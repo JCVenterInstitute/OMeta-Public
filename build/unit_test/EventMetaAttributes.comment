@@ -1,0 +1,11 @@
+ProjectName	EventName	Required    AttributeName
+#  An event called ProjectRegistration has GrantName and GrantAccountingCode attributes.
+Werewolf    ProjectRegistration    T   GrantName
+Werewolf    ProjectRegistration    T   GrantAccountingCode
+#  An event called SampleRegistration has SampleName, OrganismName and Public attributes
+Werewolf    SampleRegistration    T   SampleName
+Werewolf    SampleRegistration    T   OrganismName
+Werewolf    SampleRegistration    T   Public
+#  An event called SampleSRASubmission has SampleName and AccessionNumber attributes
+Werewolf    SampleSRASubmission   T   SampleName
+Werewolf    SampleSRASubmission   T   AccessionNumber

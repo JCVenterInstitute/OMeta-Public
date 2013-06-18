@@ -1,0 +1,89 @@
+/*
+ * Copyright J. Craig Venter Institute, 2013
+ *
+ * The creation of this program was supported by J. Craig Venter Institute
+ * and National Institute for Allergy and Infectious Diseases (NIAID),
+ * Contract number HHSN272200900007C.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+p.header1, p.header1 em {
+  margin-top:1em;
+  margin-bottom:1em;
+  font-weight:500;
+  color:#0081b3;
+  clear: both;
+  font-size:1.5em; }
+p.header1-line {
+  border-top:1px solid #cfcfcf;
+  padding: .5em 0 .5em 0;
+  margin-top:2em;
+  margin-bottom:.5em;
+  font-weight:500;
+  color:#0081b3;
+  clear: both;
+  font-size:1.5em; }
+p.header1 em { font-size: 1em; }
+
+p.header2, p.header2-line {
+  margin-top:1.5em;
+  margin-bottom:1em;
+  font-weight:500;
+  color:#686F74;
+  font-size:1.4em; }
+p.header2-line {
+  border-top: 1px solid #cfcfcf;
+  padding: .5em 0 .5em 0;
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+} /* end p.header2-line */
+
+p.header2 * { color: #686F74; }
+p.header3, p.header3 em {
+  margin-top:.5em;
+  margin-bottom:.5em;
+  padding-left:.9em;
+  font-weight:500;
+  background: url('../images/menu_arrow.gif') no-repeat left;
+  color:#0081b3;
+  font-size:1.2em; }
+p.header3 em {
+  background: none;
+  padding: 0;
+  font-size: 1em; }
+p.code { font-family: 'Courier New', Courier, monospace; }
+
+span.code { font-family: 'Courier New', Courier, monospace; }
+span.event1 { color: #ff0000; } /* red */
+span.event2 { color: #00ff00; } /* green */
+span.event3 { color: #ffc0cb; } /* pink */
+
+tr.tableHeader {
+  padding: 2px;
+  background-color: #a0a09b;
+  color: #ffffff; }
+tr.tableRowEven {
+  padding: 2px;
+  background-color: #f5f5f5; }
+tr.tableRowOdd {
+  padding: 2px;
+  background-color: #e9e9e9; }
+
+tr.tableHeader td, tr.tableHeader th, tr.tableRowEven td, tr.tableRowOdd td { padding: 6px 8px; padding-bottom: 0; margin: 0; vertical-align: top; }
+#middle_content tr.tableHeader td p.bodytext, #middle_content tr.tableRowEven td p.bodytext, #middle_content tr.tableRowOdd td p.bodytext { padding: 0; margin-bottom: 6px; }
+tr.tableHeader td p.bodytext { color: #ffffff; }
+
+td.leftColumn { color: #ffff00; }
+td.highlight { color: #ff00ff; }

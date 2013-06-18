@@ -1,0 +1,271 @@
+<!--
+  ~ Copyright J. Craig Venter Institute, 2013
+  ~
+  ~ The creation of this program was supported by J. Craig Venter Institute
+  ~ and National Institute for Allergy and Infectious Diseases (NIAID),
+  ~ Contract number HHSN272200900007C.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<project name="ometa" default="dist" basedir=".">
+    <description>
+        Builds the Hibernate/Database Distributable(s) for O-META to Load the Project Events Database.
+    </description>
+
+    <property name="tracking.web.context" value="ometa"/>
+    <property name="package.name" value="org/jcvi/${tracking.web.context}" />
+
+    <!--jboss location from user build file -->
+    <property file="./user_build_properties/${user.name}-build.properties" />
+    <property name="jboss.deploy.local.dir" value="${jboss.local.server}/deploy"/>
+    <property name="compile.target" value="1.6" />
+
+    <!-- set global properties for this build -->
+    <property name="base.dir" value="${basedir}/.."/>
+    <property name="src.dir" value="${base.dir}/main/src/java"/>
+    <property name="tmp.dir" value="${base.dir}/tmp"/>
+    <property name="build.dir" value="${base.dir}/build"/>
+    <property name="class.dir" value="${tmp.dir}/classes"/>
+    <property name="dist.dir" value="${base.dir}/dist"/>
+    <property name="web.dir" value="${base.dir}/main/src/www"/>
+    <property name="hibernate.dir" value="${base.dir}/build/hibernate"/>
+
+    <!-- LIBRARY -->
+    <property name="common.util.dir" value="${base.dir}/common/CommonUtils/" />
+    <property name="thirdparty.lib.dir" value="${base.dir}/common/thirdparty" />
+    <property name="JBoss-Client.lib.dir" value="${thirdparty.lib.dir}/JBoss-5.1.0.GA/client/" />
+    <property name="dom4j.lib.dir" value="${thirdparty.lib.dir}/Dom4J-1.6.1/"/>
+    <property name="hibernate.lib.dir" value="${thirdparty.lib.dir}/Hibernate-3.3.1/"/>
+    <property name="mysql.lib.dir" value="${thirdparty.lib.dir}/MySQL-5.1.14"/>
+    <property name="displaytag.lib.dir" value="${thirdparty.lib.dir}/displaytag-1.2"/>
+    <property name="apachepoi.lib.dir" value="${thirdparty.lib.dir}/ApachePOI-3.7"/>
+    <property name="ebi.lib.dir" value="${thirdparty.lib.dir}/ebi"/>
+    <property name="struts.lib.dir" value="${thirdparty.lib.dir}/Struts-2.2.1.1/"/>
+    <property name="servlet.lib.dir" value="${thirdparty.lib.dir}/Servlet-2.4/"/>
+    <property name="ehcache.lib.dir" value="${thirdparty.lib.dir}/ehcache-2.3.1/"/>
+    <property name="log4j.lib.dir" value="${thirdparty.lib.dir}/Log4J-1.2.8"/>
+
+    <property name="war-tmp-dir" value="${dist.dir}/tmp-war"/>
+    <property name="pre-exploded-war" value="${dist.dir}/${tracking.web.context}-pre-exploded.war"/>
+    <property name="exploded-war" value="${war-tmp-dir}/${tracking.web.context}.war"/>
+    <property name="persistence-ar" value="${dist.dir}/${tracking.web.context}_db_interface.jar"/>
+
+    <target name="init">
+        <!-- Create the time stamp -->
+        <tstamp/>
+        <mkdir dir="${tmp.dir}"/>
+        <mkdir dir="${class.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+        <mkdir dir="${class.dir}/resource" />
+        <mkdir dir="${class.dir}/resource/internal" />
+        <copy todir="${class.dir}/resource">
+            <fileset dir="${build.dir}/resource/">
+                <include name="LoadingEngine*.properties"/>
+                <include name="gen_*.sql"/>
+            </fileset>
+        </copy>
+        <copy file="${web.dir}/WEB-INF/struts.xml" todir="${class.dir}"/>
+    </target>
+
+    <path id="common-classpath">
+        <fileset dir="${common.util.dir}" includes="Common-Utils.jar"/>
+        <fileset dir="${hibernate.lib.dir}" includes="*.jar"/>
+        <fileset dir="${JBoss-Client.lib.dir}" includes="*.jar"/>
+        <fileset dir="${struts.lib.dir}" includes="*.jar"/>
+        <fileset dir="${servlet.lib.dir}" includes="*.jar"/>
+        <fileset dir="${apachepoi.lib.dir}" includes="*.jar"/>
+        <fileset dir="${ebi.lib.dir}" includes="*.jar"/>
+        <fileset file="${base.dir}/common/thirdparty/JBoss-5.1.0.GA/server/*.*" />
+    </path>
+
+    <target name="compile" depends="init" description="compile the source">
+        <javac  target="${compile.target}"
+                srcdir="${src.dir}"
+                classpathref="common-classpath"
+                destdir="${class.dir}"
+                debug="true"
+                debuglevel="lines,vars,source"/>
+    </target>
+
+    <target name="make-har" depends="compile" description="make hibernate archive">
+        <jar destfile="${persistence-ar}">
+            <fileset dir="${tmp.dir}/classes">
+                <include name="${package.name}/hibernate/dao/*.class" />
+                <include name="${package.name}/model/*.class" />
+            </fileset>
+            <fileset dir="${base.dir}/build">
+                <include name="META-INF/persistence.xml" />
+            </fileset>
+            <zipgroupfileset dir="${ehcache.lib.dir}" includes="*.jar" />
+            <zipgroupfileset dir="${mysql.lib.dir}" includes="*.jar"/>
+            <zipgroupfileset dir="${JBoss-Client.lib.dir}" includes="antlr.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/ehcache-2.3.1" includes="**/*.jar"/>
+        </jar>
+    </target>
+
+    <target name="make-loader-app" depends="compile,make-har" description="Create a file-loader application jar.">
+        <!-- create the jar file -->
+        <jar destfile="${dist.dir}/${tracking.web.context}App.jar">
+            <fileset dir="${tmp.dir}/classes">
+                <include name="**/*.class" />
+                <include name="**/*.properties" />
+                <include name="**/*.xml" />
+                <include name="**/*.sql" />
+                <exclude name="${package.name}/production_etl/**/*.class" />
+                <exclude name="${package.name}/action/**/*.class" />
+                <exclude name="${package.name}/interceptor/**/*.class" />
+                <exclude name="${package.name}/stateless_session_bean/**/*.class" />
+            </fileset>
+            <fileset dir="${build.dir}/hibernate" includes="standalone_*_hibernate.cfg.xml"/>
+            <fileset dir="${build.dir}" file="log4j.xml"/>
+            <fileset file="${persistence-ar}"/>
+            <zipgroupfileset dir="${dom4j.lib.dir}" includes="*.jar"/>
+            <zipgroupfileset dir="${hibernate.lib.dir}" includes="*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/Hibernate-Commons-Annotations-3.3.0" includes="**/*.jar"/>
+            <zipgroupfileset dir="${common.util.dir}" includes="**/*.jar"/>
+            <zipgroupfileset dir="${mysql.lib.dir}" includes="**/*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/cglib-2.2" includes="**/*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/jta-1_1" includes="**/*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/asm-3.3.1" includes="**/*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/ehcache-2.3.1" includes="**/*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/commons-collections-3.2.1" includes="**/*.jar"/>
+            <zipgroupfileset dir="${JBoss-Client.lib.dir}" includes="*.jar"
+                             excludes="activation.jar, avalon-framework.jar, FastInfoset.jar, getopt.jar, jacorb.jar, jaxb*.jar, jaxws.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/Servlet-2.4" includes="javax.servlet.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/Struts-2.2.1.1" includes="**/*.jar"/>
+        </jar>
+    </target>
+
+    <target name="make-etl-app" depends="compile,make-har" description="Create an Extract/Translate/Load Jar File">
+        <jar destfile="${dist.dir}/${tracking.web.context}ETL.jar">
+            <fileset dir="${tmp.dir}/classes">
+                <include name="**/*.class" />
+                <include name="**/*.properties" />
+                <include name="**/*.xml" />
+                <include name="**/*.sql" />
+                <exclude name="${package.name}/action/**/*.class" />
+                <exclude name="${package.name}/engine/**/*.class" />
+                <exclude name="${package.name}/interceptor/**/*.class" />
+                <exclude name="${package.name}/stateless_session_bean/**/*.class" />
+                <exclude name="${package.name}/web_bean/**/*.class" />
+                <exclude name="${package.name}/jndi/**/*.class" />
+            </fileset>
+            <fileset dir="${build.dir}/hibernate" includes="standalone_*_hibernate.cfg.xml"/>
+            <fileset dir="${build.dir}" file="log4j.xml"/>
+            <fileset file="${persistence-ar}"/>
+            <zipgroupfileset dir="${dom4j.lib.dir}" includes="*.jar"/>
+            <zipgroupfileset dir="${hibernate.lib.dir}" includes="*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/Hibernate-Commons-Annotations-3.3.0" includes="**/*.jar"/>
+            <zipgroupfileset dir="${common.util.dir}" includes="**/*.jar"/>
+            <zipgroupfileset dir="${mysql.lib.dir}" includes="**/*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/cglib-2.2" includes="**/*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/jta-1_1" includes="**/*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/asm-3.3.1" includes="**/*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/ehcache-2.3.1" includes="**/*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/commons-collections-3.2.1" includes="**/*.jar"/>
+            <zipgroupfileset dir="${JBoss-Client.lib.dir}" includes="mail.jar" />
+            <zipgroupfileset dir="${JBoss-Client.lib.dir}" includes="activation.jar"/>
+            <zipgroupfileset dir="${JBoss-Client.lib.dir}" includes="log4j.jar"/>
+            <zipgroupfileset dir="${log4j.lib.dir}" includes="log4j.jar"/>
+        </jar>
+    </target>
+
+    <target name="war" depends="make-har">
+        <war warfile="${pre-exploded-war}" webxml="${web.dir}/WEB-INF/web.xml" >
+            <classes dir="${class.dir}">
+                <include name="**/*.class"/>
+                <include name="**/*.xml"/>
+                <exclude name="**/*.properties"/>
+                <exclude name="**/log4j.xml"/>
+                <exclude name="${package.name}/hibernate/**/*.class" />
+                <exclude name="${package.name}/model/*.class" />
+                <exclude name="${package.name}/bean_interface/**/*.class" />
+                <exclude name="${package.name}/stateless_session_bean/**/*.class" />
+                <exclude name="${package.name}/configuration/*.class" />
+                <exclude name="${package.name}/engine/**/*.class" />
+                <exclude name="**/*.hbm.xml" />
+                <exclude name="**/service-hibernate.xml" />
+            </classes>
+            <fileset dir="${web.dir}">
+                <include name="**/*.jsp"/>
+                <include name="**/*.js"/>
+                <include name="**/*.css"/>
+                <include name="**/*.jpg"/>
+                <include name="**/*.gif"/>
+                <include name="**/*.png"/>
+                <include name="**/*.xml"/>
+                <include name="**/*.swf"/>
+                <include name="**/*.html"/>
+                <exclude name="**/struts.xml" />
+            </fileset>
+            <lib dir="${struts.lib.dir}" includes="*.jar"/>
+            <lib dir="${displaytag.lib.dir}" includes="*.jar"/>
+            <lib dir="${common.util.dir}" includes="**/*.jar"/>
+            <lib dir="${apachepoi.lib.dir}" includes="**/*.jar"/>
+            <lib dir="${ebi.lib.dir}" includes="**/*.jar"/>
+            <zipfileset dir="${base.dir}/build/META-INF" includes="context.xml" prefix="META-INF"/>
+        </war>
+        <mkdir dir="${war-tmp-dir}" />
+        <mkdir dir="${exploded-war}" />
+        <unjar dest="${exploded-war}" src="${pre-exploded-war}" />
+        <delete file="${pre-exploded-war}" />
+    </target>
+
+    <target name="server-jar" depends="compile">
+        <jar destfile="${dist.dir}/${tracking.web.context}_ejb_server.jar">
+            <fileset dir="${tmp.dir}/classes">
+                <include name="${package.name}/**/*.class" />
+                <exclude name="${package.name}/hibernate/**/*.class" />
+                <exclude name="${package.name}/action/**/*.class" />
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="ear" depends="compile,server-jar,war,make-har" description="All targets to make the enterprise application." >
+        <ear earfile="${dist.dir}/${tracking.web.context}.ear" appxml="${build.dir}/META-INF/application.xml" >
+            <metainf dir="${build.dir}/META-INF">
+                <include name="jboss.xml" />
+                <!--<include name="scheduler-service.xml" />-->
+            </metainf>
+            <fileset dir="${dist.dir}">
+                <include name="${tracking.web.context}_ejb_server.jar" />
+                <include name="${tracking.web.context}_db_interface.jar" />
+            </fileset>
+            <fileset dir="${war-tmp-dir}" >
+                <include name="**/*" />
+            </fileset>
+            <fileset dir="${common.util.dir}" includes="Common-Utils.jar"/>
+            <fileset dir="${apachepoi.lib.dir}" includes="**/*.jar"/>
+            <fileset dir="${build.dir}">
+                <include name="**/*.properties" />
+                <exclude name="**/*-build.properties" />
+            </fileset>
+        </ear>
+    </target>
+
+    <target name="dist" depends="make-loader-app,make-etl-app,war,ear" description="generate the distribution" />
+
+    <target name="ear-to-jboss" depends="dist"  description="export to jboss">
+        <unzip src="${dist.dir}/${tracking.web.context}.ear" dest="${jboss.deploy.local.dir}/${tracking.web.context}.ear/" />
+    </target>
+
+    <target name="clean-classes" description="clean up" >
+        <delete dir="${tmp.dir}"/>
+    </target>
+
+    <target name="clean" description="clean up" depends="clean-classes" >
+        <delete dir="${dist.dir}" />
+    </target>
+</project>

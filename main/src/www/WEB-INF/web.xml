@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Copyright J. Craig Venter Institute, 2013
+  ~
+  ~ The creation of this program was supported by J. Craig Venter Institute
+  ~ and National Institute for Allergy and Infectious Diseases (NIAID),
+  ~ Contract number HHSN272200900007C.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+
+    <display-name>Production Status</display-name>
+
+    <filter>
+        <filter-name>Struts</filter-name>
+        <filter-class>
+            org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter
+        </filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Struts</filter-name>
+        <url-pattern>*.action</url-pattern>
+    </filter-mapping>
+
+    <welcome-file-list>
+        <welcome-file>/JSP/index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Project Website Resources</web-resource-name>
+            <description>Protects selected resources</description>
+
+            <url-pattern>forceLoginForProductionStatus.action</url-pattern>
+            <url-pattern>forceLoginForEventDetails.action</url-pattern>
+
+            <!--<url-pattern>templateMaker.action</url-pattern>-->
+            <!--<url-pattern>/JSP/EventTemplateMaker.jsp</url-pattern>-->
+
+            <url-pattern>webLoader.action</url-pattern>
+            <url-pattern>/JSP/Upload.jsp</url-pattern>
+
+            <url-pattern>eventDetail.action</url-pattern>
+            <url-pattern>/JSP/EventDetail.jsp</url-pattern>
+
+            <url-pattern>eventLoader.action</url-pattern>
+            <url-pattern>/JSP/eventLoader.jsp</url-pattern>
+
+            <url-pattern>projectSetup.action</url-pattern>
+            <url-pattern>/JSP/ProjectSetup.jsp</url-pattern>
+
+            <url-pattern>metadataSetup.action</url-pattern>
+            <url-pattern>/JSP/MetadataSetup.jsp</url-pattern>
+
+            <url-pattern>sampleLoader.action</url-pattern>
+            <url-pattern>/JSP/SampleLoader.jsp</url-pattern>
+
+            <url-pattern>multiLoader.action</url-pattern>
+            <url-pattern>/JSP/MultiLoader.jsp</url-pattern>
+
+            <url-pattern>secureIndex.action</url-pattern>
+
+            <url-pattern>sampleWithEventLoader.action</url-pattern>
+            <url-pattern>/JSP/SampleWithEventLoader.jsp</url-pattern>
+
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>pstuser</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <realm-name>jcvi</realm-name>
+        <form-login-config>
+        <form-login-page>/JSP/Login.jsp</form-login-page>
+        <form-error-page>/JSP/ErrorOnLogin.jsp</form-error-page>
+        </form-login-config>
+    </login-config>
+
+    <security-role>
+        <role-name>pstuser</role-name>
+    </security-role>
+
+</web-app>

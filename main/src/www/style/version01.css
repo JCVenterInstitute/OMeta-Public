@@ -1,0 +1,349 @@
+/*
+ * Copyright J. Craig Venter Institute, 2013
+ *
+ * The creation of this program was supported by J. Craig Venter Institute
+ * and National Institute for Allergy and Infectious Diseases (NIAID),
+ * Contract number HHSN272200900007C.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+@charset "utf-8";
+/* CSS Document */
+
+li, #right_content_template p { font-size: 1em; }
+#middle_content_template #content_header, #container_2 #content_header {text-align: left;}
+#container_2 #content_header {margin-left: 210px;}
+
+body {
+    /*background: #0081b3 url(images/sample.jpg) no-repeat top left;*/
+    background-position: 350px 0;
+} /* end body */
+
+#logo_search { padding: 0; }
+#home_container {
+    margin: 0;
+    width: auto;
+} /* end #home_container */
+#menu_container ul, #home_container { margin-left: 30px; }
+#legal_container { margin-right: 0; }
+#main_block {
+    width: 100%;
+    margin: 0 auto;
+} /* end #main_block */
+
+#menu { height: 26px; }
+#menu_container { float: left; }
+#menu_container ul { float: left; }
+
+#main_block #main_content_3c {
+    border: 0;
+    width: 100%;
+} /* end #main_block #main_content_3c */
+#content_header { width: 523px; }
+#content { width:auto; }
+#content {
+    background: #ffffff;
+    padding-left: 0;
+    padding-right: 0;
+} /* end #content */
+
+#container_1, #container_2 { margin: 0; padding: 0; }
+#middle_content_template { margin: 15px 0 0 20px; }
+#left_content {
+    float: left;
+    width: 200px;
+    margin: 0;
+    padding: 0;
+} /* end #left_content */
+#right_content_template {
+    float: right;
+    width: 200px;
+    margin:0;
+    padding:0;
+} /* end #right_content */
+
+#middle_content_template h1 {
+    margin-bottom: 5px;
+    font-weight: 200;
+    text-transform: uppercase;
+    font-size: 1.5em;
+}
+
+#left_content, #middle_content_template, #right_content_template { padding: 10px; }
+#right_content_template { margin-top: -30px; }
+
+#main_content_3c { background: #0f0f0f; }
+#main_logo { padding-left: 50px; }
+
+#middle_content_template ul, #middle_content_template ol {
+    margin: 1em 0;
+    line-height:1.5em;
+    padding-left: 2.3em;
+} /* end #middle_content ul, #middle_content ol */
+
+#right_content_template h1 {
+    font-size: 1.1em;
+    font-weight: normal;
+    text-transform: uppercase;
+    margin-top: 30px;
+    margin-right: 0pt;
+    margin-bottom: 3px;
+    margin-left: 0pt;
+    padding-top: 6px;
+    padding-right: 3px;
+    padding-bottom: 0pt;
+    padding-left: 3px;
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-top-color: #cfcfcf;
+} /* end #right_content_template h1 */
+
+tr.tableHeader td p, tr.tableHeader th p { color: #ffffff; }
+tr.tableHeader th { font-weight: normal; }
+#middle_content_template p { margin-bottom: 1em; line-height:1.3em }
+#middle_content_template td p, #middle_content_template th p { margin-bottom: 6px; }
+
+#search { display: block; }
+#logo_container { width: 100%; }
+#menu_container ul li a {
+    width: auto;
+    padding: 0 1em;
+} /* end #menu_container ul li a */
+#legal_container { font-size: 1em; }
+p.header1 { clear: none; }
+
+#content {
+    border-left: 1px solid #818080;
+    border-right: 1px solid #818080;
+} /* end #container_1 */
+
+#top_dark, #bottom_dark{ /*
+  border-left: 1px solid #686868;
+  border-right: 1px solid #686868;
+  */
+} /* end #top_dark, #rounded_top, #bottom_dark, #rounded_bottom */
+/*
+#rounded_top, #rounded_bottom {
+border-left: 1px solid #a0a09b;
+border-right: 1px solid #a0a09b;
+} *//* end #rounded_top, #rounded_bottom */
+
+#siteMenuBar
+{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 58px;
+    margin-top: -47px;
+}
+
+#siteMenuBar > #menuContainer
+{
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    height: 48px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+#siteMenuBar ul
+{
+    float: right;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    font-size: 0.9em;
+}
+
+#siteMenuBar li
+{
+    display: inline;
+    margin: 0;
+    padding: 0 5px 0 5px;
+    margin-right: 10px;
+}
+
+#siteMenuBar ul:first-child
+{
+    float: left;
+    margin-left: 10px;
+}
+
+.panelHeader {
+    color: #306BA7;
+    font-family: Tahoma,sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    text-align: left;
+    margin:15px 25px 0 30px;
+}
+
+.popup {background:#FFF; border:1px solid #333; padding:1px;}
+.popup-header {height:24px; padding:7px; background:url("../images/popup/bgr_popup_header.jpg") repeat-x;}
+.popup-header h2 {margin:0; padding:0; font-size:18px; float:left;}
+.popup-header .close-link {float:right; font-size:11px;}
+
+.errorNotification {
+    font-size: 16px;
+    text-align: left;
+    color: #FF0000;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+.tableHeaderStyle {
+    font-family: Verdana,Arial,Helvetica,sans-serif;
+    font-weight: normal;
+    font-size: 1em;
+    text-align: left;
+    color: #FFFFFF;
+    margin: 0;
+    padding: 5px 12px 5px 12px;
+    vertical-align: top;
+    background-image: url("../images/blue/bg.gif");
+    background-position: right center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    border: 1px solid #FFF;
+    background-color: #B6B6B6;
+    width:75px;
+}
+
+.tableHeaderNoBG {
+    font-family: Verdana,Arial,Helvetica,sans-serif;
+    font-weight: normal;
+    font-size: 1em;
+    text-align: left;
+    color: #FFFFFF;
+    margin: 0;
+    padding: 5px 12px 5px 12px;
+    vertical-align: top;
+    cursor: pointer;
+    border: 1px solid #FFF;
+    background-color: #B6B6B6;
+    width:75px;
+}
+
+.tableHeaderNoSort {
+    font-family: Verdana,Arial,Helvetica,sans-serif;
+    font-weight: normal;
+    font-size: 1em;
+    text-align: left;
+    color: #FFFFFF;
+    margin: 0;
+    padding: 5px 5px;
+    vertical-align: top;
+    cursor: pointer;
+    border: 1px solid #FFF;
+    background-color: #B6B6B6;
+}
+
+
+.hasDatepicker {
+    vertical-align : top;
+}
+
+.errorPanelText {
+    color:white;
+    background-color:red;
+    border:1px solid;
+    border-color:red;
+    font: bold small 'trebuchet ms',helvetica,sans-serif;	
+}
+
+.comboBoxCB {
+    vertical-align:middle;
+    text-align:center;
+}
+.checkBoxHeader {
+    width:7px;
+}
+/*.boxesHeader {
+    width:230px;
+}*/
+
+
+.gappedTr > td {
+    padding-top: 10px;
+}
+
+div#tableTop table tr:first-child td:first-child+td {
+    width: 250px;
+}
+
+.statusMain, .statusTop, .statusBottom, .DTTT_container { float:left; clear:both; }
+
+button.ui-button-icon-only { width: 1.2em !important; }
+
+/*global button style*/
+input[type="button"], .pageButton {
+    display: inline-block;
+    border: 1px solid #777777;
+    background: #547395;
+    color: white;
+    font: bold 11px 'Trebuchet MS';
+    padding: 4px;
+    cursor: pointer;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    font-size: 1.1em;
+    font-family: Helvetica, Arial, Sans-Serif;
+    text-decoration: none;
+    vertical-align: middle;
+    margin-left: 5px;
+}
+input[type="button"]:hover, .pageButton:hover {
+   border-top-color: #216796;
+   background: #216796;
+   color: #a8d9f0;
+   cursor: pointer;
+}
+input[type="button"]:active, .pageButton:active {
+   border-top-color: #1b435e;
+   background: #1b435e;
+}
+input[type="button"]:disabled, .pageButton:disabled {
+    border-top-color: #216796;
+    background: #dbe3eb;
+    color: black;
+    cursor: none;  
+}
+/* smaller button for inline style */
+.inlineButton {
+    padding: 2px 4px;  
+    font-size: .9em;
+}
+
+.hasTooltip {
+    background-image: url("../images/info.png");
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    padding-right: 16px;
+}
+
+.requiredField {
+    background-image: url("../images/required.png");
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    padding-right: 16px;
+}
+
+
+/* dotted bottom border for table */
+tr.borderBottom > td { border-bottom: 1px gray dotted; }

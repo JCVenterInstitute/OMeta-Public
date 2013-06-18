@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Class-Path: JUnit CommonUtils Log4J-1.2.8
+

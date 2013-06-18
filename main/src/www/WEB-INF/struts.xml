@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright J. Craig Venter Institute, 2013
+  ~
+  ~ The creation of this program was supported by J. Craig Venter Institute
+  ~ and National Institute for Allergy and Infectious Diseases (NIAID),
+  ~ Contract number HHSN272200900007C.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+    <constant name="struts.action.extension" value="action" />
+    <constant name="struts.devMode" value="true" />
+    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+
+    <package name="productionStatus" namespace="/" extends="struts-default">
+
+        <interceptors>
+            <!-- Different rules = different interceptors. -->
+            <interceptor
+                    name="readOnlyAllOrNothingInterceptor"
+                    class="org.jcvi.ometa.interceptor.struts2.ReadOnlyAllOrNothingAuthInterceptor" />
+            <!--
+            NOTE on use of writableAllOrNothingInterceptor.  This was tested and debugged, and it should work.
+
+            However, at time of writing, all the actions are shielded with the RO version, and are calling the
+            backing to the Writeable interceptor internally.  LLF, 8/4/20110
+            -->
+            <interceptor
+                    name="writableAllOrNothingInterceptor"
+                    class="org.jcvi.ometa.interceptor.struts2.WritableAllOrNothingAuthInterceptor" />
+
+            <interceptor-stack name="readOnlyAllOrNothingAuthStack">
+                <interceptor-ref name="readOnlyAllOrNothingInterceptor"/>
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+            <interceptor-stack name="writableAllOrNothingAuthStack">
+                <interceptor-ref name="writableAllOrNothingInterceptor"/>
+                <interceptor-ref name="defaultStack"/>
+            </interceptor-stack>
+        </interceptors>
+
+        <default-interceptor-ref name="defaultStack" />
+
+        <action name="forceLoginForProductionStatus"
+                class="org.jcvi.ometa.action.ForceLogin"
+                method="silentRedirect">
+            <result name="success" type="redirectAction">
+                <param name="actionName">productionStatus</param>
+                <param name="namespace">/</param>
+                <param name="projectNames">${projectNames}</param>
+                <param name="attributes">${attributes}</param>
+            </result>
+        </action>
+
+        <action name="forceLoginForEventReport"
+                class="org.jcvi.ometa.action.ForceLogin"
+                method="silentRedirect">
+            <result name="success" type="redirectAction">
+                <param name="actionName">eventReport</param>
+                <param name="namespace">/</param>
+                <param name="projectNames">${projectNames}</param>
+                <param name="attributes">${attributes}</param>
+            </result>
+        </action>
+
+        <action name="forceLoginForTemplateMaker"
+                class="org.jcvi.ometa.action.ForceLogin"
+                method="silentRedirect">
+            <result name="success" type="redirectAction">
+                <param name="actionName">templateMaker</param>
+                <param name="namespace">/</param>
+                <param name="projectNames">${projectNames}</param>
+                <param name="attributes">${attributes}</param>
+            </result>
+        </action>
+
+        <action name="forceLoginForEventDetail"
+                class="org.jcvi.ometa.action.ForceLogin"
+                method="silentRedirect">
+            <result name="success" type="redirectAction">
+                <param name="actionName">eventDetail</param>
+                <param name="namespace">/</param>
+                <param name="projectNames">${projectNames}</param>
+                <param name="attributes">${attributes}</param>
+            </result>
+        </action>
+
+
+        <action name="productionStatus"
+                class="org.jcvi.ometa.action.ProductionStatus"
+                method="statusPage">
+            <result name="success">/JSP/ProductionStatus.jsp</result>
+            <result name="error">/JSP/ProductionStatus.jsp</result>
+            <result name="success_s">/JSP/ProductionStatusShell.jsp</result>
+            <result name="error_s">/JSP/ProductionStatus.jsp</result>
+            <result name="login" type="redirectAction">
+                <param name="actionName">forceLoginForProductionStatus</param>
+                <param name="namespace">/</param>
+                <param name="projectNames">${projectNames}</param>
+                <param name="attributes">${attributes}</param>
+                <param name="iss">${iss}</param>
+            </result>
+            <result name="forbidden">/JSP/ProductionStatus.jsp</result>
+            <result name="forbidden_s">/JSP/ProductionStatus.jsp</result>
+        </action>
+        <action name="productionStatusExcel"
+                class="org.jcvi.ometa.action.ProductionStatus"
+                method="statusExcel">
+            <result name="success">/JSP/ProductionStatusExcel.jsp</result>
+        </action>
+
+        <action name="projectSetup"
+                class="org.jcvi.ometa.action.ProjectSetup"
+                method="projectSetup">
+            <result name="forbidden">/JSP/ProjectSetup.jsp</result>
+            <result name="success">/JSP/ProjectSetup.jsp</result>
+            <result name="error">/JSP/ProjectSetup.jsp</result>
+        </action>
+
+        <action name="metadataSetup"
+                class="org.jcvi.ometa.action.MetadataSetup"
+                method="process">
+            <result name="forbidden">/JSP/MetadataSetup.jsp</result>
+            <result name="success">/JSP/MetadataSetup.jsp</result>
+            <result name="error">/JSP/MetadataSetup.jsp</result>
+        </action>
+
+        <action name="sampleLoader"
+                class="org.jcvi.ometa.action.SampleLoader"
+                method="execute">
+            <result name="forbidden">/JSP/SampleLoader.jsp</result>
+            <result name="success">/JSP/SampleLoader.jsp</result>
+            <result name="error">/JSP/SampleLoader.jsp</result>
+        </action>
+
+        <action name="sampleDetail"
+                class="org.jcvi.ometa.action.SampleDetail"
+                method="detailPage">
+            <result name="success">/JSP/SampleDetail.jsp</result>
+            <result name="error" type="redirectAction">
+                <param name="actionName">SampleDetail</param>
+                <param name="namespace">/</param>
+            </result>
+        </action>
+
+        <!-- This does not have an auth interceptor, because it is wholly declaratively protected. -->
+        <action name="webLoader"
+                class="org.jcvi.ometa.action.WebLoader"
+                method="execute">
+            <result name="success">/JSP/Upload.jsp</result>
+            <result name="NO_FILE_GIVEN">/JSP/Upload.jsp</result>
+            <result name="FILE_NOT_FOUND">/JSP/Upload.jsp</result>
+            <result name="EVENT_TYPE_NOT_CHOSEN">/JSP/Upload.jsp</result>
+            <result name="FAILURE">/JSP/Upload.jsp</result>
+        </action>
+
+        <action name="templateMaker"
+                class="org.jcvi.ometa.action.EventTemplateMaker"
+                method="execute">
+            <result name="success">/JSP/EventTemplateMaker.jsp</result>
+            <result name="FILE_DOWNLOAD" type="stream">
+                <param name="contentDisposition">filename="${downloadFileName}"</param>
+                <param name="contentType">text/plain</param>
+            </result>
+            <result name="login" type="redirectAction">
+                <param name="actionName">forceLoginForTemplateMaker</param>
+                <param name="namespace">/</param>
+                <param name="projectNames">${projectNames}</param>
+                <param name="attributes">${attributes}</param>
+            </result>
+            <result name="FAILURE">/JSP/EventTemplateMaker.jsp</result>
+            <result name="forbidden">/JSP/EventTemplateMaker.jsp</result>
+        </action>
+
+        <action name="eventReport"
+                class="org.jcvi.ometa.action.EventReport"
+                method="eventReport">
+            <result name="login" type="redirectAction">
+                <param name="actionName">forceLoginForEventReport</param>
+                <param name="namespace">/</param>
+                <param name="projectNames">${projectNames}</param>
+                <param name="attributes">${attributes}</param>
+            </result>
+            <result name="success">/JSP/EventReport.jsp</result>
+            <result name="error">/JSP/EventReport.jsp</result>
+        </action>
+
+        <action name="eventDetail"
+                class="org.jcvi.ometa.action.EventDetail"
+                method="eventDetail">
+            <result name="login" type="redirectAction">
+                <param name="actionName">forceLoginForEventDetails</param>
+                <param name="namespace">/</param>
+                <param name="projectNames">${projectNames}</param>
+                <param name="attributes">${attributes}</param>
+            </result>
+            <result name="success">/JSP/EventDetail.jsp</result>
+            <result name="forbidden">/JSP/EventDetail.jsp</result>
+        </action>
+
+        <action name="eventLoader"
+                class="org.jcvi.ometa.action.EventLoader"
+                method="execute">
+            <result name="forbidden">/JSP/EventLoader.jsp</result>
+            <result name="success">/JSP/EventLoader.jsp</result>
+            <result name="error">/JSP/EventLoader.jsp</result>
+            <result name="FILE_DOWNLOAD" type="stream">
+                <param name="contentType">application/csv</param>
+                <param name="contentDisposition">attachment;filename="${downloadFileName}"</param>
+                <param name="inputName">fileInputStream</param>
+            </result>
+        </action>
+
+        <action name="sampleWithEventLoader"
+                class="org.jcvi.ometa.action.SampleWithEventLoader"
+                method="execute">
+            <result name="forbidden">/JSP/SampleWithEventLoader.jsp</result>
+            <result name="success">/JSP/SampleWithEventLoader.jsp</result>
+            <result name="error">/JSP/SampleWithEventLoader.jsp</result>
+        </action>
+
+        <!-- POPUP -->
+        <action name="projectEditOpen" class="org.jcvi.ometa.action.Editor" method="projectEditOpen">
+            <result name="success">/JSP/popup/LPopupProjectEdit.jsp</result>
+            <result name="error">/JSP/popup/LPopupProjectEdit.jsp</result>
+        </action>
+        <action name="projectEditProcess" class="org.jcvi.ometa.action.Editor" method="projectEditProcess">
+            <result name="success" type="redirectAction">
+                <param name="actionName">eventDetail</param>
+                <param name="namespace">/</param>
+                <param name="projectId">${projectId}</param>
+            </result>
+            <result name="error" type="redirectAction">
+                <param name="actionName">eventDetail</param>
+                <param name="projectId">${projectId}</param>
+            </result>
+        </action>
+
+        <action name="sampleEditOpen" class="org.jcvi.ometa.action.Editor" method="sampleEditOpen">
+            <result name="success">/JSP/popup/LPopupSampleEdit.jsp</result>
+            <result name="error">/JSP/popup/LPopupSampleEdit.jsp</result>
+        </action>
+        <action name="sampleEditProcess" class="org.jcvi.ometa.action.Editor" method="sampleEditProcess">
+            <result name="success" type="redirectAction">
+                <param name="actionName">eventDetail</param>
+                <param name="namespace">/</param>
+                <param name="projectId">${projectId}</param>
+                <param name="sampleId">${sampleId}</param>
+            </result>
+            <result name="error">/JSP/popup/LPopupSampleEdit.jsp</result>
+        </action>
+
+        <action name="addLookupValue" class="org.jcvi.ometa.action.AddLookupValue" method="addLookupValueOpen">
+            <result name="success">/JSP/popup/LPopupAddLookupValue.jsp</result>
+            <result name="error">/JSP/popup/LPopupAddLookupValue.jsp</result>
+        </action>
+        <action name="addLookupValueProcess" class="org.jcvi.ometa.action.AddLookupValue" method="addLookupValueProcess">
+            <result name="success" type="redirectAction">
+                <param name="actionName">metadataSetup</param>
+                <param name="type">e</param>
+            </result>
+            <result name="error" type="redirectAction">
+                <param name="actionName">metadataSetup</param>
+                <param name="type">e</param>
+                <param name="lerror">${lerror}</param>
+                <param name="emsg">${errorMsg}</param>
+            </result>
+        </action>
+
+        <action name="ontologySearch" class="org.jcvi.ometa.action.Ontology">
+            <result name="success">/JSP/popup/LPopupOntologySearch.jsp</result>
+            <result name="error">/JSP/popup/LPopupOntologySearch.jsp</result>
+        </action>
+        <!-- POPUP ENDS -->
+
+        <action name="addActor" class="org.jcvi.ometa.action.AddActor" method="process">
+            <result name="input">/JSP/AddActor.jsp</result>
+            <result name="success" type="redirectAction">
+                <param name="actionName">secureIndex</param>
+                <param name="namespace">/</param>
+            </result>
+            <result name="error">/JSP/AddActor.jsp</result>
+        </action>
+        <action name="help" class="org.jcvi.ometa.action.Help" method="process">
+            <result name="input">/JSP/help.jsp</result>
+            <result name="success" type="redirectAction">
+                <param name="actionName">secureIndex</param>
+                <param name="namespace">/</param>
+            </result>
+            <result name="error">/JSP/help.jsp</result>
+        </action>
+
+        <!-- FILE DOWNLOADER -->
+        <action name="getFile" class="org.jcvi.ometa.action.FileDownloader" method="download">
+            <result name="success" type="stream">
+                <param name="contentType">image/jpeg</param>
+                <param name="contentDisposition">attachment;filename="${fn}"</param>
+                <param name="inputName">fileInputStream</param>
+                <param name="bufferSize">2048</param>
+            </result>
+            <result name="error">/JSP/error.jsp</result>
+        </action>
+
+        <!-- Some forwarding actions, to pump login/logout through the struts2 'treatment' -->
+        <action name="login">
+            <result>/JSP/Login.jsp</result>
+        </action>
+
+        <action name="logout">
+            <result>/JSP/Logout.jsp</result>
+        </action>
+
+        <action name="failLogin">
+            <result>/JSP/ErrorOnLogin.jsp</result>
+        </action>
+
+        <action name="secureIndex">
+            <result>/JSP/securedIndex.jsp</result>
+        </action>
+        <action name="unsecureIndex">
+            <result>/JSP/index.jsp</result>
+        </action>
+    </package>
+
+    <!-- AJAX -->
+    <package name="json" extends="json-default">
+        <action name="sharedAjax" class="org.jcvi.ometa.action.ajax.SharedAjax" method="runAjax">
+            <result name="success" type="json"/>
+            <result name="error" type="json"/>
+        </action>
+        <action name="metadataSetupAjax" class="org.jcvi.ometa.action.ajax.MetadataSetupAjax" method="runAjax">
+            <result name="success" type="json"/>
+            <result name="error" type="json"/>
+        </action>
+        <action name="eventDetailAjax" class="org.jcvi.ometa.action.ajax.EventDetailAjax" method="runAjax">
+            <result name="success" type="json"/>
+            <result name="error" type="json"/>
+        </action>
+        <action name="productionStatusAjax" class="org.jcvi.ometa.action.ajax.ProductionStatusAjax" method="runAjax">
+            <result name="success" type="json"/>
+            <result name="error" type="json"/>
+        </action>
+        <action name="ontologyAjax" class="org.jcvi.ometa.action.ajax.OntologyAjax" method="runAjax">
+            <result name="success" type="json"/>
+            <result name="error" type="json"/>
+        </action>
+    </package>
+
+    <package name="default" namespace="/" extends="struts-default">
+        <!--<default-action-ref name="index" />-->
+        <action name="index">
+            <result type="redirectAction">
+                <param name="actionName">productionStatus</param>
+            </result>
+        </action>
+    </package>
+
+</struts>
