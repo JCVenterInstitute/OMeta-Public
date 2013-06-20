@@ -7,7 +7,8 @@ O-META - Ontolgies Based Metadata Tracking
 
 ## License
 
-(The MIT License)
+(The GNU License)
+
 Copyright J. Craig Venter Institute, 2013
 
 The creation of this program was supported by J. Craig Venter Institute
