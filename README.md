@@ -1,4 +1,4 @@
-ometa
+![alt text](https://raw.github.com/movence/ometa/master/main/src/www/images/ometa_logo.png "O-META")
 =====
 
 O-META - Ontolgies Based Metadata Tracking
@@ -6,9 +6,6 @@ O-META - Ontolgies Based Metadata Tracking
 
 
 ## License
-
-(The GNU License)
-
 Copyright J. Craig Venter Institute, 2013
 
 The creation of this program was supported by J. Craig Venter Institute
@@ -24,6 +21,8 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
+<http://www.gnu.org/licenses/>.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+======
+![alt text](https://raw.github.com/movence/ometa/master/main/src/www/images/header-logo.png "JCVI")                  
+
