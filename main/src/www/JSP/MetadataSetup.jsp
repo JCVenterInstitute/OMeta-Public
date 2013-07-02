@@ -53,12 +53,7 @@
 	            <tr><td class="panelHeader">Sample/Event Set up</td></tr>
 	            <tr>
 	                <td>
-	                    <div id="errorMessagesPanel" style="margin-top:15px;">
-	                        <s:if test="hasActionErrors()">
-	                            <input type="hidden" id="error_messages" value="<s:iterator value="actionErrors"><s:property/><br/></s:iterator>"/>
-	                            <input type="button" style="background-color:red;" class="errorPanelText" value="PROCESSING ERROR: Click Here to See the Error." onclick="utils.error.show('error_messages');return false;"/>
-	                        </s:if>
-	                    </div>
+	                    <div id="errorMessagesPanel" style="margin-top:15px;"></div>
 	                </td>
 	            </tr>
 	        </table>
@@ -87,7 +82,7 @@
 	                            <th class="tableHeaderNoSort boxesHeader">Label</th>
 	                            <th class="tableHeaderNoSort checkBoxHeader">Active</th>
 	                            <th class="tableHeaderNoSort checkBoxHeader">Required</th>
-	                            <th class="tableHeaderNoSort boxesHeader">Options</th>
+	                            <th class="tableHeaderNoSort boxesHeader">Default Options</th>
 	                            <th class="tableHeaderNoSort boxesHeader">Desc</th>
 	                            <th class="tableHeaderNoSort boxesHeader">Ontology</th>
 	                        </tr>
@@ -114,7 +109,7 @@
 	                            <th class="tableHeaderNoSort boxesHeader">Label</th>
 	                            <th class="tableHeaderNoSort checkBoxHeader">Active</th>
 	                            <th class="tableHeaderNoSort checkBoxHeader">Required</th>
-	                            <th class="tableHeaderNoSort boxesHeader">Options</th>
+	                            <th class="tableHeaderNoSort boxesHeader">Default Options</th>
 	                            <th class="tableHeaderNoSort boxesHeader">Desc</th>
 	                            <th class="tableHeaderNoSort boxesHeader">Ontology</th>
 	                        </tr>
@@ -143,7 +138,7 @@
 	                            <th class="tableHeaderNoSort checkBoxHeader">Active</th>
 	                            <th class="tableHeaderNoSort checkBoxHeader">Required</th>
 	                            <th class="tableHeaderNoSort checkBoxHeader">Sample Required</th>
-	                            <th class="tableHeaderNoSort boxesHeader">Options</th>
+	                            <th class="tableHeaderNoSort boxesHeader">Default Options</th>
 	                            <th class="tableHeaderNoSort boxesHeader">Desc</th>
 	                            <th class="tableHeaderNoSort boxesHeader">Ontology</th>
 	                            <th class="tableHeaderNoSort checkBoxHeader">Project Metadata</th>
@@ -225,10 +220,10 @@
 			        async: false,
 			        data: 'type='+t+'&projectId='+parseInt(projectId)+'&eventName='+eventName,
 			        success: function(html){
-			            if(html.dynamicList!=null) {
+			            if(html.dynamicList) {
 			                jl=html.dynamicList;
 			            } else {
-			                jl=null;
+			                jl=[];
 			            }
 			        },
 			        fail: function(html) {
@@ -408,7 +403,7 @@
 		            //for project or sample metatdata setup
 		            if(type==='s' || type==='p') {
 		            	//create attribute list
-		                maOptions = vs.vnoption.replace('$v$',0).replace('$n$','Select Attribute');
+		                maOptions = vs.vnoption.replace('$v$',0).replace('$n$','');
 		                $.each(_utils.makeAjax('g_ema', option.value, null), function(i1,v1) {
 		                    if(v1!=null && v1.attributeName!=null) {
 		                        maOptions+=vs.vvoption.replace(/\\$v\\$/g,v1.attributeName);
@@ -417,7 +412,7 @@
 		                });
 		                //get project or sample meta attribute and insert table rows
 		                $.each(_utils.makeAjax(type==='s'?'g_sma':'g_pma', option.value, null), function(i1,v1) {
-		                    if(v1!=null && v1.attributeName!=null) {
+		                    if(v1 && v1.attributeName) {
 		                    	//just a safety net if an attribute is not already in event meta attribute
 		                        if(maOptions.indexOf(v1.attributeName)<0) {
 		                            maOptions+=vs.vvoption.replace(/\\$v\\$/g,v1.attributeName);
@@ -434,7 +429,7 @@
 		                        etOptions+=vs.vvoption.replace(/\\$v\\$/g,v1.name);
 		                    }
 		                });
-		                maOptions=vs.vnoption.replace('$v$',0).replace('$n$','Select Attribute');
+		                maOptions=vs.vnoption.replace('$v$',0).replace('$n$','');
 		                $.each(_utils.makeAjax('g_a', 0, null), function(i1,v1) {
 		                    if(v1!=null && v1.name!=null) {
 		                        maOptions+=vs.vvoption.replace(/\\$v\\$/g,v1.name);
@@ -447,13 +442,12 @@
 		                    }
 		                });
 		                $('#_eventSelect').html(eo);
-		                $.each(_utils.makeAjax('g_ema', option.value, null), function(i1,v1) {
-		                    _utils.add.ema(null,v1.ema.eventName, v1.ema.attributeName, v1.ema.activeDB,
-	                            v1.ema.requiredDB, v1.ema.sampleRequiredDB, v1.ema.options,
-	                            v1.ema.desc, v1.ema.label, v1.ema.ontology,
-	                            v1.projectMeta, v1.sampleMeta);
+		                $.each(_utils.makeAjax('g_ema', option.value, null), function(_i,_ema) {
+		                    _utils.add.ema(null,_ema.ema.eventName, _ema.ema.attributeName, _ema.ema.activeDB,
+	                            _ema.ema.requiredDB, _ema.ema.sampleRequiredDB, _ema.ema.options,
+	                            _ema.ema.desc, _ema.ema.label, _ema.ema.ontology,
+	                            _ema.projectMeta, _ema.sampleMeta);
 		                });
-
 		            }
 		        } else {
 		            return;
@@ -493,6 +487,10 @@
 		    } else {
 		        _utils.flip('Project', 'PMADiv');
 		    }
+
+		    <s:if test="hasActionErrors()">
+                utils.error.add('<s:iterator value="actionErrors"><s:property/><br/></s:iterator>');
+            </s:if>
 		});
 	</script>
 </body>

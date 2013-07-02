@@ -143,9 +143,7 @@ public class ProductionStatus extends ActionSupport {
         }
 
         //shell action handler
-        if(iss)
-            rtnVal += "_s";
-        return rtnVal;
+        return rtnVal+(iss&&!rtnVal.equals(LOGIN)?"_s":"");
     }
 
     public String statusExcel() {

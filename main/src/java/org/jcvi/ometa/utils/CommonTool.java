@@ -144,7 +144,7 @@ public class CommonTool {
 
             if(attributeValue!=null) {
                 if(attributeValue.getClass() == Timestamp.class || attributeValue.getClass() == Date.class) {
-                    attributeValue = ModelValidator.PST_DEFAULT_DATE_FORMAT.format(attributeValue);
+                    attributeValue = convertTimestampToDate(attributeValue);
                 } else if(lookupValue.getDataType().equals(ModelValidator.FILE_DATA_TYPE) && decorate) {
                     attributeValue = convertIntoFileLink((String)attributeValue, null);
                 }
@@ -155,5 +155,9 @@ public class CommonTool {
             valueMap.put(lookupValue.getName(), attributeValue);
         }
         return valueMap;
+    }
+
+    public static String convertTimestampToDate(Object value) {
+        return ModelValidator.PST_DEFAULT_DATE_FORMAT.format(value);
     }
 }

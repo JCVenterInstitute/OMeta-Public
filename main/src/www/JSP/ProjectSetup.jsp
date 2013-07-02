@@ -45,13 +45,7 @@
                 <tr><td class="panelHeader">Project Setup</td></tr>
                 <tr>
                     <td>
-                        <div id="errorMessagesPanel" style="margin-top:15px;">
-                            <s:if test="hasActionErrors()">
-                                <input type="hidden" id="error_messages" value="<s:iterator value="actionErrors"><s:property/><br/></s:iterator>"/>
-                                <input type="button" style="background-color:red;"
-                                       value="PROCESSING ERROR: Click Here to See the Error." onclick="utils.error.show('error_messages');return false;"/>
-                            </s:if>
-                        </div>
+                        <div id="errorMessagesPanel" style="margin-top:15px;"></div>
                     </td>
                 </tr>
             </table>
@@ -158,7 +152,7 @@
                 data: 'type=g_a&projectId=0',
                 success: function(html){
                     if(html.dynamicList != null) {
-                        pmaOptions += '<option value=0>Select Attribute</option>';
+                        pmaOptions += vs.empty;
                         $.each(html, function(i1,v1) {
                             if(v1 != null) {
                                 $.each(v1, function(i2,v2) {
@@ -174,6 +168,10 @@
                     alert("Ajax Process has Failed.");
                 }
             });
+
+            <s:if test="hasActionErrors()">
+                utils.error.add('<s:iterator value="actionErrors"><s:property/><br/></s:iterator>');
+            </s:if>            
         });
         
         function comboBoxChanged(option, id) { return; }
@@ -193,19 +191,14 @@
         }
 
         function loadProject() {
-            /*var docObj = document.projectLoaderPage;
-            var emptyTextBoxes = $('input:text').filter(function() { return this.value == ""; });
-            var string = "Please fill blanks for : \n";
-            var fields = '';
-
-            emptyTextBoxes.each(function() {
-                fields += "\n" + this.id;
-            });
-
-            if(fields != '') {
-                alert(string + fields);
+            var errMsg = '';
+            if($('#_editGroupSelect').val()==='0' || $('#_viewGroupSelect').val()==='0') {
+                errMsg += "Please select project EDIT GROUP and VIEW GROUP";
+            }
+            if(errMsg.length>0) {
+                utils.error.add(errMsg);
                 return;
-            }*/
+            }
             $("#jobType").val("insert");
             $('form#projectLoaderPage').submit();
         }

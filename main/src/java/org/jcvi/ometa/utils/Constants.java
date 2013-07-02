@@ -53,8 +53,8 @@ public class Constants {
     public static String STEC_URL="http://www.shigatox.net/new/";
     public static String NCPF_URL="http://www.hpacultures.org.uk/collections/ncpf.jsp";
 
-    public static final String CONIFG_FILE_STORAGE_PATH = SERVICE_NAME+".fileStorage.path";
-    public static final String CONFIG_TAREXCLUDE_PATH = SERVICE_NAME+".tarexclude.files.path";
+    public static final String CONIFG_FILE_STORAGE_PATH = "ometa.fileStorage.path";
+    public static final String CONFIG_TAREXCLUDE_PATH = "ometa.tarexclude.files.path";
 
     public static final String PROPERTIES_FILE_NAME = "resource/LoadingEngine";
     public static final String PRODUCTION_DATABASE = "production";

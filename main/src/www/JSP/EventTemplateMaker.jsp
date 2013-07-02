@@ -46,13 +46,7 @@
     			<tr><td class="panelHeader">Template Download</td></tr>
     			<tr>
     				<td>
-    					<div id="errorMessagesPanel" style="margin-top:15px;">
-    						<s:if test="hasActionErrors()">
-    							<input type="hidden" id="error_messages" value="<s:iterator value="actionErrors"><s:property/><br/></s:iterator>"/>
-    							<input type="button" style="background-color:red;"
-    								value="PROCESSING ERROR: Click Here to See the Error." onclick="utils.error.show('error_messages');return false;"/>
-    						</s:if>
-    					</div>
+    					<div id="errorMessagesPanel" style="margin-top:15px;"></div>
     				</td>
     			</tr>
     		</table>
@@ -99,34 +93,15 @@
         </div>
     </s:form>
     <script src="scripts/jquery/jquery.dataTables.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('select').combobox();
-
-            var projectId = <s:if test="projectId == null">0</s:if><s:else><s:property value="projectId"/></s:else>;
-            var sampleId = <s:if test="sampleId == null">0</s:if><s:else><s:property value="sampleId"/></s:else>;
-            var eventId = <s:if test="eventId == null">0</s:if><s:else><s:property value="eventId"/></s:else>;
-            if( projectId != null && projectId != 0) {
-                $('#_projectSelect').val(projectId);
-                projectChanged(projectId);
-                if( sampleId != null && sampleId != 0) {
-                    $('#_sampleSelect').val(sampleId);
-                    //getEventType($('#_projectSelect').val(), $('#_sampleSelect').val(), 0);
-                }
-                if( eventId != null && eventId != 0) {
-                    $('#_eventSelect').val(eventId);
-                }
-            }
-        });
-        
+    <script>        
         function comboBoxChanged(option, id) {
             if(id==='_projectSelect') {
                 $("#downloadButton").attr("disabled", true);
                 if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
                     projectChanged(option.value);
                 } else {
-                    $("#_sampleSelect").html('<option value="0"></option>');
-                    $("#_eventSelect").html('<option value="0"></option>');
+                    $("#_sampleSelect").html(vs.empty);
+                    $("#_eventSelect").html(vs.empty);
                 }
             } else if(id==='_sampleSelect') {
                 if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
@@ -159,10 +134,10 @@
                 data: "type="+ajaxType+"&projectId="+projectId+"&sampleId="+sampleId+"&eventTypeId="+eventId,
                 success: function(html){
                     if(ajaxType == "Sample") {
-                        var list = '<option value=0></option>';
+                        var list = vs.empty;
                         $.each(html.aaData, function(i1,v1) {
                             if(i1!=null && v1!=null) {
-                                list += '<option value="'+v1.id+'">' +v1.name + '</option>';
+                                list += vs.vnoption.replace("$v$",v1.id).replace("$n$",v1.name);;
                             }
                         });
 
@@ -170,7 +145,7 @@
                             $("#_sampleSelect").html(list);
 
                     } else if(ajaxType == "Event") {
-                        var list = '<option value=0></option>';
+                        var list = vs.empty;
 
                         $.each(html, function(i) {
                             if(html[i] != null) {
@@ -207,6 +182,30 @@
             $("#_eventSelect").attr("disabled", true);
             $("#downloadButton").attr("disabled", true);
         }
+
+        
+        $(document).ready(function() {
+            $('select').combobox();
+
+            var projectId = <s:if test="projectId == null">0</s:if><s:else><s:property value="projectId"/></s:else>;
+            var sampleId = <s:if test="sampleId == null">0</s:if><s:else><s:property value="sampleId"/></s:else>;
+            var eventId = <s:if test="eventId == null">0</s:if><s:else><s:property value="eventId"/></s:else>;
+            if( projectId != null && projectId != 0) {
+                $('#_projectSelect').val(projectId);
+                projectChanged(projectId);
+                if( sampleId != null && sampleId != 0) {
+                    $('#_sampleSelect').val(sampleId);
+                    //getEventType($('#_projectSelect').val(), $('#_sampleSelect').val(), 0);
+                }
+                if( eventId != null && eventId != 0) {
+                    $('#_eventSelect').val(eventId);
+                }
+            }
+
+            <s:if test="hasActionErrors()">
+                utils.error.add('<s:iterator value="actionErrors"><s:property/><br/></s:iterator>');
+            </s:if>
+        });
     </script>
 </body>
 </html>

@@ -52,13 +52,7 @@
                 <tr><td class="panelHeader">Event Loader</td></tr>
                 <tr>
                     <td>
-                        <div id="errorMessagesPanel" style="margin-top:15px;">
-                            <s:if test="hasActionErrors()">
-                                <input type="hidden" id="error_messages" value="<s:iterator value="actionErrors"><s:property/><br/></s:iterator>"/>
-                                <input type="button" style="background-color:red;"
-                                       value="PROCESSING ERROR: Click Here to See the Error." onclick="utils.error.show('error_messages');return false;"/>
-                            </s:if>
-                        </div>
+                        <div id="errorMessagesPanel" style="margin-top:15px;"></div>
                     </td>
                 </tr>
             </table>
@@ -109,11 +103,11 @@
                         <table>
                             <tr>
                                 <td align="right" id="loadProjectNameLabel">Project Name</td>
-                                <td width="250px;"><s:textfield id="_projectName" name="loadingProject.projectName" size="35px"/></td>
+                                <td class="requiredField"><input type="text" id="_projectName" name="loadingProject.projectName" size="33px"/></td>
                             </tr>
                             <tr class="gappedTr">
                                 <td align="right">Public</td>
-                                <td>
+                                <td class="requiredField">
                                     <s:select id="_isProjectPublic" list="#{0:'No', 1:'Yes'}" name="loadingProject.isPublic" required="true" />
                                 </td>
                             </tr>
@@ -128,7 +122,7 @@
                         <table>
                             <tr>
                                 <td align="right" id="loadSampleNameLabel">Sample Name</td>
-                                <td width="250px;"><s:textfield id="_sampleName" name="loadingSample.sampleName" size="35px"/></td>
+                                <td class="requiredField"><input type="text" id="_sampleName" name="loadingSample.sampleName" size="33px"/></td>
                             </tr>
                             <tr id="parentSelectTr" class="gappedTr">
                                 <td align="right" id="parentSampleLabel">Parent Sample</td>
@@ -138,7 +132,7 @@
                             </tr>
                             <tr class="gappedTr">
                                 <td align="right">Public</td>
-                                <td>
+                                <td class="requiredField">
                                     <s:select id="_isSamplePublic" list="#{0:'No', 1:'Yes'}" name="loadingSample.isPublic" required="true" />
                                 </td>
                             </tr>
@@ -267,7 +261,7 @@
         },
         callbacks = {
             added: function(data,id) {
-                var list = '<option value=0></option>';
+                var list = vs.empty;
                 $.each(data.aaData, function(i1,v1) {
                     if(i1!=null && v1!=null) {
                         list += vs.vnoption.replace('$v$',v1.id).replace('$n$',v1.name);
@@ -277,7 +271,7 @@
                 return;
             },
             sample: function(data) {
-                var list = '<option value=0></option>';
+                var list = vs.empty;
                 $.each(data.aaData, function(i1,v1) {
                     if(i1!=null && v1!=null) {
                         list += vs.vvoption.replace(/\\$v\\$/g, v1.name);
@@ -289,7 +283,7 @@
                 return;
             },
             event: function(data) {
-                var list = '<option value=0></option>';
+                var list = vs.empty;
                 $.each(data, function(i1,v1) {
                     if(v1 != null) {
                         $.each(v1, function(i2,v2) {
@@ -306,39 +300,43 @@
             meta: function(data, en) {
                 var content = "", count= 0;
                 eventAttributes = []; gridLineCount=0; avDic={};
-                $.each(data, function(i1, v1) { //build attributes input section
-                    if(v1 != null) {
-                        $.each(v1, function(i2, v2) {
-                            if(v2 != null && v2.eventMetaAttributeId != null && v2.projectId != null) {
-                                eventAttributes.push(v2); //stores event attributes for other uses
+                $.each(data.aaData, function(i1, _ma) { //build attributes input section
+                    if(_ma != null) {
+                        if(_ma != null && _ma.eventMetaAttributeId != null && _ma.projectId != null) {
+                            eventAttributes.push(_ma); //stores event attributes for other uses
 
-                                content += '<tr class="gappedTr">'+
-                                        pBeanHtml.replace("$pn$",utils.getProjectName()).replace("$lt$", "beanList["+count+"].")+ //project name for bean
-                                        anBeanHtml.replace("$an$",v2.lookupValue.name).replace("$lt$", "beanList["+count+"].")+ //attribute name
-                                        '<td align="right" '+(v2.desc && v2.desc!==''?'class="hasTooltip" title="'+v2.desc+'"':'')+'>'+
-                                        (v2.label!=null&&v2.label!==''?v2.label:v2.lookupValue.name) +  //attribute name or label
-                                        '</td>';
-                                var subcon='';
-                                if(v2.options!=null&&v2.options!=='') { //select box for option values
+                            content += '<tr class="gappedTr">'+
+                                    pBeanHtml.replace("$pn$",utils.getProjectName()).replace("$lt$", "beanList["+count+"].")+ //project name for bean
+                                    anBeanHtml.replace("$an$",_ma.lookupValue.name).replace("$lt$", "beanList["+count+"].")+ //attribute name
+                                    '<td align="right" '+(_ma.desc && _ma.desc!==''?'class="hasTooltip" title="'+_ma.desc+'"':'')+'>'+
+                                    (_ma.label!=null&&_ma.label!==''?_ma.label:_ma.lookupValue.name) +  //attribute name or label
+                                    '</td>';
+                            var subcon='';
+                            if(_ma.options!=null&&_ma.options!=='') { 
+                                var optcon='';
+                                if(_ma.options.indexOf(';')>0) { //select box for option values
                                     var opts='';
-                                    $.each(v2.options.split(';'), function(i3,v3) {
-                                        opts+='<option value="'+v3+'">'+(v3==='1'?'Yes':v3==='0'?'No':v3)+'</option>';
+                                    $.each(_ma.options.split(';'), function(_opti,_opt) {
+                                        opts+=vs.vnoption.replace("$v$",_opt).replace("$n$",(_opt==='1'?'Yes':_opt==='0'?'No':_opt));
                                     });
-                                    subcon+=avSelectHtml.replace("$an$",v2.lookupValue.name+"_$id$").replace("$opts$",opts);
-                                } else { 
-                                    if(v2.lookupValue.dataType==='file') { //file 
-                                        subcon+=avFileHtml.replace("$an$",v2.lookupValue.name+" $id$");
-                                    } else { //text input
-                                        subcon+=avTextHtml.replace("$an$",v2.lookupValue.name+" $id$");
-                                    }
+                                    optcon=avSelectHtml.replace("$an$",_ma.lookupValue.name+"_$id$").replace("$opts$",opts);
+                                } else { //set default text input box option values without ";"
+                                    optcon=avTextHtml.replace("$an$",_ma.lookupValue.name+" $id$").replace("$val$", _ma.options); 
                                 }
-                                avDic[v2.lookupValue.name]=subcon; //store html contents with its attribute name for later use in adding row
-                                subcon='<td'+(v2.requiredDB?' class="requiredField"':'')+'>'+subcon.replace("$id$", count).replace("$lt$","beanList["+count+"].")+'</td>'; //update ID(count)
-
-                                content+=subcon+'</tr>';
-                                count++;
+                                subcon+=optcon;
+                            } else {  
+                                if(_ma.lookupValue.dataType==='file') { //file 
+                                    subcon+=avFileHtml.replace("$an$",_ma.lookupValue.name+" $id$");
+                                } else { //text input
+                                    subcon+=avTextHtml.replace("$an$",_ma.lookupValue.name+" $id$");
+                                }
                             }
-                        });
+                            avDic[_ma.lookupValue.name]=subcon; //store html contents with its attribute name for later use in adding row
+                            subcon='<td'+(_ma.requiredDB?' class="requiredField"':'')+'>'+subcon.replace("$id$", count).replace("$lt$","beanList["+count+"].")+'</td>'; //update ID(count)
+
+                            content+=subcon+'</tr>';
+                            count++;
+                        }
                     }
                 });
                 $("div#attributeInputDiv").html("<table>"+content.replace(/\\$val\\$/g, '')+"</table>");
@@ -348,13 +346,13 @@
                 content='';
                 if(utils.checkNP(en)) {
                     if(!utils.checkSR(en)) {
-                        content+='<th class="tableHeaderNoBG">Sample</th>';
+                        content+='<th class="tableHeaderNoBG requiredField">Sample</th>';
                     } else {
-                        content+='<th class="tableHeaderNoBG">Sample Name</th><th class="tableHeaderNoBG">Parent Sample</th><th class="tableHeaderNoBG">Public</th>';
+                        content+='<th class="tableHeaderNoBG requiredField">Sample Name</th><th class="tableHeaderNoBG">Parent Sample</th><th class="tableHeaderNoBG requiredField">Public</th>';
                     }
                 } else {
                     if(utils.checkPR(en)) {
-                        content+='<th class="tableHeaderNoBG">Project Name</th><th class="tableHeaderNoBG">Public</th>';    
+                        content+='<th class="tableHeaderNoBG requiredField">Project Name</th><th class="tableHeaderNoBG requiredField">Public</th>';    
                     }
                 }
                 //add headers for event meta attributes
@@ -398,7 +396,7 @@
                 if(utils.getLoadType()==='form') {
                     _utils.showPS(et);  
                 } 
-                _utils.makeAjax('sharedAjax.action', 'type=EventSpecificAttrs&projectName='+utils.getProjectName()+'&eventName='+et, et, callbacks.meta);
+                _utils.makeAjax('sharedAjax.action', 'type=ea&projectName='+utils.getProjectName()+'&eventName='+et, et, callbacks.meta);
             }
         };
 
@@ -503,18 +501,22 @@
                     $("[name='beanList[${bstat.count-1}].attributeValue']").val("${bean.attributeValue}");
                 </s:iterator>    
             }
+
+            <s:if test="hasActionErrors()">
+                utils.error.add('<s:iterator value="actionErrors"><s:property/><br/></s:iterator>');
+            </s:if>
         });
 
         function comboBoxChanged(option, id) {
             if(id==='_projectSelect') {
                 button.clear_attr();
                 $("#eventLoadButton").attr("disabled", true);
-                $("#_eventSelect").html('<option value="0"></option>');
+                $("#_eventSelect").html(vs.empty);
                 if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
                     changes.project(option.value);
                 } else {
-                    $("#_sampleSelect").html('<option value="0"></option>');
-                    $("#_eventSelect").html('<option value="0"></option>');
+                    $("#_sampleSelect").html(vs.empty);
+                    $("#_eventSelect").html(vs.empty);
                 }
             } else if(id==='_eventSelect') {
                 button.clear_attr();
@@ -525,7 +527,7 @@
                 if(option.value && option.value!=0 && option.text && option.text!='' && $('#_eventSelect').val() != 0) {
                     _utils.makeAjax(
                         'sharedAjax.action',
-                        'type=EventSpecificAttrs&projectName='+utils.getProjectName()+'&eventName='+utils.getEventName(),
+                        'type=ea&projectName='+utils.getProjectName()+'&eventName='+utils.getEventName(),
                         utils.getEventName(),
                         callbacks.meta
                     );
@@ -590,15 +592,17 @@
                             //add sample information fields for project registration
                             content=content
                                 +'<td><input type="text" name="gridList['+gridLineCount+'].sampleName" id="_sampleName'+gridLineCount+'" /></td>'
-                                +avSampleSelectHtml.replace("$si$", "_parentSelect"+gridLineCount).replace("$sn$", "gridList["+gridLineCount+"].parentSampleName").replace("$opts$",sample_options)
-                                +'<td><select name="gridList['+gridLineCount+'].samplePublic"><option value="1">Yes</option><option value="0">No</option></select></td>';
+                                +avSampleSelectHtml.replace("$si$", "_parentSelect"+gridLineCount)
+                                    .replace("$sn$", "gridList["+gridLineCount+"].parentSampleName")
+                                    .replace("$opts$",sample_options)
+                                +'<td><select name="gridList['+gridLineCount+'].samplePublic">'+vs.ynoption+'</select></td>';
                         }
                     } else {
                         //add project information fields for project registration
                         if(utils.checkPR(en)) {
                             content=content
                                 +'<td><input type="text" name="gridList['+gridLineCount+'].projectName" id="_projectName'+gridLineCount+'" /></td>'
-                                +'<td><select name="gridList['+gridLineCount+'].projectPublic"><option value="1">Yes</option><option value="0">No</option></select></td>';
+                                +'<td><select name="gridList['+gridLineCount+'].projectPublic">'+vs.ynoption+'</select></td>';
                         }
                     }
                     var ltVal, beans=((dict&&dict['beans'])?dict['beans']:null);

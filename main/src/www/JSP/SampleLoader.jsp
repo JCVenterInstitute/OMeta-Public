@@ -49,13 +49,7 @@
                 <tr><td class="panelHeader">Sample Loader</td></tr>
                 <tr>
                     <td>
-                        <div id="errorMessagesPanel" style="margin-top:15px;">
-                            <s:if test="hasActionErrors()">
-                                <input type="hidden" id="error_messages" value="<s:iterator value="actionErrors"><s:property/><br/></s:iterator>"/>
-                                <input type="button" style="background-color:red;"
-                                       value="PROCESSING ERROR: Click Here to See the Error." onclick="utils.error.show('error_messages');return false;"/>
-                            </s:if>
-                        </div>
+                        <div id="errorMessagesPanel" style="margin-top:15px;"></div>
                     </td>
                 </tr>
             </table>
@@ -133,6 +127,10 @@
                     $('#_parentSampleSelect').val(parentSampleId);
                 $("#sampleLoadButton").attr("disabled", false);
             }
+
+            <s:if test="hasActionErrors()">
+                utils.error.add('<s:iterator value="actionErrors"><s:property/><br/></s:iterator>');
+            </s:if>
         });
 
         function labeling(l) {
@@ -149,7 +147,7 @@
                     projectChanged(option.value);
                     $('.ui-autocomplete-input').val('');
                 } else {
-                    $("#_parentSampleSelect").html('<option value="0"></option>');
+                    $("#_parentSampleSelect").html(vs.empty);
                 }
             }
         }
@@ -174,10 +172,10 @@
                 data: "type="+ajaxType+"&projectId="+projectId+"&subType=S&sampleLevel="+level,
                 success: function(html){
                     if(ajaxType == "Sample") {
-                        var list = '<option value=0></option>';
+                        var list = vs.empty;
                         $.each(html.aaData, function(i1,v1) {
                             if(i1!=null && v1!=null) {
-                                list += '<option value="'+v1.id+'">' +v1.name + '</option>';
+                                list += vs.vnoption.replace("$v$",v1.id).replace("$n$",v1.name);
                             }
                         });
                         $("#_parentSampleSelect").html(list);

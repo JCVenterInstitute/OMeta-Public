@@ -45,13 +45,7 @@
                 <tr><td class="panelHeader">Register Actor</td></tr>
                 <tr>
                     <td>
-                        <div id="errorMessagesPanel" style="margin-top:15px;">
-                            <s:if test="hasActionErrors()">
-                                <input type="hidden" id="error_messages" value="<s:iterator value="actionErrors"><s:property/><br/></s:iterator>"/>
-                                <input type="button"  style="background-color:red;"
-                                       value="PROCESSING ERROR: Click Here to See the Error." onclick="utils.error.show('error_messages');return false;"/>
-                            </s:if>
-                        </div>
+                        <div id="errorMessagesPanel" style="margin-top:15px;"></div>
                     </td>
                 </tr>
             </table>
@@ -112,6 +106,10 @@
         function doClear() {
             $("#_usertName, #_firstName, #_lastName, #_middleName, #_email").val('');
         }
+
+        <s:if test="hasActionErrors()">
+            utils.error.add('<s:iterator value="actionErrors"><s:property/><br/></s:iterator>');
+        </s:if>
     </script>
 </body>
 </html>

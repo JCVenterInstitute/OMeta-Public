@@ -401,6 +401,8 @@ public class EventLoader extends ActionSupport {
         Project parentProject = readPersister.getProject(projectName);
         project.setParentProjectId(parentProject.getProjectId());
         project.setProjectLevel(parentProject.getProjectLevel()+1);
+        project.setEditGroup(parentProject.getEditGroup());
+        project.setViewGroup(parentProject.getViewGroup());
         return project;
     }
 

@@ -48,13 +48,7 @@
     			<tr><td class="panelHeader">Event File Upload</td></tr>
     			<tr>
     				<td>
-    					<div id="errorMessagesPanel" style="margin-top:15px;">
-    						<s:if test="hasActionErrors()">
-    							<input type="hidden" id="error_messages" value="<s:iterator value="actionErrors"><s:property/><br/></s:iterator>"/>
-    							<input type="button" style="background-color:red;"
-    								value="PROCESSING ERROR: Click Here to See the Error." onclick="utils.error.show('error_messages');return false;"/>
-    						</s:if>
-    					</div>
+    					<div id="errorMessagesPanel" style="margin-top:15px;"></div>
     				</td>
     			</tr>
     		</table>
@@ -106,34 +100,12 @@
     <script src="scripts/jquery/jquery.dataTables.js"></script>
 
     <script>
-
-        /* previous version #31968 */
-        $(document).ready(function() {
-            $('select').combobox();
-
-            var projectId = <s:if test="projectId == null">0</s:if><s:else><s:property value="projectId"/></s:else>;
-            var eventId = <s:if test="eventId == null">0</s:if><s:else><s:property value="eventId"/></s:else>;
-            if( projectId != null && projectId != 0) {
-                $('#_projectSelect').val(projectId);
-                projectChanged(projectId);
-                if( eventId != null && eventId != 0) {
-                    $('#_eventSelect').val(eventId);
-                }
-            }
-
-            $("#uploadFile").change(function() {
-                if($(this).val() != null && $(this).val() != '') {
-                    $("#submitButton").attr("disabled", false);
-                }
-            });
-        });
-
         function comboBoxChanged(option, id) {
             if(id==='_projectSelect') {
                 if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
                     projectChanged(option.value);
                 } else {
-                    $("#_eventSelect").html('<option value="0"></option>');
+                    $("#_eventSelect").html(vs.empty);
                 }
             } 
         }
@@ -200,6 +172,31 @@
             $("#eventName").val($("#_eventSelect option:selected").text());
             docObj.submit();
         }
+
+        /* previous version #31968 */
+        $(document).ready(function() {
+            $('select').combobox();
+
+            var projectId = <s:if test="projectId == null">0</s:if><s:else><s:property value="projectId"/></s:else>;
+            var eventId = <s:if test="eventId == null">0</s:if><s:else><s:property value="eventId"/></s:else>;
+            if( projectId != null && projectId != 0) {
+                $('#_projectSelect').val(projectId);
+                projectChanged(projectId);
+                if( eventId != null && eventId != 0) {
+                    $('#_eventSelect').val(eventId);
+                }
+            }
+
+            $("#uploadFile").change(function() {
+                if($(this).val() != null && $(this).val() != '') {
+                    $("#submitButton").attr("disabled", false);
+                }
+            });
+
+            <s:if test="hasActionErrors()">
+                utils.error.add('<s:iterator value="actionErrors"><s:property/><br/></s:iterator>');
+            </s:if>
+        });
     </script>
 
 </body>

@@ -51,13 +51,7 @@
                 <tr><td class="panelHeader">Sample Loader</td></tr>
                 <tr>
                     <td>
-                        <div id="errorMessagesPanel" style="margin-top:15px;">
-                            <s:if test="hasActionErrors()">
-                                <input type="hidden" id="error_messages" value="<s:iterator value="actionErrors"><s:property/><br/></s:iterator>"/>
-                                <input type="button" style="background-color:red;"
-                                       value="PROCESSING ERROR: Click Here to See the Error." onclick="utils.error.show('error_messages');return false;"/>
-                            </s:if>
-                        </div>
+                        <div id="errorMessagesPanel" style="margin-top:15px;"></div>
                     </td>
                 </tr>
             </table>
@@ -133,24 +127,7 @@
         </div>
     </s:form>
     
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#_eventSelect').attr('disabled', true);
-            $('#_projectSelect').combobox();
-            $('#_parentSampleSelect').combobox();
-
-            //set values at failure
-            var projectId = <s:if test="projectId == null">0</s:if><s:else><s:property value="projectId"/></s:else>;
-            var parentSampleId = <s:if test="sampleId == null">0</s:if><s:else><s:property value="sampleId"/></s:else>;
-            if( projectId != null && projectId != 0) {
-                $('#_projectSelect').val(projectId);
-                projectChanged(projectId);
-                if( parentSampleId != null && parentSampleId != 0)
-                    $('#_parentSampleSelect').val(parentSampleId);
-                $("#sampleLoadButton").attr("disabled", false);
-            }
-        });
-
+    <script>
         (function() {
             this.toggleParentSelect = function(disable) {
                 $('#_parentSampleSelect').val(0);
@@ -163,7 +140,7 @@
                 toggleParentSelect(true);
             };
             this.eventTypeChanged = function() {
-                getMetaAttrHtml("EventSpecificAttrs",
+                getMetaAttrHtml("ea",
                     $("#_projectSelect option:selected").text(),
                     $("#_eventSelect option:selected").text());
                 
@@ -198,8 +175,8 @@
                     projectChanged(option.value);
                     $('.ui-autocomplete-input').val('');
                 } else {
-                    $("#_sampleSelect").html('<option value="0"></option>');
-                    $("#_eventSelect").html('<option value="0"></option>');
+                    $("#_sampleSelect").html(vs.empty);
+                    $("#_eventSelect").html(vs.empty);
                 }
             }
         }
@@ -219,21 +196,21 @@
                 data: "type="+ajaxType+"&projectId="+projectId+"&subType=S&sampleLevel="+level,
                 success: function(html){
                     if(ajaxType == "Sample") {
-                        var list = '<option value=0></option>';
+                        var list = vs.empty;
                         $.each(html.aaData, function(i1,v1) {
                             if(i1!=null && v1!=null) {
-                                list += '<option value="'+v1.id+'">' +v1.name + '</option>';
+                                list += vs.vnoption.replace("$v$",v1.id).replace("$n$",v1.name);
                             }
                         });
                         $("#_parentSampleSelect").html(list);
                     } else if(ajaxType == "Event") {
-                        var list = '<option value=0> Type</option>';
+                        var list = '<option value=0>Type</option>';
 
                         $.each(html, function(i1,v1) {
                             if(v1 != null) {
                                 $.each(v1, function(i2,v2) {
                                     if(v2 != null && v2.lookupValueId != null && v2.name != null) {
-                                        list += '<option value="'+v2.lookupValueId+'">'+v2.name + '</option>';
+                                        list += vs.vnoption.replace("$v$",v2.lookupValueId).replace("$n$",v2.name);
                                     }
                                 });
                             }
@@ -256,7 +233,7 @@
                 async: false,
                 data: "type="+ajaxType+"&projectName="+projectName+"&eventName="+eventName,
                 success: function(html){
-                    if(ajaxType == "EventSpecificAttrs") {
+                    if(ajaxType == "ea") {
                         var content = '<table style="margin-top:15px;">';
                         $.each(html, function(i1, v1) {
                             if(v1 != null) {
@@ -300,6 +277,47 @@
                 }
             });
         }
+
+        $(document).ready(function() {
+            $('#_eventSelect').attr('disabled', true);
+            var label=$('input:hidden#label').val();            
+            if(label!==null && label!=='') {
+                $.each($('#_projectSelect').find('option'), function(i1,v1) {
+                    if(v1.text===paramP) {
+                        $('#_projectSelect').val(parseInt(v1.value));
+                        projectChanged(v1.value);
+                        $.each($('#_eventSelect').find('option'), function(i2,v2) {
+                            if(v2.text.indexOf(label)!==-1 && v2.text.indexOf('Registration')!==-1) {
+                                $('#_eventSelect').val(parseInt(v2.value));
+                                eventTypeChanged();
+                            }
+                        });
+                    }
+                });
+                labeling(label);
+                if(label==='Family') {
+                    toggleParentSelect(false);
+                }
+            }
+            
+            $('#_projectSelect').combobox();
+            $('#_parentSampleSelect').combobox();
+
+            //set values at failure
+            var projectId = <s:if test="projectId == null">0</s:if><s:else><s:property value="projectId"/></s:else>;
+            var parentSampleId = <s:if test="sampleId == null">0</s:if><s:else><s:property value="sampleId"/></s:else>;
+            if( projectId != null && projectId != 0) {
+                $('#_projectSelect').val(projectId);
+                projectChanged(projectId);
+                if( parentSampleId != null && parentSampleId != 0)
+                    $('#_parentSampleSelect').val(parentSampleId);
+                $("#sampleLoadButton").attr("disabled", false);
+            }
+
+            <s:if test="hasActionErrors()">
+                utils.error.add('<s:iterator value="actionErrors"><s:property/><br/></s:iterator>');
+            </s:if>
+        });
     </script>
 </body>
 </html>

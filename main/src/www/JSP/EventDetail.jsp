@@ -223,14 +223,11 @@
                         $("#editProjectBtn").attr("disabled", ($("#editable").val()!=1));
                     } else {
                         //reset
-                        $("#_sampleSelect").html('<option value="0"></option>');
+                        $("#_sampleSelect").html(vs.empty);
                         $('#sampleTable').dataTable().fnClearTable();
                         $('#eventTable').dataTable().fnClearTable();
                         $("tbody#projectTableBody").html('');
-                        $("#errorMessagesPanel").html( '<input type="hidden" id="error_messages" value="You do not have permission to access the project."/>' +
-                                '<a id="errorMessagesLink" href="#" onclick="utils.error.show(\'error_messages\');return false;">' +
-                                '   <u style="font-size:16px;text-align:left;color:#FF0000;font-weight:600;vertical-align:middle;">ERROR</u>' +
-                                '</a>' );
+                        utils.error.add("You do not have permission to access the project.");
                     }
                 },
                 sample: function(projectId, sampleId) {
@@ -238,7 +235,7 @@
                     _page.get.edt(projectId, sampleId, 0);
                 },
                 event: function(eventId) {
-                    gethtmlByType("changeEventStatus", 0, 0, eventId);
+                    gethtmlByType("ces", 0, 0, eventId);
                 }
             },
             popup: {
@@ -272,6 +269,11 @@
                     var dates = "&fd="+$('input[name="fromDate"]').val()+"&td="+$('input[name="toDate"]').val();
                     eDT.fnNewAjax("eventDetailAjax.action?type=edt&projectId="+projectId+"&sampleId="+sampleId+"&eventId=0"+dates);
                 }
+            },
+            callbacks: {
+                project: function() {},
+                sample: function() {},
+                event: function() {}
             }
         }, 
         openSampleEditPopup = function(sampleId) {
@@ -288,12 +290,13 @@
 
         function comboBoxChanged(option, id) {
             if(id==='_projectSelect') {
+                document.getElementById('sampleTable').getElementsByTagName('img')[0].src = openBtn;
                 document.getElementById('eventTable').getElementsByTagName('img')[0].src = openBtn;
                 if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
                     _page.change.project(option.value, 0);
                     $('.ui-autocomplete-input').val('');
                 } else {
-                    $("#_sampleSelect").html('<option value="0"></option>');
+                    $("#_sampleSelect").html(vs.empty);
                 }
             } else if(id==='_sampleSelect') {
                 if(option.value!=null && option.text!=null && option.text!='') {
@@ -328,11 +331,11 @@
                         } else if(ajaxType == "Sample") {
                             var list = vs.alloption;
                             $(html.aaData).each(function(i1,v1) {
-                                if(v1) { list += '<option value="'+v1.id+'">' +v1.name + '</option>'; }
+                                if(v1) { list += vs.vnoption.replace("$v$",v1.id).replace("$n$",v1.name); }
                             });
                             if(sampleId == null || sampleId == 0) { $("#_sampleSelect").html(list); }
 
-                        } else if(ajaxType == "changeEventStatus") {
+                        } else if(ajaxType == "ces") {
                             if(html.aaData && html.aaData[0]==='success') {
                                 _page.get.edt($('#_projectSelect').val(), $('#_sampleSelect').val(), 0);
                                 rtnVal = true;
@@ -440,6 +443,10 @@
                 $(this).append('<img id="dosearch_'+this.id+'" style="float:right;" class="ui-icon ui-icon-search" title="Search" />&nbsp;');
             });
             $('#sampleTableDiv, #eventTableDiv, #eventDateDiv').toggle(300);
+
+            <s:if test="hasActionErrors()">
+                utils.error.add('<s:iterator value="actionErrors"><s:property/><br/></s:iterator>');
+            </s:if>
         });
 
 

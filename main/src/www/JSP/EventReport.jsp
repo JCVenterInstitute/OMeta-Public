@@ -31,6 +31,7 @@
         tr.even { padding: 2px; background-color: #e9e9e9; } 
         tr.odd { padding: 2px; background-color: #f5f5f5; }
         tr.odd td, tr.even td { padding: 6px 8px; margin: 0; vertical-align: top; }
+        .chkbox { margin:5px 5px 5px 15px; }
     </style>
 </head>
 
@@ -40,7 +41,16 @@
             action="eventReport"
             method="post" theme="simple">
     	<s:include value="TopMenu.jsp" />
-    	<div id="pageTitle" class="panelHeader">Event Report</div>
+    	<div id="HeaderPane" style="margin:15px 0 0 30px;">
+            <table cellpadding="0" cellspacing="0" border="0">
+                <tr><td class="panelHeader">Event Report</td></tr>
+                <tr>
+                    <td>
+                        <div id="errorMessagesPanel" style="margin-top:10px;"></div>
+                    </td>
+                </tr>
+            </table>
+        </div>
     	<div id="middle_content_template">
     		<div id="statusTableDiv">
     			<div id="tableTop">
@@ -90,83 +100,62 @@
     <script src="scripts/jquery/jquery.dataTables.js"></script>
     <script>
         $(document).ready(function() {
-
             utils.initDatePicker();
-            
-            $('input:checkbox[name=sAll]').live('click', function() {
-                var type=$(this).val();
-                if($(this).is(':checked'))
-                    $('input:checkbox[name='+type+'Attr]').attr('checked', true);
-                else
-                    $('input:checkbox[name='+type+'Attr]').attr('checked', false);
-            });
-            
-            
             $( "#_projectSelect" ).combobox();
 
         });
+
+        var callbacks = {
+            meta: function(data) {
+                $.each(data, function(_i, _o) {
+                    console.log(_o.err);
+                    if(_o) {
+                        var keys = ['project', 'sample', 'event'];
+                        $.each(keys, function(_k_i, _k) {
+                            var values = _o[_k], _html='';
+                            if(values) {
+                                $.each(values, function(_a_i,_a) {
+                                    _html += '<input class="chkbox" type="checkbox" name="'+_k+'Attr" value="'+_a+'"/>'
+                                        + '<label class="checkboxLabel">'+_a+'</label>';
+                                    if(_k_i!=0 && _k_i%4==0) _html += '<br/>';
+                                });
+                                if(_html.length>0)
+                                    _html+='<input class="chkbox" type="checkbox" name="sAll" value="'+_k+'"/>'
+                                        +'<label class="checkboxLabel"><b>Select All</b></label>';    
+                                }
+                                $('#'+_k+'MetaAttributesTD').html(_html);
+                        });  
+                    }
+                });
+        
+                $('input:checkbox[name=sAll]').live('click', function() {
+                    var type=$(this).val(), checked=$(this).is(':checked');
+                    $('input:checkbox[name='+type+'Attr]').attr('checked', checked);
+                });
+            }
+        }
         
         function comboBoxChanged(option) {
             if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
-                getAllProjectAttribute(option.value);
+                makeAjax("MetaAttributes", option.value, callbacks.meta);
             } else {
                 $("#_sampleSelect").html('<option value="0">Select Sample</option>');
                 $("#_eventSelect").html('<option value="0">Select Event</option>');
             }    
         }
 
-        function getAllProjectAttribute(projectId) {
-            var projectVal = '', sampleVal = '', eventVal = '', unitPerLine=4;
+        function makeAjax(type, projectId, cb) {
             $.ajax({
                 url:"sharedAjax.action",
                 cache: false,
                 async: false,
-                data: "type=MetaAttributes&projectId="+projectId+"&sampleId=0&eventId=0&subType=A",
-                success: function(html){
-                    $.each(html, function(i1, v1) {
-                        if(v1 != null) {
-                            $.each(v1, function(i2, v2) {
-                                if(v2 != null) {
-                                    if(v2.project != null) {
-                                        $.each(v2.project, function(i3,v3) {
-                                            projectVal += '<input style="margin:5px 5px 5px 15px;" type="checkbox" name="projectAttr" value="'+v3+'"/>'
-                                                    + '<label class="checkboxLabel">'+v3+'</label>';
-                                            if(i3!=0 && i3%unitPerLine==0) projectVal += '<br/>';
-                                        });
-                                        if(projectVal.length>0)
-                                            projectVal+='<input style="margin:5px 5px 5px 15px;" type="checkbox" name="sAll" value="project"/>'
-                                                    + '<label class="checkboxLabel"><b>Select All</b></label>';
-                                    }
-                                    if(v2.sample != null) {
-                                        $.each(v2.sample, function(i3,v3) {
-                                            sampleVal += '<input style="margin:5px 5px 5px 15px;" type="checkbox" name="sampleAttr" value="'+v3+'"/>'
-                                                    + '<label class="checkboxLabel">'+v3+'</label>';
-                                            if(i3!=0 && i3%unitPerLine==0) sampleVal += '<br/>';
-                                        });
-                                        if(sampleVal.length>0)
-                                            sampleVal+='<input style="margin:5px 5px 5px 15px;" type="checkbox" name="sAll" value="sample"/>'
-                                                    + '<label class="checkboxLabel"><b>Select All</b></label>';
-                                    }
-                                    if(v2.event!=null) {
-                                        $.each(v2.event, function(i3,v3) {
-                                            eventVal += '<input style="margin:5px 5px 5px 15px;" type="checkbox" name="eventAttr" value="'+v3+'"/>'
-                                                    + '<label class="checkboxLabel">'+v3+'</label>';
-                                            if(i3!=0 && i3%unitPerLine==0) eventVal += '<br/>';
-                                        });
-                                        if(eventVal.length>0)
-                                            eventVal+='<input style="margin:5px 5px 5px 15px;" type="checkbox" name="sAll" value="event"/>'
-                                                    + '<label class="checkboxLabel"><b>Select All</b></label>';
-                                    }
-                                }    
-                            });
-                        }
-                    });
-                    $("#projectMetaAttributesTD").html(projectVal);
-                    $("#sampleMetaAttributesTD").html(sampleVal);
-                    $("#eventMetaAttributesTD").html(eventVal);
-                },
-                fail: function(html) {
-                    alert("Ajax Process has Failed.");
+                data: "type="+type+"&projectId="+projectId+"&sampleId=0&eventId=0&subType=A",
+                success: function(data){
+                    if(data.err) {
+                        utils.error.add(data.err.substring(data.err.indexOf(':')+1));    
+                    } else {
+                        cb((data.aaData?data.aaData:[]));    
+                    }
                 }
             });
         }

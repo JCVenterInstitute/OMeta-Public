@@ -141,11 +141,17 @@ public class ProjectSetup extends ActionSupport {
                             ema.setSampleRequired(false);
                             emaList.add(ema);
 
-                            FileReadAttributeBean fbean = new FileReadAttributeBean();
-                            fbean.setAttributeName(pma.getAttributeName());
-                            fbean.setAttributeValue(bean.getValue());
-                            fbean.setProjectName(pma.getProjectName());
-                            fbList.add(fbean);
+                            if(bean.getValue()!=null && !bean.getValue().isEmpty()) {
+                                FileReadAttributeBean fbean = new FileReadAttributeBean();
+                                fbean.setAttributeName(pma.getAttributeName());
+                                fbean.setAttributeValue(bean.getValue());
+                                fbean.setProjectName(pma.getProjectName());
+                                fbList.add(fbean);
+                            } else {
+                                if(bean.getRequiredDB().equals(1)) {
+                                    throw new Exception(String.format("'%s' is a required field, but value is not provided.", bean.getName()));
+                                }
+                            }
                         }
                     }
                 }
@@ -154,7 +160,9 @@ public class ProjectSetup extends ActionSupport {
                 loadParameter.addProjects(projectList);
                 loadParameter.addProjectMetaAttributes(pmaList);
                 loadParameter.addEventMetaAttributes(emaList);
-                loadParameter.addProjectRegistrations(Constants.EVENT_PROJECT_REGISTRATION, fbList);
+                if(fbList.size()>0) {
+                    loadParameter.addProjectRegistrations(Constants.EVENT_PROJECT_REGISTRATION, fbList);
+                }
                 psewt.loadAll( null, loadParameter );
             }
             returnValue = SUCCESS;

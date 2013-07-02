@@ -51,13 +51,7 @@
         <s:include value="TopMenu.jsp" />
         <div id="HeaderPane" style="margin:15px 0 0 30px;">
             <div class="panelHeader" style="margin:0;">Project Status</div>
-            <div id="errorMessagesPanel" style="margin-top:15px;">
-                <s:if test="hasActionErrors()">
-                    <input type="hidden" id="error_messages" value="<s:iterator value="actionErrors"><s:property/><br/></s:iterator>"/>
-                    <input type="button" style="background-color:red;"
-                           value="PROCESSING ERROR: Click Here to See the Error." onclick="utils.error.show('error_messages');return false;"/>
-                </s:if>
-            </div>
+            <div id="errorMessagesPanel" style="margin-top:15px;"></div>
         </div>
         <div id="middle_content_template">
             <p>An Excel version of this data is also available for download
@@ -128,7 +122,10 @@
                 contentSelector: 'div',
                 startCollapsed: true
             });
-
+            
+            <s:if test="hasActionErrors()">
+                utils.error.add('<s:iterator value="actionErrors"><s:property/><br/></s:iterator>');
+            </s:if>
         });
 
         function getDisplayedAttributes() {

@@ -67,6 +67,7 @@
                 <param name="namespace">/</param>
                 <param name="projectNames">${projectNames}</param>
                 <param name="attributes">${attributes}</param>
+                <param name="iss">${iss}</param>
             </result>
         </action>
 

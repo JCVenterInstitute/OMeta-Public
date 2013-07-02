@@ -80,24 +80,29 @@ var utils = {
             this.remove();
             $('#errorMessagesPanel').append(
                 $('<input type="hidden" id="error_messages">').attr('value',msg),
-                $('<a class="errorPanelText" style="cursor:pointer;"'
-                    + 'onclick="utils.error.show(\'error_messages\');return false;">'
-                    + 'ERROR: Click Here to See the Error.</a>'
+                $('<input type="button" id="error_btn" style="background-color:red;cursor:pointer;"'
+                    + 'onclick="utils.error.show(\'error_messages\');return false;" '
+                    + 'value="ERROR: Click Here to See the Error." />'
                 )
             );
         },
         remove: function() {
             if($('#error_messages')) {
-                $('#errorMessagesPanel>input:hidden#error_messages, #errorMessagesPanel>a.errorPanelText').remove();
+                $('#error_messages, #error_btn').remove();
             }    
         },
         show: function(objectId) {
-            if (window.showModalDialog) {
+            /*if (window.showModalDialog) {
                 window.showModalDialog('./html/errorPopup.html',$('#'+objectId).val(),
                     "dialogWidth=600px;dialogHeight=300px; resizable=yes; scroll=yes");
             } else {
                 document.getElementById('mozillaErrorMessage').style.display = "";
-            }
+            }*/
+            $.openPopupLayer({
+                name: "erroPopup",
+                width: 450,
+                url: "html/errorPopup.html?msg="+$('#'+objectId).val()
+            });
         }
     }
 };
@@ -105,7 +110,9 @@ var utils = {
 var vs = {
     vvoption: '<option value="$v$">$v$</option>',
     vnoption: '<option value="$v$">$n$</option>',
-    alloption: '<option value="0">All..</option>'
+    ynoption: '<option value="1">Yes</option><option value="0">No</option>',
+    alloption: '<option value="0">All..</option>',
+    empty: '<option value="0"></option>'
 };
 
 //additional jquery methods
