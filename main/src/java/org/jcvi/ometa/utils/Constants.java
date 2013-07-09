@@ -34,6 +34,8 @@ public class Constants {
 
     public final static String CONFIGURATION_PREFIX = "ometa";
 
+    public final static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+
     public static String NEW_WINDOW_LINK_HTML = "window.open('%s');";
     public static String A_TAG_HTML = "<a href=%s onclick=%s>";
     public static String A_TAG_CLOSING_HTML = "</a>";
@@ -67,7 +69,7 @@ public class Constants {
     public static final String DENIED_USER_EDIT_MESSAGE = "You do not have permission to edit the project.";
     public static final String DENIED_USER_VIEW_MESSAGE = "You do not have permission to access the project.";
     public static final String LOGIN_REQUIRED_MESSAGE = "User must first login before attempting to use the requested resources.";
-    public static final String INVALID_DATE_MESSAGE = "Your data input is invalid. Please use yyyy-MM-dd format.";
+    public static final String INVALID_DATE_MESSAGE = "Your data input is invalid. Please use " + DEFAULT_DATE_FORMAT + " format.";
     public static final String FORBIDDEN_ACTION_RESPONSE = "forbidden";
 
     public static final String EVENT_PROJECT_REGISTRATION = "ProjectRegistration";
