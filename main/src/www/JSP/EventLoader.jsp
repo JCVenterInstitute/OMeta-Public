@@ -567,15 +567,9 @@
                 this.submit_form("template");
             },
             submit_form: function(type) {
-                var $selectedProject = $("#_projectSelect option:selected"),
-                    $selectedSample = $("#_sampleSelect option:selected"),
-                    $selectedEvent = $("#_eventSelect option:selected");
-                if($selectedProject.val()!==0)
-                    $("#projectName").val($selectedProject.text());
-                if($selectedSample.val()!==0)
-                    $("#sampleName").val($selectedSample.text());
-                if($selectedEvent.val()!==0)
-                    $("#eventName").val($selectedEvent.text());
+                $("#projectName").val(utils.getProjectName());
+                $("#sampleName").val(utils.getSampleName()));
+                $("#eventName").val(utils.getEventName());
                 $("#jobType").val(type);
                 $('form#eventLoaderPage').submit();
             },

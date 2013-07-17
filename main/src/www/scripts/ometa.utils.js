@@ -26,6 +26,9 @@ var utils = {
     getEventName: function(en) {
         return (!en)?$("#_eventSelect option:selected").text():en;
     },
+    getSampleName: function() {
+        return $("#_sampleSelect option:selected").text();
+    },
     getLoadType: function() {
         return $('input[name="loadType"]:checked').val();
     },
