@@ -72,10 +72,11 @@ public class EventLoader extends ActionSupport {
     private List<FileReadAttributeBean> beanList;
     private List<GridBean> gridList;
 
-    private StringWriter outputWriter;
+    private InputStream downloadStream;
+    private String downloadContentType;
 
-    private File csvUploadFile;
-    private String csvUploadFileName;
+    private File uploadFile;
+    private String uploadFileName;
 
     private String fileStoragePath;
     private ArrayList<String> loadedFiles;
@@ -103,21 +104,10 @@ public class EventLoader extends ActionSupport {
     }
 
     /**
-     * Supports the file download.
-     */
-    public InputStream getFileInputStream() {
-        if (outputWriter != null) {
-            return new ByteArrayInputStream(outputWriter.toString().getBytes());
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * Setup a download filename to fully-indicate type of event.  See also: struts.xml
      */
     public String getDownloadFileName() {
-        return eventName + "_EventAttributes.csv";
+        return eventName + "_EventAttributes." + (jobType.endsWith("c")?"csv":"xls");
     }
 
     public String execute() {
@@ -163,11 +153,11 @@ public class EventLoader extends ActionSupport {
                     this.reset();
 
                 } else if (jobType.equals("file")) { //loads data from a CSV file to grid view
-                    if (!this.csvUploadFile.canRead()) {
+                    if (!this.uploadFile.canRead()) {
                         throw new Exception("Error in reading the file.");
                     } else {
                         try {
-                            CSVReader reader = new CSVReader(new FileReader(this.csvUploadFile));
+                            CSVReader reader = new CSVReader(new FileReader(this.uploadFile));
 
                             int lineCount = 0;
                             List<String> columns = new ArrayList<String>();
@@ -236,10 +226,10 @@ public class EventLoader extends ActionSupport {
                     validator.validateEventTemplateSanity(emaList, projectName, sampleName, eventName);
                     */
 
-                    CsvPreProcessingUtils cvsUtils = new CsvPreProcessingUtils();
-                    outputWriter = cvsUtils.buildFileContent(emaList, projectName, sampleName, eventName);
-
-                    // Cause the post-dispatcher to push the file stream back to user.
+                    TemplatePreProcessingUtils cvsUtils = new TemplatePreProcessingUtils();
+                    String templateType = jobType.substring(jobType.indexOf("_")+1);
+                    downloadStream = cvsUtils.buildFileContent(templateType, emaList, projectName, sampleName, eventName);
+                    downloadContentType = templateType.equals("c")?"csv":"vnd.ms-excel";
                     rtnVal = Constants.FILE_DOWNLOAD_MSG;
                 }
             }
@@ -293,8 +283,8 @@ public class EventLoader extends ActionSupport {
                     tx.commit();
                 }
 
-                if(jobType!=null && jobType.equals("grid") && this.csvUploadFile!=null) {
-                    this.csvUploadFile.delete();
+                if(jobType!=null && jobType.equals("grid") && this.uploadFile!=null) {
+                    this.uploadFile.delete();
                 }
             } catch(Exception ex) {
                 ex.printStackTrace();
@@ -493,7 +483,7 @@ public class EventLoader extends ActionSupport {
     }
 
     private String getUnknownErrorMessage() {
-        return "Unknown error uploading file " + getCsvUploadFileName();
+        return "Unknown error uploading file " + this.getUploadFileName();
     }
 
     public String getProjectName() {
@@ -600,23 +590,35 @@ public class EventLoader extends ActionSupport {
         this.eventId = eventId;
     }
 
-    public String getCsvUploadFileName() {
-        return csvUploadFileName;
+    public InputStream getDownloadStream() {
+        return downloadStream;
     }
 
-    public void setCsvUploadFileName(String csvUploadFileName) {
-        this.csvUploadFileName = csvUploadFileName;
+    public void setDownloadStream(InputStream downloadStream) {
+        this.downloadStream = downloadStream;
     }
 
-    public File getCsvUploadFile() {
-        return csvUploadFile;
+    public String getDownloadContentType() {
+        return downloadContentType;
     }
 
-    public void setCsvUploadFile(File csvUploadFile) {
-        this.csvUploadFile = csvUploadFile;
+    public void setDownloadContentType(String downloadContentType) {
+        this.downloadContentType = downloadContentType;
     }
 
-    public StringWriter getOutputWriter() {
-        return outputWriter;
+    public File getUploadFile() {
+        return uploadFile;
+    }
+
+    public void setUploadFile(File uploadFile) {
+        this.uploadFile = uploadFile;
+    }
+
+    public String getUploadFileName() {
+        return uploadFileName;
+    }
+
+    public void setUploadFileName(String uploadFileName) {
+        this.uploadFileName = uploadFileName;
     }
 }
