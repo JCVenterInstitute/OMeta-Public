@@ -1,9 +1,13 @@
 package org.jcvi.ometa.utils;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.poi.hssf.usermodel.DVConstraint;
+import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.CellRangeAddressList;
 import org.apache.poi.ss.usermodel.*;
 import org.jcvi.ometa.model.EventMetaAttribute;
+import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.scratch.ScratchUtils;
 
 import java.io.*;
@@ -71,13 +75,10 @@ public class TemplatePreProcessingUtils {
         int i = 0;
         for(HeaderDetail detail : attributes) {
             csvContents.append((i > 0 ? "," : "") + "\"" + detail.getName() + "\"");
-            comments.append(
-                    (i > 0 ? "," : "") +
-                            "\"" +
-                            String.format(this.mutatedComment, detail.getDataType(), detail.isRequired()?"*Required":"optional") +
-                            (detail.getOptions()!=null && detail.getOptions().length()>0 ? ("["+detail.getOptions()+"]") : "") +
-                            "\""
-            );
+            comments.append((i > 0 ? "," : "")
+                    + "\""
+                    + this.getComment(detail) + (detail.hasOptions()?detail.getOptionsString():"")
+                    + "\"");
             i++;
         }
 
@@ -119,11 +120,30 @@ public class TemplatePreProcessingUtils {
             cell.setCellStyle(boldCS);
 
             cell = commentRow.createCell(headerIndex++);
-            cell.setCellValue(
-                    String.format(this.mutatedComment, detail.getDataType(), detail.isRequired()?"*Required":"optional") +
-                            (detail.getOptions()!=null && detail.getOptions().length()>0 ? ("["+detail.getOptions()+"]") : "")
-            );
+            cell.setCellValue(this.getComment(detail));
             cell.setCellStyle(redCS);
+
+            if(detail.getDataType().equals(ModelValidator.DATE_DATA_TYPE)) {
+                DataFormat df = wb.createDataFormat();
+                CellStyle dateCS = wb.createCellStyle();
+                CreationHelper createHelper = wb.getCreationHelper();
+                dateCS.setDataFormat(createHelper.createDataFormat().getFormat(Constants.DEFAULT_DATE_FORMAT));
+
+                sheet.setDefaultColumnStyle(headerIndex-1, dateCS);
+            }
+
+            this.addValidations(headerIndex - 1, detail, sheet);
+        }
+
+        //adds project name validation
+        if(!isProjectRegistration) {
+            CellRangeAddressList addressList = new CellRangeAddressList(2, 100, 0, 0);
+            DVConstraint projectNameConstraint = DVConstraint.createExplicitListConstraint(new String[]{projectName});
+            DataValidation projectNameValidation = new HSSFDataValidation(addressList, projectNameConstraint);
+            projectNameValidation.setSuppressDropDownArrow(true);
+            projectNameValidation.setErrorStyle(DataValidation.ErrorStyle.STOP);
+            projectNameValidation.createErrorBox("A template ONLY supports single project!", "Project: " + projectName);
+            sheet.addValidationData(projectNameValidation);
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -131,6 +151,55 @@ public class TemplatePreProcessingUtils {
         InputStream templateStream = new ByteArrayInputStream(baos.toByteArray());
 
         return templateStream;
+    }
+
+    private String getComment(HeaderDetail detail) {
+        return String.format(this.mutatedComment, detail.getDataType(), detail.isRequired()?"*Required":"optional");
+    }
+
+    private void addValidations(int headerIndex, HeaderDetail detail, Sheet sheet) {
+        CellRangeAddressList addressList = new CellRangeAddressList(2, 100, headerIndex, headerIndex);
+        DVConstraint constraint = null;
+        DataValidation validation = null;
+        //adds select box with option values
+        if(detail.hasOptions()) {
+            constraint = DVConstraint.createExplicitListConstraint(detail.getOptionsArray());
+            validation = new HSSFDataValidation(addressList, constraint);
+            validation.setSuppressDropDownArrow(false);
+            sheet.addValidationData(validation);
+        }
+
+        //data type validation
+        if(detail.getDataType().equals(ModelValidator.DATE_DATA_TYPE)) {
+            constraint = DVConstraint.createDateConstraint(
+                    DVConstraint.OperatorType.GREATER_THAN,
+                    "1900-01-01", "0000-00-00",
+                    Constants.DEFAULT_DATE_FORMAT
+            );
+            validation = new HSSFDataValidation(addressList, constraint);
+            validation.setSuppressDropDownArrow(true);
+            validation.setErrorStyle(DataValidation.ErrorStyle.STOP);
+            validation.createErrorBox("Use a valid date format!", Constants.DEFAULT_DATE_FORMAT);
+            sheet.addValidationData(validation);
+        } else if(detail.getDataType().equals(ModelValidator.INT_DATA_TYPE)) {
+            constraint = DVConstraint.createNumericConstraint(
+                    DVConstraint.ValidationType.INTEGER,
+                    DVConstraint.OperatorType.GREATER_OR_EQUAL,
+                    "0", "0"
+            );
+            validation = new HSSFDataValidation(addressList, constraint);
+            validation.setSuppressDropDownArrow(true);
+            sheet.addValidationData(validation);
+        } else if(detail.getDataType().equals(ModelValidator.FLOAT_DATA_TYPE)) {
+            constraint = DVConstraint.createNumericConstraint(
+                    DVConstraint.ValidationType.DECIMAL,
+                    DVConstraint.OperatorType.GREATER_OR_EQUAL,
+                    "0", "0"
+            );
+            validation = new HSSFDataValidation(addressList, constraint);
+            validation.setSuppressDropDownArrow(true);
+            sheet.addValidationData(validation);
+        }
     }
 
     public File preProcessTemplateFile(File originalFile) {
@@ -181,7 +250,16 @@ public class TemplatePreProcessingUtils {
         public void setName(String name) { this.name = name; }
         public boolean isRequired() { return required; }
         public void setRequired(boolean required) { this.required = required; }
+        public boolean hasOptions() {
+            return this.getOptions()!=null && this.getOptions().length()>0;
+        }
         public String getOptions() { return options; }
+        public String getOptionsString() {
+            return (this.hasOptions()? ("["+this.getOptions()+"]") : "");
+        }
+        public String[] getOptionsArray() {
+            return (this.hasOptions() ? this.getOptions().split(";") : null);
+        }
         public void setOptions(String options) { this.options = options; }
         public String getDataType() { return dataType; }
         public void setDataType(String dataType) { this.dataType = dataType; }
