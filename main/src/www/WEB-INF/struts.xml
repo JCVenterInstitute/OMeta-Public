@@ -163,6 +163,7 @@
         </action>
 
         <!-- This does not have an auth interceptor, because it is wholly declaratively protected. -->
+        <!--
         <action name="webLoader"
                 class="org.jcvi.ometa.action.WebLoader"
                 method="execute">
@@ -190,6 +191,7 @@
             <result name="FAILURE">/JSP/EventTemplateMaker.jsp</result>
             <result name="forbidden">/JSP/EventTemplateMaker.jsp</result>
         </action>
+		-->
 
         <action name="eventReport"
                 class="org.jcvi.ometa.action.EventReport"
@@ -224,9 +226,9 @@
             <result name="success">/JSP/EventLoader.jsp</result>
             <result name="error">/JSP/EventLoader.jsp</result>
             <result name="FILE_DOWNLOAD" type="stream">
-                <param name="contentType">application/csv</param>
+                <param name="contentType">application/${downloadContentType}</param>
                 <param name="contentDisposition">attachment;filename="${downloadFileName}"</param>
-                <param name="inputName">fileInputStream</param>
+                <param name="inputName">downloadStream</param>
             </result>
         </action>
 
@@ -284,6 +286,10 @@
                 <param name="lerror">${lerror}</param>
                 <param name="emsg">${errorMsg}</param>
             </result>
+        </action>
+		
+		<action name="popup" class="org.jcvi.ometa.action.Popup" method="run">
+            <result name="SELECT_TEMPLATE">/JSP/popup/LPopupTemplateSelect.jsp</result>
         </action>
 
         <action name="ontologySearch" class="org.jcvi.ometa.action.Ontology">
