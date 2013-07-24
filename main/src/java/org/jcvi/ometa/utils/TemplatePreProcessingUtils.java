@@ -137,13 +137,15 @@ public class TemplatePreProcessingUtils {
 
         //adds project name validation
         if(!isProjectRegistration) {
-            CellRangeAddressList addressList = new CellRangeAddressList(2, 100, 0, 0);
+            Row firstRow = sheet.createRow(rowIndex++);
+            firstRow.createCell(0).setCellValue(projectName);
+            /*CellRangeAddressList addressList = new CellRangeAddressList(2, 100, 0, 0);
             DVConstraint projectNameConstraint = DVConstraint.createExplicitListConstraint(new String[]{projectName});
             DataValidation projectNameValidation = new HSSFDataValidation(addressList, projectNameConstraint);
             projectNameValidation.setSuppressDropDownArrow(true);
             projectNameValidation.setErrorStyle(DataValidation.ErrorStyle.STOP);
             projectNameValidation.createErrorBox("A template ONLY supports single project!", "Project: " + projectName);
-            sheet.addValidationData(projectNameValidation);
+            sheet.addValidationData(projectNameValidation);*/
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
