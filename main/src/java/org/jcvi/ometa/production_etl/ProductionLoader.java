@@ -22,6 +22,7 @@
 package org.jcvi.ometa.production_etl;
 
 import org.jcvi.ometa.production_etl.dbi.ProductionLoaderConnectionFactory;
+import org.jcvi.ometa.utils.EmailSender;
 
 import java.io.*;
 import java.sql.*;
@@ -116,7 +117,7 @@ public class ProductionLoader {
             dbInterface.closeConnections();
 
         } catch (Exception ex) {
-            //new EmailSender().send( "etl", "[PST} Failure in ETL Process", ex.toString() );
+            new EmailSender().send( "etl", "[PST} Failure in ETL Process", ex.toString() );
             System.out.println("FAILED to carry out database update.  See error below.");
             ex.printStackTrace();
         }
@@ -184,7 +185,7 @@ public class ProductionLoader {
                     int colnum = i + 1;
 
                     Object value = null;
-                    //System.out.println("COLNUM=" + colnum + ", TYPE=" + metadata.getColumnType(colnum) + ", TYPENAME=" + metadata.getColumnTypeName(colnum));
+
                     if (metadata.getColumnTypeName(colnum).equalsIgnoreCase("VARBINARY")) {
                         Blob blob = fetchSourceResults.getBlob(colnum);
                         value = getBlobResult(blob);
