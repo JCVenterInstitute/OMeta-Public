@@ -318,7 +318,7 @@
                             if(_ma.options!=null&&_ma.options!=='') { 
                                 var optcon='';
                                 if(_ma.options.indexOf(';')>0) { //select box for option values
-                                    var opts='';
+                                    var opts=vs.vnoption.replace("$v$","0").replace("$n$","");
                                     $.each(_ma.options.split(';'), function(_opti,_opt) {
                                         opts+=vs.vnoption.replace("$v$",_opt).replace("$n$",(_opt==='1'?'Yes':_opt==='0'?'No':_opt));
                                     });

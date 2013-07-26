@@ -143,6 +143,10 @@ public class EventLoader extends ActionSupport {
                                 loadingSample.setSampleName(gBean.getSampleName());
                                 loadingSample.setParentSampleName(gBean.getParentSampleName());
                                 loadingSample.setIsPublic(Integer.valueOf(gBean.getSamplePublic()));
+                            } else {
+                                if(gBean.getSampleName()!=null) {
+                                    this.sampleName = gBean.getSampleName();
+                                }
                             }
                             List<FileReadAttributeBean> fBeanList = gBean.getBeanList();
                             if(fBeanList!=null && fBeanList.size()>0) {
@@ -370,7 +374,9 @@ public class EventLoader extends ActionSupport {
         List<FileReadAttributeBean> loadingList = null;
         if (frab != null && frab.size() > 0) {
             loadingList = processFileReadBeans(
-                    isProjectRegistration ? project.getProjectName() : projectName, isSampleRegistration ? sample.getSampleName() : this.sampleName, frab
+                    isProjectRegistration ? project.getProjectName() : projectName,
+                    isSampleRegistration ? sample.getSampleName() : this.sampleName,
+                    frab
             );
         }
         if (loadingList != null && loadingList.size() > 0) {
@@ -460,7 +466,10 @@ public class EventLoader extends ActionSupport {
                 }
             }
 
-            if (!fBean.getAttributeName().equals("0") && fBean.getAttributeValue()!=null && !fBean.getAttributeValue().isEmpty()) {
+            if (!fBean.getAttributeName().equals("0")
+                    && fBean.getAttributeValue()!=null
+                    && !fBean.getAttributeValue().equals("0")
+                    && !fBean.getAttributeValue().isEmpty()) {
                 processedList.add(fBean);
             }
         }
