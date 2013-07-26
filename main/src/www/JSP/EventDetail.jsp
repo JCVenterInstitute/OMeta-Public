@@ -68,14 +68,10 @@
         <s:include value="TopMenu.jsp" />
         <div style="margin-bottom:45px;">
             <div id="pageTitle" class="panelHeader" style="float:left">Event Detail</div>
-            <div id="errorMessagesPanel" style="margin:15px 0 0 35px;float:left">
-                <s:if test="hasActionErrors()">
-                    <input type="hidden" id="error_messages" value="<s:iterator value="actionErrors"><s:property/><br/></s:iterator>"/>
-                    <s:a id="errorMessagesLink" href="#" onclick="utils.error.show('error_messages');return false;">
-                        <u style="font-size:16px;text-align:left;color:#FF0000;font-weight:600;vertical-align:middle;">ERROR</u>
-                    </s:a>
-                </s:if>
-            </div>
+            <div id="errorMessagesPanel" style="float:left;margin-top:15px;"></div>
+            <s:if test="hasActionErrors()">
+                <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
+            </s:if>
         </div>
         <div id="middle_content_template">
             <!--<div id="columnsTable"></div>  for column listing-->
@@ -444,9 +440,7 @@
             });
             $('#sampleTableDiv, #eventTableDiv, #eventDateDiv').toggle(300);
 
-            <s:if test="hasActionErrors()">
-                utils.error.add('<s:iterator value="actionErrors"><s:property/><br/></s:iterator>');
-            </s:if>
+            utils.error.check();
         });
 
 

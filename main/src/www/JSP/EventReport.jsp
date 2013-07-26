@@ -46,7 +46,10 @@
                 <tr><td class="panelHeader">Event Report</td></tr>
                 <tr>
                     <td>
-                        <div id="errorMessagesPanel" style="margin-top:10px;"></div>
+                        <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+                        <s:if test="hasActionErrors()">
+                            <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
+                        </s:if>
                     </td>
                 </tr>
             </table>
@@ -102,7 +105,7 @@
         $(document).ready(function() {
             utils.initDatePicker();
             $( "#_projectSelect" ).combobox();
-
+            utils.error.check();
         });
 
         var callbacks = {

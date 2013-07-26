@@ -79,6 +79,12 @@ var utils = {
         });   
     },
     error: {
+        check: function() {
+            var _error = $('#error_messages').val();
+            if(typeof _error!='undefined' && _error!='') {
+                this.add(_error);
+            }
+        },
         add: function(msg) {
             this.remove();
             $('#errorMessagesPanel').append(

@@ -51,7 +51,10 @@
         <s:include value="TopMenu.jsp" />
         <div id="HeaderPane" style="margin:15px 0 0 30px;">
             <div class="panelHeader" style="margin:0;">Project Status</div>
-            <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+            <div id="errorMessagesPanel" style="float:left;margin-top:15px;"></div>
+            <s:if test="hasActionErrors()">
+                <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
+            </s:if>
         </div>
         <div id="middle_content_template">
             <p>An Excel version of this data is also available for download
@@ -123,9 +126,7 @@
                 startCollapsed: true
             });
             
-            <s:if test="hasActionErrors()">
-                utils.error.add('<s:iterator value="actionErrors"><s:property/><br/></s:iterator>');
-            </s:if>
+            utils.error.check();
         });
 
         function getDisplayedAttributes() {

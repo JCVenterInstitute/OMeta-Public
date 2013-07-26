@@ -49,6 +49,9 @@
     			<tr>
     				<td>
     					<div id="errorMessagesPanel" style="margin-top:15px;"></div>
+                        <s:if test="hasActionErrors()">
+                            <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
+                        </s:if>
     				</td>
     			</tr>
     		</table>
@@ -193,9 +196,7 @@
                 }
             });
 
-            <s:if test="hasActionErrors()">
-                utils.error.add('<s:iterator value="actionErrors"><s:property/><br/></s:iterator>');
-            </s:if>
+            utils.error.check();
         });
     </script>
 
