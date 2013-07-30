@@ -15,7 +15,7 @@
     <div class="popup">
         <div class="popup-header">
             <h2>Select Template Format</h2>
-            <a href="#" onclick="_popup.close()" title="Close" class="close-link">Close</a>
+            <a href="#" onclick="_popup.close" title="Close" class="close-link">Close</a>
             <br clear="both" />
         </div>
         <div style="padding:10px;">

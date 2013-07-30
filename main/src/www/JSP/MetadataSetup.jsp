@@ -38,6 +38,7 @@
 		    /* row background: mouse hover & new row */
 		    tr.borderBottom:hover>td.comboBoxCB, tr.borderBottom:hover>td input, tr.borderBottom:hover>td>textarea { background: #bbdcf8; }
 		    .buttonAdded>td.comboBoxCB,.buttonAdded>td input,.buttonAdded>td>textarea { background: #e9f4fd; }
+		    tr>td.fix172 { min-width:172px; }
 		</style>
 	</head>
 
@@ -183,11 +184,11 @@
             	'<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].projectMeta" id="projectMeta$cnt$"/>' +
 	            '<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].sampleMeta" id="sampleMeta$cnt$"/>',	
 	        ma:
-	            '<td style="min-width:172px;"><select name="beanList[$cnt$].name" id="ma$cnt$">$o$</select></td>',
+	            '<td class="fix172"><select name="beanList[$cnt$].name" id="ma$cnt$">$o$</select></td>',
 	        ema:
 	            //'<td><select name="beanList[$cnt$].et" id="et$cnt$">$et$</select></td>' +
-	            '<td id="etTD$cnt$">$etTD$</td>' +
-	            '<td style="min-width:172px;">'+
+	            '<td id="etTD$cnt$" class="fix172">$etTD$</td>' +
+	            '<td class="fix172">'+
 	            '  <select name="beanList[$cnt$].name" id="ema$cnt$">$ema$</select>' +
 	            '</td>',
             etTD_c:
