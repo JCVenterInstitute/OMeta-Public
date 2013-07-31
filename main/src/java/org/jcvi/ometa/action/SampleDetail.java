@@ -53,6 +53,7 @@ public class SampleDetail extends ActionSupport {
     private Long projectId;
     private String sampleName;
     private Long sampleId;
+    private String iss;
     private Map<String, Object> detailMap;
 
     private final String TAXONOMY_ID = "Taxonomy ID";
@@ -223,6 +224,14 @@ public class SampleDetail extends ActionSupport {
 
     public Map<String, Object> getDetailMap() {
         return detailMap;
+    }
+
+    public String getIss() {
+        return iss;
+    }
+
+    public void setIss(String iss) {
+        this.iss = iss;
     }
 
     public void setDetailMap(Map<String, Object> detailMap) {

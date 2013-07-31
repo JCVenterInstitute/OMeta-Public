@@ -45,7 +45,7 @@ public class Constants {
     public static String TRACESRA_URL= "http://www.ncbi.nlm.nih.gov/sites/entrez?db=sra&cmd=Search&dopt=DocSum&term=txid";
     public static String WGS_URL= "http://www.ncbi.nlm.nih.gov/nucleotide/";
     public static String ANNOTATION_URL= "http://www.ncbi.nlm.nih.gov/sites/entrez?db=nucleotide&cmd=Search&term=";
-    public static String SAMPLE_DETAIL_URL = "/sampleDetail.action?";
+    public static String SAMPLE_DETAIL_URL = "/"+SERVICE_NAME+"/sampleDetail.action?";
     public static String dbSNP_URL = "#";
     public static String INTERNAL_PROJECT_PAGE = "http://%s.jcvi.org/projects/%s/%s/index.php";
     public static String NCBI_PROJECT_PAGE = "http://www.ncbi.nlm.nih.gov/bioproject/";

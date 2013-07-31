@@ -35,9 +35,18 @@
         <s:hidden name="projectName" />
         <s:hidden name="attributesOnScreen" />
         <s:hidden name="attributes" />
-        <jsp:include page="TopMenu.jsp"/>
-         <div id="HeaderPane" style="margin:15px 0 0 30px;">
-            <div class="panelHeader" style="margin:0;">Sample Detail</div>
+        <s:if test="iss.equals(\"true\");">
+            <link rel="stylesheet" href="style/main.css" />
+            <link rel="stylesheet" href="style/version01.css" />
+            <script src="scripts/jquery/jquery-1.7.2.js"></script>
+            <script src="scripts/jquery/jquery-ui.js"></script>
+            <script src="scripts/ometa.utils.js"></script>
+        </s:if>
+        <s:else>
+            <jsp:include page="TopMenu.jsp"/>
+        </s:else>
+        <div id="HeaderPane" style="margin:15px 0 0 30px;">
+           <div class="panelHeader" style="margin:0;">Sample Detail</div>
         </div>
         <div id="middle_content_template">
             <h1 class="csc-firstHeader">

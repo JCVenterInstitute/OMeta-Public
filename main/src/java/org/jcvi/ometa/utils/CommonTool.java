@@ -89,9 +89,9 @@ public class CommonTool {
                 } else if ("organism".equals(loweredKey)) {
                     decoratedValue = convertIntoATag(
                             Constants.SAMPLE_DETAIL_URL +
-                                    "projectName=" + project.getProjectName() +
+                                    "projectName=" + project.getProjectName().replaceAll(" ", "%20") +
                                     "&projectId=" + project.getProjectId() +
-                                    "&sampleName=" + attributeMap.get("Sample Name") +
+                                    "&sampleName=" + ((String)attributeMap.get("Sample Name")).replaceAll(" ", "%20") +
                                     "&sampleId=" + attributeMap.get("sampleId"),
                             decoratedValue
                     );
