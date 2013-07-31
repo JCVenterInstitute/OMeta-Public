@@ -340,7 +340,7 @@ public class JsonProducer implements Schedulable {
                             sampleJsonObj.put("OrganismUrl",
                                     (PROD_SERVER_ADDRESS + Constants.SAMPLE_DETAIL_URL +
                                             "iss=true" +
-                                            "projectName=" + project.getProjectName() +
+                                            "&projectName=" + project.getProjectName() +
                                             "&projectId=" + project.getProjectId() +
                                             "&sampleName=" + sampleAttrMap.get("Sample Name") +
                                             "&sampleId=" + sampleAttrMap.get("sampleId")).replaceAll("\\\"", "\\\\\"")
