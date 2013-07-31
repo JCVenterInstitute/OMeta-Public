@@ -199,8 +199,9 @@
             anBeanHtml='<input type="hidden" value="$an$" name="$lt$attributeName"/>',
             avTextHtml='<input type="text" id="$an$" name="$lt$attributeValue" value="$val$"/>',
             avFileHtml='<input type="file" id="$an$" name="$lt$upload"/>',
-            avSelectHtml='<select id="$an$" name="$lt$attributeValue">$opts$</select>',
+            avSelectHtml='<select $multi$ id="$an$" name="$lt$attributeValue" style="min-width:35px;">$opts$</select>',
             avSampleSelectHtml='<td><select id="$si$" name="$sn$">$opts$</select></td>',
+            multiSelect='multi(',
             avHtml, sample_options;
 
         var _utils = {
@@ -318,11 +319,25 @@
                             if(_ma.options!=null&&_ma.options!=='') { 
                                 var optcon='';
                                 if(_ma.options.indexOf(';')>0) { //select box for option values
-                                    var opts=vs.vnoption.replace("$v$","0").replace("$n$","");
-                                    $.each(_ma.options.split(';'), function(_opti,_opt) {
-                                        opts+=vs.vnoption.replace("$v$",_opt).replace("$n$",(_opt==='1'?'Yes':_opt==='0'?'No':_opt));
-                                    });
-                                    optcon=avSelectHtml.replace("$an$",_ma.lookupValue.name+"_$id$").replace("$opts$",opts);
+                                    //is this multi select
+                                    var isMulti = (_ma.options.substring(0, multiSelect.length)===multiSelect) 
+                                            && (_ma.options.lastIndexOf(')')===_ma.options.length-1),
+                                        opts=vs.vnoption.replace("$v$","0").replace("$n$",""),
+                                        _options = _ma.options;
+
+                                    if(isMulti) {
+                                        _options = _options.substring(multiSelect.length, _options.length-1);
+                                    }
+
+                                    //convert 0 or 1 options to yes/no
+                                    if(_options==='0;1' || _options==='1;0') {
+                                        opt=vs.ynoption;    
+                                    } else {
+                                        $.each(_options.split(';'), function(_opti,_opt) {
+                                            opts+=vs.vvoption.replace(/\\$v\\$/g,_opt);
+                                        });
+                                    }
+                                    optcon=avSelectHtml.replace("$an$",_ma.lookupValue.name+"_$id$").replace("$opts$",opts).replace("$multi$", isMulti?"multiple":"");
                                 } else { //set default text input box option values without ";"
                                     optcon=avTextHtml.replace("$an$",_ma.lookupValue.name+" $id$").replace("$val$", _ma.options); 
                                 }

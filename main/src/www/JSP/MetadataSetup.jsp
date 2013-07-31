@@ -173,9 +173,9 @@
 	        odo:
 	            '<td><input type="text" name="beanList[$cnt$].options" id="options$cnt$" size="27"/></td>' +
 	            '<td><textarea name="beanList[$cnt$].desc" id="desc$cnt$" cols="27" rows="1"/></td>' +
-	            '<td><input type="text" name="beanList[$cnt$].ontology" id="ontology$cnt$" size="27" placeholder="Search Ontology Terms"/></td>',
+	            '<td><input type="text" name="beanList[$cnt$].ontology" id="ontology$cnt$"  placeholder="Search Ontology"/></td>',
 	        lar:
-	            '<td><input type="text" name="beanList[$cnt$].label" id="label$cnt$" size="27"/></td>' +
+	            '<td><input type="text" name="beanList[$cnt$].label" id="label$cnt$" size="15"/></td>' +
 	            '<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].active" id="active$cnt$"/>' +
 	            '<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].required" id="required$cnt$"/>',
 	        s:
@@ -357,7 +357,7 @@
                             	return (v==null?'':v.indexOf('[')>=0?v.substring(0,v.indexOf('[')):v+' ')+(ui.item.term?'['+ui.item.term+']':'');
                         	})
 	                    }
-		            });
+		            }).css('width', '100px');
 		            maCnt++;	
 		        }
 		    },

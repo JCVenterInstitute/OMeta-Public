@@ -49,7 +49,7 @@ public class EventPersistenceHelper {
     protected static final MessageFormat UNKNOWN_ATTRIB_TYPE_HUMAN_READABLE_MSG = new MessageFormat(
             "Unknown attribute type {0} " );
     protected static final MessageFormat CONTROLLED_VOCAB_VIOLATED_HUMAN_READABLE_MSG = new MessageFormat(
-            "{0} {1} attribute may not be set to {2}.  Instead, use one of these values: {3} " );
+            "{0} {1} attribute may not be set to {2}.  Instead, use one or more of these values: {3} " );
     protected static final MessageFormat EVENT_NOT_IN_PROJECT_HUMAN_READABLE_MSG = new MessageFormat(
             "Event attribute of {0} does not belong to project {1} " );
     protected static final MessageFormat INVALID_PROJECT_META_ATTRIB_HUMAN_READABLE_MSG = new MessageFormat(
@@ -238,14 +238,29 @@ public class EventPersistenceHelper {
 
         // Not all values are controlled.  Some may have empty control values.
         if ( controlValues != null  &&  controlValues.trim().length() > 0 ) {
-            String[] controlValueArray = controlValues.split(";");
-            boolean found = false;
-            for ( String controlValue: controlValueArray ) {
+            String multiplePrefix = "multi(";
+            //trim multiple select for validation
+            if(controlValues.startsWith(multiplePrefix) && controlValues.endsWith(")")) {
+                controlValues = controlValues.substring(multiplePrefix.length(), controlValues.length()-1);
+            }
+            List<String> controlValueList = Arrays.asList(controlValues.split(";"));
+            boolean found = true;
+            if(attributeValue.contains(",")) {
+                for(String currentAttributeValue : attributeValue.split(",")) {
+                    if(controlValueList.indexOf(currentAttributeValue)<0) {
+                        found = false;
+                        break;
+                    }
+                }
+            } else {
+                found = controlValueList.indexOf(attributeValue) >= 0;
+            }
+            /*for ( String controlValue: controlValueArray ) {
                 if ( attributeValue.equals( controlValue ) ) {
                     found = true;
                     break;
                 }
-            }
+            }*/
 
             if ( ! found ) {
                 String message = CONTROLLED_VOCAB_VIOLATED_HUMAN_READABLE_MSG.format(
@@ -638,5 +653,9 @@ public class EventPersistenceHelper {
     /** This is for dictating "state" for the "builder" aspects of this class. */
     public static enum ProcessingPhase {
         preIterate, iterate, postIterate
+    }
+
+    public void setEmaNameToControls(Map<String, String> emaNameToControls) {
+        this.emaNameToControls = emaNameToControls;
     }
 }
