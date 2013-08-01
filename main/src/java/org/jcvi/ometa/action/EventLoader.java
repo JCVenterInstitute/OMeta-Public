@@ -317,7 +317,7 @@ public class EventLoader extends ActionSupport {
              */
             List<EventMetaAttribute> emas = this.readPersister.getEventMetaAttributes(projectName, null); //, Constants.EVENT_PROJECT_REGISTRATION);
             if (emas != null && emas.size() > 0) {
-                List<EventMetaAttribute> newEmas = new ArrayList<EventMetaAttribute>();
+                List<EventMetaAttribute> newEmas = new ArrayList<EventMetaAttribute>(emas.size());
 
                 for (EventMetaAttribute ema : emas) {
                     EventMetaAttribute newEma = new EventMetaAttribute();
@@ -343,9 +343,29 @@ public class EventLoader extends ActionSupport {
                 );
             }
 
+            List<SampleMetaAttribute> smas = this.readPersister.getSampleMetaAttributes(projectId);
+            if(smas != null && smas.size() > 0) {
+                List<SampleMetaAttribute> newSmas = new ArrayList<SampleMetaAttribute>(smas.size());
+                for(SampleMetaAttribute sma : smas) {
+                    SampleMetaAttribute newSma = new SampleMetaAttribute();
+                    newSma.setProjectName(project.getProjectName());
+                    newSma.setAttributeName(sma.getAttributeName());
+                    newSma.setNameLookupId(sma.getNameLookupId());
+                    newSma.setDataType(sma.getDataType());
+                    newSma.setDesc(sma.getDesc());
+                    newSma.setLabel(sma.getLabel());
+                    newSma.setOntology(sma.getOntology());
+                    newSma.setOptions(sma.getOptions());
+                    newSma.setRequired(sma.isRequired());
+                    newSma.setActive(sma.isActive());
+                    newSmas.add(newSma);
+                }
+                loadParameter.addSampleMetaAttributes(newSmas);
+            }
+
             List<ProjectMetaAttribute> pmas = this.readPersister.getProjectMetaAttributes(projectName);
             if (pmas != null && pmas.size() > 0) {
-                List<ProjectMetaAttribute> newPmas = new ArrayList<ProjectMetaAttribute>();
+                List<ProjectMetaAttribute> newPmas = new ArrayList<ProjectMetaAttribute>(pmas.size());
                 for (ProjectMetaAttribute pma : pmas) {
                     ProjectMetaAttribute newPma = new ProjectMetaAttribute();
                     newPma.setProjectName(project.getProjectName());

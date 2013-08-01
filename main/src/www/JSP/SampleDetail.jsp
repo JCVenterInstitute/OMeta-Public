@@ -22,6 +22,8 @@
 <!DOCTYPE html>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="/struts-tags" prefix="s" %>
+<%@ page isELIgnored="false" %>
+
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
     <link rel="stylesheet" href="style/dataTables.css" />
@@ -94,6 +96,7 @@
     <script src="scripts/jquery/jquery.dataTables.js"></script>
     <script>
         $(document).ready(function() {
+            console.log('${iss}');
             $('#statusTable tbody tr:even').addClass('even');
             $('#statusTable tbody tr:odd').addClass('odd');
         })

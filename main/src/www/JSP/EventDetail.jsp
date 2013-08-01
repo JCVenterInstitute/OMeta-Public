@@ -51,10 +51,13 @@
                 top: 200px;
                 left: 25%;
             }
-            td.details { text-align:left; padding:2px 0 2px 5px; }
-            td.details div { position: relative; overflow: auto; overflow-y: hidden; }
-            td.details table { margin:5px 5px; }
-            td.details table td { border:1px solid white; }
+            td._details { 
+                text-align:left; 
+                padding:0 0 0 35px;
+                border: 1px gray dotted;
+            }
+            td._details div { position: relative; overflow: auto; overflow-y: hidden; }
+            td._details table td { border:1px solid white; }
 
             .datatable_top, .datatable_table, .datatable_bottom { float:left; clear:both; width:100%;}
         </style>
@@ -413,8 +416,8 @@
                     _table.fnClose(_row);
                 } else {
                     this.src = closeBtn;
-                    _table.fnOpen(_row, subrow_html.replace(/\\$d\\$/, _table.fnGetData(_row)[(_is_event?6:5)]), 'details');
-                    $('td.details>div').css('width', $('#projectTableDiv').width()-90);
+                    _table.fnOpen(_row, subrow_html.replace(/\\$d\\$/, _table.fnGetData(_row)[(_is_event?6:5)]), '_details');
+                    $('td._details>div').css('width', $('#projectTableDiv').width()-90);
                 }
             });
             
