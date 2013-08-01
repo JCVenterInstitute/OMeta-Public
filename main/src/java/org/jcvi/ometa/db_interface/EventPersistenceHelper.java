@@ -247,7 +247,7 @@ public class EventPersistenceHelper {
             boolean found = true;
             if(attributeValue.contains(",")) {
                 for(String currentAttributeValue : attributeValue.split(",")) {
-                    if(controlValueList.indexOf(currentAttributeValue)<0) {
+                    if(controlValueList.indexOf(currentAttributeValue.trim())<0) {
                         found = false;
                         break;
                     }

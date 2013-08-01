@@ -35,7 +35,7 @@
         <s:hidden name="projectName" />
         <s:hidden name="attributesOnScreen" />
         <s:hidden name="attributes" />
-        <s:if test="iss.equals(\"true\");">
+        <s:if test="iss.equals(\"true\")">
             <link rel="stylesheet" href="style/main.css" />
             <link rel="stylesheet" href="style/version01.css" />
             <script src="scripts/jquery/jquery-1.7.2.js"></script>
