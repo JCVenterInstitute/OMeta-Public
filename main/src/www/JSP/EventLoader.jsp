@@ -254,7 +254,8 @@
             },
             showPS:function(et) {
                 if(utils.checkSR(et)) { // triggers sample loader
-                    $('#sampleDetailInputDiv').show();    
+                    $('#sampleDetailInputDiv').show();  
+                    $('.sampleSelectTr').hide();  
                 } else if(utils.checkPR(et)) {
                     $('#projectDetailInputDiv').show();   
                 } 
@@ -472,8 +473,8 @@
                 } else if(_selectedType==='file') {
                     $('#fileInputDiv').show();
                 } else {
-                    _utils.showPS();
                     $('#attributeInputDiv, .sampleSelectTr').show();
+                    _utils.showPS();
                 }
             });
 
