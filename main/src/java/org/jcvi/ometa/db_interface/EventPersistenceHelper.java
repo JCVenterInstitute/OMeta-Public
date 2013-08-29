@@ -29,7 +29,6 @@ import org.jcvi.ometa.utils.GuidGetter;
 import org.jcvi.ometa.validation.ModelValidator;
 
 import java.text.MessageFormat;
-import java.util.Date;
 import java.util.*;
 
 /**
@@ -414,7 +413,8 @@ public class EventPersistenceHelper {
 
     public void checkRequiredEventAttribsAndSample() throws Exception {
         checkPostIteratePhase();
-        if ( sampleAttributesEncountered )
+        // hkim removed requirement check for only sample attribute
+        //if ( sampleAttributesEncountered )
             checkRequiredAttribs( requiredEmaToSatisfied, "Event"  );
 
         // Event meta attributes are what decide whether the sample is required for an event, so this check
