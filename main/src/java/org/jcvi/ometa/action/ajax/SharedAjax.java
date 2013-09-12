@@ -187,7 +187,18 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                     aaData.add(errorMap);
                 }
             } else if ("ea".equals(type)) { //attribute for an event
-                aaData = readPersister.getEventMetaAttributes(projectName, eventName);
+                List<EventMetaAttribute> eaList = readPersister.getEventMetaAttributes(projectName, eventName);
+                Map<Integer, EventMetaAttribute> orderedEA = new TreeMap<Integer, EventMetaAttribute>();
+                List<EventMetaAttribute> orderedList = new ArrayList<EventMetaAttribute>(eaList.size());
+                for(EventMetaAttribute ea : eaList) {
+                    if(ea.getOrder()!=null) {
+                        orderedEA.put(ea.getOrder(), ea);
+                    } else {
+                        orderedList.add(ea);
+                    }
+                }
+                orderedList.addAll(0, orderedEA.values());
+                aaData = orderedList;
             } else if ("ces".equals(type)) { //Change Event Status
                 Editor editor = new Editor();
                 String resultVal = editor.eventEditProcess(eventId);

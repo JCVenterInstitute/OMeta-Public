@@ -63,6 +63,7 @@ public class EventMetaAttribute implements MetaAttributeModelBean, ProjectRefere
 
     private String label;
     private String ontology;
+    private Integer order;
 
 
     @Id
@@ -340,5 +341,15 @@ public class EventMetaAttribute implements MetaAttributeModelBean, ProjectRefere
     @JCVI_BeanPopulator_Column
     public void setOntology(String ontology) {
         this.ontology = ontology;
+    }
+
+    @Column(name = "evenma_order", nullable = true)
+    public Integer getOrder() {
+        return order;
+    }
+
+    @JCVI_BeanPopulator_Column
+    public void setOrder(Integer order) {
+        this.order = order;
     }
 }

@@ -74,6 +74,9 @@
 	                    <div><s:select id="_eventSelect" list="#{'0':''}" required="true" disabled="true" /></div>
 	                </div>
 	            </div>
+	            <div id="loadingImg" style="padding-left:5px;display:none;">
+	            	<img src="images/loading.gif" />
+	            </div>
 	            <div id="PMADiv" style="display:none;">
 	                <div style="margin:10px 10px 0 0;">
 	                    <h1 class="csc-firstHeader">Project Meta Attributes</h1>
@@ -147,6 +150,7 @@
 	                            <th class="tableHeaderNoSort boxesHeader">Ontology</th>
 	                            <th class="tableHeaderNoSort checkBoxHeader">Project Metadata</th>
 	                            <th class="tableHeaderNoSort checkBoxHeader">Sample Metadata</th>
+	                            <th class="tableHeaderNoSort boxesHeader">Pos</th>
 	                        </tr>
 	                        </thead>
 	                        <tbody id="etAdditionTbody"></tbody>
@@ -180,9 +184,10 @@
 	            '<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].required" id="required$cnt$"/>',
 	        s:
 	            '<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].sampleRequired" id="sampleRequired$cnt$"/>',
-            ps:
+            pso:
             	'<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].projectMeta" id="projectMeta$cnt$"/>' +
-	            '<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].sampleMeta" id="sampleMeta$cnt$"/>',	
+	            '<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].sampleMeta" id="sampleMeta$cnt$"/>' +
+	            '<td><input type="text" name="beanList[$cnt$].order" id="order$cnt$" size="2"/></td>',	
 	        ma:
 	            '<td class="fix172"><select name="beanList[$cnt$].name" id="ma$cnt$">$o$</select></td>',
 	        ema:
@@ -202,8 +207,8 @@
             	'<div class="pageButton inlineButton" title="Add attribute to the event group" id="add_$imgid$">Add Attribute</div></div>',
             etSelect: '<select name="beanList[$cnt$].et" id="et$cnt$">$et_opts$</select>',
             etHidden: '<input type="hidden" name="beanList[$cnt$].et" id="et$cnt$" value="$et$">'
-	    },
-	    _utils = {
+	    };
+	    var _utils = {
 			ontology: function() {
 		        window.open('http://www.ebi.ac.uk/ontology-lookup/init.do',
                     'ontologyWindow',
@@ -216,26 +221,81 @@
 		        $('div[id$="MADiv"]').hide();
 		        $('#'+s).show();
 		    },
-		    makeAjax: function(t, projectId, eventName) {
-			    var jl;
+		    makeAjax: function(t, projectId, eventName, cb) {
 			    $.ajax({
 			        url: 'metadataSetupAjax.action',
 			        cache: false,
-			        async: false,
 			        data: 'type='+t+'&projectId='+parseInt(projectId)+'&eventName='+eventName,
 			        success: function(html){
 			            if(html.dynamicList) {
-			                jl=html.dynamicList;
-			            } else {
-			                jl=[];
+			            	cb(html.dynamicList);
 			            }
 			        },
 			        fail: function(html) {
 			            alert("Ajax Process has Failed.");
 			        }
 			    });
-			    return jl;
 			},
+			callback: {
+		    	ema_d: function(list) {
+		    		var projectId = null;
+	                maOptions = vs.vnoption.replace('$v$',0).replace('$n$','');
+		    		$.each(list, function(i1,v1) {
+		    			v1 = v1.ema;
+		    			if(i1===0) {
+		    				projectId = ''+v1.projectId;
+		    			}
+	                    if(v1!=null && v1.attributeName!=null) {
+	                        maOptions+=vs.vvoption.replace(/\\$v\\$/g,v1.attributeName);
+	                        emaDict[v1.attributeName]={'a':v1.activeDB,'r':v1.requiredDB,'o':v1.options,'d':v1.desc,'l':v1.label};
+	                    }
+	                });
+	                //get project or sample meta attribute and insert table rows
+	                _utils.makeAjax(type==='s'?'g_sma':'g_pma', projectId, null, _utils.callback.ma);
+		    	},
+		    	ema: function(list) {
+		    		 $.each(list, function(_i,_ema) {
+	                    _utils.add.ema(null,_ema.ema.eventName, _ema.ema.attributeName, _ema.ema.activeDB,
+                            _ema.ema.requiredDB, _ema.ema.sampleRequiredDB, _ema.ema.options,
+                            _ema.ema.desc, _ema.ema.label, _ema.ema.ontology,
+                            _ema.projectMeta, _ema.sampleMeta, _ema.ema.order);
+	                });
+		    		_utils.laoding.hide();
+		    	},
+		    	ma: function(list) {
+		    		$.each(list, function(i1,v1) {
+	                    if(v1 && v1.attributeName) {
+	                        _utils.add.ma(null,type==='s'?'smaAdditionTbody':'pmaAdditionTbody',
+	                        	v1.attributeName, v1.activeDB, v1.requiredDB, v1.options, v1.desc,v1.label, v1.ontology);
+	                    }
+	                });
+	                _utils.laoding.hide();
+		    	},
+		    	et: function(list) {
+		    		$.each(list, function(i1,v1) {
+	                    if(v1!=null && v1.name!=null) {
+	                        etOptions+=vs.vvoption.replace(/\\$v\\$/g,v1.name);
+	                    }
+	                });	
+		    	},
+		    	at: function(list) {
+		    		maOptions=vs.vnoption.replace('$v$',0).replace('$n$','');
+	                $.each(list, function(i1,v1) {
+	                    if(v1!=null && v1.name!=null) {
+	                        maOptions+=vs.vvoption.replace(/\\$v\\$/g,v1.name);
+	                    }
+	                });	
+		    	},
+		    	pet: function(list) {
+		    		var eo=vs.alloption;
+	                $.each(list, function(i1,v1) {
+	                    if(v1!=null && v1.name!=null) {
+	                        eo+=vs.vvoption.replace(/\\$v\\$/g,v1.name);
+	                    }
+	                });
+	                $('#_eventSelect').html(eo);
+		    	}
+		    },
 		    add: {
 		        ma: function(added,div,n,a,r,o,d,l,ot) {
             		$('#'+div).append(
@@ -248,7 +308,7 @@
 		            utils.preSelect('ma'+maCnt, n);
 		            this.setValues(a,r,o,d,l,ot);
 		        },
-		        ema: function(added,et,n,a,r,s,o,d,l,ot,pm,sm) {
+		        ema: function(added,et,n,a,r,s,o,d,l,ot,pm,sm,pos) {
             		//$('#etAdditionTbody').append(emaHtml.replace(/\\$cnt\\$/g,maCnt).replace("$et$",etOptions).replace("$ema$",maOptions));
             		var _that = this,
             			_et = et ? et : '',
@@ -266,7 +326,7 @@
             					+_html.lar
             					+_html.s
             					+_html.odo
-            					+_html.ps
+            					+_html.pso
         					)
         					.replace(/\\$et\\$/g, _et)
         					.replace(/\\$cnt\\$/g,maCnt)
@@ -304,14 +364,15 @@
 		            utils.checkCB('sampleRequired'+maCnt, s);
 		            utils.checkCB('projectMeta'+maCnt, pm);
 		            utils.checkCB('sampleMeta'+maCnt, sm);
-		            this.setValues(a,r,o,d,l,ot);
+		            this.setValues(a,r,o,d,l,ot,pos);
 		        },
-		        setValues: function(a,r,o,d,l,ot) {
+		        setValues: function(a,r,o,d,l,ot,pos) {
 		        	utils.checkCB('active'+maCnt, a);
 		            utils.checkCB('required'+maCnt, r);
 		            $('#options'+maCnt).val(o);
 		            $('#desc'+maCnt).val(d);
 		            $('#label'+maCnt).val(l);
+		            $('#order'+maCnt).val(pos);
 		            $('#ontology'+maCnt).val(ot).autocomplete({
 		                source: function( request, response ) {
 	                        $.ajax({
@@ -391,80 +452,46 @@
 		            this.attribute();
 		        }
 		    },
+		    laoding: {
+		    	show: function() {
+		    		$('#loadingImg').show();
+		    	},
+		    	hide: function() {
+		    		$('#loadingImg').hide();
+		    	}
+		    },
 	        submit: function() {
 	            $("form").submit();
 	        }
 		};
 
 		function comboBoxChanged(option, id) {
-		    var l;
+		    var l, cb = _utils.callback;
 		    if(id==='_projectSelect') {
+	    		_utils.laoding.show();
 		        if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
 		        	//cleans attributes divisiona dn disabling buttons
 		            _utils.clean.all();
 		            $('input:button[id$="AddButton"]').prop('disabled', false);
-
 		            //for project or sample metatdata setup
 		            if(type==='s' || type==='p') {
 		            	//create attribute list
-		                maOptions = vs.vnoption.replace('$v$',0).replace('$n$','');
-		                $.each(_utils.makeAjax('g_ema', option.value, null), function(i1,v1) {
-		                    if(v1!=null && v1.attributeName!=null) {
-		                        maOptions+=vs.vvoption.replace(/\\$v\\$/g,v1.attributeName);
-		                        emaDict[v1.attributeName]={'a':v1.activeDB,'r':v1.requiredDB,'o':v1.options,'d':v1.desc,'l':v1.label};
-		                    }
-		                });
-		                //get project or sample meta attribute and insert table rows
-		                $.each(_utils.makeAjax(type==='s'?'g_sma':'g_pma', option.value, null), function(i1,v1) {
-		                    if(v1 && v1.attributeName) {
-		                    	//just a safety net if an attribute is not already in event meta attribute
-		                        if(maOptions.indexOf(v1.attributeName)<0) {
-		                            maOptions+=vs.vvoption.replace(/\\$v\\$/g,v1.attributeName);
-		                        }
-		                        _utils.add.ma(null,type==='s'?'smaAdditionTbody':'pmaAdditionTbody',v1.attributeName, v1.activeDB,
-		                                v1.requiredDB, v1.options, v1.desc,
-		                                v1.label, v1.ontology);
-		                    }
-		                });
+						_utils.makeAjax('g_ema', option.value, null, cb.ema_d);
 		            } else { //event metadata setup
 		                etOptions=vs.vnoption.replace('$v$',0).replace('$n$','Select Event');
-		                $.each(_utils.makeAjax('g_et', 0, null), function(i1,v1) {
-		                    if(v1!=null && v1.name!=null) {
-		                        etOptions+=vs.vvoption.replace(/\\$v\\$/g,v1.name);
-		                    }
-		                });
-		                maOptions=vs.vnoption.replace('$v$',0).replace('$n$','');
-		                $.each(_utils.makeAjax('g_a', 0, null), function(i1,v1) {
-		                    if(v1!=null && v1.name!=null) {
-		                        maOptions+=vs.vvoption.replace(/\\$v\\$/g,v1.name);
-		                    }
-		                });
-		                var eo=vs.alloption;
-		                $.each(_utils.makeAjax('g_pet', option.value, null), function(i1,v1) {
-		                    if(v1!=null && v1.name!=null) {
-		                        eo+=vs.vvoption.replace(/\\$v\\$/g,v1.name);
-		                    }
-		                });
-		                $('#_eventSelect').html(eo);
-		                $.each(_utils.makeAjax('g_ema', option.value, null), function(_i,_ema) {
-		                    _utils.add.ema(null,_ema.ema.eventName, _ema.ema.attributeName, _ema.ema.activeDB,
-	                            _ema.ema.requiredDB, _ema.ema.sampleRequiredDB, _ema.ema.options,
-	                            _ema.ema.desc, _ema.ema.label, _ema.ema.ontology,
-	                            _ema.projectMeta, _ema.sampleMeta);
-		                });
+						_utils.makeAjax('g_et', option.value, null, cb.et);
+						_utils.makeAjax('g_a', option.value, null, cb.at);
+		                _utils.makeAjax('g_pet', option.value, null, cb.pet);
+						_utils.makeAjax('g_ema', option.value, null, cb.ema);
 		            }
 		        } else {
 		            return;
 		        }
 		    } else if(id==='_eventSelect') {
+		    	_utils.laoding.show();
 		    	//get an event specific meta attributes
 		        _utils.clean.attribute();
-		        $.each(_utils.makeAjax('g_ema', $('#_projectSelect option:selected').val(), option.value), function(i1,v1) {
-		            _utils.add.ema(null,v1.ema.eventName, v1.ema.attributeName, v1.ema.activeDB,
-	                    v1.ema.requiredDB, v1.ema.sampleRequiredDB, v1.ema.options,
-	                    v1.ema.desc, v1.ema.label, v1.ema.ontology,
-	                    v1.projectMeta, v1.sampleMeta);
-		        });
+		        _utils.makeAjax('g_ema', $('#_projectSelect option:selected').val(), option.value, cb.ema);
 		    } else {
 		    	//loads data from ema dictionary for changing attribute, so it doesn't need to ask server for data
 		        if(id!=null && id.indexOf('ma')!=-1) {

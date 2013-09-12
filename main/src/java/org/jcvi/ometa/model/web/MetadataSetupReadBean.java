@@ -46,6 +46,8 @@ public class MetadataSetupReadBean implements Serializable {
     private String projectMeta;
     private String sampleMeta;
 
+    private String order;
+
     public String getEt() {
         return et;
     }
@@ -169,5 +171,14 @@ public class MetadataSetupReadBean implements Serializable {
     @JCVI_BeanPopulator_Column
     public void setSampleMeta(String sampleMeta) {
         this.sampleMeta = sampleMeta;
+    }
+
+    public String getOrder() {
+        return order;
+    }
+
+    @JCVI_BeanPopulator_Column
+    public void setOrder(String order) {
+        this.order = order;
     }
 }

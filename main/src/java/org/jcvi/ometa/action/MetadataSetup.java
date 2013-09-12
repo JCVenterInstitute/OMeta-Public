@@ -187,6 +187,46 @@ public class MetadataSetup extends ActionSupport {
                         }
                     }
 
+                    //process meta attribute orders
+                    Map<String, List<MetadataSetupReadBean>> groupedList = new HashMap<String, List<MetadataSetupReadBean>>();
+                    for (MetadataSetupReadBean bean : beanList) {
+                        if(groupedList.containsKey(bean.getEt())) {
+                            groupedList.get(bean.getEt()).add(bean);
+                        } else {
+                            List<MetadataSetupReadBean> beanList = new ArrayList<MetadataSetupReadBean>();
+                            beanList.add(bean);
+                            groupedList.put(bean.getEt(), beanList);
+                        }
+                    }
+                    beanList = new ArrayList<MetadataSetupReadBean>(beanList.size());
+                    for(String et : groupedList.keySet()) {
+                        List<MetadataSetupReadBean> currentList = groupedList.get(et);
+                        Map<String, MetadataSetupReadBean> treeMap = new TreeMap<String, MetadataSetupReadBean>();
+                        List<MetadataSetupReadBean> unordered = new ArrayList<MetadataSetupReadBean>();
+                        for(MetadataSetupReadBean bean : currentList) {
+                            String order = bean.getOrder();
+                            if(order==null || order.trim().length()==0) {
+                                unordered.add(bean);
+                            } else {
+                                if(treeMap.containsKey(order)) {
+                                    throw new DuplicatedOrderException("Meta Attribute Orders are duplicated!");
+                                } else {
+                                    treeMap.put(order, bean);
+                                }
+                            }
+                        }
+
+                        int newPosition = 1;
+                        for(MetadataSetupReadBean bean : treeMap.values()) {
+                            bean.setOrder(String.valueOf(newPosition++));
+                            beanList.add(bean);
+                        }
+                        for(MetadataSetupReadBean bean : unordered) {
+                            bean.setOrder(String.valueOf(newPosition++));
+                            beanList.add(bean);
+                        }
+                    }
+
                     Map<String, SampleMetaAttribute> existingSmaMap = this.getSmaMap(loadingProject.getProjectId());
                     Map<String, ProjectMetaAttribute> existingPmaMap = this.getPmaMap(loadingProject.getProjectId());
 
@@ -201,7 +241,8 @@ public class MetadataSetup extends ActionSupport {
                             //updates existing EMA
                             ema = existingEmaMap.get(bean.getEt()).get(bean.getName());
                             //skips unchanged EMA
-                            if(this.isUnchanged(bean, ema) && bean.getSampleRequiredDB()==ema.getSampleRequiredDB()) {
+                            if(this.isUnchanged(bean, ema) && bean.getSampleRequiredDB()==ema.getSampleRequiredDB()
+                                    && (ema.getOrder()!=null && ema.getOrder().equals(Integer.parseInt(bean.getOrder())))) {
                                 isNewOrModified = false;
                             }
                         } else { //creates new EMA
@@ -218,6 +259,7 @@ public class MetadataSetup extends ActionSupport {
                                     bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName());
                             ema.setEventName(bean.getEt());
                             ema.setSampleRequiredDB(bean.getSampleRequiredDB());
+                            ema.setOrder(Integer.parseInt(bean.getOrder()));
                             emaList.add(ema);
                         }
 
@@ -283,6 +325,8 @@ public class MetadataSetup extends ActionSupport {
                 return LOGIN;
             } else if( ex.getClass() == ParseException.class ) {
                 addActionError( Constants.INVALID_DATE_MESSAGE );
+            } else if( ex.getClass() == DuplicatedOrderException.class ) {
+                addActionError( "Error while processing meta attribute positions. Check for any duplicated position values." );
             } else {
                 addActionError( "Error while adding or updating metadata." );
             }
@@ -427,5 +471,11 @@ public class MetadataSetup extends ActionSupport {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    private class DuplicatedOrderException extends Exception {
+        public DuplicatedOrderException( String message ) {
+            super( message ) ;
+        }
     }
 }

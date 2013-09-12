@@ -88,9 +88,9 @@ public class EventLoader extends ActionSupport {
 
     private Logger logger = Logger.getLogger(EventLoader.class);
 
-    public EventLoader(ReadBeanPersister persister, ProjectSampleEventWritebackBusiness writeBean) {
+    public EventLoader(ReadBeanPersister persister, ProjectSampleEventWritebackBusiness writeEjb) {
         this.readPersister = persister;
-        this.psewt = writeBean;
+        this.psewt = writeEjb;
     }
 
     public EventLoader() {
