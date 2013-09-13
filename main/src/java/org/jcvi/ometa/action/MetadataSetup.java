@@ -200,10 +200,9 @@ public class MetadataSetup extends ActionSupport {
                     }
                     beanList = new ArrayList<MetadataSetupReadBean>(beanList.size());
                     for(String et : groupedList.keySet()) {
-                        List<MetadataSetupReadBean> currentList = groupedList.get(et);
-                        Map<String, MetadataSetupReadBean> treeMap = new TreeMap<String, MetadataSetupReadBean>();
+                        Map<Integer, MetadataSetupReadBean> treeMap = new TreeMap<Integer, MetadataSetupReadBean>();
                         List<MetadataSetupReadBean> unordered = new ArrayList<MetadataSetupReadBean>();
-                        for(MetadataSetupReadBean bean : currentList) {
+                        for(MetadataSetupReadBean bean : groupedList.get(et)) {
                             String order = bean.getOrder();
                             if(order==null || order.trim().length()==0) {
                                 unordered.add(bean);
@@ -211,7 +210,7 @@ public class MetadataSetup extends ActionSupport {
                                 if(treeMap.containsKey(order)) {
                                     throw new DuplicatedOrderException("Meta Attribute Orders are duplicated!");
                                 } else {
-                                    treeMap.put(order, bean);
+                                    treeMap.put(Integer.parseInt(order), bean);
                                 }
                             }
                         }

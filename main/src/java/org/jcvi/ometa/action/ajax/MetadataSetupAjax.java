@@ -34,9 +34,7 @@ import org.jcvi.ometa.utils.PresentationActionDelegate;
 import org.jcvi.ometa.utils.UploadActionDelegate;
 import org.jcvi.ometa.validation.ModelValidator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -77,11 +75,43 @@ public class MetadataSetupAjax extends ActionSupport implements IAjaxAction {
                 }
                 List<EventMetaAttribute> emas = psept.getEventMetaAttributes(projectId, eventTypeLV==null?null:eventTypeLV.getLookupValueId());
                 if(emas.size()>0) {
+
+                    //order by orders
+                    //group ema by event type
+                    Map<String, List<EventMetaAttribute>> groupedList = new HashMap<String, List<EventMetaAttribute>>();
+                    for (EventMetaAttribute ema : emas) {
+                        LookupValue lv = ema.getEventTypeLookupValue();
+                        if(groupedList.containsKey(lv.getName())) {
+                            groupedList.get(lv.getName()).add(ema);
+                        } else {
+                            List<EventMetaAttribute> emaList = new ArrayList<EventMetaAttribute>();
+                            emaList.add(ema);
+                            groupedList.put(lv.getName(), emaList);
+                        }
+                    }
+                    //sort by orders
+                    emas = new ArrayList<EventMetaAttribute>(emas.size());
+                    for(String et : groupedList.keySet()) {
+                        List<EventMetaAttribute> sortedList = new ArrayList<EventMetaAttribute>(groupedList.get(et).size());
+                        Map<Integer, EventMetaAttribute> treeMap = new TreeMap<Integer, EventMetaAttribute>();
+                        for(EventMetaAttribute ema : groupedList.get(et)) {
+                            if(ema.getOrder()==null) {
+                                sortedList.add(ema);
+                            } else {
+                                treeMap.put(ema.getOrder(), ema);
+                            }
+                        }
+                        sortedList.addAll(0, treeMap.values());
+                        emas.addAll(sortedList);
+                    }
+
+                    //project meta attribute
                     List<ProjectMetaAttribute> pmas = psept.getProjectMetaAttributes(projectId);
                     List<String> pmaNames = new ArrayList<String>(pmas.size());
                     for(ProjectMetaAttribute pma : pmas) {
                         pmaNames.add(pma.getAttributeName());
                     }
+                    //sample meta attribute
                     List<SampleMetaAttribute> smas = psept.getSampleMetaAttributes(projectId);
                     List<String> smaNames = new ArrayList<String>();
                     for(SampleMetaAttribute sma : smas) {
