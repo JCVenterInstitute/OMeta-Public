@@ -139,7 +139,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
 
                 ProjectMap pMap = this.getProjectInformation(this.projectId, false);
                 if(pMap.isViewable()) { //only if the user has view permission on a project
-                    Map<String, List> containerMap = new HashMap<String, List>();
+                    Map<String, Object> containerMap = new HashMap<String, Object>();
                     List<Long> projectIds = new ArrayList<Long>();
                     projectIds.add(this.projectId);
 
@@ -171,14 +171,21 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                     }
                     if (subType.equals("E") || subType.equals("A")) {
                         List<EventMetaAttribute> allEventMetaAttributes = readPersister.getEventMetaAttributes(projectIds);
-                        List<String> eventMetaList = new ArrayList<String>();
+                        Map<String, List<String>> groupedEMA = new HashMap<String, List<String>>();
                         for (EventMetaAttribute ema : allEventMetaAttributes) {
-                            //TODO hkim may need to remove "accession" constraint for more EMA choices
-                            if (!eventMetaList.contains(ema.getLookupValue().getName())
-                                    && ema.getLookupValue().getName().contains("accession"))
-                                eventMetaList.add(ema.getLookupValue().getName());
+                            if(ema.getEventTypeLookupValue()!=null && ema.getLookupValue()!=null) {
+                                String et = ema.getEventTypeLookupValue().getName();
+                                String name = ema.getLookupValue().getName();
+                                if(groupedEMA.containsKey(et)) {
+                                    groupedEMA.get(et).add(name);
+                                } else {
+                                    List<String> newList = new ArrayList<String>();
+                                    newList.add(name);
+                                    groupedEMA.put(et, newList);
+                                }
+                            }
                         }
-                        containerMap.put("event", eventMetaList);
+                        containerMap.put("event", groupedEMA);
                     }
                     aaData.add(containerMap);
                 } else {

@@ -108,25 +108,40 @@
             utils.error.check();
         });
 
-        var callbacks = {
+        var h_s = {
+            cb: '<input class="chkbox" type="checkbox" name="$g$Attr" value="$v$"/><label class="checkboxLabel">$v$</label>'
+        },
+        callbacks = {
             meta: function(data) {
                 $.each(data, function(_i, _o) {
-                    console.log(_o.err);
                     if(_o) {
                         var keys = ['project', 'sample', 'event'];
-                        $.each(keys, function(_k_i, _k) {
-                            var values = _o[_k], _html='';
+                        $.each(keys, function(k_i, k) {
+                            var values = _o[k], _html='';
                             if(values) {
-                                $.each(values, function(_a_i,_a) {
-                                    _html += '<input class="chkbox" type="checkbox" name="'+_k+'Attr" value="'+_a+'"/>'
-                                        + '<label class="checkboxLabel">'+_a+'</label>';
-                                    if(_k_i!=0 && _k_i%4==0) _html += '<br/>';
-                                });
-                                if(_html.length>0)
-                                    _html+='<input class="chkbox" type="checkbox" name="sAll" value="'+_k+'"/>'
+                                if(k==='event') {
+                                    $.each(values, function(et, attrs) {
+                                        _html+='<div><strong>'+et+'</strong></div><div>';
+                                        $.each(attrs, function(a_i, a) {
+                                            _html+=h_s.cb.replace('$g$',k).replace(/\\$v\\$/g, a);
+                                            if(a_i!=0 && a_i%4==0) {
+                                                _html += '<br/>';
+                                            }
+                                        });
+                                        _html+='</div>';
+                                    });
+                                } else {
+                                    $.each(values, function(a_i,a) {
+                                        _html+=h_s.cb.replace('$g$',k).replace(/\\$v\\$/g, a);
+                                        if(a_i!=0 && a_i%4==0) _html += '<br/>';
+                                    });
+                                }
+                                if(_html.length>0) {
+                                    _html+='<input class="chkbox" type="checkbox" name="sAll" value="'+k+'"/>'
                                         +'<label class="checkboxLabel"><b>Select All</b></label>';    
                                 }
-                                $('#'+_k+'MetaAttributesTD').html(_html);
+                                $('#'+k+'MetaAttributesTD').html(_html);
+                            }
                         });  
                     }
                 });
