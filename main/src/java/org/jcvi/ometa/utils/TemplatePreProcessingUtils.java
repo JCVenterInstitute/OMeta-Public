@@ -56,6 +56,10 @@ public class TemplatePreProcessingUtils {
             ));
         }
 
+        if(sampleRequired) {
+            headers.add(1, new HeaderDetail("Sample", true, "string", ""));
+        }
+
         InputStream templateStream = null;
         if(type.equals("c")) {
             templateStream = this.createCSV(headers, isProjectRegistration, projectName, sampleName);
