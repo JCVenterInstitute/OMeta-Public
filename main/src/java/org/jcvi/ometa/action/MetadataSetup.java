@@ -207,7 +207,7 @@ public class MetadataSetup extends ActionSupport {
                             if(order==null || order.trim().length()==0) {
                                 unordered.add(bean);
                             } else {
-                                if(treeMap.containsKey(order)) {
+                                if(treeMap.containsKey(Integer.parseInt(order))) {
                                     throw new DuplicatedOrderException("Meta Attribute Orders are duplicated!");
                                 } else {
                                     treeMap.put(Integer.parseInt(order), bean);

@@ -110,6 +110,16 @@
     <script>
         <jsp:useBean id="userBean" class="org.jcvi.ometa.web_bean.UserInfoWebBean"/>
         <jsp:setProperty name="userBean" property="userId" value="<%=request.getRemoteUser()%>"/>
+
+        var _searchArr = window.location.search.substr(1).split("&"),
+            paramP, _temparr;
+        if(_searchArr) {
+            $(_searchArr).each(function() {
+                _temparr=this.split("=");
+                _temparr[0]==='p'?sessionStorage.setItem('pst.project', _temparr[1]):null;
+            });
+        }
+
         $(document).ready(function() {
             $('div#nav ul li').mouseover(function() {
                 $(this).find('ul:first').show();
@@ -140,7 +150,7 @@
                     <table cellspacing="0" cellpadding="0" class="HeaderPanel">
                         <tbody>
                         <tr>
-                            <td align="left" style="vertical-align: top;">
+                            <td align="left" style="vertical-align: top;padding: 10px;">
                                 <img class="headerImage" src="images/ometa_logo.png" alt="Ontology based Metadata Tracking">
                             </td>
                             <td align="left" style="padding: 0 0 0 25px;">
