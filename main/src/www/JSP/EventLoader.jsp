@@ -616,13 +616,19 @@
                                 +'<td><select name="gridList['+gridLineCount+'].projectPublic">'+vs.ynoption+'</select></td>';
                         }
                     }
-                    var ltVal, beans=((dict&&dict['beans'])?dict['beans']:null);
+                    var ltVal, beans=((dict&&dict['beans'])?dict['beans']:null), _ea, _field;
                     //add event meta attribute fields
                     $.each(eventAttributes, function(i1, v1) {
                         ltVal="gridList["+gridLineCount+"].beanList["+i1+"].";
-                        content+=pBeanHtml.replace("$pn$", _pn).replace("$lt$", ltVal)+
-                                anBeanHtml.replace("$an$",(beans?beans[i1][0]:v1.lookupValue.name)).replace("$lt$", ltVal)+
-                                '<td>'+avDic[v1.lookupValue.name].replace(/\\$id\\$/g, gridLineCount).replace("$lt$",ltVal).replace('$val$', (beans?beans[i1][1]:''))+'</td>';
+                        _ea=pBeanHtml.replace("$pn$", _pn);//projectName
+                        _ea+=anBeanHtml.replace("$an$",(beans?beans[i1][0]:v1.lookupValue.name));//attributeName
+                        _field='<td>'+avDic[v1.lookupValue.name].replace("$lt$",ltVal);
+                        if(_field.indexOf('<select ')>0) {
+                            _ea+=_field+'</td>';
+                        } else {
+                            _ea+=_field.replace('$val$', (beans?beans[i1][1]:''))+'</td>';
+                        }
+                        content+=_ea.replace(/\\$lt\\$/g, ltVal).replace(/\\$id\\$/g, gridLineCount);
                     });
                     //add to grid body
                     $('#gridBody').append('<tr class="borderBottom">'+content+'</tr>');
