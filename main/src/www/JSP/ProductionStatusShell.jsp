@@ -80,6 +80,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
             var attrs = '${attributes}', aoColumns=[];
+            console.log(attrs);
             attrs=attrs.split(',');
             var header='<thead><tr>', hd="<th class='tableHeaderStyle'><p style='color:#FFFFFF;'>$hd$</th>";;
             $.each(attrs, function(i,v) {

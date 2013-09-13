@@ -123,12 +123,16 @@ public class ProductionStatus extends ActionSupport {
                     availableAttributes.add(ema.getLookupValue().getName());
             }
 
+            StringBuilder attributeBuilder = new StringBuilder();
             if (attributes == null || attributes.equals("") || "ALL".equals(attributes)) {
-                attributes = "";
                 for(String attribute:availableAttributes) {
-                    attributes+=attribute+",";
+                    attributeBuilder.append(attribute+",");
                 }
+                attributes = attributeBuilder.toString();
             }
+
+            //escapes all single quotes
+            attributes = attributes.replaceAll("'", "\\\\'");
 
         } catch (ForbiddenResourceException fre) {
             logger.error(Constants.DENIED_USER_VIEW_MESSAGE);
