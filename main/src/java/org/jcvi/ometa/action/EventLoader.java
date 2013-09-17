@@ -82,7 +82,7 @@ public class EventLoader extends ActionSupport {
     private ArrayList<String> loadedFiles;
 
     private static final String DEFAULT_USER_MESSAGE = "Not yet entered";
-    private final String MULTIPLE_SUBJECT_IN_FILE_MESSAGE = "Multiple projects/samples are found in the file";
+    private final String MULTIPLE_SUBJECT_IN_FILE_MESSAGE = "Multiple projects are found in the file";
     private final String UNSUPPORTED_UPLOAD_FILE_TYPE_MESSAGE = "File type is not supported. Supported file types are JPG, JPEG, GIF and BMP.";
     private String message = DEFAULT_USER_MESSAGE;
 
