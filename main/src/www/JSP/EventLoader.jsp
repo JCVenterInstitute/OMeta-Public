@@ -177,7 +177,7 @@
                         <tr>
                             <td>Loader CSV File</td>
                             <td>
-                                <s:file name="csvUploadFile" id="csvUploadFile" cssStyle="margin:0 0 0 14px;" size="75px" />
+                                <s:file name="uploadFile" id="csvUploadFile" cssStyle="margin:0 0 0 14px;" size="75px" />
                             </td>
                         </tr>
                     </table>
@@ -262,6 +262,14 @@
             },
             hidePS: function() {
                 $('#sampleDetailInputDiv, #projectDetailInputDiv').hide();
+            },
+            validation: function() {
+                var valid = true;
+                if($("#_projectSelect").val()==='0' || $("#_eventSelect").val()==='0') {
+                    utils.error.add("Select a Project and Event");
+                    valid = false;
+                }    
+                return valid;
             }
         },
         callbacks = {
@@ -338,18 +346,19 @@
                                             opts+=vs.vvoption.replace(/\\$v\\$/g,_opt);
                                         });
                                     }
-                                    optcon=avSelectHtml.replace("$an$",_ma.lookupValue.name+"_$id$").replace("$opts$",opts).replace("$multi$", isMulti?"multiple":"");
+                                    optcon=avSelectHtml.replace("$opts$",opts).replace("$multi$", isMulti?"multiple":"");
                                 } else { //set default text input box option values without ";"
-                                    optcon=avTextHtml.replace("$an$",_ma.lookupValue.name+" $id$").replace("$val$", _ma.options); 
+                                    optcon=avTextHtml.replace("$val$", _ma.options); 
                                 }
                                 subcon+=optcon;
                             } else {  
                                 if(_ma.lookupValue.dataType==='file') { //file 
-                                    subcon+=avFileHtml.replace("$an$",_ma.lookupValue.name+" $id$");
+                                    subcon+=avFileHtml;
                                 } else { //text input
-                                    subcon+=avTextHtml.replace("$an$",_ma.lookupValue.name+" $id$");
+                                    subcon+=avTextHtml;
                                 }
                             }
+                            subcon = subcon.replace("$an$",_ma.lookupValue.name.replace(/ /g,"_")+"_$id$");
                             avDic[_ma.lookupValue.name]=subcon; //store html contents with its attribute name for later use in adding row
                             subcon='<td'+(_ma.requiredDB?' class="requiredField"':'')+'>'+subcon.replace("$id$", count).replace("$lt$","beanList["+count+"].")+'</td>'; //update ID(count)
 
@@ -593,7 +602,8 @@
             add_event: function(pn,en,dict) { //add event to grid view
                 var _pn=pn?pn:utils.getProjectName(),
                     _en=en?en:utils.getEventName(),
-                    content='';
+                    content='',
+                    selects={};
                 if(_pn&&_en) {
                     if(utils.checkNP(en)){
                         if(!utils.checkSR(en)) {
@@ -616,23 +626,38 @@
                                 +'<td><select name="gridList['+gridLineCount+'].projectPublic">'+vs.ynoption+'</select></td>';
                         }
                     }
-                    var ltVal, beans=((dict&&dict['beans'])?dict['beans']:null), _ea, _field;
+                    var ltVal, beans=((dict&&dict['beans'])?dict['beans']:null), _ea, _field, bean;
                     //add event meta attribute fields
                     $.each(eventAttributes, function(i1, v1) {
+                        bean = null;
+                        if(beans) {
+                            $.each(beans, function(i2,v2) {
+                                if(v1.lookupValue.name===v2[0]) {
+                                    bean = v2;
+                                }
+                            });
+                        }
                         ltVal="gridList["+gridLineCount+"].beanList["+i1+"].";
                         _ea=pBeanHtml.replace("$pn$", _pn);//projectName
-                        _ea+=anBeanHtml.replace("$an$",(beans?beans[i1][0]:v1.lookupValue.name));//attributeName
-                        _field='<td>'+avDic[v1.lookupValue.name].replace("$lt$",ltVal);
+                        _ea+=anBeanHtml.replace("$an$",(bean?bean[0]:v1.lookupValue.name));//attributeName
+                        _field='<td>'+avDic[v1.lookupValue.name];
                         if(_field.indexOf('<select ')>0) {
-                            _ea+=_field+'</td>';
+                            _ea+=_field;
+                            selects[v1.lookupValue.name.replace(/ /g,"_")+'_'+gridLineCount] = (bean?bean[1]:'');
                         } else {
-                            _ea+=_field.replace('$val$', (beans?beans[i1][1]:''))+'</td>';
+                            _ea+=_field.replace('$val$', (bean?bean[1]:''));
                         }
+                        _ea+='</td>';
                         content+=_ea.replace(/\\$lt\\$/g, ltVal).replace(/\\$id\\$/g, gridLineCount);
                     });
                     //add to grid body
                     $('#gridBody').append('<tr class="borderBottom">'+content+'</tr>');
 
+                    if(Object.keys(selects).length>0) {
+                        $.each(selects, function(k,v) {
+                            utils.preSelect2(k, v);
+                        });
+                    }
                     utils.initDatePicker();
                     $('select[id^="_"]').combobox();
 
@@ -666,6 +691,7 @@
                 this.clear_attr();
             },
             clear_attr: function() {
+                utils.error.remove();
                 $("#attributeInputDiv, #gridHeader, #gridBody").html('');
                 $('[name^="beanList"], [name^="gridList"]').remove();
                 $('#_projectName, #_parentProjectSelect~input, #_sampleName, #_parentSampleSelect~input').val('');
