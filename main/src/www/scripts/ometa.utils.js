@@ -60,6 +60,12 @@ var utils = {
         }).attr('selected', true);
         $selNode.change();
     },
+    preSelect2: function(id, val) {
+        var $selNode=$('#'+id);
+        $("#"+id+" option").filter(function() {
+            return $(this).text()==val || $(this).val()==val;
+        }).attr('selected', true);  
+    },
     listToOptions: function(l, t, k, k2) {
         var os='', o=t==='vv'?vs.vvoption:vs.vnoption;
         $.each(l, function(i1,v1) {
