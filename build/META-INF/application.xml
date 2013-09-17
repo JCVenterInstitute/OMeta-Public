@@ -41,7 +41,7 @@
         <java>Common-Utils.jar</java>
     </module>
     <module>
-        <java>poi-3.7-20101029.jar</java>
+        <java>poi-3.9-20121203.jar</java>
     </module>
 
 </application>
