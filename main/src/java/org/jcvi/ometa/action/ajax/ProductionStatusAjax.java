@@ -180,7 +180,6 @@ public class ProductionStatusAjax extends ActionSupport implements IAjaxAction {
             Map<Long, List<Event>> sampleIdVsEventList = getSampleIdVsEventList(sampleIdList);
 
             Project currProject = null;
-            LookupValue tempLookupValue = null;
 
             Map<Long, Project> projects = new HashMap<Long, Project>(); //for caching projects
             Map<Long, Map<String, Object>> projectAttributes = new HashMap<Long, Map<String, Object>>(); // for caching project's attribute value map
@@ -193,13 +192,14 @@ public class ProductionStatusAjax extends ActionSupport implements IAjaxAction {
                     projects.put(currProject.getProjectId(), currProject);
 
                     List<ProjectAttribute> projectAttributesList = readPersister.getProjectAttributes(currProject.getProjectId());
-                    sampleAttrMap.putAll(CommonTool.getAttributeValueMap(projectAttributesList, true, null));
-                    sampleAttrMap.put("Project Name", currProject.getProjectName());
-                    projectAttributes.put(currProject.getProjectId(), sampleAttrMap);
-                } else {
-                    currProject = projects.get(sample.getProjectId());
-                    sampleAttrMap = projectAttributes.get(currProject.getProjectId());
+                    Map<String, Object> projectAttrMap = new HashMap<String, Object>();
+                    projectAttrMap.putAll(CommonTool.getAttributeValueMap(projectAttributesList, true, null));
+                    projectAttrMap.put("Project Name", currProject.getProjectName());
+                    projectAttributes.put(currProject.getProjectId(), projectAttrMap);
                 }
+
+                currProject = projects.get(sample.getProjectId());
+                sampleAttrMap.putAll(projectAttributes.get(currProject.getProjectId()));
 
                 sampleAttrMap.put("Sample Name", sample.getSampleName());
                 sampleAttrMap.put("sampleId", sample.getSampleId());
