@@ -148,7 +148,7 @@
                         <h1 class="csc-firstHeader">Event Attributes</h1>
                     </div>
                     <div style="font-size:0.9em;padding-top:5px;margin-left:135px;padding-left:50px">
-                        Required Fields= <img style="vertical-align:bottom;" src="images/required.png"/>
+                        [Required<img style="vertical-align:bottom;" src="images/icon/req.png"/><img style="vertical-align:bottom;" src="images/icon/info_r.png"/>]
                     </div>
                 </div>
                 <div id="attributeInputDiv" style="margin:10px 0;">
@@ -317,12 +317,14 @@
                     if(_ma != null) {
                         if(_ma != null && _ma.eventMetaAttributeId != null && _ma.projectId != null) {
                             eventAttributes.push(_ma); //stores event attributes for other uses
-
+                            var isDesc = _ma.desc && _ma.desc!=='', isRequired = _ma.requiredDB;
                             content += '<tr class="gappedTr">'+
                                     pBeanHtml.replace("$pn$",utils.getProjectName()).replace("$lt$", "beanList["+count+"].")+ //project name for bean
                                     anBeanHtml.replace("$an$",_ma.lookupValue.name).replace("$lt$", "beanList["+count+"].")+ //attribute name
-                                    '<td align="right" '+(_ma.desc && _ma.desc!==''?'class="hasTooltip" title="'+_ma.desc+'"':'')+'>'+
-                                    (_ma.label!=null&&_ma.label!==''?_ma.label:_ma.lookupValue.name) +  //attribute name or label
+                                    '<td align="right" ' +
+                                        'class="' + (isDesc&&isRequired?'requiredWithDesc':isDesc?'hasDesc':'isRequired') + '" ' +
+                                        (isDesc?'title="'+_ma.desc+'"':'')+'>'+
+                                        (_ma.label!=null&&_ma.label!==''?_ma.label:_ma.lookupValue.name) +  
                                     '</td>';
                             var subcon='';
                             if(_ma.options!=null&&_ma.options!=='') { 
@@ -360,7 +362,7 @@
                             }
                             subcon = subcon.replace("$an$",_ma.lookupValue.name.replace(/ /g,"_")+"_$id$");
                             avDic[_ma.lookupValue.name]=subcon; //store html contents with its attribute name for later use in adding row
-                            subcon='<td'+(_ma.requiredDB?' class="requiredField"':'')+'>'+subcon.replace("$id$", count).replace("$lt$","beanList["+count+"].")+'</td>'; //update ID(count)
+                            subcon='<td>'+subcon.replace("$id$", count).replace("$lt$","beanList["+count+"].")+'</td>'; //update ID(count)
 
                             content+=subcon+'</tr>';
                             count++;
@@ -374,20 +376,20 @@
                 content='';
                 if(utils.checkNP(en)) {
                     if(!utils.checkSR(en)) {
-                        content+='<th class="tableHeaderNoBG requiredField">Sample</th>';
+                        content+='<th class="tableHeaderNoBG isRequired">Sample</th>';
                     } else {
-                        content+='<th class="tableHeaderNoBG requiredField">Sample Name</th><th class="tableHeaderNoBG">Parent Sample</th><th class="tableHeaderNoBG requiredField">Public</th>';
+                        content+='<th class="tableHeaderNoBG isRequired">Sample Name</th><th class="tableHeaderNoBG">Parent Sample</th><th class="tableHeaderNoBG isRequired">Public</th>';
                     }
                 } else {
                     if(utils.checkPR(en)) {
-                        content+='<th class="tableHeaderNoBG requiredField">Project Name</th><th class="tableHeaderNoBG requiredField">Public</th>';    
+                        content+='<th class="tableHeaderNoBG isRequired">Project Name</th><th class="tableHeaderNoBG isRequired">Public</th>';    
                     }
                 }
                 //add headers for event meta attributes
                 $.each(eventAttributes, function(i1, v1) {
                     content+='<th class="tableHeaderNoBG' +
                             //(v1.desc&&v1.desc!==''?' hasTooltip':'') +
-                            (v1.requiredDB?' requiredField':'') + '" ' +
+                            (v1.requiredDB?' isRequired':'') + '" ' +
                             (v1.desc&&v1.desc!==''?'title="'+v1.desc+'"':'') +'>' +
                             v1.lookupValue.name
                         '</th>';

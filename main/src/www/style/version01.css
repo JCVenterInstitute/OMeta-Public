@@ -344,6 +344,25 @@ input[type="button"]:disabled, .pageButton:disabled {
     padding-right: 16px;
 }
 
+.requiredWithDesc {
+    background-image: url("../images/icon/info_r.png");
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    padding-right: 16px;
+}
+.hasDesc {
+    background-image: url("../images/icon/info.png");
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    padding-right: 16px;   
+}
+.isRequired {
+    background-image: url("../images/icon/req.png");
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    padding-right: 16px;   
+}
+
 
 /* dotted bottom border for table */
 tr.borderBottom > td { border-bottom: 1px gray dotted; }
