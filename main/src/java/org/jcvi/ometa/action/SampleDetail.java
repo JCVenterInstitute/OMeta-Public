@@ -27,6 +27,7 @@ import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.stateless_session_bean.ForbiddenResourceException;
 import org.jcvi.ometa.stateless_session_bean.LoginRequiredException;
+import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.property.PropertyHelper;
@@ -62,6 +63,9 @@ public class SampleDetail extends ActionSupport {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
         readPersister = new ReadBeanPersister( props );
     }
+    public SampleDetail(ReadBeanPersister beanPersister) {
+        this.readPersister = beanPersister;
+    }
 
     public String detailPage() {
         String rtnVal = SUCCESS;
@@ -93,49 +97,51 @@ public class SampleDetail extends ActionSupport {
 
                 Map<String, Object> eventMap = new HashMap<String, Object> ();
                 eventMap.put("eventName", tempEventName);
-                eventMap.put("date", ModelValidator.PST_DEFAULT_DATE_FORMAT.format(evt.getCreationDate()));
+                eventMap.put("date", CommonTool.convertTimestampToDate(evt.getCreationDate()));
 
                 List<Map<String, Object>> attrList = new ArrayList<Map<String, Object>>();
                 Map<String, Object> attrMap;
                 List<EventAttribute> eventAttributes = readPersister.getEventAttributes( evt.getEventId() , projectId);
 
                 for(EventAttribute ea : eventAttributes) {
-                    tempLookupValue = ea.getMetaAttribute().getLookupValue();
-                    Object eventAttrValue = ModelValidator.getModelValue( tempLookupValue, ea );
-                    String attributeName = tempLookupValue.getName();
-                    attrMap = new HashMap<String, Object>();
+                    if(ea.getMetaAttribute()!=null) {
+                        tempLookupValue = ea.getMetaAttribute().getLookupValue();
+                        Object eventAttrValue = ModelValidator.getModelValue( tempLookupValue, ea );
+                        String attributeName = tempLookupValue.getName();
+                        attrMap = new HashMap<String, Object>();
 
-                    if(attributeName.equals("Organism"))
-                        detailMap.put("Organism", eventAttrValue);
+                        if(attributeName.equals("Organism"))
+                            detailMap.put("Organism", eventAttrValue);
 
-                    if(tempLookupValue.getName().contains("status")) {
-                        eventMap.put("eventStatus", eventAttrValue);
-                    } else {
-                        attrMap.put("name", tempLookupValue.getName());
+                        if(tempLookupValue.getName().contains("status")) {
+                            eventMap.put("eventStatus", eventAttrValue);
+                        } else {
+                            attrMap.put("name", tempLookupValue.getName());
 
-                        if("sra accession".equals(attributeName))
-                            eventAttrValue = ((String)eventAttrValue).replaceAll("[\\,\\;]", "\n");
+                            if("sra accession".equals(attributeName))
+                                eventAttrValue = ((String)eventAttrValue).replaceAll("[\\,\\;]", "\n");
 
-                        String externalLink = null;
-                        if("sra accession".equals(attributeName))
-                            externalLink = String.format( Constants.NEW_WINDOW_LINK_HTML, Constants.TRACESRA_URL + detailMap.get(TAXONOMY_ID));
-                        else if("annotation accession".equals(attributeName))
-                            externalLink = String.format( Constants.NEW_WINDOW_LINK_HTML, Constants.ANNOTATION_URL + eventAttrValue + "[PACC]");
-                        else if("wgs accession".equals(attributeName))
-                            externalLink = String.format( Constants.NEW_WINDOW_LINK_HTML, Constants.WGS_URL + eventAttrValue);
+                            String externalLink = null;
+                            if("sra accession".equals(attributeName))
+                                externalLink = String.format( Constants.NEW_WINDOW_LINK_HTML, Constants.TRACESRA_URL + detailMap.get(TAXONOMY_ID));
+                            else if("annotation accession".equals(attributeName))
+                                externalLink = String.format( Constants.NEW_WINDOW_LINK_HTML, Constants.ANNOTATION_URL + eventAttrValue + "[PACC]");
+                            else if("wgs accession".equals(attributeName))
+                                externalLink = String.format( Constants.NEW_WINDOW_LINK_HTML, Constants.WGS_URL + eventAttrValue);
 
-                        if(externalLink != null)
-                            eventAttrValue = String.format( Constants.A_TAG_HTML, "#", externalLink ) + eventAttrValue + Constants.A_TAG_CLOSING_HTML;
+                            if(externalLink != null)
+                                eventAttrValue = String.format( Constants.A_TAG_HTML, "#", externalLink ) + eventAttrValue + Constants.A_TAG_CLOSING_HTML;
 
-                        if(eventAttrValue!=null) {
-                            if(eventAttrValue.getClass() == Timestamp.class || eventAttrValue.getClass() == Date.class)
-                                eventAttrValue = ModelValidator.PST_DEFAULT_DATE_FORMAT.format(eventAttrValue);
+                            if(eventAttrValue!=null) {
+                                if(eventAttrValue.getClass() == Timestamp.class || eventAttrValue.getClass() == Date.class)
+                                    eventAttrValue = CommonTool.convertTimestampToDate(eventAttrValue);
+                            }
+                            attrMap.put("value", eventAttrValue);
                         }
-                        attrMap.put("value", eventAttrValue);
-                    }
 
-                    if(!attrMap.isEmpty())
-                        attrList.add(attrMap);
+                        if(!attrMap.isEmpty())
+                            attrList.add(attrMap);
+                    }
                 }
 
                 eventMap.put("eventAttr", attrList);

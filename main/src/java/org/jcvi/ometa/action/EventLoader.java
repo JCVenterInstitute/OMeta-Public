@@ -30,17 +30,19 @@ import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.engine.MultiLoadParameter;
 import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.stateless_session_bean.ForbiddenResourceException;
+import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.CsvPreProcessingUtils;
 import org.jcvi.ometa.utils.UploadActionDelegate;
-import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.property.PropertyHelper;
 
 import javax.naming.InitialContext;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.util.*;
 
@@ -461,7 +463,7 @@ public class EventLoader extends ActionSupport {
                 String fileDirectoryPathProject = _projectName.replaceAll(" ", "_"); //project folder
                 String fileDirectoryPathSample = fileDirectoryPathProject + File.separator +
                         (_sampleName!=null&&!_sampleName.isEmpty()?_sampleName.replaceAll(" ", "_"):"project"); //sample folder
-                String fileDirectoryPath = fileDirectoryPathSample + File.separator + ModelValidator.PST_DEFAULT_DATE_FORMAT.format(new Date()); //date folder
+                String fileDirectoryPath = fileDirectoryPathSample + File.separator + CommonTool.convertTimestampToDate(new Date()); //date folder
 
                 String fileName = originalFileName.substring(0,originalFileName.indexOf(".")) +
                         "_"+System.currentTimeMillis() +

@@ -30,9 +30,9 @@ import org.jcvi.ometa.model.FileReadAttributeBean;
 import org.jcvi.ometa.model.Project;
 import org.jcvi.ometa.model.Sample;
 import org.jcvi.ometa.stateless_session_bean.ForbiddenResourceException;
+import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.UploadActionDelegate;
-import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.property.PropertyHelper;
 
 import javax.naming.InitialContext;
@@ -112,7 +112,7 @@ public class SampleWithEventLoader  extends ActionSupport {
                 if( beanList != null && beanList.size() > 0) {
                     for(FileReadAttributeBean readBean : beanList) {
                         if( readBean.getAttributeName().toLowerCase().contains("date") )
-                            ModelValidator.PST_DEFAULT_DATE_FORMAT.parse(readBean.getAttributeValue());
+                            CommonTool.convertTimestampToDate(readBean.getAttributeValue());
                         readBean.setSampleName(sampleName);
                     }
                 }

@@ -28,6 +28,8 @@ import org.jcvi.ometa.validation.ModelValidator;
 
 import java.io.File;
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -158,6 +160,19 @@ public class CommonTool {
     }
 
     public static String convertTimestampToDate(Object value) {
-        return ModelValidator.PST_DEFAULT_DATE_FORMAT.format(value);
+        String[] formats = {"MM/dd/yyyy", Constants.DEFAULT_DATE_FORMAT};
+        Date parsedDate = null;
+        boolean isString = (value.getClass() == String.class);
+
+        if(isString) {
+            for(String format : formats) {
+                try {
+                    parsedDate = new SimpleDateFormat(format).parse((String)value);
+                } catch(ParseException e) {}
+            }
+        } else {
+            parsedDate = (Date)value;
+        }
+        return ModelValidator.PST_DEFAULT_DATE_FORMAT.format(parsedDate);
     }
 }

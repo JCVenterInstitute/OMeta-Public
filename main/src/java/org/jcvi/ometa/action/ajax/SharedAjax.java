@@ -89,7 +89,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                 projectMap.put("editable", pMap.isEditable()?1:0);
 
                 projectMap.put("Project Name", pMap.getProject().getProjectName());
-                projectMap.put("Project Registration", ModelValidator.PST_DEFAULT_DATE_FORMAT.format(pMap.getProject().getCreationDate()));
+                projectMap.put("Project Registration", CommonTool.convertTimestampToDate(pMap.getProject().getCreationDate()));
 
                 List<ProjectAttribute> projectAttributes = readPersister.getProjectAttributes(this.projectId);
                 for (ProjectAttribute projAttr : projectAttributes) {
