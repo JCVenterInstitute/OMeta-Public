@@ -109,7 +109,7 @@ public class OntologyLookupService {
         try {
             Map<String, OntologyTerm> directParents = this.getParents(termId, ontology);
             for(Map.Entry<String, OntologyTerm> entry : directParents.entrySet()) {
-                parents.putAll(getParentsToRoot(entry.getKey(), entry.getValue().getOntology_a()));
+                parents.putAll(getParentsToRoot(entry.getKey(), entry.getValue().getOntologyAbbr()));
             }
             parents.putAll(directParents);
         } catch (Exception e) {

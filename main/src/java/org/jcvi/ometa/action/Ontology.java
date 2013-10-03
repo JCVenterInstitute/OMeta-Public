@@ -38,8 +38,9 @@ import java.util.Properties;
  * User: hkim
  * Date: 4/17/13
  * Time: 9:20 AM
+ * bioportal API key : 0189b747-4ff6-4f07-9619-0ec86972c7f5, a6b4dbc7-d18d-40ce-a5d0-93e5e5a88468
  */
-public class Ontology extends ActionSupport{
+public class Ontology extends ActionSupport {
     private Logger logger = Logger.getLogger(Ontology.class);
 
     private OntologyLookupService ontologyService;
