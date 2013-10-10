@@ -24,9 +24,9 @@ package org.jcvi.ometa.action.ajax;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.Logger;
 import org.jcvi.ometa.ontology.OntologyLookupService;
+import org.jcvi.ometa.ontology.OntologyTerm;
 import uk.ac.ebi.ontocat.OntologyService;
 import uk.ac.ebi.ontocat.OntologyServiceException;
-import uk.ac.ebi.ontocat.OntologyTerm;
 import uk.ac.ebi.ontocat.bioportal.BioportalOntologyService;
 import uk.ac.ebi.ontocat.ols.OlsOntologyService;
 import uk.ac.ebi.ook.web.services.Query;
@@ -100,6 +100,9 @@ public class OntologyAjax extends ActionSupport implements IAjaxAction {
                  * commented by hkim on 5/29/13
                 result = oservice.searchAll(sw);
                 */
+
+                /*
+                * old version using OLS
                 Map<String, String> ontologies = ols.getOntologies();
 
                 QueryServiceLocator locator = new QueryServiceLocator();
@@ -125,6 +128,22 @@ public class OntologyAjax extends ActionSupport implements IAjaxAction {
                     ot.put("uri", uri);
                     result.add(ot);
                 }
+                */
+
+                org.jcvi.ometa.ontology.BioportalOntologyService bioportal = new org.jcvi.ometa.ontology.BioportalOntologyService();
+                List<org.jcvi.ometa.ontology.OntologyTerm> terms = bioportal.search(sw, null, null);
+                if(terms!=null && terms.size()>0) {
+                    for(OntologyTerm term : terms) {
+                        Map<String, Object> ot = new HashMap<String, Object>();
+                        ot.put("ontology", term.getOntologyId());
+                        ot.put("ontolabel", term.getOntologyFull());
+                        ot.put("taccession", term.getTermId());
+                        ot.put("tlabel", term.getTerm());
+                        ot.put("uri", null);
+                        result.add(ot);
+                    }
+                }
+
 
                 /*
                 //trim result size from growing too big
@@ -157,7 +176,7 @@ public class OntologyAjax extends ActionSupport implements IAjaxAction {
 
         try {
             Set<Map.Entry<String, String>> sTerms = qs.getPrefixedTermsByName(sw, false).entrySet();
-            List<OntologyTerm> result = new ArrayList<OntologyTerm>();
+            List<uk.ac.ebi.ontocat.OntologyTerm> result = new ArrayList<uk.ac.ebi.ontocat.OntologyTerm>();
             for (Map.Entry<String, String> entry : sTerms) {
                 // splitting e.g. 228975=NEWT:Thymus magnus
                 String termAccession = entry.getKey();
@@ -169,7 +188,7 @@ public class OntologyAjax extends ActionSupport implements IAjaxAction {
                     continue;
                 }
                 // Inject searchoptions into context
-                OntologyTerm ot = new OntologyTerm(ontologyAccession,termAccession, label, uri);
+                uk.ac.ebi.ontocat.OntologyTerm ot = new uk.ac.ebi.ontocat.OntologyTerm(ontologyAccession,termAccession, label, uri);
                 result.add(ot);
             }
         } catch (RemoteException e) {
