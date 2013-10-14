@@ -39,6 +39,7 @@
 		    tr.borderBottom:hover>td.comboBoxCB, tr.borderBottom:hover>td input, tr.borderBottom:hover>td>textarea { background: #bbdcf8; }
 		    .buttonAdded>td.comboBoxCB,.buttonAdded>td input,.buttonAdded>td>textarea { background: #e9f4fd; }
 		    tr>td.fix172 { min-width:172px; }
+		    ul.ui-autocomplete.ui-menu{width:300px}
 		</style>
 	</head>
 
@@ -379,23 +380,24 @@
 	                            url: "ontologyAjax.action?t=sall",
 	                            data: {
 	                                maxRows: 12,
-	                                sw: request.term
+	                                sw: request.term.replace(' ', '%20')
 	                            },
 	                            success: function( data ) {
 	                            	//cleans decorated input fields when fails
 	                            	if(!data || !data.result) {
 	                            		utils.error.remove();
 	                            		$('input[id^="ontology"]').removeClass('ui-autocomplete-loading').removeAttr('style');
-	                            		utils.error.add("Ontology search failed. Please try again.");
+	                            		utils.error.add("Ontolo	gy search failed. Please try again.");
 	                            	} else {
 		                                response( $.map( data.result, function( item ) {
 		                                	//decorate options
 		                                	if(item.ontology) {
 			                                    return {
-			                                        label: item.ontolabel+" - "+item.tlabel+" ("+item.taccession+")",
-			                                        value: item.taccession,
+			                                        label: item.ontolabel+" - "+item.tlabel, //+" ("+item.taccession+")",
+			                                        value: item.tlabel,
 			                                        ontology: item.ontolabel,
-			                                        term: item.tlabel
+			                                        term: item.tlabel,
+			                                        accession: item.taccession
 
 			                                    }
 			                                } else {
@@ -413,9 +415,12 @@
 	                    },
 	                    minLength: 3,
 	                    select: function(event, ui) {
+	                    	console.log(ui);
 	                    	//insert ontology term to meta attribute description wrapped square brackets
                         	$(this).parent('td').prev('td').find('textarea:first-child').val(function(i,v){
-                            	return (v==null?'':v.indexOf('[')>=0?v.substring(0,v.indexOf('[')):v+' ')+(ui.item.term?'['+ui.item.term+']':'');
+                            	return (v==null ? '' : v.indexOf('[')>=0 ? v.substring(0,v.indexOf('[')) : v+' ')
+                            		+(ui.item.ontology?'['+ui.item.ontology+', '+ui.item.accession+']':''
+                    			);
                         	})
 	                    }
 		            }).css('width', '100px');
