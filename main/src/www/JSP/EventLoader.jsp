@@ -148,7 +148,7 @@
                         <h1 class="csc-firstHeader">Event Attributes</h1>
                     </div>
                     <div style="font-size:0.9em;padding-top:5px;margin-left:135px;padding-left:50px">
-                        [Required<img style="vertical-align:bottom;" src="images/icon/req.png"/><img style="vertical-align:bottom;" src="images/icon/info_r.png"/>]
+                        [<img style="vertical-align:bottom;" src="images/icon/req.png"/><img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Required, <img style="vertical-align:bottom;" src="images/icon/ontology.png"/>-Ontology]
                     </div>
                 </div>
                 <div id="attributeInputDiv" style="margin:10px 0;">
@@ -317,15 +317,20 @@
                     if(_ma != null) {
                         if(_ma != null && _ma.eventMetaAttributeId != null && _ma.projectId != null) {
                             eventAttributes.push(_ma); //stores event attributes for other uses
-                            var isDesc = _ma.desc && _ma.desc!=='', isRequired = _ma.requiredDB;
+
+                            var isDesc = _ma.desc && _ma.desc!=='', 
+                                isRequired = _ma.requiredDB,
+                                hasOntology = _ma.ontology;
                             content += '<tr class="gappedTr">'+
                                     pBeanHtml.replace("$pn$",utils.getProjectName()).replace("$lt$", "beanList["+count+"].")+ //project name for bean
                                     anBeanHtml.replace("$an$",_ma.lookupValue.name).replace("$lt$", "beanList["+count+"].")+ //attribute name
                                     '<td align="right" ' +
                                         'class="' + (isDesc&&isRequired?'requiredWithDesc':isDesc?'hasDesc':'isRequired') + '" ' +
                                         (isDesc?'title="'+_ma.desc+'"':'')+'>'+
-                                        (_ma.label!=null&&_ma.label!==''?_ma.label:_ma.lookupValue.name) +  
+                                        (_ma.label!=null&&_ma.label!==''?_ma.label:_ma.lookupValue.name) + " " + 
+                                        (hasOntology?'<img style="vertical-align:bottom;" src="images/icon/ontology.png"/>':'') +
                                     '</td>';
+
                             var subcon='';
                             if(_ma.options!=null&&_ma.options!=='') { 
                                 var optcon='';
@@ -389,10 +394,13 @@
                 $.each(eventAttributes, function(i1, v1) {
                     content+='<th class="tableHeaderNoBG' +
                             //(v1.desc&&v1.desc!==''?' hasTooltip':'') +
-                            (v1.requiredDB?' isRequired':'') + '" ' +
-                            (v1.desc&&v1.desc!==''?'title="'+v1.desc+'"':'') +'>' +
-                            v1.lookupValue.name
-                        '</th>';
+                            //(v1.requiredDB?' isRequired':'') +
+                            //(v1.ontology?' hasOntology':'') + 
+                            '" ' +(v1.desc&&v1.desc!==''?'title="'+v1.desc+'"':'') +'>' +
+                            v1.lookupValue.name +
+                            '<br/><img style="vertical-align:bottom;" src="images/icon/ontology.png"/>' +
+                            '<img style="vertical-align:bottom;" src="images/icon/req.png"/>' +
+                            '</th>';
                 });
                 $('thead#gridHeader').html('<tr>'+content+'</tr>');
 
@@ -429,162 +437,6 @@
                 _utils.makeAjax('sharedAjax.action', 'type=ea&projectName='+utils.getProjectName()+'&eventName='+et, et, callbacks.meta);
             }
         };
-
-        $(document).ready(function() {
-            //customization for labels
-            var label=$('input:hidden#label').val();
-            switch(label) {
-                case 'SR': label="SampleReceipt"; break;
-                case 'PM': label="Patient Metadata"; break;
-                case 'HM': label="Household Metadata"; break;
-                case 'FM': label="Family Metadata"; break;
-                case "SM": label="Sample Metadata"; break;
-                default: label=null;
-            }
-            if(label!=null&&label.length>0) {
-                $.each($('#_projectSelect').find('option'), function(i1,v1) {
-                    if(v1.text===paramP || v1.text.indexOf(paramP)>=0) {
-                        $('#_projectSelect').val(parseInt(v1.value));
-                        changes.project(v1.value);
-                        $.each($('#_eventSelect').find('option'), function(i2,v2) {
-                            if(v2.text.indexOf(label)!=-1) {
-                                $('#_eventSelect').val(parseInt(v2.value));
-                                changes.event(v2.text);
-                                $('#_eventSelect').attr('disabled', true);
-                            }
-                        });
-                    }
-                });
-                if(label==='Family Metadata') {
-                    _utils.addDD('patient', $('#_projectSelect').val(), 1);
-                } else if(label==='Sample Metadata') {
-                    _utils.addDD('patient', $('#_projectSelect').val(), 1);
-                    _utils.addDD('family', $('#_projectSelect').val(), 2);
-                }
-
-                _utils.labeling(label);
-            }
-
-            $('select[id$="Select"]').combobox();
-
-            //retrieve existing values for preload
-            var _oldProjectId = '${projectId}',
-                _oldSampleName = '${sampleName}',
-                _oldEventName = '${eventName}',
-                _oldJobType = '${jobType}';
-
-            //load type radio button change event
-            $('input[name="loadType"]').change(function() {
-                $('div[id$="InputDiv"], #gridAddLineBtn, .sampleSelectTr').hide();
-                utils.preSelect('_sampleSelect', '');
-                var _selectedType = $(this).val();
-                if(_selectedType==='grid') {
-                    $('#gridInputDiv, #gridAddLineBtn').show();
-                    _utils.addGridRows(utils.getProjectName(), utils.getEventName());
-                } else if(_selectedType==='file') {
-                    $('#fileInputDiv').show();
-                } else {
-                    $('#attributeInputDiv, .sampleSelectTr').show();
-                    _utils.showPS();
-                }
-            });
-
-            //preselect load type radio button
-            var rtnJobType = (_oldJobType===''||_oldJobType==='insert'||_oldJobType==='template'?'form':_oldJobType);
-            $('input[name="loadType"][value='+rtnJobType+']').attr('checked', true);
-            $('input[name="loadType"]:checked').change();
-
-            //preload project and event type
-            if(_oldProjectId) {
-                changes.project(_oldProjectId);
-                utils.preSelect("_eventSelect", _oldEventName);
-                changes.event(_oldEventName);
-                if(_oldSampleName!=='') {
-                    utils.preSelect("_sampleSelect", _oldSampleName);
-                }
-            }
-
-            //preload grid body
-            if('${gridList}'!=='') {
-                //remove any existing dom elements
-                gridLineCount = 0;
-                $('#gridBody').html('');
-                $('[name^="gridList"]').remove();
-                <s:iterator value="gridList" var="gbean" status="gstat">
-                    var gridLine={}, beans=[];
-                    <s:iterator value="beanList" var="fbean" status="fstat">
-                        beans.push(["${fbean.attributeName}", "${attributeValue}"]);
-                    </s:iterator>
-                    gridLine['pn']="${gbean.projectName}";
-                    gridLine['pp']="${gbean.projectPublic}";
-                    gridLine['sn']="${gbean.sampleName}";
-                    gridLine['psn']="${gbean.parentSampleName}";
-                    gridLine['sp']="${gbean.samplePublic}";
-                    gridLine['beans']=beans;
-                    button.add_event(null,null,gridLine);
-                </s:iterator>
-                _utils.addGridRows(null,_oldEventName);
-            } else if('${beanList}'!=='') {
-                //remove any existing dom elements
-                $('[name^="beanList"]').remove();
-                <s:iterator value="beanList" var="bean" status="bstat">
-                    $("[name='beanList[${bstat.count-1}].attributeValue']").val("${bean.attributeValue}");
-                </s:iterator>    
-            }
-
-            utils.error.check();
-        });
-
-        function comboBoxChanged(option, id) {
-            if(id==='_projectSelect') {
-                button.clear_attr();
-                $("#eventLoadButton").attr("disabled", true);
-                $("#_eventSelect").html(vs.empty);
-                if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
-                    changes.project(option.value);
-                } else {
-                    $("#_sampleSelect").html(vs.empty);
-                    $("#_eventSelect").html(vs.empty);
-                }
-            } else if(id==='_eventSelect') {
-                button.clear_attr();
-                if(option.value && option.value!=0 && option.text && option.text!='') {
-                    changes.event(option.text);
-                }
-            } else if(id==='_sampleSelect') {
-                if(option.value && option.value!=0 && option.text && option.text!='' && $('#_eventSelect').val() != 0) {
-                    _utils.makeAjax(
-                        'sharedAjax.action',
-                        'type=ea&projectName='+utils.getProjectName()+'&eventName='+utils.getEventName(),
-                        utils.getEventName(),
-                        callbacks.meta
-                    );
-                }
-            } else if(id==='a_patientSelect') {
-                var label=$('input:hidden#label').val()
-                if(label==='FM')
-                    _utils.makeAjax(
-                        'sharedAjax.action',
-                        'type=Sample&projectId='+$('#_projectSelect').val()+'&sampleId='+option.value+'&sampleLevel=2',
-                        null,
-                        callbacks.sample
-                    );
-                else if(label==='SM')
-                    _utils.makeAjax(
-                        'sharedAjax.action',
-                        'type=Sample&projectId='+$('#_projectSelect').val()+'&sampleId='+option.value+'&sampleLevel=2',
-                        'family',
-                        callbacks.added
-                    );
-            } else if(id==='a_familySelect') {
-                _utils.makeAjax(
-                    'sharedAjax.action',
-                    'type=Sample&projectId='+$('#_projectSelect').val()+'&sampleId='+option.value+'&sampleLevel=3',
-                    null,
-                    callbacks.sample
-                );
-            }
-        }
 
         var button = {
             submit_event: function() {
@@ -706,6 +558,162 @@
                 $('#_projectName, #_parentProjectSelect~input, #_sampleName, #_parentSampleSelect~input').val('');
             }
         };
+
+        function comboBoxChanged(option, id) {
+            if(id==='_projectSelect') {
+                button.clear_attr();
+                $("#eventLoadButton").attr("disabled", true);
+                $("#_eventSelect").html(vs.empty);
+                if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
+                    changes.project(option.value);
+                } else {
+                    $("#_sampleSelect").html(vs.empty);
+                    $("#_eventSelect").html(vs.empty);
+                }
+            } else if(id==='_eventSelect') {
+                button.clear_attr();
+                if(option.value && option.value!=0 && option.text && option.text!='') {
+                    changes.event(option.text);
+                }
+            } else if(id==='_sampleSelect') {
+                if(option.value && option.value!=0 && option.text && option.text!='' && $('#_eventSelect').val() != 0) {
+                    _utils.makeAjax(
+                        'sharedAjax.action',
+                        'type=ea&projectName='+utils.getProjectName()+'&eventName='+utils.getEventName(),
+                        utils.getEventName(),
+                        callbacks.meta
+                    );
+                }
+            } else if(id==='a_patientSelect') {
+                var label=$('input:hidden#label').val()
+                if(label==='FM')
+                    _utils.makeAjax(
+                        'sharedAjax.action',
+                        'type=Sample&projectId='+$('#_projectSelect').val()+'&sampleId='+option.value+'&sampleLevel=2',
+                        null,
+                        callbacks.sample
+                    );
+                else if(label==='SM')
+                    _utils.makeAjax(
+                        'sharedAjax.action',
+                        'type=Sample&projectId='+$('#_projectSelect').val()+'&sampleId='+option.value+'&sampleLevel=2',
+                        'family',
+                        callbacks.added
+                    );
+            } else if(id==='a_familySelect') {
+                _utils.makeAjax(
+                    'sharedAjax.action',
+                    'type=Sample&projectId='+$('#_projectSelect').val()+'&sampleId='+option.value+'&sampleLevel=3',
+                    null,
+                    callbacks.sample
+                );
+            }
+        }
+
+        $(document).ready(function() {
+            //customization for labels
+            var label=$('input:hidden#label').val();
+            switch(label) {
+                case 'SR': label="SampleReceipt"; break;
+                case 'PM': label="Patient Metadata"; break;
+                case 'HM': label="Household Metadata"; break;
+                case 'FM': label="Family Metadata"; break;
+                case "SM": label="Sample Metadata"; break;
+                default: label=null;
+            }
+            if(label!=null&&label.length>0) {
+                $.each($('#_projectSelect').find('option'), function(i1,v1) {
+                    if(v1.text===paramP || v1.text.indexOf(paramP)>=0) {
+                        $('#_projectSelect').val(parseInt(v1.value));
+                        changes.project(v1.value);
+                        $.each($('#_eventSelect').find('option'), function(i2,v2) {
+                            if(v2.text.indexOf(label)!=-1) {
+                                $('#_eventSelect').val(parseInt(v2.value));
+                                changes.event(v2.text);
+                                $('#_eventSelect').attr('disabled', true);
+                            }
+                        });
+                    }
+                });
+                if(label==='Family Metadata') {
+                    _utils.addDD('patient', $('#_projectSelect').val(), 1);
+                } else if(label==='Sample Metadata') {
+                    _utils.addDD('patient', $('#_projectSelect').val(), 1);
+                    _utils.addDD('family', $('#_projectSelect').val(), 2);
+                }
+
+                _utils.labeling(label);
+            }
+
+            $('select[id$="Select"]').combobox();
+
+            //retrieve existing values for preload
+            var _oldProjectId = '${projectId}',
+                _oldSampleName = '${sampleName}',
+                _oldEventName = '${eventName}',
+                _oldJobType = '${jobType}';
+
+            //load type radio button change event
+            $('input[name="loadType"]').change(function() {
+                $('div[id$="InputDiv"], #gridAddLineBtn, .sampleSelectTr').hide();
+                utils.preSelect('_sampleSelect', '');
+                var _selectedType = $(this).val();
+                if(_selectedType==='grid') {
+                    $('#gridInputDiv, #gridAddLineBtn').show();
+                    _utils.addGridRows(utils.getProjectName(), utils.getEventName());
+                } else if(_selectedType==='file') {
+                    $('#fileInputDiv').show();
+                } else {
+                    $('#attributeInputDiv, .sampleSelectTr').show();
+                    _utils.showPS();
+                }
+            });
+
+            //preselect load type radio button
+            var rtnJobType = (_oldJobType===''||_oldJobType==='insert'||_oldJobType==='template'?'form':_oldJobType);
+            $('input[name="loadType"][value='+rtnJobType+']').attr('checked', true);
+            $('input[name="loadType"]:checked').change();
+
+            //preload project and event type
+            if(_oldProjectId) {
+                changes.project(_oldProjectId);
+                utils.preSelect("_eventSelect", _oldEventName);
+                changes.event(_oldEventName);
+                if(_oldSampleName!=='') {
+                    utils.preSelect("_sampleSelect", _oldSampleName);
+                }
+            }
+
+            //preload grid body
+            if('${gridList}'!=='') {
+                //remove any existing dom elements
+                gridLineCount = 0;
+                $('#gridBody').html('');
+                $('[name^="gridList"]').remove();
+                <s:iterator value="gridList" var="gbean" status="gstat">
+                    var gridLine={}, beans=[];
+                    <s:iterator value="beanList" var="fbean" status="fstat">
+                        beans.push(["${fbean.attributeName}", "${attributeValue}"]);
+                    </s:iterator>
+                    gridLine['pn']="${gbean.projectName}";
+                    gridLine['pp']="${gbean.projectPublic}";
+                    gridLine['sn']="${gbean.sampleName}";
+                    gridLine['psn']="${gbean.parentSampleName}";
+                    gridLine['sp']="${gbean.samplePublic}";
+                    gridLine['beans']=beans;
+                    button.add_event(null,null,gridLine);
+                </s:iterator>
+                _utils.addGridRows(null,_oldEventName);
+            } else if('${beanList}'!=='') {
+                //remove any existing dom elements
+                $('[name^="beanList"]').remove();
+                <s:iterator value="beanList" var="bean" status="bstat">
+                    $("[name='beanList[${bstat.count-1}].attributeValue']").val("${bean.attributeValue}");
+                </s:iterator>    
+            }
+
+            utils.error.check();
+        });
     </script>
 </body>
 

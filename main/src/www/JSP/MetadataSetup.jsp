@@ -415,7 +415,6 @@
 	                    },
 	                    minLength: 3,
 	                    select: function(event, ui) {
-	                    	console.log(ui);
 	                    	//insert ontology term to meta attribute description wrapped square brackets
                         	$(this).parent('td').prev('td').find('textarea:first-child').val(function(i,v){
                             	return (v==null ? '' : v.indexOf('[')>=0 ? v.substring(0,v.indexOf('[')) : v+' ')
