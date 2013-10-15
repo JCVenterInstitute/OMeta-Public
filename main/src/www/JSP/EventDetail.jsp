@@ -60,6 +60,8 @@
             td._details table td { border:1px solid white; }
 
             .datatable_top, .datatable_table, .datatable_bottom { float:left; clear:both; width:100%;}
+            
+            tr>td.sorting_1 { width:12px !important; text-align: center; }
         </style>
     </head>
     <body>
@@ -118,7 +120,7 @@
                     <table name="sampleTable" id="sampleTable" class="contenttable" style="width:95%;">
                         <thead id="sampleTableHeader">
                         <tr>
-                            <th style="width:1%;text-align:center"><img id="table_openBtn"/></th>
+                            <th style="width:7px;text-align:center"><img id="table_openBtn"/></th>
                             <th class="tableHeaderStyle">Sample Name</th>
                             <th class="tableHeaderStyle">Parent</th>
                             <th class="tableHeaderStyle">User</th>
@@ -376,8 +378,8 @@
                     }
                 },
                 "aoColumnDefs": [
-                    {"bSearchable": false, "bVisible": false, "aTargets": [ 5 ]},
-                    {"sWidth": "1%", "bSortable": false, "aTargets": [ 0 ]}
+                    {"bSearchable": true, "bVisible": false, "aTargets": [ 5 ]},
+                    {"sWidth": "7px", "bSortable": false, "aTargets": [ 0 ]}
                 ]
             }).fnFilterOnReturn();
 
@@ -402,8 +404,8 @@
                     }
                 },
                 "aoColumnDefs": [
-                    {"bSearchable": false, "bVisible": false, "aTargets": [ 6 ]},
-                    {"sWidth": "1%", "bSortable": false, "aTargets": [ 0 ]},
+                    {"bSearchable": true, "bVisible": false, "aTargets": [ 6 ]},
+                    {"sWidth": "7px", "bSortable": false, "aTargets": [ 0 ]},
                     {"bSortable":false, "aTargets":[5]}
                 ]
             }).fnFilterOnReturn();
