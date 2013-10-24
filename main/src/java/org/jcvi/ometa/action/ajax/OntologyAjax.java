@@ -70,15 +70,32 @@ public class OntologyAjax extends ActionSupport implements IAjaxAction {
                 oservice = new OlsOntologyService();
 
             }
-            OntologyLookupService ols = new OntologyLookupService();
+            org.jcvi.ometa.ontology.BioportalOntologyService bioportal = new org.jcvi.ometa.ontology.BioportalOntologyService();
+
+            //OntologyLookupService ols = new OntologyLookupService();
 
             if(t.equals("ot")) { //get ontologies
+                OntologyLookupService ols = new OntologyLookupService();
                 result.add(ols.getOntologies());
                 //result = ontologyService.getOntologies();
             } else if(t.equals("root")) { //root terms
                 result = oservice.getRootTerms(ot);
-            } else if(t.equals("chil")) { //children
-                result = oservice.getChildren(ot, tid);
+            } else if(t.equals("child")) { //children
+                //result = oservice.getChildren(ot, tid);
+
+                List<org.jcvi.ometa.ontology.OntologyTerm> terms = bioportal.search(sw, tid, ot); //get all descendants from a term
+                if(terms!=null && terms.size()>0) {
+                    for(OntologyTerm term : terms) {
+                        Map<String, Object> ot = new HashMap<String, Object>();
+                        ot.put("ontology", term.getOntologyId());
+                        ot.put("ontolabel", term.getOntologyFull());
+                        ot.put("taccession", term.getTermId());
+                        ot.put("tlabel", term.getTerm());
+                        ot.put("uri", null);
+                        result.add(ot);
+                    }
+                }
+
             } else if(t.equals("pare")) { //parents
                 result = oservice.getParents(ot, tid);
             } else if(t.equals("term")) { //get term
@@ -101,8 +118,7 @@ public class OntologyAjax extends ActionSupport implements IAjaxAction {
                 result = oservice.searchAll(sw);
                 */
 
-                /*
-                * old version using OLS
+                /* old version using OLS
                 Map<String, String> ontologies = ols.getOntologies();
 
                 QueryServiceLocator locator = new QueryServiceLocator();
@@ -130,7 +146,6 @@ public class OntologyAjax extends ActionSupport implements IAjaxAction {
                 }
                 */
 
-                org.jcvi.ometa.ontology.BioportalOntologyService bioportal = new org.jcvi.ometa.ontology.BioportalOntologyService();
                 List<org.jcvi.ometa.ontology.OntologyTerm> terms = bioportal.search(sw, null, null);
                 if(terms!=null && terms.size()>0) {
                     for(OntologyTerm term : terms) {

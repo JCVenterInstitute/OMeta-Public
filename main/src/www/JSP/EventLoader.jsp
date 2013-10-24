@@ -28,6 +28,7 @@
     <head>
         <link rel="stylesheet" href="style/dataTables.css" />
         <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" />
+        <link rel="stylesheet" href="style/multiple-select.css" />
         <style>
             .loadRadio { margin-left: 10px; margin-right: 3px; }
             #gridBody .ui-autocomplete-input { width: 150px; }
@@ -193,6 +194,7 @@
         </div>
     </s:form>
 
+    <script src="scripts/jquery/jquery.multiple.select.js"></script>
     <script>
         var eventAttributes = [], gridLineCount=0, avDic= {};
         var pBeanHtml='<input type="hidden" value="$pn$" name="$lt$projectName"/>',
@@ -313,68 +315,134 @@
             meta: function(data, en) {
                 var content = "", count= 0;
                 eventAttributes = []; gridLineCount=0; avDic={};
+                var $attributeDiv = $("#attributeInputDiv"); //where attributes are placed
+
                 $.each(data.aaData, function(i1, _ma) { //build attributes input section
-                    if(_ma != null) {
-                        if(_ma != null && _ma.eventMetaAttributeId != null && _ma.projectId != null) {
-                            eventAttributes.push(_ma); //stores event attributes for other uses
+                    if(_ma != null && _ma.eventMetaAttributeId != null && _ma.projectId != null) {
+                        eventAttributes.push(_ma); //stores event attributes for other uses
 
-                            var isDesc = _ma.desc && _ma.desc!=='', 
-                                isRequired = _ma.requiredDB,
-                                hasOntology = _ma.ontology;
-                            content += '<tr class="gappedTr">'+
-                                    pBeanHtml.replace("$pn$",utils.getProjectName()).replace("$lt$", "beanList["+count+"].")+ //project name for bean
-                                    anBeanHtml.replace("$an$",_ma.lookupValue.name).replace("$lt$", "beanList["+count+"].")+ //attribute name
-                                    '<td align="right" ' +
-                                        'class="' + (isDesc&&isRequired?'requiredWithDesc':isDesc?'hasDesc':'isRequired') + '" ' +
-                                        (isDesc?'title="'+_ma.desc+'"':'')+'>'+
-                                        (_ma.label!=null&&_ma.label!==''?_ma.label:_ma.lookupValue.name) + " " + 
-                                        (hasOntology?'<img style="vertical-align:bottom;" src="images/icon/ontology.png"/>':'') +
-                                    '</td>';
+                        //options
+                        var isDesc = (_ma.desc && _ma.desc!=='');
+                        var isRequired = _ma.requiredDB;
+                        var hasOntology = (_ma.ontology && _ma.ontology!=='');
+                        var $attributeTr = $('<tr class="gappedTr"></tr>');
 
-                            var subcon='';
-                            if(_ma.options!=null&&_ma.options!=='') { 
-                                var optcon='';
-                                if(_ma.options.indexOf(';')>0) { //select box for option values
-                                    //is this multi select
-                                    var isMulti = (_ma.options.substring(0, multiSelect.length)===multiSelect) 
-                                            && (_ma.options.lastIndexOf(')')===_ma.options.length-1),
-                                        opts=vs.vnoption.replace("$v$","0").replace("$n$",""),
-                                        _options = _ma.options;
+                        $attributeTr.append(pBeanHtml.replace("$pn$",utils.getProjectName()).replace("$lt$", "beanList["+count+"]."));//project name for bean
+                        $attributeTr.append(anBeanHtml.replace("$an$",_ma.lookupValue.name).replace("$lt$", "beanList["+count+"]."));//attribute name
+                        $attributeTr.append(//icons and hover over information
+                            '<td align="right" ' + 
+                                'class="' + (isDesc&&isRequired?'requiredWithDesc':isDesc?'hasDesc':'isRequired') + '" ' +
+                                (isDesc?'title="'+_ma.desc+'"':'')+'>'+
+                                (_ma.label!=null&&_ma.label!==''?_ma.label:_ma.lookupValue.name) + " " + 
+                                (hasOntology?'<img style="vertical-align:bottom;" src="images/icon/ontology.png"/>':'') +
+                            '</td>'
+                        );
 
-                                    if(isMulti) {
-                                        _options = _options.substring(multiSelect.length, _options.length-1);
-                                    }
+                        var subcon='';
+                        var isSelect = (_ma.options!=null&&_ma.options!=='' && _ma.options.indexOf(';')>0);
+                        var isMulti = false;
+                        var isText = false;
 
-                                    //convert 0 or 1 options to yes/no
-                                    if(_options==='0;1' || _options==='1;0') {
-                                        opt=vs.ynoption;    
-                                    } else {
-                                        $.each(_options.split(';'), function(_opti,_opt) {
-                                            opts+=vs.vvoption.replace(/\\$v\\$/g,_opt);
-                                        });
-                                    }
-                                    optcon=avSelectHtml.replace("$opts$",opts).replace("$multi$", isMulti?"multiple":"");
-                                } else { //set default text input box option values without ";"
-                                    optcon=avTextHtml.replace("$val$", _ma.options); 
-                                }
-                                subcon+=optcon;
-                            } else {  
-                                if(_ma.lookupValue.dataType==='file') { //file 
-                                    subcon+=avFileHtml;
-                                } else { //text input
-                                    subcon+=avTextHtml;
-                                }
+                        if(isSelect) { //select box for option values 
+                            //is this multi select
+                            isMulti = (_ma.options.substring(0, multiSelect.length)===multiSelect) && (_ma.options.lastIndexOf(')')===_ma.options.length-1);
+                            var opts=vs.vnoption.replace("$v$","0").replace("$n$",""),
+                                _options = _ma.options;
+
+                            if(isMulti) {
+                                _options = _options.substring(multiSelect.length, _options.length-1);
                             }
-                            subcon = subcon.replace("$an$",_ma.lookupValue.name.replace(/ /g,"_")+"_$id$");
-                            avDic[_ma.lookupValue.name]=subcon; //store html contents with its attribute name for later use in adding row
-                            subcon='<td>'+subcon.replace("$id$", count).replace("$lt$","beanList["+count+"].")+'</td>'; //update ID(count)
 
-                            content+=subcon+'</tr>';
-                            count++;
+                            //convert 0 or 1 options to yes/no
+                            if(_options==='0;1' || _options==='1;0') {
+                                opt=vs.ynoption;    
+                            } else {
+                                $.each(_options.split(';'), function(_opti,_opt) {
+                                    opts+=vs.vvoption.replace(/\\$v\\$/g,_opt);
+                                });
+                            }
+                            subcon+=avSelectHtml.replace("$opts$",opts).replace("$multi$", isMulti?"multiple=\"multiple\"":"");
+                        } else {  
+                            if(_ma.lookupValue.dataType==='file') { //file 
+                                subcon+=avFileHtml;
+                            } else { //text input
+                                isText = true;
+                                subcon+=avTextHtml.replace(/\\$val\\$/, '');
+                            }
                         }
+                        subcon = subcon.replace("$an$",_ma.lookupValue.name.replace(/ /g,"_")+"_$id$");
+
+                        var $subcon = $('<td>'+subcon.replace("$id$", count).replace("$lt$","beanList["+count+"].")+'</td>');
+    
+                        if(isText && hasOntology) {
+                            var desc = _ma.desc;
+                            var ontologyInfo = desc.substring(desc.indexOf('[')+1, desc.length-1).split(',');
+                            var ot = ontologyInfo[0].replace(/^\s+|\s+$/g, '');
+                            var tid = ontologyInfo[1].replace(/^\s+|\s+$/g, '');
+                            $subcon.find('input').autocomplete({
+                                source: function( request, response ) {
+                                    $.ajax({
+                                        url: "ontologyAjax.action?t=child",
+                                        data: {
+                                            maxRows: 12,
+                                            sw: request.term.replace(' ', '%20'),
+                                            tid: tid,
+                                            ot: ot
+                                        },
+                                        success: function( data ) {
+                                            //cleans decorated input fields when fails
+                                            if(!data || !data.result) {
+                                                utils.error.remove();
+                                                $('input[id^="ontology"]').removeClass('ui-autocomplete-loading').removeAttr('style');
+                                                utils.error.add("Ontolo gy search failed. Please try again.");
+                                            } else {
+                                                response( $.map( data.result, function( item ) {
+                                                    //decorate options
+                                                    if(item.ontology) {
+                                                        return {
+                                                            label: item.ontolabel+" - "+item.tlabel, //+" ("+item.taccession+")",
+                                                            value: item.tlabel,
+                                                            ontology: item.ontolabel,
+                                                            term: item.tlabel,
+                                                            accession: item.taccession
+
+                                                        }
+                                                    } else {
+                                                        return {
+                                                            label: item,
+                                                            value: '',
+                                                            ontology: null,
+                                                            term: null
+                                                        }
+                                                    }
+                                                }));
+                                            }
+                                        }
+                                    });
+                                },
+                                minLength: 3,
+                                select: function(event, ui) {
+                                    //insert ontology term to meta attribute description wrapped square brackets
+                                    $(this).parent('td').prev('td').find('textarea:first-child').val(function(i,v){
+                                        return (v==null ? '' : v.indexOf('[')>=0 ? v.substring(0,v.indexOf('[')) : v+' ')
+                                            +(ui.item.ontology?'['+ui.item.ontology+', '+ui.item.accession+']':''
+                                        );
+                                    })
+                                }
+                            }).css('width', '100px');
+                        }
+                        /* multiple select jquery plugin
+                        if(isMulti) {
+                            $subcon.find('select').multipleSelect();
+                        }*/
+                        $attributeTr.append($subcon);
+
+                        avDic[_ma.lookupValue.name]=subcon; //store html contents with its attribute name for later use in adding row
+
+                        $attributeDiv.append($attributeTr);
+                        count++;
                     }
                 });
-                $("div#attributeInputDiv").html("<table>"+content.replace(/\\$val\\$/g, '')+"</table>");
                 utils.initDatePicker(); //initialise data fields
 
                 //add table headers for gird view

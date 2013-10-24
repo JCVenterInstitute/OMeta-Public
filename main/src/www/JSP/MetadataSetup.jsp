@@ -31,10 +31,6 @@
         <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" />
 		<style>
 		    #EMADiv .ui-autocomplete-input, #SMADiv .ui-autocomplete-input, #PMADiv .ui-autocomplete-input { width: 150px; }
-		    .ui-autocomplete-loading { 
-		    	-webkit-appearance: none; -webkit-box-sizing: content-box; 
-		    	background: #abedf3 url('images/jqueryUI/ui-anim_basic_16x16.gif') left center no-repeat !important; 
-		    }
 		    /* row background: mouse hover & new row */
 		    tr.borderBottom:hover>td.comboBoxCB, tr.borderBottom:hover>td input, tr.borderBottom:hover>td>textarea { background: #bbdcf8; }
 		    .buttonAdded>td.comboBoxCB,.buttonAdded>td input,.buttonAdded>td>textarea { background: #e9f4fd; }
@@ -393,12 +389,11 @@
 		                                	//decorate options
 		                                	if(item.ontology) {
 			                                    return {
-			                                        label: item.ontolabel+" - "+item.tlabel, //+" ("+item.taccession+")",
+			                                        label: item.ontolabel, //+" ("+item.taccession+")",
 			                                        value: item.tlabel,
-			                                        ontology: item.ontolabel,
-			                                        term: item.tlabel,
-			                                        accession: item.taccession
-
+			                                        ontology: item.ontology,
+			                                        accession: item.taccession,
+			                                        term : item.tlabel
 			                                    }
 			                                } else {
 			                                	return {
@@ -415,10 +410,11 @@
 	                    },
 	                    minLength: 3,
 	                    select: function(event, ui) {
+	                    	console.log(ui.item);
 	                    	//insert ontology term to meta attribute description wrapped square brackets
                         	$(this).parent('td').prev('td').find('textarea:first-child').val(function(i,v){
                             	return (v==null ? '' : v.indexOf('[')>=0 ? v.substring(0,v.indexOf('[')) : v+' ')
-                            		+(ui.item.ontology?'['+ui.item.ontology+', '+ui.item.accession+']':''
+                            		+(ui.item.ontology?'['+ui.item.label+','+ui.item.ontology+','+ui.item.accession+']':''
                     			);
                         	})
 	                    }
