@@ -317,6 +317,8 @@
                 eventAttributes = []; gridLineCount=0; avDic={};
                 var $attributeDiv = $("#attributeInputDiv"); //where attributes are placed
 
+                $attributeDiv.empty(); //empty any existing contents
+                
                 $.each(data.aaData, function(i1, _ma) { //build attributes input section
                     if(_ma != null && _ma.eventMetaAttributeId != null && _ma.projectId != null) {
                         eventAttributes.push(_ma); //stores event attributes for other uses
@@ -401,7 +403,7 @@
                                                     if(item.ontology) {
                                                         return {
                                                             label: item.tlabel + " - " + item.ontolabel,
-                                                            value: item.tlabel + "<" + item.taccession + ">"
+                                                            value: item.tlabel + "@" + item.taccession
 
                                                         }
                                                     } else {
