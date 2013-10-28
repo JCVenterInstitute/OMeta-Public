@@ -389,9 +389,10 @@
 		                                	//decorate options
 		                                	if(item.ontology) {
 			                                    return {
-			                                        label: item.ontolabel, //+" ("+item.taccession+")",
+			                                        label: item.tlabel + " - " + item.ontolabel,
 			                                        value: item.tlabel,
-			                                        ontology: item.ontology,
+			                                        ontologyId: item.ontology,
+			                                        ontologyLabel: item.ontolabel,
 			                                        accession: item.taccession,
 			                                        term : item.tlabel
 			                                    }
@@ -414,7 +415,7 @@
 	                    	//insert ontology term to meta attribute description wrapped square brackets
                         	$(this).parent('td').prev('td').find('textarea:first-child').val(function(i,v){
                             	return (v==null ? '' : v.indexOf('[')>=0 ? v.substring(0,v.indexOf('[')) : v+' ')
-                            		+(ui.item.ontology?'['+ui.item.label+','+ui.item.ontology+','+ui.item.accession+']':''
+                            		+(ui.item.accession?'['+ui.item.ontologyLabel+','+ui.item.ontologyId+','+ui.item.accession+']':''
                     			);
                         	})
 	                    }

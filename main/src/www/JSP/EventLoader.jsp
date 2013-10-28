@@ -377,8 +377,8 @@
                         if(isText && hasOntology) {
                             var desc = _ma.desc;
                             var ontologyInfo = desc.substring(desc.indexOf('[')+1, desc.length-1).split(',');
-                            var ot = ontologyInfo[0].replace(/^\s+|\s+$/g, '');
-                            var tid = ontologyInfo[1].replace(/^\s+|\s+$/g, '');
+                            var ot = ontologyInfo[1].replace(/^\s+|\s+$/g, '');
+                            var tid = ontologyInfo[2].replace(/^\s+|\s+$/g, '');
                             $subcon.find('input').autocomplete({
                                 source: function( request, response ) {
                                     $.ajax({
@@ -400,11 +400,8 @@
                                                     //decorate options
                                                     if(item.ontology) {
                                                         return {
-                                                            label: item.ontolabel+" - "+item.tlabel, //+" ("+item.taccession+")",
-                                                            value: item.tlabel,
-                                                            ontology: item.ontolabel,
-                                                            term: item.tlabel,
-                                                            accession: item.taccession
+                                                            label: item.tlabel + " - " + item.ontolabel,
+                                                            value: item.tlabel + "<" + item.taccession + ">"
 
                                                         }
                                                     } else {
@@ -422,14 +419,9 @@
                                 },
                                 minLength: 3,
                                 select: function(event, ui) {
-                                    //insert ontology term to meta attribute description wrapped square brackets
-                                    $(this).parent('td').prev('td').find('textarea:first-child').val(function(i,v){
-                                        return (v==null ? '' : v.indexOf('[')>=0 ? v.substring(0,v.indexOf('[')) : v+' ')
-                                            +(ui.item.ontology?'['+ui.item.ontology+', '+ui.item.accession+']':''
-                                        );
-                                    })
+                                    return;
                                 }
-                            }).css('width', '100px');
+                            }); //.css('width', '175px');
                         }
                         /* multiple select jquery plugin
                         if(isMulti) {
