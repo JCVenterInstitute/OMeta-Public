@@ -32,6 +32,9 @@
         <style>
             .loadRadio { margin-left: 10px; margin-right: 3px; }
             #gridBody .ui-autocomplete-input { width: 150px; }
+            .ms-choice {line-height: 20px; }
+            .ms-choice, .ms-choice > div { height: 20px; }
+
         </style>
 
     </head>
@@ -201,9 +204,9 @@
             anBeanHtml='<input type="hidden" value="$an$" name="$lt$attributeName"/>',
             avTextHtml='<input type="text" id="$an$" name="$lt$attributeValue" value="$val$"/>',
             avFileHtml='<input type="file" id="$an$" name="$lt$upload"/>',
-            avSelectHtml='<select $multi$ id="$an$" name="$lt$attributeValue" style="min-width:35px;">$opts$</select>',
+            avSelectHtml='<select $multi$ id="$an$" name="$lt$attributeValue" style="min-width:35px;width:200px;">$opts$</select>',
             avSampleSelectHtml='<td><select id="$si$" name="$sn$">$opts$</select></td>',
-            multiSelect='multi(',
+            multiSelectPrefix='multi(',
             avHtml, sample_options;
 
         var _utils = {
@@ -347,12 +350,12 @@
 
                         if(isSelect) { //select box for option values 
                             //is this multi select
-                            isMulti = (_ma.options.substring(0, multiSelect.length)===multiSelect) && (_ma.options.lastIndexOf(')')===_ma.options.length-1);
-                            var opts=vs.vnoption.replace("$v$","0").replace("$n$",""),
-                                _options = _ma.options;
+                            isMulti = (_ma.options.substring(0, multiSelectPrefix.length)===multiSelectPrefix) && (_ma.options.lastIndexOf(')')===_ma.options.length-1);
+                            var opts = isMulti?'':vs.vnoption.replace("$v$","0").replace("$n$","");
+                            var _options = _ma.options;
 
                             if(isMulti) {
-                                _options = _options.substring(multiSelect.length, _options.length-1);
+                                _options = _options.substring(multiSelectPrefix.length, _options.length-1);
                             }
 
                             //convert 0 or 1 options to yes/no
@@ -379,56 +382,59 @@
                         if(isText && hasOntology) {
                             var desc = _ma.desc;
                             var ontologyInfo = desc.substring(desc.indexOf('[')+1, desc.length-1).split(',');
-                            var ot = ontologyInfo[1].replace(/^\s+|\s+$/g, '');
-                            var tid = ontologyInfo[2].replace(/^\s+|\s+$/g, '');
-                            $subcon.find('input').autocomplete({
-                                source: function( request, response ) {
-                                    $.ajax({
-                                        url: "ontologyAjax.action?t=child",
-                                        data: {
-                                            maxRows: 12,
-                                            sw: request.term.replace(' ', '%20'),
-                                            tid: tid,
-                                            ot: ot
-                                        },
-                                        success: function( data ) {
-                                            //cleans decorated input fields when fails
-                                            if(!data || !data.result) {
-                                                utils.error.remove();
-                                                $('input[id^="ontology"]').removeClass('ui-autocomplete-loading').removeAttr('style');
-                                                utils.error.add("Ontolo gy search failed. Please try again.");
-                                            } else {
-                                                response( $.map( data.result, function( item ) {
-                                                    //decorate options
-                                                    if(item.ontology) {
-                                                        return {
-                                                            label: item.tlabel + " - " + item.ontolabel,
-                                                            value: item.tlabel + "@" + item.taccession
 
+                            if(ontologyInfo.length === 3) {
+                                var ot = ontologyInfo[1].replace(/^\s+|\s+$/g, '');
+                                var tid = ontologyInfo[2].replace(/^\s+|\s+$/g, '');
+                                $subcon.find('input').autocomplete({
+                                    source: function( request, response ) {
+                                        $.ajax({
+                                            url: "ontologyAjax.action?t=child",
+                                            data: {
+                                                maxRows: 12,
+                                                sw: request.term.replace(' ', '%20'),
+                                                tid: tid,
+                                                ot: ot
+                                            },
+                                            success: function( data ) {
+                                                //cleans decorated input fields when fails
+                                                if(!data || !data.result) {
+                                                    utils.error.remove();
+                                                    $('input[id^="ontology"]').removeClass('ui-autocomplete-loading').removeAttr('style');
+                                                    utils.error.add("Ontolo gy search failed. Please try again.");
+                                                } else {
+                                                    response( $.map( data.result, function( item ) {
+                                                        //decorate options
+                                                        if(item.ontology) {
+                                                            return {
+                                                                label: item.tlabel + " - " + item.ontolabel,
+                                                                value: item.tlabel + "@" + item.taccession
+
+                                                            }
+                                                        } else {
+                                                            return {
+                                                                label: item,
+                                                                value: '',
+                                                                ontology: null,
+                                                                term: null
+                                                            }
                                                         }
-                                                    } else {
-                                                        return {
-                                                            label: item,
-                                                            value: '',
-                                                            ontology: null,
-                                                            term: null
-                                                        }
-                                                    }
-                                                }));
+                                                    }));
+                                                }
                                             }
-                                        }
-                                    });
-                                },
-                                minLength: 3,
-                                select: function(event, ui) {
-                                    return;
-                                }
-                            }); //.css('width', '175px');
+                                        });
+                                    },
+                                    minLength: 3,
+                                    select: function(event, ui) {
+                                        return;
+                                    }
+                                }); //.css('width', '175px');
+                            }
                         }
-                        /* multiple select jquery plugin
+                        /* multiple select jquery plugin */
                         if(isMulti) {
                             $subcon.find('select').multipleSelect();
-                        }*/
+                        }
                         $attributeTr.append($subcon);
 
                         avDic[_ma.lookupValue.name]=subcon; //store html contents with its attribute name for later use in adding row
