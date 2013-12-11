@@ -27,7 +27,6 @@ public class BioportalOntologyService {
 
     public List<OntologyTerm> search(String search, String searchRootId, String ontologyId) throws Exception {
         String serviceUrl = this.buildUrl("search", search, searchRootId, ontologyId);
-        System.out.println(serviceUrl);
         String resultString = this.callService(serviceUrl);
 
         List<OntologyTerm> results = null;
@@ -69,6 +68,7 @@ public class BioportalOntologyService {
         con.setRequestMethod("GET");
         con.setRequestProperty("User-Agent", "Mozilla/5.0");
         con.setRequestProperty("Accept", "application/json");
+        con.setConnectTimeout(15000); //times out after 15 secs
 
         int responseCode = con.getResponseCode();
         if(responseCode == 200) {
