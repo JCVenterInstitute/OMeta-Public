@@ -309,7 +309,7 @@ public class SampleDAO extends HibernateDAO {
                 else if(sortCol.equals("parent"))
                     sql += " parent ";
                 else if(sortCol.equals("user"))
-                    sql += " sample ";
+                    sql += " user ";
                 else if(sortCol.equals("date"))
                     sql += " sample_create_date ";
                 sql += sortDir;

@@ -181,17 +181,14 @@ public class EventLoader extends ActionSupport {
                                     } else {
                                         int colIndex = 0;
 
-                                        if (currProjectName == null || isProjectRegistration) {
-                                            currProjectName = line[colIndex];
-                                        }
-
-                                        if (!isProjectRegistration && !currProjectName.equals(line[colIndex])) {
+                                        currProjectName = line[colIndex++];
+                                        if (!isProjectRegistration && !currProjectName.equals(this.projectName)) {
                                             throw new Exception(MULTIPLE_SUBJECT_IN_FILE_MESSAGE);
                                         }
-                                        //move next column
-                                        colIndex++;
 
                                         GridBean gBean = new GridBean();
+                                        gBean.setProjectName(currProjectName);
+
                                         if (hasSampleName) {
                                             gBean.setSampleName(line[(colIndex++)]);
                                         }

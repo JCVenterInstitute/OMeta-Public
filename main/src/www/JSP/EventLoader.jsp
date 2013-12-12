@@ -372,12 +372,14 @@
                                 subcon+=avFileHtml;
                             } else { //text input
                                 isText = true;
-                                subcon+=avTextHtml.replace(/\\$val\\$/, '');
+                                subcon+=avTextHtml;
                             }
                         }
                         subcon = subcon.replace("$an$",_ma.lookupValue.name.replace(/ /g,"_")+"_$id$");
 
-                        var $subcon = $('<td>'+subcon.replace("$id$", count).replace("$lt$","beanList["+count+"].")+'</td>');
+                        avDic[_ma.lookupValue.name] = subcon; //store html contents with its attribute name for later use in adding row
+
+                        var $subcon = $('<td>'+subcon.replace(/\\$val\\$/g, '').replace("$id$", count).replace("$lt$","beanList["+count+"].")+'</td>');
     
                         if(isText && hasOntology) {
                             var desc = _ma.desc;
@@ -431,13 +433,12 @@
                                 }); //.css('width', '175px');
                             }
                         }
+
                         /* multiple select jquery plugin */
                         if(isMulti) {
                             $subcon.find('select').multipleSelect();
                         }
                         $attributeTr.append($subcon);
-
-                        avDic[_ma.lookupValue.name]=subcon; //store html contents with its attribute name for later use in adding row
 
                         $attributeDiv.append($attributeTr);
                         count++;
@@ -539,7 +540,7 @@
                             //add sample select box for other events
                             content+=avSampleSelectHtml.replace("$si$", "_sampleSelect"+gridLineCount).replace("$sn$", "gridList["+gridLineCount+"].sampleName").replace("$opts$",sample_options);
                         } else {
-                            //add sample information fields for project registration
+                            //add sample information fields for sample registration
                             content=content
                                 +'<td><input type="text" name="gridList['+gridLineCount+'].sampleName" id="_sampleName'+gridLineCount+'" /></td>'
                                 +avSampleSelectHtml.replace("$si$", "_parentSelect"+gridLineCount)
@@ -566,6 +567,7 @@
                                 }
                             });
                         }
+
                         ltVal="gridList["+gridLineCount+"].beanList["+i1+"].";
                         _ea=pBeanHtml.replace("$pn$", _pn);//projectName
                         _ea+=anBeanHtml.replace("$an$",(bean?bean[0]:v1.lookupValue.name));//attributeName

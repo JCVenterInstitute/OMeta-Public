@@ -22,6 +22,7 @@
 package org.jcvi.ometa.validation;
 
 import org.jcvi.ometa.model.*;
+import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
 
 import java.net.MalformedURLException;
@@ -289,7 +290,7 @@ public class ModelValidator {
 
     private Date validateAndSetDate(StringBuilder errors, String sourceName, AttributeModelBean attribute, String value) {
         // Two tries to get the date/time right.
-        String trimmedValue = value.trim();
+        String trimmedValue = CommonTool.convertTimestampToDate(value.trim());
         SimpleDateFormat chosenFormat = PST_DEFAULT_DATE_FORMAT;//US_SLASHED_DATE_TIME_FMT;
         chosenFormat.setLenient(false);
         Date rtnDate = null;

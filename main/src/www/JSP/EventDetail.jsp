@@ -61,7 +61,6 @@
 
             .datatable_top, .datatable_table, .datatable_bottom { float:left; clear:both; width:100%;}
             
-            tr>td.sorting_1 { width:12px !important; text-align: center; }
         </style>
     </head>
     <body>
