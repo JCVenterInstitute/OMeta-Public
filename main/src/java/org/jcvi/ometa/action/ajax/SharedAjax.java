@@ -88,7 +88,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                 Map<String, Object> projectMap = new HashMap<String, Object>();
                 projectMap.put("editable", pMap.isEditable()?1:0);
 
-                projectMap.put("Project Name", pMap.getProject().getProjectName());
+                projectMap.put(Constants.ATTR_PROJECT_NAME, pMap.getProject().getProjectName());
                 projectMap.put("Project Registration", CommonTool.convertTimestampToDate(pMap.getProject().getCreationDate()));
 
                 List<ProjectAttribute> projectAttributes = readPersister.getProjectAttributes(this.projectId);

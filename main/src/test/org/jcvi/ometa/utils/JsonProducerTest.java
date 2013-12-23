@@ -31,9 +31,29 @@ import org.junit.Test;
  * Time: 3:51 PM
  */
 public class JsonProducerTest extends PSTTestAbstract {
+    JsonProducer producer = null;
+
     @Test
     public void doJson() {
-        JsonProducer producer = new JsonProducer(this.getReadEjb("int"));
+        producer = new JsonProducer(this.getReadEjb("int"));
+        this.whole();
+        this.helper();
+    }
+
+    private void helper() {
+        String projectNames = "Adenovirus,Arbovirus,CDC+Viral+Collection,Coronavirus,Norovirus,Paramyxovirus,Rotavirus";
+        //String attributes = "Project Name,Collaborator,Collaborator Institute,Study Objective,Planned Samples,Received Samples,Discarded Samples,In Progress Samples,Published Samples,End Date,Failed QC";
+        String attributes = "Project Name,Failed QC";
+        //String screen = "Project Name,Collaborator,Collaborator Institute,Study Objective,Planned Samples,Received Samples,Discarded Samples,In Progress Samples,Published Samples,End Date,Failed QC";
+        String screen = "Project Name,Failed QC";
+        String sorting = "";
+        String fileName = "otherViral";
+        String filePath = "/Users/hkim/Stuffs/test/pst";
+
+        producer.jsonHelper(projectNames, attributes, screen, sorting, fileName, filePath, "some");
+    }
+
+    private void whole() {
         producer.generateJson();
     }
 }

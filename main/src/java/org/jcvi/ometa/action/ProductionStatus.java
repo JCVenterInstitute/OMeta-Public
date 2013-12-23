@@ -48,7 +48,7 @@ public class ProductionStatus extends ActionSupport {
 
     private ReadBeanPersister readPersister;
     private static final String forbiddenAttributes[] = {"run date"};
-    private final String defaultAttributes[] = {"Project Name", "Sample Name", "Parent Sample"};
+    private final String defaultAttributes[] = {Constants.ATTR_PROJECT_NAME, Constants.ATTR_SAMPLE_NAME, Constants.ATTR_PARENT_SAMPLE_NAME};
 
     private String projectNames;
     private String attributes; //comma separated attributes
@@ -214,8 +214,9 @@ public class ProductionStatus extends ActionSupport {
                     }
                 }
 
-                if (!projectAttrMap.containsKey("Project Name"))
-                    projectAttrMap.put("Project Name", project.getProjectName());
+                if (!projectAttrMap.containsKey(Constants.ATTR_PROJECT_NAME)) {
+                    projectAttrMap.put(Constants.ATTR_PROJECT_NAME, project.getProjectName());
+                }
 
                 List<Sample> samples = projectIdVsSampleList.get(project.getProjectId());
                 if(samples!=null && samples.size()>0) {
@@ -230,7 +231,7 @@ public class ProductionStatus extends ActionSupport {
                     for (Sample sample : samples) {
                         Map<String, Object> sampleAttrMap = new HashMap<String, Object>();
                         sampleAttrMap.putAll(projectAttrMap);
-                        sampleAttrMap.put("Sample Name", sample.getSampleName());
+                        sampleAttrMap.put(Constants.ATTR_SAMPLE_NAME, sample.getSampleName());
                         sampleAttrMap.put("sampleId", sample.getSampleId());
                         if (sample.getParentSampleId() != null) {
                             Sample parentSample = readPersister.getSample(sample.getParentSampleId());

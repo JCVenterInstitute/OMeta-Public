@@ -40,7 +40,7 @@ public class ProductionStatusAjax extends ActionSupport implements IAjaxAction {
     private ReadBeanPersister readPersister;
 
     private static final String forbiddenAttributes[] = {"run date"};
-    private final String defaultAttributes[] = {"Project Name", "Sample Name", "Parent Sample"};
+    private final String defaultAttributes[] = {Constants.ATTR_PROJECT_NAME, Constants.ATTR_SAMPLE_NAME, Constants.ATTR_PARENT_SAMPLE_NAME};
 
     private List aaData;
     private String type;
@@ -187,21 +187,24 @@ public class ProductionStatusAjax extends ActionSupport implements IAjaxAction {
 
             for (Sample sample : samples) {
                 Map<String, Object> sampleAttrMap = new HashMap<String, Object>();
-                if(!projects.containsKey(sample.getProjectId())) {
+                if(!projects.containsKey(sample.getProjectId())) { //recycle or get project data with attributes
                     currProject = readPersister.getProject(sample.getProjectId());
                     projects.put(currProject.getProjectId(), currProject);
 
                     List<ProjectAttribute> projectAttributesList = readPersister.getProjectAttributes(currProject.getProjectId());
                     Map<String, Object> projectAttrMap = new HashMap<String, Object>();
                     projectAttrMap.putAll(CommonTool.getAttributeValueMap(projectAttributesList, true, null));
-                    projectAttrMap.put("Project Name", currProject.getProjectName());
+
+                    if(!projectAttrMap.containsKey(Constants.ATTR_PROJECT_NAME)) { //if there is no project name attribute, use project name from project object
+                        projectAttrMap.put(Constants.ATTR_PROJECT_NAME, currProject.getProjectName());
+                    }
                     projectAttributes.put(currProject.getProjectId(), projectAttrMap);
                 }
 
                 currProject = projects.get(sample.getProjectId());
                 sampleAttrMap.putAll(projectAttributes.get(currProject.getProjectId()));
 
-                sampleAttrMap.put("Sample Name", sample.getSampleName());
+                sampleAttrMap.put(Constants.ATTR_SAMPLE_NAME, sample.getSampleName());
                 sampleAttrMap.put("sampleId", sample.getSampleId());
 
                 if (sample.getParentSampleId() != null) { //get parent sample information and cache it

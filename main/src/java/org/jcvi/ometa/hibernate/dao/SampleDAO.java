@@ -26,6 +26,7 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.jcvi.ometa.model.Sample;
+import org.jcvi.ometa.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -333,7 +334,8 @@ public class SampleDAO extends HibernateDAO {
 
     public List<Sample> getAllSamples(String projectIds, String attributeNames, String sSearch, String sortType, String sortCol, String sortDir, Session session) throws DAOException {
         List<Sample> sampleList = new ArrayList<Sample>();
-        String defaultAttributes[] = {"Project Name", "Sample Name", "Parent Sample", "Parent Project"};
+        String defaultAttributes[] = {Constants.ATTR_PROJECT_NAME, Constants.ATTR_SAMPLE_NAME, Constants.ATTR_PARENT_SAMPLE_NAME};
+
         try {
             List results = null;
             boolean isInt = (sSearch!=null && Pattern.compile("\\d+").matcher(sSearch).matches());
@@ -420,13 +422,13 @@ public class SampleDAO extends HibernateDAO {
                     if(isSearch)
                         temp_sql = " and "+sql_wsort_s.replaceFirst("#sampleIds#", sub_sql.replaceAll("#selector#", "s.sample_id"));
                     temp_sql += " order by ";
-                    if(sortCol.equals("Project Name"))
+                    if(sortCol.equals(Constants.ATTR_PROJECT_NAME))
                         temp_sql += "p.projet_name ";
-                    else if(sortCol.equals("Sample Name"))
+                    else if(sortCol.equals(Constants.ATTR_SAMPLE_NAME))
                         temp_sql += "s.sample_name ";
                     else if(sortCol.equals("Parent Project"))
                         temp_sql += "p_1.project_name ";
-                    else if(sortCol.equals("Parent Sample"))
+                    else if(sortCol.equals(Constants.ATTR_PARENT_SAMPLE_NAME))
                         temp_sql += "s_1.sample_name ";
                     sql = sql_s_default.replace("#opt#", temp_sql + " #sortDir# ");
                 } else {

@@ -229,7 +229,7 @@ public class JsonProducer implements Schedulable {
                 json.put("attributes", Arrays.asList(screenAttributes.split(",")));
             }
 
-            json.put("sorting", sorting==null||sorting.isEmpty()||sorting.equals("-")?null:sorting);
+            json.put("sorting", (sorting == null || sorting.isEmpty() || sorting.equals("-") ? null : sorting));
             json.put("projectNames", projectNames);
 
             List<ProjectAttribute> allProjectAttributes = pseEjb.getProjectAttributes(projectIds);
@@ -276,8 +276,8 @@ public class JsonProducer implements Schedulable {
                     }
                 }
 
-                if (!projectAttrMap.containsKey("Project Name"))
-                    projectAttrMap.put("Project Name", project.getProjectName());
+                if (!projectAttrMap.containsKey(Constants.ATTR_PROJECT_NAME))
+                    projectAttrMap.put(Constants.ATTR_PROJECT_NAME, project.getProjectName());
 
                 currSum.put("p_n", project.getProjectName());
                 currSum.put("p_s", projectAttrMap.get(PROJECT_STATUS));
@@ -293,7 +293,7 @@ public class JsonProducer implements Schedulable {
                 for (Sample sample : samplesForProject) {
                     Map<String, Object> sampleAttrMap = new HashMap<String, Object>();
                     sampleAttrMap.putAll(projectAttrMap);
-                    sampleAttrMap.put("Sample Name", sample.getSampleName());
+                    sampleAttrMap.put(Constants.ATTR_SAMPLE_NAME, sample.getSampleName());
                     sampleAttrMap.put("sampleId", sample.getSampleId());
 
                     List<SampleAttribute> sampleAttributes = sampleIdVsAttributeList.get(sample.getSampleId());

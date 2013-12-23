@@ -74,4 +74,8 @@ public class Constants {
 
     public static final String EVENT_PROJECT_REGISTRATION = "ProjectRegistration";
     public static final String EVENT_SAMPLE_REGISTRATION = "SampleRegistration";
+
+    public static final String ATTR_PROJECT_NAME = "Project Name";
+    public static final String ATTR_SAMPLE_NAME = "Sample Name";
+    public static final String ATTR_PARENT_SAMPLE_NAME = "Parent Sample";
 }
