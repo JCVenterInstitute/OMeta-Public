@@ -21,7 +21,6 @@
 
 package org.jcvi.ometa.action;
 
-import au.com.bytecode.opencsv.CSVReader;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -32,7 +31,7 @@ import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.stateless_session_bean.ForbiddenResourceException;
 import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
-import org.jcvi.ometa.utils.CsvPreProcessingUtils;
+import org.jcvi.ometa.utils.TemplatePreProcessingUtils;
 import org.jcvi.ometa.utils.UploadActionDelegate;
 import org.jtc.common.util.property.PropertyHelper;
 
@@ -41,7 +40,6 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.io.File;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.*;
@@ -84,7 +82,6 @@ public class EventLoader extends ActionSupport {
     private ArrayList<String> loadedFiles;
 
     private static final String DEFAULT_USER_MESSAGE = "Not yet entered";
-    private final String MULTIPLE_SUBJECT_IN_FILE_MESSAGE = "Multiple projects are found in the file";
     private final String UNSUPPORTED_UPLOAD_FILE_TYPE_MESSAGE = "File type is not supported. Supported file types are JPG, JPEG, GIF and BMP.";
     private String message = DEFAULT_USER_MESSAGE;
 
@@ -162,64 +159,11 @@ public class EventLoader extends ActionSupport {
                     if (!this.uploadFile.canRead()) {
                         throw new Exception("Error in reading the file.");
                     } else {
-                        try {
-                            CSVReader reader = new CSVReader(new FileReader(this.uploadFile));
-
-                            int lineCount = 0;
-                            List<String> columns = new ArrayList<String>();
-
-                            String currProjectName = null;
-
-                            gridList = new ArrayList<GridBean>();
-                            boolean hasSampleName = false;
-                            String[] line;
-                            while ((line = reader.readNext()) != null) {
-                                if (lineCount != 1) {
-                                    if (lineCount == 0) {
-                                        Collections.addAll(columns, line);
-                                        hasSampleName = columns.indexOf("SampleName") >= 0;
-                                    } else {
-                                        int colIndex = 0;
-
-                                        currProjectName = line[colIndex++];
-                                        if (!isProjectRegistration && !currProjectName.equals(this.projectName)) {
-                                            throw new Exception(MULTIPLE_SUBJECT_IN_FILE_MESSAGE);
-                                        }
-
-                                        GridBean gBean = new GridBean();
-                                        gBean.setProjectName(currProjectName);
-
-                                        if (hasSampleName) {
-                                            gBean.setSampleName(line[(colIndex++)]);
-                                        }
-
-                                        if (isProjectRegistration) {
-                                            gBean.setProjectName(currProjectName);
-                                            gBean.setProjectPublic(line[(colIndex++)]);
-                                        } else if (isSampleRegistration) {
-                                            gBean.setParentSampleName(line[(colIndex++)]);
-                                            gBean.setSamplePublic(line[(colIndex++)]);
-                                        }
-
-                                        gBean.setBeanList(new ArrayList<FileReadAttributeBean>());
-                                        for (; colIndex < columns.size(); colIndex++) {
-                                            FileReadAttributeBean fBean = new FileReadAttributeBean();
-                                            fBean.setProjectName(isProjectRegistration ? currProjectName : this.projectName);
-                                            fBean.setAttributeName(columns.get(colIndex));
-                                            fBean.setAttributeValue(line[colIndex]);
-                                            gBean.getBeanList().add(fBean);
-                                        }
-                                        this.gridList.add(gBean);
-                                    }
-                                }
-                                lineCount++;
-                            }
-                            jobType = "grid";
-                        } catch (Exception ex) {
-                            throw ex;
-                        }
+                        TemplatePreProcessingUtils csvUtils = new TemplatePreProcessingUtils();
+                        gridList = csvUtils.parseLoadedFile(uploadFile, projectName, isProjectRegistration, isSampleRegistration);
+                        jobType = "grid";
                     }
-                } else if (jobType.equals("template")) { //download template
+                } else if (jobType.startsWith("template")) { //download template
                     List<EventMetaAttribute> emaList = readPersister.getEventMetaAttributes(projectName, eventName);
 
                     /*
@@ -228,10 +172,9 @@ public class EventLoader extends ActionSupport {
                     ModelValidator validator = new ModelValidator();
                     validator.validateEventTemplateSanity(emaList, projectName, sampleName, eventName);
                     */
-
-                    TemplatePreProcessingUtils cvsUtils = new TemplatePreProcessingUtils();
+                    TemplatePreProcessingUtils csvUtils = new TemplatePreProcessingUtils();
                     String templateType = jobType.substring(jobType.indexOf("_")+1);
-                    downloadStream = cvsUtils.buildFileContent(templateType, emaList, projectName, sampleName, eventName);
+                    downloadStream = csvUtils.buildFileContent(templateType, emaList, projectName, sampleName, eventName);
                     downloadContentType = templateType.equals("c")?"csv":"vnd.ms-excel";
                     rtnVal = Constants.FILE_DOWNLOAD_MSG;
                 }
