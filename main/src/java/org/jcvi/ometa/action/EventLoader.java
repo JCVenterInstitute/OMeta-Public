@@ -75,8 +75,9 @@ public class EventLoader extends ActionSupport {
     private InputStream downloadStream;
     private String downloadContentType;
 
-    private File uploadFile;
-    private String uploadFileName;
+    private File dataTemplate;
+    private String dataTemplateFileName;
+    private String dataTemplateContentType;
 
     private String fileStoragePath;
     private ArrayList<String> loadedFiles;
@@ -156,11 +157,14 @@ public class EventLoader extends ActionSupport {
                     this.reset();
 
                 } else if (jobType.equals("file")) { //loads data from a CSV file to grid view
-                    if (!this.uploadFile.canRead()) {
+                    if (!this.getDataTemplate().canRead()) {
                         throw new Exception("Error in reading the file.");
                     } else {
-                        TemplatePreProcessingUtils csvUtils = new TemplatePreProcessingUtils();
-                        gridList = csvUtils.parseLoadedFile(uploadFile, projectName, isProjectRegistration, isSampleRegistration);
+                        TemplatePreProcessingUtils templateUtil = new TemplatePreProcessingUtils();
+                        gridList = templateUtil.parseLoadedFile(
+                                this.getDataTemplateFileName(), this.getDataTemplate(),
+                                projectName, isProjectRegistration, isSampleRegistration
+                        );
                         jobType = "grid";
                     }
                 } else if (jobType.startsWith("template")) { //download template
@@ -172,9 +176,9 @@ public class EventLoader extends ActionSupport {
                     ModelValidator validator = new ModelValidator();
                     validator.validateEventTemplateSanity(emaList, projectName, sampleName, eventName);
                     */
-                    TemplatePreProcessingUtils csvUtils = new TemplatePreProcessingUtils();
+                    TemplatePreProcessingUtils templateUtil = new TemplatePreProcessingUtils();
                     String templateType = jobType.substring(jobType.indexOf("_")+1);
-                    downloadStream = csvUtils.buildFileContent(templateType, emaList, projectName, sampleName, eventName);
+                    downloadStream = templateUtil.buildFileContent(templateType, emaList, projectName, sampleName, eventName);
                     downloadContentType = templateType.equals("c")?"csv":"vnd.ms-excel";
                     rtnVal = Constants.FILE_DOWNLOAD_MSG;
                 }
@@ -229,8 +233,8 @@ public class EventLoader extends ActionSupport {
                     tx.commit();
                 }
 
-                if(jobType!=null && jobType.equals("grid") && this.uploadFile!=null) {
-                    this.uploadFile.delete();
+                if(jobType!=null && jobType.equals("grid") && this.getDataTemplate()!=null) {
+                    this.getDataTemplate().delete();
                 }
             } catch(Exception ex) {
                 ex.printStackTrace();
@@ -454,7 +458,7 @@ public class EventLoader extends ActionSupport {
     }
 
     private String getUnknownErrorMessage() {
-        return "Unknown error uploading file " + this.getUploadFileName();
+        return "Unknown error uploading file " + this.getDataTemplate();
     }
 
     public String getProjectName() {
@@ -577,19 +581,27 @@ public class EventLoader extends ActionSupport {
         this.downloadContentType = downloadContentType;
     }
 
-    public File getUploadFile() {
-        return uploadFile;
+    public File getDataTemplate() {
+        return dataTemplate;
     }
 
-    public void setUploadFile(File uploadFile) {
-        this.uploadFile = uploadFile;
+    public void setDataTemplate(File dataTemplate) {
+        this.dataTemplate = dataTemplate;
     }
 
-    public String getUploadFileName() {
-        return uploadFileName;
+    public String getDataTemplateFileName() {
+        return dataTemplateFileName;
     }
 
-    public void setUploadFileName(String uploadFileName) {
-        this.uploadFileName = uploadFileName;
+    public void setDataTemplateFileName(String dataTemplateFileName) {
+        this.dataTemplateFileName = dataTemplateFileName;
+    }
+
+    public String getDataTemplateContentType() {
+        return dataTemplateContentType;
+    }
+
+    public void setDataTemplateContentType(String dataTemplateContentType) {
+        this.dataTemplateContentType = dataTemplateContentType;
     }
 }

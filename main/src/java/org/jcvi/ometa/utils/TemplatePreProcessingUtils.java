@@ -177,7 +177,17 @@ public class TemplatePreProcessingUtils {
         DataValidation validation = null;
         //adds select box with option values
         if(detail.hasOptions()) {
-            constraint = DVConstraint.createExplicitListConstraint(detail.getOptionsArray());
+            //remove "multi(", ")" wrapper for multi-select option values
+            String[] optionArray = detail.getOptionsArray();
+            if(optionArray.length > 1) {
+                String first = optionArray[0];
+                if(first.startsWith("multi(")) {
+                    optionArray[0] = first.substring(6);
+                    String last = optionArray[optionArray.length - 1];
+                    optionArray[optionArray.length - 1] = last.substring(0, last.length() - 1);
+                }
+            }
+            constraint = DVConstraint.createExplicitListConstraint(optionArray);
             validation = new HSSFDataValidation(addressList, constraint);
             validation.setSuppressDropDownArrow(false);
             sheet.addValidationData(validation);
@@ -217,13 +227,12 @@ public class TemplatePreProcessingUtils {
     }
 
     public List<GridBean> parseLoadedFile(
-            File uploadedFile, String projectName,
+            String originalFileName, File uploadedFile, String projectName,
             boolean isProjectRegistration, boolean isSampleRegistration
     ) throws Exception {
         List<GridBean> gridBeans = new ArrayList<GridBean>();
 
-        String fileName = uploadedFile.getName();
-        String fileType = fileName.substring(fileName.lastIndexOf(".") + 1);
+        String fileType = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
 
         List<String> columns = new ArrayList<String>();
         String currProjectName = null;
