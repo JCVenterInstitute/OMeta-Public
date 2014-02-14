@@ -22,10 +22,10 @@
 package org.jcvi.ometa.engine;
 
 import org.apache.log4j.Logger;
+import org.apache.poi.util.IOUtils;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
 import org.jcvi.ometa.configuration.BeanPopulator;
 import org.jcvi.ometa.configuration.EventLoader;
-import org.jcvi.ometa.configuration.FileMappingSupport;
 import org.jcvi.ometa.configuration.InputBeanType;
 import org.jcvi.ometa.hibernate.dao.DAOException;
 import org.jcvi.ometa.model.*;
@@ -33,9 +33,7 @@ import org.jcvi.ometa.utils.*;
 import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.scratch.ScratchUtils;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Date;
 import java.util.List;
 
@@ -141,7 +139,7 @@ public class LoadingEngine {
         String projectName = usage.getProjectName();
         String sampleName = usage.getSampleName();
         String eventName = usage.getTemplateEventName();
-        String outputFile = usage.getOutputLocation();
+        String outputPath = usage.getOutputLocation();
         String userName = usage.getUsername();
         String passWord = usage.getPassword();
         String server = usage.getServerUrl();
@@ -183,19 +181,16 @@ public class LoadingEngine {
                 }
             }
 
-            StringBuilder outputBuilder = new StringBuilder();
-            TsvPreProcessingUtils utils = new TsvPreProcessingUtils();
-            utils.buildFileContent( emaList, projectName, sampleName, outputBuilder );
+            TemplatePreProcessingUtils templateUtils = new TemplatePreProcessingUtils();
+            InputStream templateInputStream = templateUtils.buildFileContent("c", emaList, projectName, sampleName, eventName);
 
-            String outputFileName =
-                    new Date().getTime() + "_" + eventName + "_" +
-                    FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX;
-            File f = new File( outputFile, outputFileName );
-            fw = new FileWriter( f );
-            fw.append( outputBuilder.toString() );
-            fw.close();
+            String outputFileName = eventName + "_" + new Date().getTime() + ".csv";
+            File templateFile = new File(outputPath, outputFileName);
+            FileOutputStream outputStream = new FileOutputStream(templateFile);
+            IOUtils.copy(templateInputStream, outputStream);
+            IOUtils.closeQuietly(outputStream);
 
-            System.out.println("Your template file has been created, and is located at " + f.getAbsolutePath() );
+            System.out.println("Your template file has been created, and is located at " + templateFile.getAbsolutePath() );
 
         } catch ( Exception ex ) {
             throw ex;
