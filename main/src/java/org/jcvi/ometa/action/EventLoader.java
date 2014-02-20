@@ -177,7 +177,7 @@ public class EventLoader extends ActionSupport {
                     validator.validateEventTemplateSanity(emaList, projectName, sampleName, eventName);
                     */
                     TemplatePreProcessingUtils templateUtil = new TemplatePreProcessingUtils();
-                    String templateType = jobType.substring(jobType.indexOf("_")+1);
+                    String templateType = jobType.substring(jobType.indexOf("_") + 1);
                     downloadStream = templateUtil.buildFileContent(templateType, emaList, projectName, sampleName, eventName);
                     downloadContentType = templateType.equals("c")?"csv":"vnd.ms-excel";
                     rtnVal = Constants.FILE_DOWNLOAD_MSG;

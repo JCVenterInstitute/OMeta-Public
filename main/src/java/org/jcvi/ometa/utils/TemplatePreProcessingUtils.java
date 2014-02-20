@@ -296,42 +296,45 @@ public class TemplatePreProcessingUtils {
             int lineCount = 0;
 
             while ((line = reader.readNext()) != null) {
-                if (lineCount != 1) {
-                    if (lineCount == 0) {
+                if (lineCount != 1) { //skips comment line
+                    if (lineCount == 0) { //headers
                         Collections.addAll(columns, line);
                         hasSampleName = columns.indexOf("SampleName") >= 0;
                     } else {
                         int colIndex = 0;
 
                         currProjectName = line[colIndex++];
-                        if (!isProjectRegistration && !currProjectName.equals(projectName)) {
-                            throw new Exception("Multiple projects are found in the file");
-                        }
 
-                        GridBean gBean = new GridBean();
-                        gBean.setProjectName(currProjectName);
+                        if(!currProjectName.isEmpty()) {
+                            if (!isProjectRegistration && !currProjectName.equals(projectName)) {
+                                throw new Exception("Multiple projects are found in the file");
+                            }
 
-                        if (hasSampleName) {
-                            gBean.setSampleName(line[(colIndex++)]);
-                        }
-
-                        if (isProjectRegistration) {
+                            GridBean gBean = new GridBean();
                             gBean.setProjectName(currProjectName);
-                            gBean.setProjectPublic(line[(colIndex++)]);
-                        } else if (isSampleRegistration) {
-                            gBean.setParentSampleName(line[(colIndex++)]);
-                            gBean.setSamplePublic(line[(colIndex++)]);
-                        }
 
-                        gBean.setBeanList(new ArrayList<FileReadAttributeBean>());
-                        for (; colIndex < columns.size(); colIndex++) {
-                            FileReadAttributeBean fBean = new FileReadAttributeBean();
-                            fBean.setProjectName(isProjectRegistration ? currProjectName : projectName);
-                            fBean.setAttributeName(columns.get(colIndex));
-                            fBean.setAttributeValue(line[colIndex]);
-                            gBean.getBeanList().add(fBean);
+                            if (hasSampleName) {
+                                gBean.setSampleName(line[(colIndex++)]);
+                            }
+
+                            if (isProjectRegistration) {
+                                gBean.setProjectName(currProjectName);
+                                gBean.setProjectPublic(line[(colIndex++)]);
+                            } else if (isSampleRegistration) {
+                                gBean.setParentSampleName(line[(colIndex++)]);
+                                gBean.setSamplePublic(line[(colIndex++)]);
+                            }
+
+                            gBean.setBeanList(new ArrayList<FileReadAttributeBean>());
+                            for (; colIndex < columns.size(); colIndex++) {
+                                FileReadAttributeBean fBean = new FileReadAttributeBean();
+                                fBean.setProjectName(isProjectRegistration ? currProjectName : projectName);
+                                fBean.setAttributeName(columns.get(colIndex));
+                                fBean.setAttributeValue(line[colIndex]);
+                                gBean.getBeanList().add(fBean);
+                            }
+                            gridBeans.add(gBean);
                         }
-                        gridBeans.add(gBean);
                     }
                 }
                 lineCount++;
