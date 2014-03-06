@@ -253,7 +253,15 @@ public class TemplatePreProcessingUtils {
                     }
                     hasSampleName = columns.indexOf("SampleName") >= 0;
 
-                    for(int i = 2; i <= sheet.getLastRowNum(); i++) {
+                    int startingRow = 1;
+                    Row metaRow = sheet.getRow(startingRow);
+                    String firstMetaColumn = metaRow.getCell(0).getStringCellValue();
+                    if(!firstMetaColumn.isEmpty() && firstMetaColumn.startsWith("#") && firstMetaColumn.indexOf("string") > 0) {
+                        startingRow = 2; //skip the second line that holds metadata of each column
+                    }
+
+
+                    for(int i = startingRow; i <= sheet.getLastRowNum(); i++) {
                         Row row = sheet.getRow(i);
                         int colIndex = 0;
 
@@ -296,45 +304,52 @@ public class TemplatePreProcessingUtils {
             int lineCount = 0;
 
             while ((line = reader.readNext()) != null) {
-                if (lineCount != 1) { //skips comment line
-                    if (lineCount == 0) { //headers
-                        Collections.addAll(columns, line);
-                        hasSampleName = columns.indexOf("SampleName") >= 0;
-                    } else {
-                        int colIndex = 0;
+                if (lineCount == 0) { //headers
+                    Collections.addAll(columns, line);
+                    hasSampleName = columns.indexOf("SampleName") >= 0;
+                } else {
+                    int colIndex = 0;
 
-                        currProjectName = line[colIndex++];
-
-                        if(!currProjectName.isEmpty()) {
-                            if (!isProjectRegistration && !currProjectName.equals(projectName)) {
-                                throw new Exception("Multiple projects are found in the file");
-                            }
-
-                            GridBean gBean = new GridBean();
-                            gBean.setProjectName(currProjectName);
-
-                            if (hasSampleName) {
-                                gBean.setSampleName(line[(colIndex++)]);
-                            }
-
-                            if (isProjectRegistration) {
-                                gBean.setProjectName(currProjectName);
-                                gBean.setProjectPublic(line[(colIndex++)]);
-                            } else if (isSampleRegistration) {
-                                gBean.setParentSampleName(line[(colIndex++)]);
-                                gBean.setSamplePublic(line[(colIndex++)]);
-                            }
-
-                            gBean.setBeanList(new ArrayList<FileReadAttributeBean>());
-                            for (; colIndex < columns.size(); colIndex++) {
-                                FileReadAttributeBean fBean = new FileReadAttributeBean();
-                                fBean.setProjectName(isProjectRegistration ? currProjectName : projectName);
-                                fBean.setAttributeName(columns.get(colIndex));
-                                fBean.setAttributeValue(line[colIndex]);
-                                gBean.getBeanList().add(fBean);
-                            }
-                            gridBeans.add(gBean);
+                    if(lineCount == 1) {
+                        //skip the second line that holds metadata of each column
+                        String firstMetaColumn = line[colIndex];
+                        if(!firstMetaColumn.isEmpty() && firstMetaColumn.startsWith("#") && firstMetaColumn.indexOf("string") > 0) {
+                            lineCount++;
+                            continue;
                         }
+                    }
+
+                    currProjectName = line[colIndex++];
+
+                    if(!currProjectName.isEmpty()) {
+                        if (!isProjectRegistration && !currProjectName.equals(projectName)) {
+                            throw new Exception("Multiple projects are found in the file");
+                        }
+
+                        GridBean gBean = new GridBean();
+                        gBean.setProjectName(currProjectName);
+
+                        if (hasSampleName) {
+                            gBean.setSampleName(line[(colIndex++)]);
+                        }
+
+                        if (isProjectRegistration) {
+                            gBean.setProjectName(currProjectName);
+                            gBean.setProjectPublic(line[(colIndex++)]);
+                        } else if (isSampleRegistration) {
+                            gBean.setParentSampleName(line[(colIndex++)]);
+                            gBean.setSamplePublic(line[(colIndex++)]);
+                        }
+
+                        gBean.setBeanList(new ArrayList<FileReadAttributeBean>());
+                        for (; colIndex < columns.size(); colIndex++) {
+                            FileReadAttributeBean fBean = new FileReadAttributeBean();
+                            fBean.setProjectName(isProjectRegistration ? currProjectName : projectName);
+                            fBean.setAttributeName(columns.get(colIndex));
+                            fBean.setAttributeValue(line[colIndex]);
+                            gBean.getBeanList().add(fBean);
+                        }
+                        gridBeans.add(gBean);
                     }
                 }
                 lineCount++;
