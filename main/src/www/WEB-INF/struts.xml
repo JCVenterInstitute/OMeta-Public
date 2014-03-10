@@ -162,37 +162,6 @@
             </result>
         </action>
 
-        <!-- This does not have an auth interceptor, because it is wholly declaratively protected. -->
-        <!--
-        <action name="webLoader"
-                class="org.jcvi.ometa.action.WebLoader"
-                method="execute">
-            <result name="success">/JSP/Upload.jsp</result>
-            <result name="NO_FILE_GIVEN">/JSP/Upload.jsp</result>
-            <result name="FILE_NOT_FOUND">/JSP/Upload.jsp</result>
-            <result name="EVENT_TYPE_NOT_CHOSEN">/JSP/Upload.jsp</result>
-            <result name="FAILURE">/JSP/Upload.jsp</result>
-        </action>
-
-        <action name="templateMaker"
-                class="org.jcvi.ometa.action.EventTemplateMaker"
-                method="execute">
-            <result name="success">/JSP/EventTemplateMaker.jsp</result>
-            <result name="FILE_DOWNLOAD" type="stream">
-                <param name="contentDisposition">filename="${downloadFileName}"</param>
-                <param name="contentType">text/plain</param>
-            </result>
-            <result name="login" type="redirectAction">
-                <param name="actionName">forceLoginForTemplateMaker</param>
-                <param name="namespace">/</param>
-                <param name="projectNames">${projectNames}</param>
-                <param name="attributes">${attributes}</param>
-            </result>
-            <result name="FAILURE">/JSP/EventTemplateMaker.jsp</result>
-            <result name="forbidden">/JSP/EventTemplateMaker.jsp</result>
-        </action>
-		-->
-
         <action name="eventReport"
                 class="org.jcvi.ometa.action.EventReport"
                 method="eventReport">

@@ -49,12 +49,6 @@
             <url-pattern>forceLoginForProductionStatus.action</url-pattern>
             <url-pattern>forceLoginForEventDetails.action</url-pattern>
 
-            <!--<url-pattern>templateMaker.action</url-pattern>-->
-            <!--<url-pattern>/JSP/EventTemplateMaker.jsp</url-pattern>-->
-
-            <url-pattern>webLoader.action</url-pattern>
-            <url-pattern>/JSP/Upload.jsp</url-pattern>
-
             <url-pattern>eventDetail.action</url-pattern>
             <url-pattern>/JSP/EventDetail.jsp</url-pattern>
 
