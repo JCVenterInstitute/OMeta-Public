@@ -42,7 +42,6 @@ public class LoadingEngineUsage {
     protected static final String MULTIPART_INPUTFILE_PARAM_NAME = "multipartInputfile";
     protected static final String DATABASE_ENVIRONMENT_PARAM_NAME = "serverUrl";
     protected static final String EVENT_TYPE_PARAM_NAME = "eventType";
-    protected static final String MAKE_STUBB_PARAM_NAME = "makeStubb";
     protected static final String OUTPUTLOC_PARAM_NAME = "outputLocation";
     protected static final String MAKE_EVENT_PARAM_NAME = "makeEvent";
     protected static final String PROJECT_NAME_PARAM_NAME = "projectName";
@@ -53,7 +52,6 @@ public class LoadingEngineUsage {
 
     private static final String APPLICATION_BLURB =
         "Loading engine: loads files of events and settings, to be written to the events database as table rows.  " +
-        "When -" + MAKE_STUBB_PARAM_NAME + " is given, inputfile is an output from this run, and input to a future invocation." +
         "  To make events, and get more detailed information, give flags   -" + MAKE_EVENT_PARAM_NAME + ",  -" +
         PROJECT_NAME_PARAM_NAME + ", -" + SAMPLE_NAME_PARAM_NAME + ", and -" + EVENT_TYPE_PARAM_NAME + ".";
 
@@ -63,7 +61,6 @@ public class LoadingEngineUsage {
     private OptionParameter multiDefinitionFileParam;
     private OptionParameter serverUrlParam;
     private OptionParameter eventTypeParam;
-    private FlagParameter makeStubbFlag;
     private FlagParameter makeTemplateFlag;
     private OptionParameter projectNameParam;
     private OptionParameter sampleNameParam;
@@ -79,7 +76,7 @@ public class LoadingEngineUsage {
      */
     public LoadingEngineUsage(String[] commandLineArguments) throws Exception {
         init(commandLineArguments);
-        if (! validate() ) {
+        if (! validate()) {
             System.out.println(getUsage());
             System.out.println();
             System.out.println(getErrors());
@@ -96,9 +93,9 @@ public class LoadingEngineUsage {
     }
 
     public String getUsername() { return usernameParam.getValue(); }
-    public void setUsername( String username ) { usernameParam.setValue( username ); }
+    public void setUsername( String username) { usernameParam.setValue( username ); }
     public String getPassword() { return passwordParam.getValue(); }
-    public void setPassword( String password ) { passwordParam.setValue( password ); }
+    public void setPassword( String password) { passwordParam.setValue( password ); }
 
     public String getInputFilename() { return inputFileNameParam.getValue(); }
     public void setInputFilename(String filename) { inputFileNameParam.setValue(filename); }
@@ -107,26 +104,23 @@ public class LoadingEngineUsage {
     public String getServerUrl() { return serverUrlParam.getValue(); }
     public void setServerUrl(String url) { serverUrlParam.setValue( url ); }
     public String getMultipartInputfileName() { return multiDefinitionFileParam.getValue(); }
-    public void setMultipartInputfileName( String filename ) { multiDefinitionFileParam.setValue( filename ); }
+    public void setMultipartInputfileName( String filename) { multiDefinitionFileParam.setValue( filename ); }
     public boolean isMultipart() { return !isEmpty( multiDefinitionFileParam); }
 
-    public void setCreateStubb( boolean flag ) { makeStubbFlag.setValue( flag ); }
-    public boolean isCreateStubb() { return makeStubbFlag.getValue(); }
-
-    public void setEventType( String eventType ) { eventTypeParam.setValue( eventType ); }
+    public void setEventType( String eventType) { eventTypeParam.setValue( eventType ); }
     public String getEventType() { return eventTypeParam.getValue(); }
 
     // All related to creating a template for event.
-    public void setProjectName( String projectName ) { projectNameParam.setValue( projectName ); }
+    public void setProjectName( String projectName) { projectNameParam.setValue( projectName ); }
     public String getProjectName() { return projectNameParam.getValue(); }
-    public void setSampleName( String sampleName ) { sampleNameParam.setValue( sampleName ); }
+    public void setSampleName( String sampleName) { sampleNameParam.setValue( sampleName ); }
     public String getSampleName() { return sampleNameParam.getValue(); }
     public boolean isMakeEventTemplate() { return makeTemplateFlag.getValue(); }
     public void setMakeEventTemplate(boolean flag) { makeTemplateFlag.setValue( flag ); }
     public String getTemplateEventName() { return templateEventNameParam.getValue(); }
-    public void setTemplateEventName( String templateEventName ) {  templateEventNameParam.setValue( templateEventName ); }
+    public void setTemplateEventName( String templateEventName) {  templateEventNameParam.setValue( templateEventName ); }
     public String getOutputLocation() { return outputLocationParam.getValue(); }
-    public void setOutputLocation( String location ) { outputLocationParam.setValue( location ); }
+    public void setOutputLocation( String location) { outputLocationParam.setValue( location ); }
     public boolean isCmdLineNamedEvent() { return ! isEmpty( eventTypeParam ); }
 
     /** Answers the question: are the inputs good? */
@@ -135,24 +129,20 @@ public class LoadingEngineUsage {
         errors = new StringBuilder();
 
         try {
-            if ( isMakeEventTemplate() ) {
+            if(isMakeEventTemplate()) {
                 testOutputLocation(outputLocationParam.getValue(), rtnVal);
-                if ( isEmpty(projectNameParam) || isEmpty(templateEventNameParam) ) {
+                if(isEmpty(projectNameParam) || isEmpty(templateEventNameParam)) {
                     errors.append("No value provided for projectName or event template name, for template generation.\n");
                     rtnVal = false;
                 }
             }
-            else if ( isEmpty(inputFileNameParam)  &&   makeStubbFlag.getValue() == true ) {
-                errors.append("No value provided for stub output parameter " + inputFileNameParam.getName() ).append("\n");
-                rtnVal = false;
-            }
-            else if ( isEmpty(inputFileNameParam)  &&  isEmpty( multiDefinitionFileParam ) ) {
+            else if(isEmpty(inputFileNameParam)  &&  isEmpty( multiDefinitionFileParam )) {
                 errors.append("No value provided for parameters " + inputFileNameParam.getName() )
                       .append( " or " + multiDefinitionFileParam.getName() )
                       .append("\n");
                 rtnVal = false;
             }
-            else if ( ! isEmpty(inputFileNameParam)  &&  ! isEmpty( multiDefinitionFileParam )) {
+            else if(! isEmpty(inputFileNameParam)  &&  ! isEmpty( multiDefinitionFileParam )) {
                 errors.append("Values provided for both parameters ")
                       .append(inputFileNameParam.getName())
                       .append(" and ")
@@ -162,15 +152,15 @@ public class LoadingEngineUsage {
                 rtnVal = false;
             }
             else {
-                if ( ! isEmpty(inputFileNameParam) ) {
+                if(! isEmpty(inputFileNameParam)) {
                     rtnVal &= testInputFile(inputFileNameParam.getValue(), rtnVal);
                 }
-                else if ( ! isEmpty( multiDefinitionFileParam )) {
+                else if(! isEmpty( multiDefinitionFileParam )) {
                     rtnVal &= testInputFile(multiDefinitionFileParam.getValue(), rtnVal);
                 }
             }
 
-            if ( isEmpty(serverUrlParam) ) {
+            if(isEmpty(serverUrlParam)) {
                 errors.append("Value must be provided for ")
                       .append(serverUrlParam.getName())
                       .append("\n");
@@ -178,19 +168,19 @@ public class LoadingEngineUsage {
             }
 
             // Under some circumstances, will need to login.  But no need if other params were wrong.
-            if ( rtnVal  &&  ! makeStubbFlag.getValue() ) {
-                if ( isEmpty( usernameParam ) ) {
+            if(rtnVal) {
+                if(isEmpty( usernameParam )) {
                     Console console = System.console();
-                    if ( console == null ) {
+                    if(console == null) {
                         errors.append( "No " + usernameParam.getName() + " given, and no console available.\n" );
                     }
                     else {
                         usernameParam.setValue(console.readLine("Enter your USERNAME, please: "));
                     }
                 }
-                if ( isEmpty( passwordParam ) ) {
+                if(isEmpty( passwordParam )) {
                     Console console = System.console();
-                    if ( console == null ) {
+                    if(console == null) {
                         errors.append( "No " + passwordParam.getName() + " given, and no console available.\n" );
                     }
                     else {
@@ -199,7 +189,7 @@ public class LoadingEngineUsage {
                     }
 
                 }
-                if ( isEmpty( usernameParam )  || isEmpty( passwordParam ) ) {
+                if(isEmpty( usernameParam )  || isEmpty( passwordParam )) {
                     errors.append( "For the combination of parameters given, you must either provide both a " +
                             usernameParam.getName() + " value and a " + passwordParam.getName() +
                             " value, or you must respond with them when prompted.\n" );
@@ -211,7 +201,7 @@ public class LoadingEngineUsage {
             // NOTE:  Cannot test that any event type exists, from within this usage object.  That
             //  must be done after database contact has been made.
 
-        } catch ( Exception ex ) {
+        } catch ( Exception ex) {
             errors.append(ex.getMessage()).append("\n");
         }
 
@@ -233,7 +223,6 @@ public class LoadingEngineUsage {
                 inputFileNameParam,
                 eventTypeParam,
                 multiDefinitionFileParam,
-                makeStubbFlag,
                 projectNameParam,
                 sampleNameParam,
                 templateEventNameParam,
@@ -281,10 +270,6 @@ public class LoadingEngineUsage {
         multiDefinitionFileParam.setUsageInfo("Input file to be loaded, which applies multiple" +
                 "\n      types of settings."
         );
-        makeStubbFlag = commandLineHandler.addFlagParameter(MAKE_STUBB_PARAM_NAME);
-        makeStubbFlag.setUsageInfo("Optional: input file does not exist," +
-                "\n      and will be created with headers and no data."
-        );
         serverUrlParam = commandLineHandler.addOptionParameter(DATABASE_ENVIRONMENT_PARAM_NAME);
         serverUrlParam.setUsageInfo("Tells which application server host/port is to be used." +
                 "\n      hostname.domain:PPPP please check with Project Websites team for values," +
@@ -320,56 +305,37 @@ public class LoadingEngineUsage {
     /** Input files all follow these rules. */
     private boolean testInputFile(String filename, boolean rtnVal) {
         File testFile = new File( filename );
-        if ( ! makeStubbFlag.getValue() ) {
-            if ( ! testFile.exists() ) {
-                errors.append("File " + filename + " does not exist.\n");
-            }
-            else if ( ! testFile.canRead() ) {
-                errors.append("File " + filename + " cannot be read.\n");
-            }
-            else if ( ! filename.toLowerCase().endsWith(INPUT_FILE_EXTENSION) ) {
-                errors.append("File " + filename + " does not end with proper extension.\n");
-            }
-            else {
-                rtnVal = true;
-            }
-
-        }
-        else {
-            if ( testFile.exists() ) {
-                errors.append(
-                        "File " + filename + " already exists.  Not overwriting with stubb.\n");
-            }
-            else {
-                rtnVal = true;
-            }
+        if(!testFile.exists()) {
+            errors.append("File " + filename + " does not exist.\n");
+        } else if(!testFile.canRead()) {
+            errors.append("File " + filename + " cannot be read.\n");
+        } else if(!filename.toLowerCase().endsWith(INPUT_FILE_EXTENSION)) {
+            errors.append("File " + filename + " does not end with proper extension.\n");
+        } else {
+            rtnVal = true;
         }
         return rtnVal;
     }
 
     /** Input files all follow these rules. */
     private boolean testOutputLocation(String location, boolean rtnVal) {
-        if ( location == null  ||  location.trim().length() == 0 ) {
+        if(location == null  ||  location.trim().length() == 0) {
             return false;
         }
 
         File testFile = new File( location );
-        if ( makeTemplateFlag.getValue() ) {
-            if ( ! testFile.exists() ) {
+        if(makeTemplateFlag.getValue()) {
+            if(!testFile.exists()) {
                 errors.append("Directory " + location + " does not exist.\n");
-            }
-            else if ( ! testFile.canWrite() ) {
+            } else if(!testFile.canWrite()) {
                 errors.append("Directory " + location + " cannot be written.\n");
-            }
-            else if ( ! testFile.isDirectory() ) {
+            } else if(!testFile.isDirectory()) {
                 errors.append("File " + location + " is not a directory.\n");
-            }
-            else {
+            } else {
                 rtnVal = true;
             }
 
-        }
-        else {
+        } else {
             errors.append( "Do not request an output location for any options except to make a template.\n");
             rtnVal = false;
         }

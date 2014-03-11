@@ -24,7 +24,6 @@ package org.jcvi.ometa.engine;
 import org.apache.log4j.Logger;
 import org.apache.poi.util.IOUtils;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
-import org.jcvi.ometa.configuration.BeanPopulator;
 import org.jcvi.ometa.configuration.EventLoader;
 import org.jcvi.ometa.configuration.InputBeanType;
 import org.jcvi.ometa.hibernate.dao.DAOException;
@@ -33,7 +32,10 @@ import org.jcvi.ometa.utils.*;
 import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.scratch.ScratchUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -65,10 +67,7 @@ public class LoadingEngine {
                 throw new IllegalArgumentException("Invalid Usage");
             }
             LoadingEngine engine = new LoadingEngine( usage );
-            if ( usage.isCreateStubb() ) {
-                engine.createStubbFile();
-            }
-            else if ( usage.isCmdLineNamedEvent() ) {
+            if ( usage.isCmdLineNamedEvent() ) {
                 engine.loadEventFile();
             }
             else if ( usage.isMultipart() ) {
@@ -79,7 +78,6 @@ public class LoadingEngine {
             }
             else {
                 engine.dispatchByFilename();
-
             }
             System.out.println("Loading process done!");
         } catch ( DAOException daoex ) {
@@ -103,30 +101,6 @@ public class LoadingEngine {
     public LoadingEngine( LoadingEngineUsage usage ) {
         this.usage = usage;
 
-    }
-
-    //------------------------------------------PUBLIC INTERFACE
-    /** Makes a file with all the headers expected in a normal input file of type given. */
-    public void createStubbFile() throws Exception {
-        String inputFile = usage.getInputFilename();
-        InputBeanType inputBeanType = InputBeanType.getInputBeanType(inputFile);
-        File file = new File( inputFile );
-        Class beanClass = decodeBeanClass(inputBeanType);
-
-        BeanPopulator populator = new BeanPopulator( beanClass );
-        List<String> headerList = populator.getHeaderNames();
-
-        PrintWriter pw = new PrintWriter( new FileWriter( file ) );
-        int colNum = 0;
-        for ( String header: headerList ) {
-            if ( colNum > 0 ) {
-                pw.print("\t");
-            }
-            pw.print( header );
-            colNum ++;
-        }
-        pw.println();
-        pw.close();
     }
 
     /**
