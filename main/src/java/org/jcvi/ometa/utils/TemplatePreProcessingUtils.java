@@ -8,6 +8,7 @@ import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellRangeAddressList;
 import org.apache.poi.ss.usermodel.*;
+import org.jcvi.ometa.model.Event;
 import org.jcvi.ometa.model.EventMetaAttribute;
 import org.jcvi.ometa.model.FileReadAttributeBean;
 import org.jcvi.ometa.model.GridBean;
@@ -306,7 +307,7 @@ public class TemplatePreProcessingUtils {
             while ((line = reader.readNext()) != null) {
                 if (lineCount == 0) { //headers
                     Collections.addAll(columns, line);
-                    hasSampleName = columns.indexOf("SampleName") >= 0;
+                    hasSampleName = columns.indexOf(Event.SAMPLE_NAME_HEADER) >= 0;
                 } else {
                     int colIndex = 0;
 
@@ -320,6 +321,9 @@ public class TemplatePreProcessingUtils {
                     }
 
                     currProjectName = line[colIndex++];
+                    if(projectName == null) { //assign the first project
+                        projectName = currProjectName;
+                    }
 
                     if(!currProjectName.isEmpty()) {
                         if (!isProjectRegistration && !currProjectName.equals(projectName)) {
@@ -329,7 +333,7 @@ public class TemplatePreProcessingUtils {
                         GridBean gBean = new GridBean();
                         gBean.setProjectName(currProjectName);
 
-                        if (hasSampleName) {
+                        if(hasSampleName) {
                             gBean.setSampleName(line[(colIndex++)]);
                         }
 
@@ -345,6 +349,7 @@ public class TemplatePreProcessingUtils {
                         for (; colIndex < columns.size(); colIndex++) {
                             FileReadAttributeBean fBean = new FileReadAttributeBean();
                             fBean.setProjectName(isProjectRegistration ? currProjectName : projectName);
+                            fBean.setSampleName(hasSampleName ? gBean.getSampleName() : null);
                             fBean.setAttributeName(columns.get(colIndex));
                             fBean.setAttributeValue(line[colIndex]);
                             gBean.getBeanList().add(fBean);
@@ -368,26 +373,57 @@ public class TemplatePreProcessingUtils {
             Long timeStamp = new Date().getTime();
             File scratchLoc = ScratchUtils.getScratchLocation(timeStamp, "EventLoader__" + originalFile.getName());
 
-            outputFile = new File( scratchLoc, originalFile.getName() );
+            outputFile = new File(scratchLoc, originalFile.getName());
 
-            BufferedReader br = new BufferedReader( new FileReader( originalFile ) );
-            PrintWriter pw = new PrintWriter( new FileWriter( outputFile ) );
+            BufferedReader br = new BufferedReader(new FileReader(originalFile));
+            PrintWriter pw = new PrintWriter(new FileWriter(outputFile));
 
             String inline = null;
-            while ( null != ( inline = br.readLine() ) ) {
+            while (null != (inline = br.readLine())) {
                 // Will output all lines except those having pound-sign prefixes.
-                if ( ! inline.startsWith( "#" ) ) {
-                    pw.println( inline );
+                if (!inline.startsWith("#")) {
+                    pw.println(inline);
                 }
             }
 
             outputFile.deleteOnExit();
             br.close();
             pw.close();
-        } catch ( Exception ex ) {
-            throw new IllegalArgumentException( ex );
+        } catch (Exception ex) {
+            throw new IllegalArgumentException(ex);
         }
         return outputFile;
+    }
+
+    /*
+     * Will get rid of files created as temporaries by this process.
+     * This method is copied over from original template processor, TsvPreProcessingUtils.java
+     * 3/10/14 by hkim
+    */
+    public void deletePreProcessedFile( File file ) {
+        try {
+            if(file.exists()) {
+                file.delete();
+                File parentFile = file.getParentFile();
+                // If parent exists, definitely should be deleted.  Separate directory
+                // created for each temporary file.  But the grandparent should only be deleted
+                // if it is just a numeric value.  Numerically-named directories may be
+                // included as grandparents.
+                if ( parentFile.canWrite() ) {
+                    parentFile.delete();
+
+                    parentFile = parentFile.getParentFile();
+                    try {
+                        Long.parseLong( parentFile.getName() );
+                        parentFile.delete();
+                    } catch ( NumberFormatException nfe ) {
+                        // Do nothing.  Just don't try and delete anything.
+                    }
+                }
+            }
+        } catch ( Exception ex ) {
+            System.out.println("WARNING: failed to dispose of an intermediate file " + file.getAbsolutePath() );
+        }
     }
 
     private class HeaderDetail {
