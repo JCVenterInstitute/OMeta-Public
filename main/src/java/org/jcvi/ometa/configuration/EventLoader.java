@@ -22,11 +22,15 @@
 package org.jcvi.ometa.configuration;
 
 import org.jcvi.ometa.model.*;
+import org.jcvi.ometa.utils.Constants;
+import org.jcvi.ometa.utils.TemplatePreProcessingUtils;
 import org.jcvi.ometa.utils.TsvPreProcessingUtils;
 import org.jtc.common.util.tsv.TsvMappedReader;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -96,56 +100,32 @@ public class EventLoader {
         return beans;
     }
 
-    /**
-     * Read all kinds of attribute beans.
-     *
-     * @param inputFile what to load.
-     */
-    public List<FileReadAttributeBean> getGenericAttributeBeans(File inputFile) throws Exception {
+    public List<List<FileReadAttributeBean>> getGenericAttributeBeans(File inputFile, String eventName) throws Exception {
 
-        List<FileReadAttributeBean> beans = new ArrayList<FileReadAttributeBean>();
+        List<List<FileReadAttributeBean>> beans = new ArrayList<List<FileReadAttributeBean>>();
 
         // Assume the file contains right kind of data for this tye of bean.
-        TsvPreProcessingUtils preProcessor = new TsvPreProcessingUtils();
-        File processedFile = preProcessor.preProcessTsvFile(inputFile);
-        TsvMappedReader rdr = new TsvMappedReader(processedFile);
+        TemplatePreProcessingUtils templateUtils = new TemplatePreProcessingUtils();
+        File processedFile = templateUtils.preProcessTemplateFile(inputFile);
 
-        BeanPopulator populator = new BeanPopulator(FileReadAttributeBean.class);
-        rdr.setColumnNames(populator.getDefaultHeaderSet());
+        boolean isProjectRegistration = eventName.equals(Constants.EVENT_PROJECT_REGISTRATION);
+        boolean isSampleRegistration = eventName.equals(Constants.EVENT_SAMPLE_REGISTRATION);
 
-        Map<String, String> row;
-        while (null != (row = rdr.getRowValues())) {
-            FileReadAttributeBean nextBean = new FileReadAttributeBean();
-            // NOTE: all of the beans in the file are required to be the same type.
-            populator.populateBean(row, nextBean);
-            beans.add(nextBean);
+        List<GridBean> parsedList = templateUtils.parseLoadedFile(
+                processedFile.getName(),
+                processedFile,
+                null,
+                isProjectRegistration,
+                isSampleRegistration
+        );
+
+        if(parsedList != null && parsedList.size() > 0) {
+            for(GridBean gridBean : parsedList) {
+                beans.add(gridBean.getBeanList());
+            }
         }
 
-        preProcessor.eliminatePreProcessedFile(processedFile);
-        return beans;
-    }
-
-    public List<FileReadAttributeBean> getGenericAttributeBeansFromCsv(File inputFile) throws Exception {
-
-        List<FileReadAttributeBean> beans = new ArrayList<FileReadAttributeBean>();
-
-        // Assume the file contains right kind of data for this tye of bean.
-        TsvPreProcessingUtils preProcessor = new TsvPreProcessingUtils();
-        File processedFile = preProcessor.preProcessTsvFile(inputFile);
-        TsvMappedReader rdr = new TsvMappedReader(processedFile);
-
-        BeanPopulator populator = new BeanPopulator(FileReadAttributeBean.class);
-        rdr.setColumnNames(populator.getDefaultHeaderSet());
-
-        Map<String, String> row;
-        while (null != (row = rdr.getRowValues())) {
-            FileReadAttributeBean nextBean = new FileReadAttributeBean();
-            // NOTE: all of the beans in the file are required to be the same type.
-            populator.populateBean(row, nextBean);
-            beans.add(nextBean);
-        }
-
-        preProcessor.eliminatePreProcessedFile(processedFile);
+        templateUtils.deletePreProcessedFile(processedFile);
         return beans;
     }
 

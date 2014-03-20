@@ -103,18 +103,11 @@ public class BeanWriter {
         }
     }
 
-    public void writeEvents( File... files) throws Exception {
-        for ( File file: files ) {
-            List<FileReadAttributeBean> attributeBeans = loader.getGenericAttributeBeans( file );
-            String eventName = getEventName(file.getName());
-            pseEjb.loadAttributes(attributeBeans, eventName);
-
-        }
-    }
-
     public void writeEvent( File eventFile, String eventName ) throws Exception {
-        List<FileReadAttributeBean> attributeBeans = loader.getGenericAttributeBeans(eventFile);
-        pseEjb.loadAttributes(attributeBeans, eventName);
+        List<List<FileReadAttributeBean>> attributeBeans = loader.getGenericAttributeBeans(eventFile, eventName);
+        for(List<FileReadAttributeBean> list : attributeBeans) {
+            pseEjb.loadAttributes(list, eventName);
+        }
     }
 
     /**
@@ -137,8 +130,8 @@ public class BeanWriter {
         if ( pos <= 0  ||  inputFilePathStr.charAt( pos - 1 ) != '_' ) {
             throw new Exception(
                     inputFilePathStr + " ends with " +
-                    FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX +
-                    " but has no event name prefixing that.");
+                            FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX +
+                            " but has no event name prefixing that.");
         }
         else {
             int pos2 = inputFilePathStr.lastIndexOf( "_" );
@@ -204,22 +197,22 @@ public class BeanWriter {
         // Finally, the events.
         files = collector.getProjectRegistrationFiles();
         for ( File file: files ) {
-            List<FileReadAttributeBean> attributeBeans = loader.getGenericAttributeBeans( file );
-            String eventName = getEventName( file.getName() );
+            String eventName = getEventName(file.getName());
+            List<FileReadAttributeBean> attributeBeans = loader.getGenericAttributeBeans(file, eventName).get(0);
             parameterObject.addProjectRegistrations( eventName, attributeBeans );
         }
 
         files = collector.getSampleRegistrationFiles();
         for ( File file: files ) {
-            List<FileReadAttributeBean> attributeBeans = loader.getGenericAttributeBeans( file );
-            String eventName = getEventName( file.getName() );
+            String eventName = getEventName(file.getName());
+            List<FileReadAttributeBean> attributeBeans = loader.getGenericAttributeBeans(file, eventName).get(0);
             parameterObject.addSampleRegistrations( eventName, attributeBeans );
         }
 
         files = collector.getEventFiles();
         for ( File file: files ) {
-            List<FileReadAttributeBean> attributeBeans = loader.getGenericAttributeBeans( file );
-            String eventName = getEventName( file.getName() );
+            String eventName = getEventName(file.getName());
+            List<FileReadAttributeBean> attributeBeans = loader.getGenericAttributeBeans(file, eventName).get(0);
             parameterObject.addEvents( eventName, attributeBeans );
         }
 
