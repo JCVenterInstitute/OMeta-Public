@@ -62,21 +62,18 @@ public class LoadingEngine {
         try {
             LoadingEngineUsage usage = new LoadingEngineUsage( args );
             boolean isValid = usage.validate();
-            if ( !isValid ) {
-                System.out.println( usage.getErrors() );
+            if(!isValid) {
+                System.out.println( usage.getErrors());
                 throw new IllegalArgumentException("Invalid Usage");
             }
-            LoadingEngine engine = new LoadingEngine( usage );
-            if ( usage.isCmdLineNamedEvent() ) {
+            LoadingEngine engine = new LoadingEngine(usage);
+            if(usage.isCmdLineNamedEvent()) {
                 engine.loadEventFile();
-            }
-            else if ( usage.isMultipart() ) {
+            } else if(usage.isMultiFile()) {
                 engine.digestMultipart();
-            }
-            else if ( usage.isMakeEventTemplate() ) {
+            } else if (usage.isMakeEventTemplate()) {
                 engine.createEventTemplate();
-            }
-            else {
+            } else {
                 engine.dispatchByFilename();
             }
             System.out.println("Loading process done!");
@@ -112,7 +109,7 @@ public class LoadingEngine {
 
         String projectName = usage.getProjectName();
         String sampleName = usage.getSampleName();
-        String eventName = usage.getTemplateEventName();
+        String eventName = usage.getEventName();
         String outputPath = usage.getOutputLocation();
         String userName = usage.getUsername();
         String passWord = usage.getPassword();
@@ -185,7 +182,7 @@ public class LoadingEngine {
 
         EventLoader loader = new EventLoader();
         String eventFileName = usage.getInputFilename();
-        String eventType = usage.getEventType();
+        String eventType = usage.getEventName();
         try {
             BeanWriter writer = new BeanWriter( serverUrl, userName, passWord, loader );
 
@@ -278,7 +275,7 @@ public class LoadingEngine {
                     writer.writePMAs( file );
                     break;
                 case eventAttributes:
-                    writer.writeEvents( file );
+                    writer.writeEvent(file, null);
                     break;
                 default:
                     throw new IllegalArgumentException(

@@ -337,7 +337,7 @@ public class TemplatePreProcessingUtils {
                             gBean.setSampleName(line[(colIndex++)]);
                         }
 
-                        if (isProjectRegistration) {
+                        if(isProjectRegistration) {
                             gBean.setProjectName(currProjectName);
                             gBean.setProjectPublic(line[(colIndex++)]);
                         } else if (isSampleRegistration) {

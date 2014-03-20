@@ -121,7 +121,7 @@ public class ProjectLoader {
         usage.setServerUrl(serverUrl);
         usage.setUsername(username);
         usage.setPassword(password);
-        usage.setMultipartInputfileName( file.getAbsolutePath() );
+        usage.setMultipartInputfileName(file.getAbsolutePath());
         usage.validate();
         LoadingEngine engine = new LoadingEngine( usage );
         engine.digestMultipart();

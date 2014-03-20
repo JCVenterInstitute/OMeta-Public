@@ -37,5 +37,4 @@ public class FileMappingSupport {
     public static final String LOOKUPVALUE_FILE_SUFFIX = "LookupValues.tsv";
     public static final String EVENT_META_ATTRIBUTES_FILE_SUFFIX = "EventMetaAttributes.tsv";
     public static final String EVENT_ATTRIBUTES_FILE_SUFFIX = "EventAttributes.tsv";
-
 }
