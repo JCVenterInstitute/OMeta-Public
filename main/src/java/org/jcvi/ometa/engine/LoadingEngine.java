@@ -288,38 +288,4 @@ public class LoadingEngine {
 
 
     }
-
-    /**
-     * Find the class that should be used to read data of the type of bean given.
-     */
-    private Class decodeBeanClass(InputBeanType inputBeanType) {
-        Class beanClass = null;
-        switch( inputBeanType ) {
-            case project:
-                beanClass = Project.class;
-                break;
-            case sample:
-                beanClass = Sample.class;
-                break;
-            case lookupValue:
-                beanClass = LookupValue.class;
-                break;
-            case sampleMetaAttributes:
-                beanClass = SampleMetaAttribute.class;
-                break;
-            case projectMetaAttributes:
-                beanClass = ProjectMetaAttribute.class;
-                break;
-            case eventMetaAttribute:
-                beanClass = EventMetaAttribute.class;
-                break;
-            case eventAttributes:
-                beanClass = EventAttribute.class;
-                break;
-            default:
-                break;
-        }
-        return beanClass;
-    }
-
 }
