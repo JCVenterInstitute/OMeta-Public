@@ -21,6 +21,8 @@
 
 package org.jcvi.ometa.utils;
 
+import org.jcvi.ometa.configuration.FileMappingSupport;
+
 import java.io.*;
 
 /**
@@ -33,99 +35,97 @@ import java.io.*;
  * script can break it up.
  */
 public class CombinedFileSplitter {
-    public static void main( String[] args ) {
+    public static void main(String[] args) {
         try {
-            if ( args.length < 2 ) {
+            if (args.length < 2) {
                 throw new IllegalArgumentException("USAGE: java CombinedFileSplitter <infile> <outdir>");
             }
 
             String infileStr = args[ 0 ];
             String outdirStr = args[ 1 ];
 
-            File input = new File( infileStr );
-            File outdir = new File( outdirStr );
+            File input = new File(infileStr);
+            File outdir = new File(outdirStr);
 
-            if ( ! outdir.isDirectory() ) {
-                throw new IllegalArgumentException( outdirStr + " is not a directory." );
+            if (! outdir.isDirectory()) {
+                throw new IllegalArgumentException(outdirStr + " is not a directory.");
             }
 
-            if ( ! input.isFile() || ! input.canRead() ) {
-                throw new IllegalArgumentException( infileStr + " is not a file." );
+            if (! input.isFile() || ! input.canRead()) {
+                throw new IllegalArgumentException(infileStr + " is not a file.");
             }
 
             CombinedFileSplitter splitter = new CombinedFileSplitter();
 
-            splitter.process( input, outdir );
-        } catch ( Exception ex ) {
+            splitter.process(input, outdir);
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    public void process( File infile, File outdir ) throws Exception {
-        BufferedReader rdr = new BufferedReader( new FileReader( infile ) );
+    public void process(File infile, File outdir) throws Exception {
+        BufferedReader rdr = new BufferedReader(new FileReader(infile));
         String inbuf = null;
 
         boolean previousIsEmptyLine = true;
         PrintWriter writer = null;
 
-        while ( null != (inbuf = rdr.readLine() ) ) {
+        while(null != (inbuf = rdr.readLine())) {
             // Do the file break.
-            if ( previousIsEmptyLine ) {
+            if(previousIsEmptyLine) {
                 String filename = inbuf.trim();
-                if ( filename.length() > 0 ) {
+                if (filename.length() > 0) {
                     previousIsEmptyLine = false;
 
-                    if ( writer != null ) {
+                    if(writer != null) {
                         writer.close();
                     }
-                    if ( ! filename.endsWith( ".tsv" ) ) {
-                        filename = filename + ".tsv";
+                    if(!filename.endsWith(FileMappingSupport.INPUT_FILE_EXTENSION)) {
+                        filename = filename + FileMappingSupport.INPUT_FILE_EXTENSION;
                     }
-                    writer = new PrintWriter( new FileWriter( new File( outdir, filename ) ) );
+                    writer = new PrintWriter(new FileWriter(new File(outdir, filename)));
                 }
             }
             else {
                 // Check on the empty line.
-                if ( inbuf.trim().length() == 0 ) {
+                if (inbuf.trim().length() == 0) {
                     previousIsEmptyLine = true;
                 }
                 else {
                     // Process the current line.
-                    if ( writer != null ) {
-                        writer.println( inbuf );
+                    if (writer != null) {
+                        writer.println(inbuf);
                     }
                 }
-
             }
-
         }
 
         rdr.close();
-        if ( writer != null )
+        if (writer != null)
             writer.close();
     }
 
     /** Attempt a full removal of the directory and its contents. */
-    public void removeDirectory( File directory ) {
-        if ( directory != null ) {
-            if ( ! directory.canWrite() ) {
-                throw new IllegalArgumentException( "Cannot write " + directory );
+    public void removeDirectory(File directory) {
+        if (directory != null) {
+            if (! directory.canWrite()) {
+                throw new IllegalArgumentException("Cannot write " + directory);
             }
             else {
                 File[] sublist = directory.listFiles();
-                for ( File file: sublist ) {
-                    if ( file.isFile() ) {
-                        if ( ! file.delete() )
-                            System.err.println( "Failed to delete file " + file );
+                for (File file: sublist) {
+                    if (file.isFile()) {
+                        if (! file.delete())
+                            System.err.println("Failed to delete file " + file);
                     }
-                    else if ( file.isDirectory() ) {
-                        removeDirectory( file );
+                    else if (file.isDirectory()) {
+                        removeDirectory(file);
                     }
                 }
             }
         }
-        if (! directory.delete() ) {
-            System.err.println( "Failed to delete directory " + directory );
+        if (! directory.delete()) {
+            System.err.println("Failed to delete directory " + directory);
         }
 
     }

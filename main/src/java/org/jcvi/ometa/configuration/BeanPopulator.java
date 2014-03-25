@@ -23,10 +23,10 @@ package org.jcvi.ometa.configuration;
 
 import org.apache.log4j.Logger;
 
-import java.util.*;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -52,18 +52,18 @@ public class BeanPopulator {
      * @param beanType only this type can be used by this populator.
      * @throws Exception thrown by any called methods.
      */
-    public BeanPopulator( Class beanType ) throws Exception {
+    public BeanPopulator(Class beanType) throws Exception {
         checkClass = beanType;
         Method[] methods = beanType.getDeclaredMethods();
         methodVsDataName = new HashMap<Method,String>();
 
-        for ( Method method: methods ) {
-            if ( method.getName().startsWith(SET_PREFIX) ) {
+        for(Method method: methods) {
+            if(method.getName().startsWith(SET_PREFIX)) {
 
                 // Only use "setters" that are annotated for use here.
-                String putativeDataName = getHeaderName( method );
-                if ( putativeDataName != null ) {
-                    methodVsDataName.put( method, putativeDataName );
+                String putativeDataName = getHeaderName(method);
+                if(putativeDataName != null) {
+                    methodVsDataName.put(method, putativeDataName);
                 }
 
             }
@@ -78,13 +78,13 @@ public class BeanPopulator {
      */
     public Set<String> getDefaultHeaderSet() {
         Set returnSet = new HashSet<String>();
-        returnSet.addAll( methodVsDataName.values() );
-        if ( returnSet.size()   !=   methodVsDataName.size() ) {
-            StringBuilder message = new StringBuilder( "Non-unique set of headers mapped to methods: [" );
-            for ( String dataName: methodVsDataName.values() ) {
-                message.append( dataName ).append( " " );
+        returnSet.addAll(methodVsDataName.values());
+        if(returnSet.size()   !=   methodVsDataName.size()) {
+            StringBuilder message = new StringBuilder("Non-unique set of headers mapped to methods: [");
+            for(String dataName: methodVsDataName.values()) {
+                message.append(dataName).append(" ");
             }
-            message.append( "]" );
+            message.append("]");
             throw new IllegalArgumentException();
         }
 
@@ -99,8 +99,8 @@ public class BeanPopulator {
      */
     public List<String> getHeaderNames() {
         List<String> rtnList = new ArrayList<String>();
-        for ( String headerName : methodVsDataName.values() ) {
-            rtnList.add( headerName );
+        for(String headerName : methodVsDataName.values()) {
+            rtnList.add(headerName);
         }
         return rtnList;
     }
@@ -113,31 +113,23 @@ public class BeanPopulator {
      * @param bean has setter methods to be used in populating the bean.  Bag-o-data.
      * @throws Exception thrown if values cannot be set.
      */
-    public void populateBean( Map<String,String> data, Object bean ) throws Exception {
+    public void populateBean(Map<String,String> data, Object bean) throws Exception {
         // Need to look at the bean to see what information it is requesting.
-        if ( bean == null || data == null ) {
+        if(bean == null || data == null) {
             throw new IllegalArgumentException("Insufficient data: either data map or bean object is null.");
         }
-        if ( bean.getClass() != checkClass ) {
-            throw new IllegalArgumentException("This populator only works on beans of type " + checkClass.getName() );
+        if(bean.getClass() != checkClass) {
+            throw new IllegalArgumentException("This populator only works on beans of type " + checkClass.getName());
         }
         Method[] methods = bean.getClass().getDeclaredMethods();
-        for ( Method method: methods ) {
-            if ( method.getName().startsWith(SET_PREFIX) ) {
+        for(Method method: methods) {
+            if(method.getName().startsWith(SET_PREFIX)) {
 
-                String putativeDataName = methodVsDataName.get( method );
+                String putativeDataName = methodVsDataName.get(method);
 
                 // Get the data from the data map.
-                String valueStr = data.get( putativeDataName );
-                if ( valueStr == null ) {
-                    if ( logger.isDebugEnabled() )
-                        logger.debug(
-                            "No value found for data name [" + putativeDataName +
-                            "] corresponding to setter method [" +
-                            method.getName() + "].  Therefore, not setting its value." );
-                    //throw new IllegalArgumentException( "Failed to find data for setter " + method.getName() );
-                }
-                else {
+                String valueStr = data.get(putativeDataName);
+                if(valueStr != null) {
                     invokeOneParamMethodWithProperType(method, bean, valueStr);
                 }
 
@@ -151,23 +143,19 @@ public class BeanPopulator {
      * @param method a method to be called.  Will provide clues as to what data to use to invoke it.
      * @return name of header to use, from input map.
      */
-    private String getHeaderName( Method method ) {
+    private String getHeaderName(Method method) {
         // Get the expected name of the data, suitable for a mapping key.
         String putativeDataName = null;
-        Annotation overridingAnnotation = getAnnotation( method );
-        if ( overridingAnnotation != null ) {
-            JCVI_BeanPopulator_Column headerMapping =
-                    (JCVI_BeanPopulator_Column)overridingAnnotation;
+        Annotation overridingAnnotation = getAnnotation(method);
+        if(overridingAnnotation != null) {
+            JCVI_BeanPopulator_Column headerMapping = (JCVI_BeanPopulator_Column)overridingAnnotation;
             putativeDataName = headerMapping.value();
-            logger.debug( "Header from override: " + putativeDataName );
 
             // No overridden column name.  Make assumption.
-            if ( putativeDataName == null  ||  putativeDataName.trim().length() == 0 ) {
+            if(putativeDataName == null  ||  putativeDataName.trim().length() == 0) {
                 // Take the mixed-case name of the thing and use it.
-                putativeDataName = method.getName().substring( SET_PREFIX.length() );
-                putativeDataName = putativeDataName.substring( 0, 1 ).toUpperCase() +
-                                   putativeDataName.substring( 1 );
-                logger.debug( "Header calculated from method name " + putativeDataName );
+                putativeDataName = method.getName().substring(SET_PREFIX.length());
+                putativeDataName = putativeDataName.substring(0, 1).toUpperCase() + putativeDataName.substring(1);
             }
         }
 
@@ -180,8 +168,8 @@ public class BeanPopulator {
      * @param method find it on this.
      * @return the overriding annotation, or null.
      */
-    private Annotation getAnnotation( Method method ) {
-        Annotation overridingAnnotation = method.getAnnotation( OVERRIDE_ANNOTATION_CLASS );
+    private Annotation getAnnotation(Method method) {
+        Annotation overridingAnnotation = method.getAnnotation(OVERRIDE_ANNOTATION_CLASS);
         return overridingAnnotation;
     }
 
@@ -197,67 +185,56 @@ public class BeanPopulator {
      * @throws IllegalAccessException thrown by called code.
      * @throws InvocationTargetException thrown by called code.
      */
-    private void invokeOneParamMethodWithProperType(Method method, Object bean, String valueStr)
-            throws IllegalAccessException, InvocationTargetException {
+    private void invokeOneParamMethodWithProperType(Method method, Object bean, String valueStr) throws IllegalAccessException, InvocationTargetException {
 
-        if ( valueStr == null ) {
-            throw new IllegalArgumentException( "Null given as value" );
+        if(valueStr == null) {
+            throw new IllegalArgumentException("Null given as value");
         }
 
-        if ( method == null ) {
-            throw new IllegalArgumentException( "Null given as method." );
+        if(method == null) {
+            throw new IllegalArgumentException("Null given as method.");
         }
 
         // Work out what type it needs to be.  Expecting float, double, int, long, or string.
         Class[] parameterTypes = method.getParameterTypes();
-        if ( parameterTypes.length != 1 ) {
-            throw new IllegalArgumentException( "Setter encountered with wrong number of parameters for column " +
-                    userFyMethodName( method.getName() ) + ", or method " + method.getName() );
+        if(parameterTypes.length != 1) {
+            throw new IllegalArgumentException(
+                    "Setter encountered with wrong number of parameters for column " + userFyMethodName(method.getName()) + ", or method " + method.getName()
+            );
         }
         Class setType = parameterTypes[ 0 ];
-        if ( setType.equals( Long.class ) ) {
-            Long value = Long.parseLong( valueStr );
-            method.invoke( bean, value );
-        }
-        else if ( setType.equals( Integer.class ) ) {
-            Integer value = Integer.parseInt( valueStr );
-            method.invoke( bean, value );
-        }
-        else if ( setType.equals( Float.class ) ) {
-            Float value = Float.parseFloat( valueStr );
-            method.invoke( bean, value );
-        }
-        else if ( setType.equals( Double.class ) ) {
-            Double value = Double.parseDouble( valueStr );
-            method.invoke( bean, value );
-        }
-        else if ( setType.equals( Boolean.class ) ) {
-            if ( valueStr.length() == 0 ) {
-                throw new RuntimeException( "Expected boolean value, but received empty string, for col / method " +
-                                            userFyMethodName( method.getName() ) + "."
-                );
+        if(setType.equals(Long.class)) {
+            Long value = Long.parseLong(valueStr);
+            method.invoke(bean, value);
+        } else if(setType.equals(Integer.class)) {
+            Integer value = Integer.parseInt(valueStr);
+            method.invoke(bean, value);
+        } else if(setType.equals(Float.class)) {
+            Float value = Float.parseFloat(valueStr);
+            method.invoke(bean, value);
+        } else if(setType.equals(Double.class)) {
+            Double value = Double.parseDouble(valueStr);
+            method.invoke(bean, value);
+        } else if(setType.equals(Boolean.class)) {
+            if(valueStr.length() == 0) {
+                throw new RuntimeException("Expected boolean value, but received empty string, for col / method " + userFyMethodName(method.getName()) + ".");
             }
-            Character testChar = valueStr.toUpperCase().charAt( 0 );
-            Boolean value = testChar == 'Y'  ||  testChar == 'T'  || testChar == '1';
-            method.invoke( bean, value );
-        }
-        else if ( setType.equals( String.class ) ) {
-            method.invoke( bean, valueStr );
-        }
-        else {
-            throw new IllegalArgumentException("Type parameter for column " +
-                    userFyMethodName( method.getName() ) +
-                    " or method " +
-                    method.getName() +
-                    " not one of those expected.");
+            Character testChar = valueStr.toUpperCase().charAt(0);
+            Boolean value = testChar == 'Y' || testChar == 'T' || testChar == '1';
+            method.invoke(bean, value);
+        } else if(setType.equals(String.class)) {
+            method.invoke(bean, valueStr);
+        } else {
+            throw new IllegalArgumentException(
+                    "Type parameter for column " + userFyMethodName(method.getName()) + " or method " + method.getName() + " not one of those expected."
+            );
         }
     }
 
-    private String userFyMethodName( String methodName ) {
-        if ( methodName.length() >= 4   &&  methodName.startsWith( "set" ) ) {
-            return methodName.substring( 3 );
-        }
-        else {
+    private String userFyMethodName(String methodName) {
+        if(methodName.length() >= 4 && methodName.startsWith("set")) {
+            return methodName.substring(3);
+        } else {
             return methodName;
         }
     }
