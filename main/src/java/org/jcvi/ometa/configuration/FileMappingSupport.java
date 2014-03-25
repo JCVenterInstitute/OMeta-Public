@@ -30,11 +30,12 @@ package org.jcvi.ometa.configuration;
  * Supports the mapping of filenames to actions.
  */
 public class FileMappingSupport {
-    public static final String PROJECT_FILE_SUFFIX = "Project.tsv";
-    public static final String SAMPLE_FILE_SUFFIX = "Sample.tsv";
-    public static final String SAMPLE_META_ATTRIBUTES_FILE_SUFFIX = "SampleMetaAttributes.tsv";
-    public static final String PROJECT_META_ATTRIBUTES_FILE_SUFFIX = "ProjectMetaAttributes.tsv";
-    public static final String LOOKUPVALUE_FILE_SUFFIX = "LookupValues.tsv";
-    public static final String EVENT_META_ATTRIBUTES_FILE_SUFFIX = "EventMetaAttributes.tsv";
-    public static final String EVENT_ATTRIBUTES_FILE_SUFFIX = "EventAttributes.tsv";
+    public static final String INPUT_FILE_EXTENSION = ".csv";
+    public static final String PROJECT_FILE_SUFFIX = "Project" + INPUT_FILE_EXTENSION;
+    public static final String SAMPLE_FILE_SUFFIX = "Sample" +  INPUT_FILE_EXTENSION;
+    public static final String SAMPLE_META_ATTRIBUTES_FILE_SUFFIX = "SampleMetaAttributes" + INPUT_FILE_EXTENSION;
+    public static final String PROJECT_META_ATTRIBUTES_FILE_SUFFIX = "ProjectMetaAttributes" + INPUT_FILE_EXTENSION;
+    public static final String LOOKUPVALUE_FILE_SUFFIX = "LookupValues" + INPUT_FILE_EXTENSION;
+    public static final String EVENT_META_ATTRIBUTES_FILE_SUFFIX = "EventMetaAttributes" + INPUT_FILE_EXTENSION;
+    public static final String EVENT_ATTRIBUTES_FILE_SUFFIX = "EventAttributes" + INPUT_FILE_EXTENSION;
 }

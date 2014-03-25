@@ -161,7 +161,7 @@ public class EventLoader extends ActionSupport {
                         throw new Exception("Error in reading the file.");
                     } else {
                         TemplatePreProcessingUtils templateUtil = new TemplatePreProcessingUtils();
-                        gridList = templateUtil.parseLoadedFile(
+                        gridList = templateUtil.parseEventFile(
                                 this.getDataTemplateFileName(), this.getDataTemplate(),
                                 projectName, isProjectRegistration, isSampleRegistration
                         );

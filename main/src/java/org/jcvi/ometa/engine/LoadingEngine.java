@@ -24,18 +24,18 @@ package org.jcvi.ometa.engine;
 import org.apache.log4j.Logger;
 import org.apache.poi.util.IOUtils;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
-import org.jcvi.ometa.configuration.EventLoader;
+import org.jcvi.ometa.configuration.FileMappingSupport;
 import org.jcvi.ometa.configuration.InputBeanType;
 import org.jcvi.ometa.hibernate.dao.DAOException;
-import org.jcvi.ometa.model.*;
+import org.jcvi.ometa.model.EventMetaAttribute;
+import org.jcvi.ometa.model.Project;
+import org.jcvi.ometa.model.Sample;
 import org.jcvi.ometa.utils.*;
 import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.scratch.ScratchUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.InputStream;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -49,7 +49,7 @@ import java.util.List;
  */
 public class LoadingEngine {
     private LoadingEngineUsage usage;
-    private static Logger logger = Logger.getLogger( LoadingEngine.class );
+    private static Logger logger = Logger.getLogger(LoadingEngine.class);
 
     //------------------------------------------MAIN
     /**
@@ -60,10 +60,10 @@ public class LoadingEngine {
      */
     public static void main(String[] args) {
         try {
-            LoadingEngineUsage usage = new LoadingEngineUsage( args );
+            LoadingEngineUsage usage = new LoadingEngineUsage(args);
             boolean isValid = usage.validate();
             if(!isValid) {
-                System.out.println( usage.getErrors());
+                System.out.println(usage.getErrors());
                 throw new IllegalArgumentException("Invalid Usage");
             }
             LoadingEngine engine = new LoadingEngine(usage);
@@ -71,20 +71,22 @@ public class LoadingEngine {
                 engine.loadEventFile();
             } else if(usage.isMultiFile()) {
                 engine.digestMultipart();
+            } else if(usage.isDirectory()) {
+                engine.digestMultiDirectory();
             } else if (usage.isMakeEventTemplate()) {
                 engine.createEventTemplate();
             } else {
                 engine.dispatchByFilename();
             }
             System.out.println("Loading process done!");
-        } catch ( DAOException daoex ) {
+        } catch (DAOException daoex) {
             System.out.println("Database Access Error: " + daoex.getMessage());
-            logger.error(LogTraceFormatter.formatStackTrace( daoex ));
-            logger.fatal( daoex );
-        } catch ( Throwable ex ) {
+            logger.error(LogTraceFormatter.formatStackTrace(daoex));
+            logger.fatal(daoex);
+        } catch (Throwable ex) {
             System.out.println("Error: " + ex.getMessage());
-            logger.error(LogTraceFormatter.formatStackTrace( ex ));
-            logger.fatal( ex );
+            logger.error(LogTraceFormatter.formatStackTrace(ex));
+            logger.fatal(ex);
         }
     }
 
@@ -95,7 +97,7 @@ public class LoadingEngine {
      *
      * @param usage full configuration object.
      */
-    public LoadingEngine( LoadingEngineUsage usage ) {
+    public LoadingEngine(LoadingEngineUsage usage) {
         this.usage = usage;
 
     }
@@ -115,21 +117,19 @@ public class LoadingEngine {
         String passWord = usage.getPassword();
         String server = usage.getServerUrl();
 
-        // Must fetch the list of attributes applying to the event type.
-        FileWriter fw = null;
         try {
             PresentationActionDelegate delegate = new PresentationActionDelegate();
             ProjectSampleEventPresentationBusiness ejb = delegate.getEjb(
-                    PresentationActionDelegate.EJB_NAME, server, userName, passWord, logger );
+                    PresentationActionDelegate.EJB_NAME, server, userName, passWord, logger);
 
-            Project project = ejb.getProject( projectName );
-            List<EventMetaAttribute> emaList = ejb.getEventMetaAttributes( project.getProjectName(), eventName );
+            Project project = ejb.getProject(projectName);
+            List<EventMetaAttribute> emaList = ejb.getEventMetaAttributes(project.getProjectName(), eventName);
             ModelValidator validator = new ModelValidator();
-            validator.validateEventTemplateSanity( emaList, projectName, sampleName, eventName );
-            if ( sampleName == null  ||  sampleName.trim().length() == 0 ) {
+            validator.validateEventTemplateSanity(emaList, projectName, sampleName, eventName);
+            if (sampleName == null  ||  sampleName.trim().length() == 0) {
                 // No sample name provided.
                 // Need a sample?
-                if ( ejb.isSampleRequired( projectName, eventName ) ) {
+                if (ejb.isSampleRequired(projectName, eventName)) {
                     throw new IllegalArgumentException(
                             "Sample is required for this template. Therefore, please provide a sample name."
                     );
@@ -138,14 +138,14 @@ public class LoadingEngine {
             else {
                 // User provided a sample name.
                 // Does the sample go with the project?
-                List<Sample> samples = ejb.getSamplesForProject( project.getProjectId() );
+                List<Sample> samples = ejb.getSamplesForProject(project.getProjectId());
                 boolean found = false;
-                for ( Sample sample: samples ) {
-                    if ( sample.getSampleName().equals( sampleName ) ) {
+                for (Sample sample: samples) {
+                    if (sample.getSampleName().equals(sampleName)) {
                         found = true;
                     }
                 }
-                if ( ! found ) {
+                if (! found) {
                     throw new IllegalArgumentException(
                             "Sample name " + sampleName + " given does not belong to project " + projectName
                     );
@@ -161,9 +161,9 @@ public class LoadingEngine {
             IOUtils.copy(templateInputStream, outputStream);
             IOUtils.closeQuietly(outputStream);
 
-            System.out.println("Your template file has been created, and is located at " + templateFile.getAbsolutePath() );
+            System.out.println("template file is at: " + templateFile.getAbsolutePath());
 
-        } catch ( Exception ex ) {
+        } catch (Exception ex) {
             throw ex;
         }
 
@@ -180,16 +180,15 @@ public class LoadingEngine {
         String passWord = usage.getPassword();
         String serverUrl = usage.getServerUrl();
 
-        EventLoader loader = new EventLoader();
         String eventFileName = usage.getInputFilename();
         String eventType = usage.getEventName();
         try {
-            BeanWriter writer = new BeanWriter( serverUrl, userName, passWord, loader );
+            BeanWriter writer = new BeanWriter(serverUrl, userName, passWord);
 
-            File eventFile = new File( eventFileName );
-            writer.writeEvent( eventFile, eventType );
+            File eventFile = new File(eventFileName);
+            writer.writeEvent(eventFile, eventType);
 
-        } catch ( Exception ex ) {
+        } catch (Exception ex) {
             throw ex;
         }
     }
@@ -201,40 +200,84 @@ public class LoadingEngine {
         String userName = usage.getUsername();
         String passWord = usage.getPassword();
         String serverUrl = usage.getServerUrl();
-        EventLoader loader = new EventLoader();
         String multipartFileName = usage.getMultipartInputfileName();
-        File file = new File( multipartFileName );
+        File file = new File(multipartFileName);
 
         // Must break this file up, and deposit it into a temporary output directory.
         String userBase = System.getProperty("user.home");
-        ScratchUtils.setScratchBaseLocation( userBase + "/" + Constants.SCRATCH_BASE_LOCATION );
+        ScratchUtils.setScratchBaseLocation(userBase + "/" + Constants.SCRATCH_BASE_LOCATION);
         Long timeStamp = new Date().getTime();
-        File scratchLoc = ScratchUtils.getScratchLocation( timeStamp, "LoadingEngine__" + file.getName() );
+        File scratchLoc = ScratchUtils.getScratchLocation(timeStamp, "LoadingEngine__" + file.getName());
+
+        System.out.println(scratchLoc.getAbsolutePath());
+
         CombinedFileSplitter splitter = new CombinedFileSplitter();
-        splitter.process( file, scratchLoc );
+        splitter.process(file, scratchLoc);
 
         // Now, will look for files in the directory of the types needed.
-        FileCollector collector = new FileCollector( scratchLoc );
+        FileCollector collector = new FileCollector(scratchLoc);
         try {
-            BeanWriter writer = new BeanWriter( serverUrl, userName, passWord, loader );
-            writer.writeMultiType( collector );
+            BeanWriter writer = new BeanWriter(serverUrl, userName, passWord);
+            writer.writeMultiType(collector);
 
-        } catch ( Exception ex ) {
+        } catch (Exception ex) {
             throw ex;
         } finally {
-            if ( scratchLoc != null  &&  scratchLoc.exists() ) {
+            if (scratchLoc != null  &&  scratchLoc.exists()) {
                 // The scratch directory may be within a numeric "unique id" directory.  That should
                 // go away, too.
                 File cleanupDir = scratchLoc;
                 String parentDirName = cleanupDir.getParentFile().getName();
                 try {
-                    Long.parseLong( parentDirName );
+                    Long.parseLong(parentDirName);
                     cleanupDir = cleanupDir.getParentFile();
-                } catch ( NumberFormatException nf ) {
+                } catch (NumberFormatException nf) {
                     // Do nothing. Just use the original.
                 }
-                splitter.removeDirectory( cleanupDir );
+                splitter.removeDirectory(cleanupDir);
             }
+        }
+    }
+
+    /**
+     * Given a directory with multiple files, applying to Projects, Samples, and events, handle all.
+     * This function basically calls digestMultipart function recursively with files in a directory
+     */
+    public void digestMultiDirectory() throws Exception {
+        String currentFileName = "";
+
+        String multiDirectoryName = usage.getMultipartDirectoryParamName();
+        File path = new File(multiDirectoryName);
+
+        try {
+            if(path.isDirectory() && path.canRead()) {
+                File[] files = path.listFiles();
+                List<File> filesToProcess = new ArrayList<File>(files.length);
+
+                for(File file : files) {
+                    //make sure project files get processed first before samples
+                    if(file.canRead() && file.getName().toLowerCase().endsWith("_project" + FileMappingSupport.INPUT_FILE_EXTENSION)) {
+                        filesToProcess.add(0, file);
+                    } else {
+                        filesToProcess.add(file);
+                    }
+                }
+
+                for(File file: filesToProcess) {
+                    if(file.isFile() && file.canRead() && file.getName().endsWith(FileMappingSupport.INPUT_FILE_EXTENSION)) {
+                        currentFileName = file.getName();
+                        usage.setMultipartInputfileName(file.getAbsolutePath());
+                        this.digestMultipart();
+                    }
+                }
+
+                System.out.println("Loading process done!");
+            }
+            else {
+                throw new IllegalArgumentException("given path ' " + path + "' is not a directory or cannot be read.");
+            }
+        } catch(Exception ex) {
+            throw new Exception("directory load failed (" + currentFileName + ") - " + ex.getMessage());
         }
     }
 
@@ -249,13 +292,12 @@ public class LoadingEngine {
         String passWord = usage.getPassword();
         String serverUrl = usage.getServerUrl();
         String inputFilePathStr = usage.getInputFilename();
-        EventLoader loader = new EventLoader();
-        File file = new File( inputFilePathStr );
+        File file = new File(inputFilePathStr);
 
         try {
-            BeanWriter writer = new BeanWriter(serverUrl, userName, passWord, loader);
-            InputBeanType inputBeanType = InputBeanType.getInputBeanType( inputFilePathStr );
-            switch ( inputBeanType ) {
+            BeanWriter writer = new BeanWriter(serverUrl, userName, passWord);
+            InputBeanType inputBeanType = InputBeanType.getInputBeanType(inputFilePathStr);
+            switch (inputBeanType) {
                 case project:
                     writer.writeProjects(file);
                     break;
@@ -269,10 +311,10 @@ public class LoadingEngine {
                     writer.writeSMAs(file);
                     break;
                 case eventMetaAttribute:
-                    writer.writeEMAs( file );
+                    writer.writeEMAs(file);
                     break;
                 case projectMetaAttributes:
-                    writer.writePMAs( file );
+                    writer.writePMAs(file);
                     break;
                 case eventAttributes:
                     writer.writeEvent(file, null);
@@ -282,10 +324,8 @@ public class LoadingEngine {
                             inputFilePathStr + " is not named suitably for this application.  No data loaded."
                     );
             }
-        } catch ( Exception ex ) {
+        } catch (Exception ex) {
             throw ex;
         }
-
-
     }
 }

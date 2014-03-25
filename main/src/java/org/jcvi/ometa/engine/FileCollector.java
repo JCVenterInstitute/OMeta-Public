@@ -36,91 +36,85 @@ import java.util.List;
  * Break up all types of files out of a list..
  */
 public class FileCollector {
+    /*
     protected static final String PROJ_REG_NAME_END = "ProjectRegistration_" + FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX;
     protected static final String SAMP_REG_NAME_END = "SampleRegistration_" + FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX;
+    */
+
     private File[] files;
     /** Give something to test against, in c'tor. */
-    public FileCollector( File[] files ) {
+    public FileCollector(File[] files) {
         this.files = files;
-        if ( files == null ) {
+        if(files == null) {
             throw new RuntimeException("Do not call with null file array.");
         }
     }
 
-    public FileCollector( File directory ) {
-        if ( directory.isDirectory()  &&  directory.canRead() ) {
+    public FileCollector(File directory) {
+        if(directory.isDirectory() && directory.canRead()) {
             files = directory.listFiles();
-        }
-        else {
+        } else {
             throw new RuntimeException("Failed to read files from " + directory);
         }
     }
 
     public List<File> getProjectFiles() {
         return getFilesWhoseNamesEndWith(FileMappingSupport.PROJECT_FILE_SUFFIX);
-
     }
     public List<File> getSampleFiles() {
         return getFilesWhoseNamesEndWith(FileMappingSupport.SAMPLE_FILE_SUFFIX);
-
     }
 
     public List<File> getLookupValueFiles() {
-        return getFilesWhoseNamesEndWith( FileMappingSupport.LOOKUPVALUE_FILE_SUFFIX );
+        return getFilesWhoseNamesEndWith(FileMappingSupport.LOOKUPVALUE_FILE_SUFFIX);
     }
 
     public List<File> getProjectMetaAttributeFiles() {
         return getFilesWhoseNamesEndWith(FileMappingSupport.PROJECT_META_ATTRIBUTES_FILE_SUFFIX);
-
     }
 
     public List<File> getSampleMetaAttributeFiles() {
-        return getFilesWhoseNamesEndWith( FileMappingSupport.SAMPLE_META_ATTRIBUTES_FILE_SUFFIX);
-
+        return getFilesWhoseNamesEndWith(FileMappingSupport.SAMPLE_META_ATTRIBUTES_FILE_SUFFIX);
     }
 
     public List<File> getEventMetaAttributeFiles() {
         return getFilesWhoseNamesEndWith(FileMappingSupport.EVENT_META_ATTRIBUTES_FILE_SUFFIX);
-
-    }
-    public List<File> getProjectRegistrationFiles() {
-        return getFilesWhoseNamesEndWith(
-                PROJ_REG_NAME_END);
-
-    }
-    public List<File> getSampleRegistrationFiles() {
-        return getFilesWhoseNamesEndWith(
-                SAMP_REG_NAME_END);
-
-    }
-    public List<File> getEventFiles() {
-        return getNonRegistrationEventFiles();
-
     }
 
-    private List<File> getFilesWhoseNamesEndWith( String nameEnd ) {
+    private List<File> getFilesWhoseNamesEndWith(String nameEnd) {
         List<File> rtnfiles = makeEmptyList();
-        for ( File f: files ) {
-            if ( f.getName().toLowerCase().endsWith( nameEnd.toLowerCase() ) ) {
-                rtnfiles.add( f );
+        for(File f: files) {
+            if(f.getName().toLowerCase().endsWith(nameEnd.toLowerCase())) {
+                rtnfiles.add(f);
             }
         }
         return rtnfiles;
+    }
+
+    /*
+    public List<File> getProjectRegistrationFiles() {
+        return getFilesWhoseNamesEndWith(PROJ_REG_NAME_END);
+    }
+    public List<File> getSampleRegistrationFiles() {
+        return getFilesWhoseNamesEndWith(SAMP_REG_NAME_END);
+    }
+    public List<File> getEventFiles() {
+        return getNonRegistrationEventFiles();
     }
 
     private List<File> getNonRegistrationEventFiles() {
         List<File> rtnfiles = makeEmptyList();
-        for ( File f: files ) {
-            if ( f.getName().endsWith( FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX )  &&
-                !f.getName().endsWith( PROJ_REG_NAME_END )  &&
-                !f.getName().endsWith( SAMP_REG_NAME_END )
-               ) {
+        for(File f: files) {
+            if(f.getName().endsWith(FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX)  &&
+                !f.getName().endsWith(PROJ_REG_NAME_END)  &&
+                !f.getName().endsWith(SAMP_REG_NAME_END)
+              ) {
 
-                rtnfiles.add( f );
+                rtnfiles.add(f);
             }
         }
         return rtnfiles;
-    }
+    }*/
 
     private List<File> makeEmptyList() { return new ArrayList<File>(); };
 }

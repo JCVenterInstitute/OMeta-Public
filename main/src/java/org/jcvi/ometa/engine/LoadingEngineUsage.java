@@ -21,6 +21,7 @@
 
 package org.jcvi.ometa.engine;
 
+import org.jcvi.ometa.configuration.FileMappingSupport;
 import org.jtc.common.util.command_line.*;
 
 import java.io.Console;
@@ -47,7 +48,6 @@ public class LoadingEngineUsage {
     protected static final String PROJECT_NAME_PARAM_NAME = "project";
     protected static final String SAMPLE_NAME_PARAM_NAME = "sample";
     protected static final String EVENT_NAME_PARAM_NAME = "event";
-    private static final String INPUT_FILE_EXTENSION = ".csv";
 
     private OptionParameter usernameParam;
     private OptionParameter passwordParam;
@@ -104,26 +104,37 @@ public class LoadingEngineUsage {
         errors = new StringBuilder();
 
         try {
-            if(isMakeEventTemplate()) {
+            if(isMakeEventTemplate()) { //template generation
                 validateOutputLocation(outputLocationParam.getValue(), rtnVal);
                 if(isEmpty(projectNameParam) || isEmpty(eventNameParam)) {
                     errors.append("Template generation requires values for project and event.\n");
                     rtnVal = false;
                 }
-            } else if(isEmpty(inputFileNameParam) && isEmpty(multiInputFileParam)) {
-                errors.append("No value provided ").append(inputFileNameParam.getName()).append(" or ").append(multiInputFileParam.getName()).append("\n");
-                rtnVal = false;
-            } else if(!isEmpty(inputFileNameParam) &&  !isEmpty(multiInputFileParam)) {
-                errors.append("Values provided for both parameters ")
-                        .append(inputFileNameParam.getName()).append(" and ").append(multiInputFileParam.getName())
-                        .append(". Only one is allowed.\n");
-                rtnVal = false;
             } else {
+                int count = 0;
                 if(!isEmpty(inputFileNameParam)) {
-                    rtnVal &= validateInputfile(inputFileNameParam.getValue(), rtnVal);
+                    ++count;
                 }
-                else if(! isEmpty( multiInputFileParam )) {
-                    rtnVal &= validateInputfile(multiInputFileParam.getValue(), rtnVal);
+                if(!isEmpty(multiInputFileParam)) {
+                    ++count;
+                }
+                if(!isEmpty(multiDirectoryParam)) {
+                    ++count;
+                }
+
+                if(count > 1) { //only one
+                    errors.append("Only one of " + inputFileNameParam.getName() + "," + multiInputFileParam.getName() + " or " + multiDirectoryParam.getName() + "is allowed.\n");
+                    rtnVal = false;
+                } else if(count == 0) { //at least one
+                    errors.append("No value provided for " + inputFileNameParam.getName() + "," + multiInputFileParam.getName() + " or " + multiDirectoryParam.getName() + "\n");
+                    rtnVal = false;
+                } else { //one given
+                    if(!isEmpty(multiDirectoryParam)) {
+                        File directory = new File(multiDirectoryParam.getValue());
+                        rtnVal = (directory.isDirectory() && directory.canRead());
+                    } else {
+                        rtnVal = validateInputfile(inputFileNameParam.getValue(), rtnVal);
+                    }
                 }
             }
 
@@ -137,7 +148,7 @@ public class LoadingEngineUsage {
                 if(isEmpty(usernameParam)) {
                     Console console = System.console();
                     if(console == null) {
-                        errors.append( "No " + usernameParam.getName() + " given, and no console available.\n" );
+                        errors.append("No " + usernameParam.getName() + " given, and no console available.\n");
                     } else {
                         usernameParam.setValue(console.readLine("Enter your USERNAME, please: "));
                     }
@@ -145,16 +156,16 @@ public class LoadingEngineUsage {
                 if(isEmpty(passwordParam)) {
                     Console console = System.console();
                     if(console == null) {
-                        errors.append( "No " + passwordParam.getName() + " given, and no console available.\n" );
+                        errors.append("No " + passwordParam.getName() + " given, and no console available.\n");
                     } else {
                         char[] passwordArr = console.readPassword("Enter your PASSWORD, please: ");
-                        passwordParam.setValue( new String( passwordArr ) );
+                        passwordParam.setValue(new String(passwordArr));
                     }
                 }
                 if(isEmpty(usernameParam) || isEmpty(passwordParam)) {
-                    errors.append( "For the combination of parameters given, you must either provide both a " +
+                    errors.append("For the combination of parameters given, you must either provide both a " +
                             usernameParam.getName() + " value and a " + passwordParam.getName() +
-                            " value, or you must respond with them when prompted.\n" );
+                            " value, or you must respond with them when prompted.\n");
                     rtnVal = false;
                 }
             }
@@ -186,8 +197,8 @@ public class LoadingEngineUsage {
         };
 
         String blurb = "Loading engine: loads files of events and settings, to be written to the events database.  " +
-            " To make events, and get more detailed information, get a template with " +
-            "-" + MAKE_EVENT_PARAM_NAME + ",  -" + PROJECT_NAME_PARAM_NAME  + ", -" + EVENT_NAME_PARAM_NAME + "(, -" + SAMPLE_NAME_PARAM_NAME + ").";
+                " To make events, and get more detailed information, get a template with " +
+                "-" + MAKE_EVENT_PARAM_NAME + ",  -" + PROJECT_NAME_PARAM_NAME  + ", -" + EVENT_NAME_PARAM_NAME + "(, -" + SAMPLE_NAME_PARAM_NAME + ").";
         return CommandLineHandler.getGeneralJavaUsage(LoadingEngine.class, "", allParams, blurb, false);
 
     }
@@ -227,12 +238,12 @@ public class LoadingEngineUsage {
     }
 
     private boolean validateInputfile(String filename, boolean rtnVal) {
-        File testFile = new File( filename );
+        File testFile = new File(filename);
         if(!testFile.exists()) {
             errors.append("File " + filename + " does not exist.\n");
         } else if(!testFile.canRead()) {
             errors.append("File " + filename + " cannot be read.\n");
-        } else if(!filename.toLowerCase().endsWith(INPUT_FILE_EXTENSION)) {
+        } else if(!filename.toLowerCase().endsWith(FileMappingSupport.INPUT_FILE_EXTENSION)) {
             errors.append("Only CSV format is supported.\n");
         } else {
             rtnVal = true;
@@ -258,7 +269,7 @@ public class LoadingEngineUsage {
             }
 
         } else {
-            errors.append( "Do not request an output location for any options except to make a template.\n");
+            errors.append("Do not request an output location for any options except to make a template.\n");
             rtnVal = false;
         }
         return rtnVal;
@@ -274,14 +285,14 @@ public class LoadingEngineUsage {
         return usernameParam.getValue();
     }
     public void setUsername(String username) {
-        usernameParam.setValue( username );
+        usernameParam.setValue(username);
     }
 
     public String getPassword() {
         return passwordParam.getValue();
     }
     public void setPassword(String password) {
-        passwordParam.setValue( password );
+        passwordParam.setValue(password);
     }
 
     public String getInputFilename() {
@@ -295,17 +306,17 @@ public class LoadingEngineUsage {
         return serverUrlParam.getValue();
     }
     public void setServerUrl(String url) {
-        serverUrlParam.setValue( url );
+        serverUrlParam.setValue(url);
     }
 
     public String getMultipartInputfileName() {
         return multiInputFileParam.getValue();
     }
     public void setMultipartInputfileName(String filename) {
-        multiInputFileParam.setValue( filename );
+        multiInputFileParam.setValue(filename);
     }
     public boolean isMultiFile() {
-        return !isEmpty( multiInputFileParam);
+        return !isEmpty(multiInputFileParam);
     }
 
     public String getMultipartDirectoryParamName() {
@@ -319,21 +330,21 @@ public class LoadingEngineUsage {
     }
 
     public void setEventName(String eventType) {
-        eventNameParam.setValue( eventType );
+        eventNameParam.setValue(eventType);
     }
     public String getEventName() {
         return eventNameParam.getValue();
     }
 
     public void setProjectName(String projectName) {
-        projectNameParam.setValue( projectName );
+        projectNameParam.setValue(projectName);
     }
     public String getProjectName() {
         return projectNameParam.getValue();
     }
 
     public void setSampleName(String sampleName) {
-        sampleNameParam.setValue( sampleName );
+        sampleNameParam.setValue(sampleName);
     }
     public String getSampleName() {
         return sampleNameParam.getValue();
@@ -347,11 +358,11 @@ public class LoadingEngineUsage {
         return outputLocationParam.getValue();
     }
     public void setOutputLocation(String location) {
-        outputLocationParam.setValue( location );
+        outputLocationParam.setValue(location);
     }
 
     public boolean isCmdLineNamedEvent() {
-        return ! isEmpty( eventNameParam );
+        return !isEmpty(eventNameParam);
     }
 
     public String getErrors() {

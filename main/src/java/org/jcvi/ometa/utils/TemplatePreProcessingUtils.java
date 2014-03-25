@@ -16,10 +16,7 @@ import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.scratch.ScratchUtils;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -42,11 +39,11 @@ public class TemplatePreProcessingUtils {
 
         headers.add(new HeaderDetail("ProjectName", true, "string", ""));
 
-        if (isSampleRegistration) { // parent sample name for sample registration
+        if(isSampleRegistration) { // parent sample name for sample registration
             headers.add(new HeaderDetail("ParentSample", false, "string", ""));
         }
 
-        if (isProjectRegistration || isSampleRegistration) { //public flag
+        if(isProjectRegistration || isSampleRegistration) { //public flag
             headers.add(new HeaderDetail("Public", true, "int", ""));
         }
 
@@ -227,9 +224,8 @@ public class TemplatePreProcessingUtils {
         }
     }
 
-    public List<GridBean> parseLoadedFile(
-            String originalFileName, File uploadedFile, String projectName,
-            boolean isProjectRegistration, boolean isSampleRegistration
+    public List<GridBean> parseEventFile(
+            String originalFileName, File uploadedFile, String projectName, boolean isProjectRegistration, boolean isSampleRegistration
     ) throws Exception {
         List<GridBean> gridBeans = new ArrayList<GridBean>();
 
@@ -267,21 +263,21 @@ public class TemplatePreProcessingUtils {
                         int colIndex = 0;
 
                         currProjectName = row.getCell(colIndex++).getStringCellValue();
-                        if (!isProjectRegistration && !currProjectName.equals(projectName)) {
+                        if(!isProjectRegistration && !currProjectName.equals(projectName)) {
                             throw new Exception("Multiple projects are found in the file");
                         }
 
                         GridBean gBean = new GridBean();
                         gBean.setProjectName(currProjectName);
 
-                        if (hasSampleName) {
+                        if(hasSampleName) {
                             gBean.setSampleName(this.getExcelCellValue(row.getCell(colIndex++)));
                         }
 
-                        if (isProjectRegistration) {
+                        if(isProjectRegistration) {
                             gBean.setProjectName(currProjectName);
                             gBean.setProjectPublic(this.getExcelCellValue(row.getCell(colIndex++)));
-                        } else if (isSampleRegistration) {
+                        } else if(isSampleRegistration) {
                             gBean.setParentSampleName(this.getExcelCellValue(row.getCell(colIndex++)));
                             gBean.setSamplePublic(this.getExcelCellValue(row.getCell(colIndex++)));
                         }
@@ -305,7 +301,7 @@ public class TemplatePreProcessingUtils {
             int lineCount = 0;
 
             while ((line = reader.readNext()) != null) {
-                if (lineCount == 0) { //headers
+                if(lineCount == 0) { //headers
                     Collections.addAll(columns, line);
                     hasSampleName = columns.indexOf(Event.SAMPLE_NAME_HEADER) >= 0;
                 } else {
@@ -326,7 +322,7 @@ public class TemplatePreProcessingUtils {
                     }
 
                     if(!currProjectName.isEmpty()) {
-                        if (!isProjectRegistration && !currProjectName.equals(projectName)) {
+                        if(!isProjectRegistration && !currProjectName.equals(projectName)) {
                             throw new Exception("Multiple projects are found in the file");
                         }
 
@@ -340,7 +336,7 @@ public class TemplatePreProcessingUtils {
                         if(isProjectRegistration) {
                             gBean.setProjectName(currProjectName);
                             gBean.setProjectPublic(line[(colIndex++)]);
-                        } else if (isSampleRegistration) {
+                        } else if(isSampleRegistration) {
                             gBean.setParentSampleName(line[(colIndex++)]);
                             gBean.setSamplePublic(line[(colIndex++)]);
                         }
@@ -364,6 +360,43 @@ public class TemplatePreProcessingUtils {
         return gridBeans;
     }
 
+    /**
+     * parse project, sample, meta attribute files into a list of maps
+     * @param beanFile
+     * @return list of maps containing field name and value pairs
+     * @throws Exception
+     */
+    public List<Map<String, String>> parseNonEventFile(File beanFile) throws Exception {
+        List<Map<String, String>> dataList = new ArrayList<Map<String, String>>();
+
+        CSVReader reader = new CSVReader(new FileReader(beanFile));
+
+        String[] line;
+        int lineCount = 0;
+        List<String> columns = new ArrayList<String>();
+
+        while((line = reader.readNext()) != null) {
+            if(lineCount == 0) { //headers
+                Collections.addAll(columns, line);
+            } else {
+
+                Map<String, String> data = new HashMap<String, String>();
+                for(int i = 0;i < columns.size();i++) {
+                    data.put(columns.get(i), line[i]);
+                }
+                dataList.add(data);
+            }
+            lineCount++;
+        }
+
+        return dataList;
+    }
+
+    /**
+     * copy user file into a scratch area
+     * @param originalFile
+     * @return new file from a scratch area that is copied version of the original file
+     */
     public File preProcessTemplateFile(File originalFile) {
         File outputFile = null;
         try {
@@ -381,7 +414,7 @@ public class TemplatePreProcessingUtils {
             String inline = null;
             while (null != (inline = br.readLine())) {
                 // Will output all lines except those having pound-sign prefixes.
-                if (!inline.startsWith("#")) {
+                if(!inline.startsWith("#")) {
                     pw.println(inline);
                 }
             }
@@ -409,7 +442,7 @@ public class TemplatePreProcessingUtils {
                 // created for each temporary file.  But the grandparent should only be deleted
                 // if it is just a numeric value.  Numerically-named directories may be
                 // included as grandparents.
-                if ( parentFile.canWrite() ) {
+                if( parentFile.canWrite() ) {
                     parentFile.delete();
 
                     parentFile = parentFile.getParentFile();
