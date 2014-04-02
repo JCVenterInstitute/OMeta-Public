@@ -30,7 +30,15 @@
     <script>
         var _popup = {
             init: function(which) {
-                $('#lvType').val((which==='et'?'Event Type':'Attribute'));
+                var type = which==='et' ? 'Event Type' : 'Attribute';
+                $('#popupHeader').append(type);
+                $('#popupLegend').prepend(type)
+                $('#lvType').val(type);
+
+                if(which==='et') {
+                    $('#lvDataType').val('string');
+                    $('#dataTypeSelectTr').hide();
+                }
                 utils.error.remove();
             },
             add: function() {
@@ -76,26 +84,26 @@
     <s:hidden name="w"/>
     <div class="popup">
         <div class="popup-header">
-            <h2>Add <s:if test="w=='et'">Event Type</s:if><s:else>Attribute</s:else></h2>
-            <a href="javascript:;" onclick="$.closePopupLayer('LPopupAddLookupValue')" title="Close" class="close-link">Close</a>
+            <h2 id="popupHeader">Add </h2>
+            <a href="#" onclick="$.closePopupLayer('LPopupAddLookupValue')" title="Close" class="close-link">Close</a>
             <br clear="both" />
         </div>
         <div style="padding:10px;">
             <fieldset style="padding:5px;">
-                <legend style="margin-left:10px;font-size:14px;"><s:if test="w=='et'">Event Type</s:if><s:else>Attribute</s:else> Information</legend>
+                <legend id="popupLegend" style="margin-left:10px;font-size:14px;"> Information</legend>
                 <div style="margin:5px 5px 5px 5px;">
                     <table>
                         <tr>
-                            <td>Type</td><td><s:select list="types" name="lvType" id="lvType" disabled="true"/></td>
+                            <td><strong>Type</strong></td><td><s:select list="types" name="lvType" id="lvType" disabled="true"/></td>
                         </tr>
                         <tr class="gappedTr">
-                            <td>Name</td><td><s:textfield id="lvName" name="lvName" size="30"/></td>
+                            <td><strong>Name</strong></td><td><s:textfield id="lvName" name="lvName" size="30"/></td>
                         </tr>
                         <tr>
                             <td/><td>Use comma(,) as delimiter to load multiple values</td>
                         </tr>
-                        <tr class="gappedTr">
-                            <td>Data Type</td><td><s:select list="dataTypes" name="lvDataType" id="lvDataType"/></td>
+                        <tr class="gappedTr" id="dataTypeSelectTr">
+                            <td><strong>Date Type</strong></td><td><s:select list="dataTypes" name="lvDataType" id="lvDataType"/></td>
                         </tr>
                     </table>
                 </div>
