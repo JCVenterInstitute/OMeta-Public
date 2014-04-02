@@ -24,6 +24,7 @@ package org.jcvi.ometa.hibernate.dao;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
@@ -48,31 +49,31 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
 
     private static SessionFactory sessionFactoryObject;
     private Session session;
-//    private Transaction transaction;
+    //private Transaction transaction;
     private Date traxStartDate;
     private String sessionFactoryName;
     private String cfgXml;
-    Logger logger = Logger.getLogger( ContainerizedSessionAndTransactionManager.class );
+    Logger logger = Logger.getLogger(ContainerizedSessionAndTransactionManager.class);
 
     @PersistenceContext(unitName="OMETAPersistenceUnit")
     private EntityManager em;
     //private EntityManagerFactory emf;
 
-    public ContainerizedSessionAndTransactionManager( Properties props ) {
-        cfgXml = props.getProperty( CONTAINERIZED_HIBERNATE_CFG_PROP );
+    public ContainerizedSessionAndTransactionManager(Properties props) {
+        cfgXml = props.getProperty(CONTAINERIZED_HIBERNATE_CFG_PROP);
     }
 
     @Override
     public void startTransaction() throws DAOException {
-        if ( session == null ) {
-            throw new DAOException( "No session yet established." );
+        if(session == null) {
+            throw new DAOException("No session yet established.");
         }
-//        if ( transaction != null ) {
-//            logger.warn( "TRAX: " + transaction + " still exists, as new one is being started!." );
+//        if(transaction != null) {
+//            logger.warn("TRAX: " + transaction + " still exists, as new one is being started!.");
 //            new Exception().printStackTrace();
 //        }
-//        if ( logger.isDebugEnabled() ) {
-//            logger.debug("Strart-Transacton:: TRAX ref: " + transaction );
+//        if(logger.isDebugEnabled()) {
+//            logger.debug("Strart-Transacton:: TRAX ref: " + transaction);
 //        }
         Date ts = new Date();
         traxStartDate = ts;
@@ -80,38 +81,35 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
 
     @Override
     public void commitTransaction() throws DAOException {
-        if ( session != null ) {
-            //Transaction tx = session.getTransaction();
-//            if ( logger.isDebugEnabled() ) {
-//                logger.debug("Commit-Transaction:: TRAX ref: " + transaction );
-//            }
-//            if ( transaction == null ) {
-//                logger.warn( "Transaction was null at commit time: TRAX ref: null" );
-//                new Exception().printStackTrace();
-//            }
-//            if ( transactionCanBeEnded(transaction) && transaction.isActive() ) {
-//                transaction.commit();
-//                transaction = null;  // Pushing this away, to guarantee won't be re-used.
-//            }
+        if(session != null) {
+            Transaction tx = session.getTransaction();
+            if(logger.isDebugEnabled()) {
+                logger.debug("Commit-Transaction:: TRAX ref: " + tx);
+            }
+            if(tx == null) {
+                logger.warn("Transaction was null at commit time: TRAX ref: null");
+                new Exception().printStackTrace();
+            }
+            if(transactionCanBeEnded(tx) && tx.isActive()) {
+                tx.commit();
+                tx = null;  // Pushing this away, to guarantee won't be re-used.
+            }
         }
     }
 
     @Override
     public void rollBackTransaction() {
         traxStartDate = null;
-        if ( session != null ) {
-            //Transaction tx = session.getTransaction();
-//            if ( logger.isDebugEnabled() ) {
-//                logger.debug("Rollback-Transaction:: TRAX ref: " + transaction );
-//            }
-//            if ( transaction == null ) {
-//                logger.warn( "Transaction was null at rollback time: TRAX ref: null" );
-//                new Exception().printStackTrace();
-//            }
-//            if ( transactionCanBeEnded(transaction)  &&  transaction.isActive() ) {
-//                transaction.rollback();
-//                transaction = null;  // Pushing this away, to guarantee won't be re-used.
-//            }
+        if(session != null) {
+            Transaction tx = session.getTransaction();
+            if(tx == null) {
+                logger.warn("Transaction was null at rollback time: TRAX ref: null");
+                new Exception().printStackTrace();
+            }
+            if(transactionCanBeEnded(tx) && tx.isActive()) {
+                tx.rollback();
+                tx = null;  // Pushing this away, to guarantee won't be re-used.
+            }
         }
     }
 
@@ -123,19 +121,19 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
 
     @Override
     public void closeSession() {
-//        if ( logger.isDebugEnabled() ) {
-//            logger.debug("Close Session:: TRAX ref: " + transaction );
+//        if(logger.isDebugEnabled()) {
+//            logger.debug("Close Session:: TRAX ref: " + transaction);
 //        }
         //Transaction trax = session.getTransaction();
-//        if ( transactionCanBeEnded( transaction )  &&  transaction.isActive() ) {
+//        if(transactionCanBeEnded(transaction)  &&  transaction.isActive()) {
 //            transaction.commit();
 //            transaction = null;  // Pushing this away, to guarantee won't be re-used.
 //        }
-//        if ( session != null  &&  session.isOpen() ) {
+//        if(session != null  &&  session.isOpen()) {
 //            try {
 //                session.close();
-//            } catch ( Exception ex ) {
-//                logger.error( "Failed to close session TRAX ref: " + transaction );
+//            } catch(Exception ex) {
+//                logger.error("Failed to close session TRAX ref: " + transaction);
 //                ex.printStackTrace();
 //            }
 //        }
@@ -143,7 +141,7 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
 
     @Override
     /** Keep this for all session factory creation use. */
-    public void setSessionFactoryName( String sessionFactoryName ) {
+    public void setSessionFactoryName(String sessionFactoryName) {
         this.sessionFactoryName = sessionFactoryName;
     }
 
@@ -157,23 +155,17 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
         // Injection fails for this non-managed class.
         DAOException ex = null;
         String pu = PERSISTENCE_UNIT;
-        if ( session == null ) {
+        if(session == null) {
             session = null;
             try {
-                em = (EntityManager)new InitialContext().lookup( pu );
-                getHibernateSession();
-            } catch ( Exception loopEx ) {
-                ex = new DAOException( loopEx );
-                logger.error( "Persistence unit JNDI name " + pu + " failed." );
-            }
-
-            if ( session != null ) {
-                logger.info( "Persistence unit JNDI name " + pu + " worked." );
-                ex = null;
+                em = (EntityManager)new InitialContext().lookup(pu);
+            } catch(Exception loopEx) {
+                ex = new DAOException(loopEx);
+                logger.error("Persistence unit JNDI name " + pu + " failed.");
             }
         }
         getHibernateSession();
-        if ( ex != null ) {
+        if(ex != null) {
             ex.printStackTrace();
         }
         return session;
@@ -185,29 +177,29 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
 
         // Find a method for getting a hibernate session.
         Method[] emMethods = em.getClass().getMethods();
-        for ( Method method: emMethods ) {
-            if ( method.getName().equals( "getHibernateSession" ) ) {
+        for(Method method: emMethods) {
+            if(method.getName().equals("getHibernateSession")) {
                 // Once found, invoke the method.
                 try {
-                    Object returnObj = method.invoke( em );
-                    if ( returnObj instanceof Session ) {
+                    Object returnObj = method.invoke(em);
+                    if(returnObj instanceof Session) {
                         session = (Session)returnObj;
                     }
                     else {
                         logger.warn(
                                 "Invoking 'getHibernateSession()' returned type of " + returnObj.getClass().getName() +
                                 " instead of a hibernate session."
-                        );
+                       );
                     }
-                } catch ( Exception ex ) {
-                    logger.error( "Failed to invoke the getter to obtain the hibernate session " + ex.getMessage());
+                } catch(Exception ex) {
+                    logger.error("Failed to invoke the getter to obtain the hibernate session " + ex.getMessage());
                     ex.printStackTrace();
                 }
             }
         }
 
-        if ( session == null ) {
-            logger.error( "Failed to find hibernate session from " + em.toString() );
+        if(session == null) {
+            logger.error("Failed to find hibernate session from " + em.toString());
         }
     }
 
@@ -244,10 +236,10 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
      * @return fully-operational session factory.
      */
 //    protected SessionFactory getSessionFactory() throws DAOException {
-//        if ( sessionFactoryObject != null )
+//        if(sessionFactoryObject != null)
 //            return sessionFactoryObject;
 //
-//        if (sessionFactoryName != null  &&  sessionFactoryName.trim().length() > 0 ) {
+//        if (sessionFactoryName != null  &&  sessionFactoryName.trim().length() > 0) {
 //            String message =
 //                    "Attempt at creating a session factory from scratch when a container session factory /" +
 //                            sessionFactoryName +
@@ -281,10 +273,10 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
 //        }
 //    }
 
-//    /** Helper: determine whether transaction can be committed or rolled back. */
-//    private boolean transactionCanBeEnded(Transaction tx) {
-//        return tx != null  &&  !( tx.wasCommitted() || tx.wasRolledBack() );
-//    }
+    /** Helper: determine whether transaction can be committed or rolled back. */
+    private boolean transactionCanBeEnded(Transaction tx) {
+        return tx != null && !(tx.wasCommitted() || tx.wasRolledBack());
+    }
 
 
 }

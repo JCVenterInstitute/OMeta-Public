@@ -209,8 +209,6 @@ public class LoadingEngine {
         Long timeStamp = new Date().getTime();
         File scratchLoc = ScratchUtils.getScratchLocation(timeStamp, "LoadingEngine__" + file.getName());
 
-        System.out.println(scratchLoc.getAbsolutePath());
-
         CombinedFileSplitter splitter = new CombinedFileSplitter();
         splitter.process(file, scratchLoc);
 
