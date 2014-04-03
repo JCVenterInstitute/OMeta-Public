@@ -22,6 +22,7 @@
 package org.jcvi.ometa.utils;
 
 import org.jcvi.ometa.model.AttributeModelBean;
+import org.jcvi.ometa.model.EventMetaAttribute;
 import org.jcvi.ometa.model.LookupValue;
 import org.jcvi.ometa.model.Project;
 import org.jcvi.ometa.validation.ModelValidator;
@@ -174,5 +175,15 @@ public class CommonTool {
             parsedDate = (Date)value;
         }
         return ModelValidator.PST_DEFAULT_DATE_FORMAT.format(parsedDate);
+    }
+
+    public static List<EventMetaAttribute> filterActiveEventMetaAttribute(List<EventMetaAttribute> list) {
+        List<EventMetaAttribute> filtered = new ArrayList<EventMetaAttribute>(list.size());
+        for(EventMetaAttribute ema : list) {
+            if(ema.isActive()) {
+                filtered.add(ema);
+            }
+        }
+        return filtered;
     }
 }

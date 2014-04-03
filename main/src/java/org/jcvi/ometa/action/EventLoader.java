@@ -169,6 +169,7 @@ public class EventLoader extends ActionSupport {
                     }
                 } else if (jobType.startsWith("template")) { //download template
                     List<EventMetaAttribute> emaList = readPersister.getEventMetaAttributes(projectName, eventName);
+                    emaList = CommonTool.filterActiveEventMetaAttribute(emaList);
 
                     /*
                      * removing the sanity check on sample requirement since multiple sample support is in action
