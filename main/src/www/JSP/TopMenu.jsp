@@ -208,8 +208,8 @@
             <li id="admin_li"><a href="#">Admin</a>
                 <ul class="submenu">
                     <li><a href="projectSetup.action">Project Setup</a></li>
-                    <li><a href="metadataSetup.action?type=p">Project Metadata Setup</a></li>
-                    <li><a href="metadataSetup.action?type=s">Sample Metadata Setup</a></li>
+                    <!--<li><a href="metadataSetup.action?type=p">Project Metadata Setup</a></li>
+                    <li><a href="metadataSetup.action?type=s">Sample Metadata Setup</a></li>-->
                     <li><a href="metadataSetup.action?type=e">Event Metadata Setup</a></li>
                 </ul>
             </li>

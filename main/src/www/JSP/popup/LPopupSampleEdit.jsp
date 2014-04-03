@@ -74,7 +74,7 @@
 							<tr>
 							<s:hidden name="sampleElements[%{#sampAttrStat.index}].id" />
 							<s:hidden name="sampleElements[%{#sampAttrStat.index}].projectId"  />
-                            <s:hidden name="sampleElements[%{#sampAttrStat.index}].sampleId"  />
+              <s:hidden name="sampleElements[%{#sampAttrStat.index}].sampleId"  />
 							<s:hidden name="sampleElements[%{#sampAttrStat.index}].nameLookupValueId"  />
 							<s:hidden name="sampleElements[%{#sampAttrStat.index}].creationDate"  />
 							<s:hidden name="sampleElements[%{#sampAttrStat.index}].createdBy"  />

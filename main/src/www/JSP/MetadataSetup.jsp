@@ -26,16 +26,31 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
-
-        <link rel="stylesheet" href="style/dataTables.css" />
-        <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" />
+    <link rel="stylesheet" href="style/dataTables.css" />
+    <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" />
 		<style>
-		    #EMADiv .ui-autocomplete-input, #SMADiv .ui-autocomplete-input, #PMADiv .ui-autocomplete-input { width: 150px; }
-		    /* row background: mouse hover & new row */
-		    tr.borderBottom:hover>td.comboBoxCB, tr.borderBottom:hover>td input, tr.borderBottom:hover>td>textarea { background: #bbdcf8; }
-		    .buttonAdded>td.comboBoxCB,.buttonAdded>td input,.buttonAdded>td>textarea { background: #e9f4fd; }
-		    tr>td.fix172 { min-width:172px; }
-		    ul.ui-autocomplete.ui-menu{width:300px}
+	    #EMADiv .ui-autocomplete-input, 
+	    #SMADiv .ui-autocomplete-input, 
+	    #PMADiv .ui-autocomplete-input { 
+	    	width: 150px; 
+	    }
+	    /* row background: mouse hover & new row */
+	    tr.borderBottom:hover>td.comboBoxCB, 
+	    tr.borderBottom:hover>td input, 
+	    tr.borderBottom:hover>td>textarea { 
+	    	background: #bbdcf8; 
+	    }
+	    .buttonAdded>td.comboBoxCB,
+	    .buttonAdded>td input,
+	    .buttonAdded>td>textarea { 
+	    	background: #e9f4fd; 
+	    }
+	    tr>td.fix172 { 
+	    	min-width:172px; 
+	    }
+	    ul.ui-autocomplete.ui-menu {
+	    	width:300px
+	    }
 		</style>
 	</head>
 
@@ -202,7 +217,7 @@
         etHidden: '<input type="hidden" name="beanList[$cnt$].et" id="et$cnt$" value="$et$">'
 	    };
 	    var _utils = {
-			ontology: function() {
+				ontology: function() {
 	        window.open('http://www.ebi.ac.uk/ontology-lookup/init.do',
             'ontologyWindow',
             'scrollbars=yes,toolbar=no,resizable=yes,width=800,height=600,left=50,top=50'
@@ -218,18 +233,17 @@
 			    $.ajax({
 		        url: 'metadataSetupAjax.action',
 		        cache: false,
+		        async: false,
 		        data: 'type='+t+'&projectId='+parseInt(projectId)+'&eventName='+eventName,
 		        success: function(html){
-	            if(html.dynamicList != null) {
-	            	cb(html.dynamicList);
-	            }
+            	cb(html.dynamicList);
 		        },
 		        fail: function(html) {
 	            alert("Ajax Process has Failed.");
 		        }
-			    });
-			},
-			callback: {
+		    	});
+				},
+				callback: {
 		    	ema_d: function(list) {
 		    		var projectId = null;
                 maOptions = vs.vnoption.replace('$v$',0).replace('$n$','');
@@ -247,36 +261,43 @@
             _utils.makeAjax(type==='s'?'g_sma':'g_pma', projectId, null, _utils.callback.ma);
 		    	},
 		    	ema: function(list) {
-		    		 $.each(list, function(_i,_ema) {
-	                    _utils.add.ema(null,_ema.ema.eventName, _ema.ema.attributeName, _ema.ema.activeDB,
-                            _ema.ema.requiredDB, _ema.ema.sampleRequiredDB, _ema.ema.options,
-                            _ema.ema.desc, _ema.ema.label, _ema.ema.ontology,
-                            _ema.projectMeta, _ema.sampleMeta, _ema.ema.order);
-	                });
+		    		if(list) {
+			    		 $.each(list, function(_i,_ema) {
+	                _utils.add.ema(null,_ema.ema.eventName, _ema.ema.attributeName, _ema.ema.activeDB,
+	                  _ema.ema.requiredDB, _ema.ema.sampleRequiredDB, _ema.ema.options,
+	                  _ema.ema.desc, _ema.ema.label, _ema.ema.ontology,
+	                  _ema.projectMeta, _ema.sampleMeta, _ema.ema.order);
+	              });
+			    		}
+    					_utils.loading.hide();
 		    	},
 		    	ma: function(list) {
 		    		$.each(list, function(i1,v1) {
-	                    if(v1 && v1.attributeName) {
-	                        _utils.add.ma(null,type==='s'?'smaAdditionTbody':'pmaAdditionTbody',
-	                        	v1.attributeName, v1.activeDB, v1.requiredDB, v1.options, v1.desc,v1.label, v1.ontology);
-	                    }
-	                });
-	                _utils.loading.hide();
+              if(v1 && v1.attributeName) {
+                _utils.add.ma(null,type==='s'?'smaAdditionTbody':'pmaAdditionTbody',
+              	v1.attributeName, v1.activeDB, v1.requiredDB, v1.options, v1.desc,v1.label, v1.ontology);
+              }
+            });
+            _utils.loading.hide();
 		    	},
 		    	et: function(list) {
-		    		$.each(list, function(i1,v1) {
-	                    if(v1!=null && v1.name!=null) {
-	                        etOptions+=vs.vvoption.replace(/\\$v\\$/g,v1.name);
-	                    }
-	                });	
+		    		if(list) {
+			    		$.each(list, function(i1,v1) {
+	              if(v1!=null && v1.name!=null) {
+	                etOptions+=vs.vvoption.replace(/\\$v\\$/g,v1.name);
+	              }
+	            });	
+			    	}
 		    	},
 		    	at: function(list) {
-		    		maOptions=vs.vnoption.replace('$v$',0).replace('$n$','');
-	                $.each(list, function(i1,v1) {
-	                    if(v1!=null && v1.name!=null) {
-	                        maOptions+=vs.vvoption.replace(/\\$v\\$/g,v1.name);
-	                    }
-	                });	
+		    		if(list) {
+			    		maOptions=vs.vnoption.replace('$v$',0).replace('$n$','');
+	            $.each(list, function(i1,v1) {
+	              if(v1!=null && v1.name!=null) {
+	                maOptions+=vs.vvoption.replace(/\\$v\\$/g,v1.name);
+	              }
+	            });	
+	          }
 		    	},
 		    	pet: function(list) {
 		    		if(list) {
@@ -359,62 +380,60 @@
 		        },
 		        setValues: function(a,r,o,d,l,ot,pos) {
 		        	utils.checkCB('active'+maCnt, a);
-		            utils.checkCB('required'+maCnt, r);
-		            $('#options'+maCnt).val(o);
-		            $('#desc'+maCnt).val(d);
-		            $('#label'+maCnt).val(l);
-		            $('#order'+maCnt).val(pos);
-		            $('#ontology'+maCnt).val(ot).autocomplete({
-		                source: function( request, response ) {
-	                        $.ajax({
-	                            url: "ontologyAjax.action?t=sall",
-	                            data: {
-	                                maxRows: 12,
-	                                sw: request.term.replace(' ', '%20')
-	                            },
-	                            success: function( data ) {
-	                            	//cleans decorated input fields when fails
-	                            	if(!data || !data.result) {
-	                            		utils.error.remove();
-	                            		$('input[id^="ontology"]').removeClass('ui-autocomplete-loading').removeAttr('style');
-	                            		utils.error.add("Ontolo	gy search failed. Please try again.");
-	                            	} else {
-		                                response( $.map( data.result, function( item ) {
-		                                	//decorate options
-		                                	if(item.ontology) {
-			                                    return {
-			                                        label: item.tlabel + " - " + item.ontolabel,
-			                                        value: item.tlabel,
-			                                        ontologyId: item.ontology,
-			                                        ontologyLabel: item.ontolabel,
-			                                        accession: item.taccession,
-			                                        term : item.tlabel
-			                                    }
-			                                } else {
-			                                	return {
-			                                		label: item,
-			                                		value: '',
-			                                		ontology: null,
-			                                		term: null
-			                                	}
-			                                }
-		                                }));
-		                            }
-	                            }
-	                        });
-	                    },
-	                    minLength: 3,
-	                    select: function(event, ui) {
-	                    	console.log(ui.item);
-	                    	//insert ontology term to meta attribute description wrapped square brackets
-                        	$(this).parent('td').prev('td').find('textarea:first-child').val(function(i,v){
-                            	return (v==null ? '' : v.indexOf('[')>=0 ? v.substring(0,v.indexOf('[')) : v+' ')
-                            		+(ui.item.accession?'['+ui.item.ontologyLabel+','+ui.item.ontologyId+','+ui.item.accession+']':''
-                    			);
-                        	})
-	                    }
-		            }).css('width', '100px');
-		            maCnt++;	
+	            utils.checkCB('required'+maCnt, r);
+	            $('#options'+maCnt).val(o);
+	            $('#desc'+maCnt).val(d);
+	            $('#label'+maCnt).val(l);
+	            $('#order'+maCnt).val(pos);
+	            $('#ontology'+maCnt).val(ot).autocomplete({
+                source: function( request, response ) {
+                  $.ajax({
+                    url: "ontologyAjax.action?t=sall",
+                    data: {
+                      maxRows: 12,
+                      sw: request.term.replace(' ', '%20')
+                    },
+                    success: function( data ) {
+                    	//cleans decorated input fields when fails
+                    	if(!data || !data.result) {
+                    		utils.error.remove();
+                    		$('input[id^="ontology"]').removeClass('ui-autocomplete-loading').removeAttr('style');
+                    		utils.error.add("Ontolo	gy search failed. Please try again.");
+                    	} else {
+                        response( $.map( data.result, function( item ) {
+                        	//decorate options
+                        	if(item.ontology) {
+                            return {
+                              label: item.tlabel + " - " + item.ontolabel,
+                              value: item.tlabel,
+                              ontologyId: item.ontology,
+                              ontologyLabel: item.ontolabel,
+                              accession: item.taccession,
+                              term : item.tlabel
+                            }
+                          } else {
+                          	return {
+                          		label: item,
+                          		value: '',
+                          		ontology: null,
+                          		term: null
+                          	}
+                          }
+                        }));
+                      }
+                    }
+                  });
+                },
+                minLength: 3,
+                select: function(event, ui) {
+                	//insert ontology term to meta attribute description wrapped square brackets
+                	$(this).parent('td').prev('td').find('textarea:first-child').val(function(i,v){
+                		return (v==null ? '' : v.indexOf('[')>=0 ? v.substring(0,v.indexOf('[')) : v+' ')
+                  		+(ui.item.accession?'['+ui.item.ontologyLabel+','+ui.item.ontologyId+','+ui.item.accession+']':'');
+                	})
+                }
+	            }).css('width', '100px');
+	            maCnt++;	
 		        }
 		    },
 		    popup: {
@@ -478,7 +497,6 @@
 									_utils.makeAjax('g_a', option.value, null, cb.at);
 	                _utils.makeAjax('g_pet', option.value, null, cb.pet);
 									_utils.makeAjax('g_ema', option.value, null, cb.ema);
-		    					_utils.loading.hide();
 		            }
 		        } else {
 	            return;

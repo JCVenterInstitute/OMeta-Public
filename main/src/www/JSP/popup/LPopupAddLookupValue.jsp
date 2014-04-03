@@ -34,9 +34,9 @@
                 $('#popupHeader').append(type);
                 $('#popupLegend').prepend(type)
                 $('#lvType').val(type);
+                $('#lvDataType').val('string');
 
                 if(which==='et') {
-                    $('#lvDataType').val('string');
                     $('#dataTypeSelectTr').hide();
                 }
                 utils.error.remove();
