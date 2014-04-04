@@ -237,7 +237,10 @@
                 <param name="projectId">${projectId}</param>
                 <param name="sampleId">${sampleId}</param>
             </result>
-            <result name="error">/JSP/popup/LPopupSampleEdit.jsp</result>
+            <result name="error" type="redirectAction">
+                <param name="actionName">eventDetail</param>
+                <param name="projectId">${projectId}</param>
+            </result>
         </action>
 
         <action name="addLookupValue" class="org.jcvi.ometa.action.AddLookupValue" method="addLookupValueOpen">

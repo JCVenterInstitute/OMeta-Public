@@ -118,8 +118,8 @@ public class EventLoader extends ActionSupport {
             sampleName = sampleName!=null && sampleName.equals("0")?null:sampleName;
 
             if (jobType != null) {
-                boolean isProjectRegistration = eventName.equals(Constants.EVENT_PROJECT_REGISTRATION);
-                boolean isSampleRegistration = eventName.equals(Constants.EVENT_SAMPLE_REGISTRATION);
+                boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION);
+                boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);
 
                 if(projectName==null || projectName.equals("0") || eventName==null || eventName.equals("0"))
                     throw new Exception("Project or Event type is not selected.");
@@ -139,10 +139,13 @@ public class EventLoader extends ActionSupport {
                                 loadingProject.setProjectName(gBean.getProjectName());
                                 loadingProject.setIsPublic(Integer.valueOf(gBean.getProjectPublic()));
                             } else if(isSampleRegistration && gBean.getSampleName()!=null && gBean.getSamplePublic()!=null) {
-                                loadingSample = new Sample();
-                                loadingSample.setSampleName(gBean.getSampleName());
-                                loadingSample.setParentSampleName(gBean.getParentSampleName());
-                                loadingSample.setIsPublic(Integer.valueOf(gBean.getSamplePublic()));
+                                Sample existingSample = readPersister.getSample(projectId, gBean.getSampleName());
+                                if(existingSample == null) {
+                                    loadingSample = new Sample();
+                                    loadingSample.setSampleName(gBean.getSampleName());
+                                    loadingSample.setParentSampleName(gBean.getParentSampleName());
+                                    loadingSample.setIsPublic(Integer.valueOf(gBean.getSamplePublic()));
+                                }
                             } else {
                                 if(gBean.getSampleName()!=null) {
                                     this.sampleName = gBean.getSampleName();
