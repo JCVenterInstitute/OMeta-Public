@@ -333,7 +333,7 @@ public class EventLoader extends ActionSupport {
                 loadParameter.addProjectMetaAttributes(newPmas);
             }
         }
-        else if (this.eventName.equals(Constants.EVENT_SAMPLE_REGISTRATION) && sample.getSampleName() != null && !sample.getSampleName().isEmpty()) {
+        else if (this.eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) && sample.getSampleName() != null && !sample.getSampleName().isEmpty()) {
             isSampleRegistration = true;
 
             List<Sample> sampleList = new ArrayList<Sample>();
