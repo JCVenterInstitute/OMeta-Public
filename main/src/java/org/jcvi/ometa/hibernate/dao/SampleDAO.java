@@ -410,9 +410,9 @@ public class SampleDAO extends HibernateDAO {
                 sub_sql = sql_p.replaceFirst("#p_attr#", "").replaceFirst("#p_opt#", sql_p_wsearch);
                 sub_sql += " union " + sql_s.replaceFirst("#s_attr#", "").replaceFirst("#s_opt#", sql_s_wsearch);
                 sub_sql += " union " + sql_e.replaceFirst("#e_attr#", "").replaceFirst("#e_opt#", sql_e_wsearch);
-                sub_sql = sub_sql.replaceAll("#sSearch#", "'%"+sSearch.toLowerCase()+"%'")
+                sub_sql = sub_sql.replaceAll("#sSearch#", "'%"+sSearch.toLowerCase().replaceAll("'", "''")+"%'")
                         .replaceAll("#i_sSearch#", sSearch)
-                        .replaceAll("#attributes#", "'"+attributeNames.replaceAll(",", "','")+"'");
+                        .replaceAll("#attributes#", "'"+attributeNames.replaceAll("'", "''").replaceAll(",", "','")+"'");
             }
             if(isSort) {
                 String optSelector = "";
