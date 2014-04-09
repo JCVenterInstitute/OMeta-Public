@@ -233,10 +233,10 @@
 			    $.ajax({
 		        url: 'metadataSetupAjax.action',
 		        cache: false,
-		        async: false,
+		        async: true,
 		        data: 'type='+t+'&projectId='+parseInt(projectId)+'&eventName='+eventName,
 		        success: function(res){
-            	cb(res);
+            	cb(res, projectId);
 		        },
 		        fail: function(html) {
 	            alert("Ajax Process has Failed.");
@@ -244,7 +244,7 @@
 		    	});
 				},
 				callback: {
-		    	ema_d: function(res) {
+		    	ema_d: function(res, projectId) {
 		    		var projectId = null;
                 maOptions = vs.vnoption.replace('$v$',0).replace('$n$','');
 		    		$.each(res.dynamicList, function(i1,v1) {
@@ -260,7 +260,7 @@
             //get project or sample meta attribute and insert table rows
             _utils.makeAjax(type==='s'?'g_sma':'g_pma', projectId, null, _utils.callback.ma);
 		    	},
-		    	ema: function(res) {
+		    	ema: function(res, projectId) {
 		    		if(res.errorMsg) {
 		    			utils.error.add(res.errorMsg);
 		    		} else {
@@ -276,7 +276,7 @@
 						}
   					_utils.loading.hide();
 		    	},
-		    	ma: function(list) {
+		    	ma: function(list, projectId) {
 		    		$.each(list, function(i1,v1) {
               if(v1 && v1.attributeName) {
                 _utils.add.ma(null,type==='s'?'smaAdditionTbody':'pmaAdditionTbody',
@@ -285,7 +285,7 @@
             });
             _utils.loading.hide();
 		    	},
-		    	et: function(res) {
+		    	et: function(res, projectId) {
 		    		if(res.dynamicList) {
 			    		$.each(res.dynamicList, function(i1,v1) {
 	              if(v1!=null && v1.name!=null) {
@@ -294,7 +294,7 @@
 	            });	
 			    	}
 		    	},
-		    	at: function(res) {
+		    	at: function(res, projectId) {
 		    		if(res.dynamicList) {
 			    		maOptions=vs.vnoption.replace('$v$',0).replace('$n$','');
 	            $.each(res.dynamicList, function(i1,v1) {
@@ -303,6 +303,7 @@
 	              }
 	            });	
 	          }
+						_utils.makeAjax('g_ema', projectId, null, _utils.callback.ema);
 		    	},
 		    	pet: function(res) {
 		    		if(res.dynamicList) {
@@ -479,37 +480,36 @@
 		    		$('#loadingImg').hide();
 		    	}
 		    },
-	        submit: function() {
-	            $("form").submit();
-	        }
+        submit: function() {
+            $("form").submit();
+        }
 		};
 
 		function comboBoxChanged(option, id) {
 		    var l, cb = _utils.callback;
 		    if(id==='_projectSelect') {
 	    		_utils.loading.show();
-		        if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
-		        	//cleans attributes divisiona dn disabling buttons
-		            _utils.clean.all();
-		            //for project or sample metatdata setup
-		            if(type==='s' || type==='p') {
-		            	//create attribute list
-									_utils.makeAjax('g_ema', option.value, null, cb.ema_d);
-            		} else { //event metadata setup
-	                etOptions=vs.vnoption.replace('$v$',0).replace('$n$','Select Event');
-									_utils.makeAjax('g_et', option.value, null, cb.et);
-									_utils.makeAjax('g_a', option.value, null, cb.at);
-	                _utils.makeAjax('g_pet', option.value, null, cb.pet);
-									_utils.makeAjax('g_ema', option.value, null, cb.ema);
-		            }
-		        } else {
-	            return;
-		        }
+	        if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
+	        	//cleans attributes divisiona dn disabling buttons
+	            _utils.clean.all();
+	            //for project or sample metatdata setup
+	            if(type==='s' || type==='p') {
+	            	//create attribute list
+								_utils.makeAjax('g_ema', option.value, null, cb.ema_d);
+          		} else { //event metadata setup
+                etOptions=vs.vnoption.replace('$v$',0).replace('$n$','Select Event');
+								_utils.makeAjax('g_et', option.value, null, cb.et);
+								_utils.makeAjax('g_a', option.value, null, cb.at);
+                _utils.makeAjax('g_pet', option.value, null, cb.pet);
+	            }
+	        } else {
+            return;
+	        }
 		    } else if(id==='_eventSelect') {
 		    	_utils.loading.show();
 		    	//get an event specific meta attributes
-		        _utils.clean.attribute();
-		        _utils.makeAjax('g_ema', $('#_projectSelect option:selected').val(), option.value, cb.ema);
+	        _utils.clean.attribute();
+	        _utils.makeAjax('g_ema', $('#_projectSelect option:selected').val(), option.value, cb.ema);
 		    } else {
 		    	//loads data from ema dictionary for changing attribute, so it doesn't need to ask server for data
 	        if(id!=null && id.indexOf('ma')!=-1) {
