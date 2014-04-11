@@ -25,7 +25,6 @@ import org.jcvi.ometa.engine.MultiLoadParameter;
 import org.jcvi.ometa.model.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Copyright J. Craig Venter Institute, 2011
@@ -37,6 +36,10 @@ import java.util.Map;
  */
 public interface ProjectSampleEventWritebackBusiness {
     void loadActor(Actor actor) throws Exception;
+
+    void loadActorGroup(List<ActorGroup> actorGroups) throws Exception;
+
+    void loadGroup(Group group) throws Exception;
     /**
      * Implement this to load one+ files representing new projects.
      *
@@ -115,33 +118,4 @@ public interface ProjectSampleEventWritebackBusiness {
     void updateProject(Project projects) throws Exception;
 
     void updateSample(Sample sample) throws Exception;
-
-    /**
-     * Implement this to provide the possible event names to then
-     * be provided to calls such as "loadEvent".
-     *
-     * @return list of valid event names (which serve as event types), such that events of this type may be posted.
-     */
-    List<String> getEventTypeNames();
-
-    /**
-     * Implement this to create a mapping of project name to sample name.
-     *
-     * @param prefix is to be added as first member of each returned list.
-     * @return map: project vs its samples.
-     */
-    Map<String,List<String>> getProjectSampleMap( String prefix );
-
-    /**
-     * Implement this to objtain all the event attributes for the project and event name given.
-     *
-     * @param projectName to match in db.
-     * @param eventName some event needed for posting.
-     * @return list of all meta attributes.
-     */
-    List<EventMetaAttribute> getEventMetaAttributes( String projectName, String eventName );
-
-    /** Tells whether a sample name is needed, for event-oriented operations. */
-    Boolean isSampleRequired( String projectName, String eventName );
-
 }

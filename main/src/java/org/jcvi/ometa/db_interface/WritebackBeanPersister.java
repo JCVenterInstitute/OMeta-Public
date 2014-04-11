@@ -114,8 +114,6 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
 
     public void writeBackActor(Actor actor) throws Exception {
         try {
-            StringBuilder errors = new StringBuilder();
-
             ActorDAO actorDAO = daoFactory.getActorDAO();
 
             //check if another user with same user name exists
@@ -132,31 +130,59 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
             GroupDAO groupDAO = daoFactory.getGroupDAO();
 
             LookupValue viewLV = lookupValueDAO.getLookupValue("General-View", session);
-            Group viewGroup = groupDAO.getGroupByLV(viewLV.getLookupValueId(), session);
+            Group viewGroup = groupDAO.getGroupByLookupId(viewLV.getLookupValueId(), session);
 
             LookupValue editLV = lookupValueDAO.getLookupValue("General-Edit", session);
-            Group editGroup = groupDAO.getGroupByLV(editLV.getLookupValueId(), session);
+            Group editGroup = groupDAO.getGroupByLookupId(editLV.getLookupValueId(), session);
 
+            List<ActorGroup> groups = new ArrayList<ActorGroup>(2);
             //add view group
             ActorGroup actgrp = new ActorGroup();
             actgrp.setActorGroupId(guidGetter.getGuid());
             actgrp.setActorId(actor.getLoginId());
             actgrp.setGroupId(viewGroup.getGroupId());
             actgrp.setCreationDate(sessionAndTransactionManager.getTransactionStartDate());
-            actorDAO.writeActorGroup(actgrp, session);
+            groups.add(actgrp);
             //add edit group
             actgrp = new ActorGroup();
             actgrp.setActorGroupId(guidGetter.getGuid());
             actgrp.setActorId(actor.getLoginId());
             actgrp.setGroupId(editGroup.getGroupId());
             actgrp.setCreationDate(sessionAndTransactionManager.getTransactionStartDate());
-            actorDAO.writeActorGroup(actgrp, session);
+            groups.add(actgrp);
+            actorDAO.writeActorGroup(groups, session);
 
         } catch (Exception ex) {
             sessionAndTransactionManager.rollBackTransaction();
             throw ex;
         }
     }
+
+    public void writeBackGroup(Group group) throws Exception {
+        try {
+            GroupDAO groupDAO = daoFactory.getGroupDAO();
+            group.setGroupId(guidGetter.getGuid());
+            groupDAO.addGroup(group, session);
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        }
+    }
+
+    public void writeBackActorGroup(List<ActorGroup> actorGroups) throws Exception {
+        try {
+            ActorDAO actorDAO = daoFactory.getActorDAO();
+            for(ActorGroup actorGroup : actorGroups) {
+                actorGroup.setActorGroupId(guidGetter.getGuid());
+                actorGroup.setCreationDate(sessionAndTransactionManager.getTransactionStartDate());
+                actorDAO.writeActorGroup(actorGroup, session);
+            }
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        }
+    }
+
 
     /**
      * Save things to be referenced by attributes later.
@@ -237,58 +263,6 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
     }
 
     /**
-     * Gets the names of all valid events.
-     */
-    public List<String> getValidEventTypeNames() throws Exception {
-        List<String> rtnVal = new ArrayList<String>();
-        LookupValueDAO dao = daoFactory.getLookupValueDAO();
-        List<LookupValue> eventLookupValues = dao.getEventLookupValueList(session);
-        for (LookupValue nextlv : eventLookupValues) {
-            rtnVal.add(nextlv.getName());
-        }
-        Collections.sort(rtnVal);
-        return rtnVal;
-    }
-
-    /**
-     * Fetches all the projects and all their samples as maps of name vs name list.
-     *
-     * @param prePad to pre-pend this passed string, to every list in the returned map.
-     * @return mapping of the project name vs its list of sample names.
-     * @throws Exception thrown for called code.
-     */
-    public Map<String, List<String>> getProjectSampleMap(String prePad) throws Exception {
-        Map<String, List<String>> projVsSamples = new TreeMap<String, List<String>>();
-        ProjectDAO pdao = daoFactory.getProjectDAO();
-        List<Project> projects = pdao.getAllProjects(session);
-        if (projects.size() > 0) {
-            SampleDAO sdao = daoFactory.getSampleDAO();
-            List<Sample> samples = sdao.getAllSamples(session);
-
-            Map<Long, String> projectIdVsName = new HashMap<Long, String>();
-            for (Project project : projects) {
-                projectIdVsName.put(project.getProjectId(), project.getProjectName());
-            }
-
-            for (Sample sample : samples) {
-                String projectName = projectIdVsName.get(sample.getProjectId());
-                if (projectName != null) {
-                    List<String> sampleNameList = projVsSamples.get(projectName);
-                    if (sampleNameList == null) {
-                        sampleNameList = new ArrayList<String>();
-                        if (prePad != null) {
-                            sampleNameList.add(prePad);
-                        }
-                        projVsSamples.put(projectName, sampleNameList);
-                    }
-                    sampleNameList.add(sample.getSampleName());
-                }
-            }
-        }
-        return projVsSamples;
-    }
-
-    /**
      * Call this when you have a project read up to the spec given for filesystem, or non-db-origin data.
      *
      * @param pBeans        list of all projects to save.
@@ -329,48 +303,6 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
             sessionAndTransactionManager.rollBackTransaction();
             throw ex;
         }
-    }
-
-    /**
-     * Retrieve all the event meta attributes for the project and event.
-     *
-     * @return all beans found.
-     * @throws Exception for called methods.
-     */
-    public List<EventMetaAttribute> getEventMetaAttributes(String projectName, String eventTypeName)
-            throws Exception {
-
-        List<EventMetaAttribute> emaBeans = new ArrayList<EventMetaAttribute>();
-        try {
-            // Get expansions of project and lookup value-for-event.
-            ProjectDAO projectDAO = daoFactory.getProjectDAO();
-            Project project = projectDAO.getProject(projectName, session);
-            if (project != null) {
-                Long projectId = project.getProjectId();
-                LookupValueDAO lookupValueDAO = daoFactory.getLookupValueDAO();
-                LookupValue lv = lookupValueDAO.getLookupValue(eventTypeName, session);
-                if (lv != null) {
-                    Long eventTypeLookupId = lv.getLookupValueId();
-
-                    EventMetaAttributeDAO emaDao = daoFactory.getEventMetaAttributeDAO();
-                    List<Long> projectIds = new ArrayList<Long>();
-                    projectIds.add(projectId);
-                    emaBeans.addAll(emaDao.readAll(projectIds, eventTypeLookupId, session));
-
-                } else {
-                    logger.warn("No lookup value in database found for event type " + eventTypeName);
-                }
-
-            } else {
-                logger.warn("No project in database found for project name /" + projectName + "/.");
-            }
-
-        } catch (Exception ex) {
-            sessionAndTransactionManager.rollBackTransaction();
-            throw ex;
-        }
-
-        return emaBeans;
     }
 
     /**
@@ -727,21 +659,6 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
             sessionAndTransactionManager.rollBackTransaction();
             throw ex;
         }
-    }
-
-    /**
-     * Need to know if the sample name is optional / dead weight, or required.
-     */
-    public Boolean isSampleRequired(String projectName, String eventName) throws Exception {
-        Boolean rtnVal = true;  // Burdened until proven otherwise.
-        try {
-            EventDAO eventDAO = daoFactory.getEventDAO();
-            rtnVal = eventDAO.isSampleRequired(projectName, eventName, session);
-        } catch (Exception ex) {
-            sessionAndTransactionManager.rollBackTransaction();
-            throw ex;
-        }
-        return rtnVal;
     }
 
     //-----------------------------------------COMMONALITY

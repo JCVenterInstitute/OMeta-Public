@@ -103,6 +103,44 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
         }
     }
 
+    @ExcludeClassInterceptors
+    @ExcludeDefaultInterceptors
+    @Override
+    @WebMethod
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void loadActorGroup(List<ActorGroup> actorGroups) throws Exception {
+        BeanPersistenceFacadeI beanPersister = getBeanPersister();
+        beanPersister.open();
+        try {
+            beanPersister.writeBackActorGroup(actorGroups);
+        } catch (Exception ex) {
+            logger.error(ex);
+            beanPersister.error();
+            throw ex;
+        } finally {
+            beanPersister.close();
+        }
+    }
+
+    @ExcludeClassInterceptors
+    @ExcludeDefaultInterceptors
+    @Override
+    @WebMethod
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void loadGroup(Group group) throws Exception {
+        BeanPersistenceFacadeI beanPersister = getBeanPersister();
+        beanPersister.open();
+        try {
+            beanPersister.writeBackGroup(group);
+        } catch (Exception ex) {
+            logger.error(ex);
+            beanPersister.error();
+            throw ex;
+        } finally {
+            beanPersister.close();
+        }
+    }
+
     /**
      * Loads all projects encountered.  NOTE: not restricting this.  Users who have logged in,
      * may load projects which do not yet exist.  If we force them to have access to
@@ -353,89 +391,6 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
 
     private String getUserName() {
         return context.getCallerPrincipal().getName();
-    }
-
-    /**
-     * Get event types from database.  No usage restriction needed.
-     *
-     * @return list of types.
-     */
-    @Override
-    @WebMethod
-    public List<String> getEventTypeNames() {
-        List<String> rtnVal = null;
-
-        BeanPersistenceFacadeI writePersister = getBeanPersister();
-        try {
-            writePersister.open();
-            rtnVal = writePersister.getValidEventTypeNames();
-            writePersister.close();
-        } catch (Exception ex) {
-            rtnVal = Collections.EMPTY_LIST;
-            logger.error(ex.getMessage());
-        } finally {
-            writePersister.close();
-        }
-        return rtnVal;
-    }
-
-    /**
-     * Gets all projects vs all their samples.  No usage restriction needed.
-     */
-    @Override
-    public Map<String, List<String>> getProjectSampleMap(String prePadStr) {
-        Map<String, List<String>> rtnVal = null;
-
-        BeanPersistenceFacadeI writePersister = getBeanPersister();
-        try {
-            writePersister.open();
-            rtnVal = writePersister.getProjectSampleMap(prePadStr);
-            writePersister.close();
-        } catch (Exception ex) {
-            rtnVal = Collections.EMPTY_MAP;
-            logger.error(ex.getMessage());
-        } finally {
-            writePersister.close();
-        }
-
-        return rtnVal;
-    }
-
-    @Override
-    public List<EventMetaAttribute> getEventMetaAttributes(String projectName, String eventName) {
-        List<EventMetaAttribute> rtnVal = null;
-        BeanPersistenceFacadeI writePersister = getBeanPersister();
-        try {
-            writePersister.open();
-            rtnVal = writePersister.getEventMetaAttributes(projectName, eventName);
-            writePersister.close();
-
-        } catch (Exception ex) {
-            rtnVal = Collections.EMPTY_LIST;
-            logger.error(ex.getMessage());
-        } finally {
-            writePersister.close();
-        }
-        return rtnVal;
-    }
-
-    /**
-     * Tells whether a sample name is needed, for event-oriented operations.  No usage restriction needed.
-     */
-    @Override
-    public Boolean isSampleRequired(String projectName, String eventName) {
-        Boolean rtnVal = true; // Burdened until shown otherwise.
-        BeanPersistenceFacadeI writePersister = getBeanPersister();
-        try {
-            writePersister.open();
-            rtnVal = writePersister.isSampleRequired(projectName, eventName);
-        } catch (Exception ex) {
-            rtnVal = true;
-            logger.error(ex.getMessage());
-        } finally {
-            writePersister.close();
-        }
-        return rtnVal;
     }
 
     /**

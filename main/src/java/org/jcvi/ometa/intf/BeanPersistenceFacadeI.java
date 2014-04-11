@@ -24,7 +24,6 @@ package org.jcvi.ometa.intf;
 import org.jcvi.ometa.model.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,12 +40,6 @@ public interface BeanPersistenceFacadeI {
     void close();
     void error();
 
-    List<String> getValidEventTypeNames() throws Exception;
-
-    Map<String,List<String>> getProjectSampleMap(String prePad) throws Exception;
-
-    List<EventMetaAttribute> getEventMetaAttributes( String projectName, String eventTypeName ) throws Exception;
-
     void writeBackActor(Actor actor) throws Exception;
 
     void writeBackLookupValues(List<LookupValue> lBeans ) throws Exception;
@@ -55,17 +48,13 @@ public interface BeanPersistenceFacadeI {
 
     void writeBackSamples(List<Sample> sBeans, String actorUserName) throws Exception;
 
-    void writeBackProjectMetaAttributes(List<ProjectMetaAttribute> pmaBeans, String actorUserName)
-            throws Exception;
+    void writeBackProjectMetaAttributes(List<ProjectMetaAttribute> pmaBeans, String actorUserName) throws Exception;
 
-    void writeBackEventMetaAttributes(List<EventMetaAttribute> emaBeans, String actorUserName)
-            throws Exception;
+    void writeBackEventMetaAttributes(List<EventMetaAttribute> emaBeans, String actorUserName) throws Exception;
 
-    void writeBackSampleMetaAttributes(List<SampleMetaAttribute> smaBeans, String actorUserName)
-                    throws Exception;
+    void writeBackSampleMetaAttributes(List<SampleMetaAttribute> smaBeans, String actorUserName) throws Exception;
 
-    void writeBackAttributes(List<FileReadAttributeBean> aBeans, String eventName, String actorUserName)
-            throws Exception;
+    void writeBackAttributes(List<FileReadAttributeBean> aBeans, String eventName, String actorUserName) throws Exception;
 
     void updateEventStatus(Event event, String actorUserName) throws Exception;
 
@@ -73,7 +62,7 @@ public interface BeanPersistenceFacadeI {
 
     void updateSample(Sample sample, String actorUserName) throws Exception;
 
-    Boolean isSampleRequired( String projectName, String eventName)
-        throws Exception;
+    void writeBackActorGroup(List<ActorGroup> actorGroups) throws Exception;
 
+    void writeBackGroup(Group group) throws Exception;
 }
