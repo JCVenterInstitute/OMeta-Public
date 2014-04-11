@@ -84,7 +84,7 @@ public class ProjectSetup extends ActionSupport {
             projectNameList.add("ALL");
             projectList = readPersister.getProjects(projectNameList);
 
-            groupList = readPersister.getUserGroup();
+            groupList = readPersister.getAllGroup();
 
             if (jobType != null && jobType.equals("insert")) {
                 tx = (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");

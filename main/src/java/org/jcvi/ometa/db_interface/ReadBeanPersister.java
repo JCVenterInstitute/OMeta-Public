@@ -49,8 +49,6 @@ public class ReadBeanPersister implements WebDataFacadeI {
     private Set<String> validDataTypes;
     private ProjectSampleEventPresentationBusiness pseb;
 
-//    private Logger logger = Logger.getLogger(ReadBeanPersister.class);
-
     public ReadBeanPersister( Properties props ) {
         //pseb = new ProjectSampleEventPresentationStateless();
         pseb = new PresentationActionDelegate().initializeEjb( Logger.getLogger( ReadBeanPersister.class ), null );
@@ -68,6 +66,13 @@ public class ReadBeanPersister implements WebDataFacadeI {
         return pseb.isUserAdmin(loginName);
     }
 
+    public List<Actor> getAllActor() throws Exception {
+        return pseb.getAllActor();
+    }
+
+    public List<ActorGroup> getActorGroup(Long actorId) throws Exception {
+        return pseb.getActorGroup(actorId);
+    }
 
     public Project getProject(String projectName) throws Exception {
         return pseb.getProject(projectName);
@@ -284,8 +289,8 @@ public class ReadBeanPersister implements WebDataFacadeI {
         return pseb.getAuthorizedProjects( username, accessLevel );
     }
 
-    public List<Group> getUserGroup() throws Exception {
-        return pseb.getUserGroup();
+    public List<Group> getAllGroup() throws Exception {
+        return pseb.getAllGroup();
     }
 
     public List<Project> getChildProjects( Long projectId ) throws Exception, IllegalAccessException {

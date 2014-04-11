@@ -101,6 +101,42 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
     }
 
     @ExcludeClassInterceptors
+    @WebMethod
+    public List<Actor> getAllActor() throws Exception {
+        List<Actor> actors = null;
+        try {
+            ActorDAO actorDao = daoFactory.getActorDAO();
+            Session session = this.startTransactedSession();
+            actors = actorDao.getAllActor(session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+        return actors;
+    }
+
+    @ExcludeClassInterceptors
+    @WebMethod
+    public List<ActorGroup> getActorGroup(Long actorId) throws Exception {
+        List<ActorGroup> actorGroups;
+        try {
+            ActorDAO actorDao = daoFactory.getActorDAO();
+            Session session = this.startTransactedSession();
+            actorGroups = actorDao.getActorGroup(actorId, session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+        return actorGroups;
+    }
+
+    @ExcludeClassInterceptors
     public String isUserAdmin(String loginName) throws Exception {
         boolean isAdmin = false;
         try {
@@ -989,13 +1025,13 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return rtnVal;
     }
 
-    public List<Group> getUserGroup() throws Exception {
+    public List<Group> getAllGroup() throws Exception {
         List<Group> rtnVal = null;
 
         try {
             GroupDAO groupDAO= daoFactory.getGroupDAO();
             Session session = this.startTransactedSession();
-            rtnVal = groupDAO.getAllUserGroup( session );
+            rtnVal = groupDAO.getAllGroup( session );
             sessionAndTransactionManager.commitTransaction();
         } catch (Exception ex) {
             sessionAndTransactionManager.rollBackTransaction();

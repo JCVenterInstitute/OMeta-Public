@@ -41,6 +41,10 @@ public interface ProjectSampleEventPresentationBusiness {
 
     public String isUserAdmin(String loginName) throws Exception;
 
+    public List<Actor> getAllActor() throws Exception;
+
+    public List<ActorGroup> getActorGroup(Long actorId) throws Exception;
+
     public Project getProject(String projectName) throws Exception;
 
     public Project getProject(Long projectId) throws Exception;
@@ -152,7 +156,7 @@ public interface ProjectSampleEventPresentationBusiness {
 
     public List<Project> getChildProjects( Long projectId ) throws Exception;
 
-    public List<Group> getUserGroup() throws Exception;
+    public List<Group> getAllGroup() throws Exception;
 
     public List<LookupValue> getLookupValueByType(String type) throws Exception;
 }
