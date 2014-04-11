@@ -28,6 +28,7 @@ import org.hibernate.criterion.Restrictions;
 import org.jcvi.ometa.model.Actor;
 import org.jcvi.ometa.model.ActorGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -91,8 +92,8 @@ public class ActorDAO extends HibernateDAO {
         boolean isAdmin = false;
         try {
             String sql = " select A.* from actor A, actor_group AG, groups G, lookup_value LV " +
-                " where A.actor_username=:userName and AG.actgrp_actor_id=A.actor_id and G.group_id=AG.actgrp_group_id " +
-                " and LV.lkuvlu_id=G.group_name_lkuvl_id and LV.lkuvlu_name='General-Admin' ";
+                    " where A.actor_username=:userName and AG.actgrp_actor_id=A.actor_id and G.group_id=AG.actgrp_group_id " +
+                    " and LV.lkuvlu_id=G.group_name_lkuvl_id and LV.lkuvlu_name='General-Admin' ";
             SQLQuery query = session.createSQLQuery( sql );
             query.setParameter("userName", loginName);
 
@@ -103,6 +104,22 @@ public class ActorDAO extends HibernateDAO {
         }
 
         return isAdmin;
+    }
+
+    public List<Actor> getAllActor(Session session) throws DAOException {
+        List<Actor> actors = new ArrayList<Actor>();
+        try {
+            Criteria crit = session.createCriteria(Actor.class);
+            List modelObjects = crit.list();
+            if (modelObjects != null && modelObjects.size() > 0) {
+                for(int i = 0;i < modelObjects.size();i++) {
+                    actors.add((Actor)modelObjects.get(i));
+                }
+            }
+        } catch(Exception ex) {
+            throw new DAOException(ex);
+        }
+        return actors;
     }
 
     /**
@@ -118,40 +135,49 @@ public class ActorDAO extends HibernateDAO {
         } catch ( Exception ex ) {
             throw new DAOException( ex );
         }
-
     }
 
-    public void writeActorGroup(ActorGroup actgrp, Session session) throws DAOException {
+    public void writeActorGroup(List<ActorGroup> groups, Session session) throws DAOException {
+        for(ActorGroup group : groups) {
+            this.writeActorGroup(group, session);
+        }
+    }
+    public void writeActorGroup(ActorGroup ag, Session session) throws DAOException {
         try {
-            session.saveOrUpdate(actgrp);
+            session.saveOrUpdate(ag);
         } catch (Exception ex) {
             throw new DAOException(ex);
         }
     }
 
-//    /**
-//     * Given an actor model, write its relevant data to the database.
-//     *
-//     * @throws org.jcvi.project_websites.hibernate.dao.DAOException thrown if state of database not as required.
-//     */
-//    public void write( Actor actor ) throws DAOException {
-//        Transaction trax = null;
-//        try {
-//            SessionFactory sFac = new ContainerizedSessionAndTransactionManager().getContainerizedSessionFactory();
-//            Session session = sFac.getCurrentSession();
-//            //Session session = getSessionFactory(sessionFactoryName).getCurrentSession();
-//            trax = session.beginTransaction();
-//
-//            session.saveOrUpdate( actor );
-//
-//            trax.commit();
-//        } catch ( Exception ex ) {
-//            if ( trax != null  &&  trax.isActive() ) {
-//                trax.rollback();
-//            }
-//            throw new DAOException( ex );
-//        }
-//
-//    }
+    public void deleteActorGroup(List<ActorGroup> groups, Session session) throws DAOException {
+        for(ActorGroup group : groups) {
+            this.deleteActorGroup(group, session);
+        }
+    }
+    public void deleteActorGroup(ActorGroup ag, Session session) throws DAOException {
+        try {
+            session.delete(ag);
+        } catch(Exception ex) {
+            throw new DAOException(ex);
+        }
+    }
 
+    public List<ActorGroup> getActorGroup(Long userId, Session session) throws DAOException {
+        List<ActorGroup> groups = new ArrayList<ActorGroup>();
+        try {
+            Criteria crit = session.createCriteria(ActorGroup.class);
+            crit.add( Restrictions.eq( "actgrp_actor_id", userId ) );
+            List modelObjects = crit.list();
+            if (modelObjects != null && modelObjects.size() > 0) {
+                for(int i = 0;i < modelObjects.size();i++) {
+                    groups.add((ActorGroup)modelObjects.get(i));
+                }
+            }
+        } catch(Exception ex) {
+            throw new DAOException(ex);
+        }
+
+        return groups;
+    }
 }

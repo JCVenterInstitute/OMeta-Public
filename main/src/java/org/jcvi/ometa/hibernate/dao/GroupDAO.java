@@ -37,7 +37,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class GroupDAO extends HibernateDAO {
-    public List<Group> getAllUserGroup( Session session ) throws DAOException {
+    public List<Group> getAllGroup( Session session ) throws DAOException {
         List<Group> returnVal = new ArrayList<Group>();
         try {
             Criteria crit = session.createCriteria( Group.class );
@@ -49,7 +49,7 @@ public class GroupDAO extends HibernateDAO {
         return returnVal;
     }
 
-    public Group getGroupByLV(Long nameId, Session session) throws DAOException {
+    public Group getGroupByLookupId(Long nameId, Session session) throws DAOException {
         Group rtnVal = null;
         try {
             Criteria crit = session.createCriteria(Group.class);
@@ -59,5 +59,13 @@ public class GroupDAO extends HibernateDAO {
             throw new DAOException(ex);
         }
         return rtnVal;
+    }
+
+    public void addGroup(Group group, Session session) throws Exception {
+        try {
+            session.saveOrUpdate(group);
+        } catch ( Exception ex ) {
+            throw new DAOException( ex );
+        }
     }
 }

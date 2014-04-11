@@ -21,10 +21,7 @@
 
 package org.jcvi.ometa.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
@@ -40,6 +37,7 @@ public class ActorGroup {
     private Long actorGroupId;
     private Long actorId;
     private Long groupId;
+    private Group group;
     private Date creationDate;
 
     @Id
@@ -77,5 +75,15 @@ public class ActorGroup {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    @OneToOne
+    @JoinColumn(name = "actgrp_group_id", referencedColumnName = "group_id", insertable = false, updatable = false)
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 }
