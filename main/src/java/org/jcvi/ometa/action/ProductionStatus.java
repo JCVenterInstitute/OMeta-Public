@@ -31,6 +31,7 @@ package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.Logger;
+import org.jcvi.ometa.action.ajax.IAjaxAction;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.stateless_session_bean.ForbiddenResourceException;
@@ -42,7 +43,7 @@ import org.jtc.common.util.property.PropertyHelper;
 
 import java.util.*;
 
-public class ProductionStatus extends ActionSupport {
+public class ProductionStatus extends ActionSupport implements IAjaxAction {
     private Logger logger = Logger.getLogger(ProductionStatus.class);
 
 
@@ -60,6 +61,20 @@ public class ProductionStatus extends ActionSupport {
     private boolean isExcel = false;
 
     private List<Map> pageElementList;
+
+    //AJAX parameters
+    private List aaData;
+    private String type;
+    //dataTable request parameters
+    private int sEcho;
+    private int iColumns;
+    private int iDisplayStart;
+    private int iDisplayLength;
+    private int iTotalRecords;
+    private int iTotalDisplayRecords;
+    private String sSearch;
+    private String iSortCol_0;
+    private String sSortDir_0;
 
     public ProductionStatus() {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
@@ -278,6 +293,187 @@ public class ProductionStatus extends ActionSupport {
         return rtnVal;
     }
 
+    @Override
+    public String runAjax() {
+        String rtnVal = ERROR;
+
+        aaData = new ArrayList<Map>();
+
+        try {
+            boolean attributesGiven = (attributes!=null && !attributes.equals("") && !"ALL".equals(attributes));
+
+            List<String> givenAttributeList = null;
+            if(attributesGiven) {
+                if(attributes.endsWith(","))
+                    attributes = attributes.substring(0, attributes.length()-1);
+                givenAttributeList = Arrays.asList(attributes.split(","));
+            }
+            String sortCol = null;
+            if(iSortCol_0!=null && !iSortCol_0.isEmpty()) {
+                sortCol = givenAttributeList.get(Integer.parseInt(iSortCol_0));
+            }
+
+            //get all project for given project names
+            List<Project> projectList = readPersister.getProjects(Arrays.asList(projectNames.split(",")));
+            List<Long> projectIds = new ArrayList<Long>();
+            String projectIds_str = "";
+            for(Project project:projectList) {
+                projectIds.add(project.getProjectId());
+                projectIds_str += ","+project.getProjectId();
+            }
+            projectIds_str=projectIds_str.substring(1);
+
+            //process attributes
+            String attributeType = null;
+            boolean hasProjectAttribute = false;
+            boolean hasEventAttribute = false;
+            boolean hasSampleAttribute = false;
+
+            String tempMetaName = null;
+            List<String> attributeList = new ArrayList<String>();
+            List<ProjectMetaAttribute> allProjectMetaAttributes = readPersister.getProjectMetaAttributes(projectIds);
+            for (ProjectMetaAttribute pma : allProjectMetaAttributes) {
+                tempMetaName = pma.getLookupValue().getName();
+                if (!attributeList.contains(tempMetaName))
+                    attributeList.add(tempMetaName);
+                if(!hasProjectAttribute && attributes.contains(tempMetaName)) {
+                    hasProjectAttribute = true;
+                }
+                if(sortCol!=null && sortCol.equals(tempMetaName))
+                    attributeType = "p";
+            }
+            List<SampleMetaAttribute> allSampleMetaAttributes = readPersister.getSampleMetaAttributes(projectIds);
+            for (SampleMetaAttribute sma : allSampleMetaAttributes) {
+                tempMetaName = sma.getLookupValue().getName();
+                if (!attributeList.contains(tempMetaName)) {
+                    attributeList.add(tempMetaName);
+                    if(!hasSampleAttribute && attributes.contains(tempMetaName)) {
+                        hasSampleAttribute = true;
+                    }
+                    if(sortCol!=null && sortCol.equals(tempMetaName))
+                        attributeType = "s";
+                }
+            }
+            List<EventMetaAttribute> allEventMetaAttributes = readPersister.getEventMetaAttributes(projectIds);
+            for (EventMetaAttribute ema : allEventMetaAttributes) {
+                tempMetaName = ema.getLookupValue().getName();
+                if (!attributeList.contains(tempMetaName)) {
+                    attributeList.add(tempMetaName);
+                    if(!hasEventAttribute && attributes.contains(tempMetaName)) {
+                        hasEventAttribute = true;
+                    }
+                    if(sortCol!=null && sortCol.equals(tempMetaName))
+                        attributeType = "e";
+                }
+            }
+            if (attributesGiven) {
+                List<String> tokenizedAttribute = new ArrayList<String>(Arrays.asList(attributes.split(",")));
+                List<String> existingAttributes = new ArrayList<String>();
+                for (String tempAttribute : tokenizedAttribute) {
+                    if (attributeList.contains(tempAttribute))
+                        existingAttributes.add(tempAttribute);
+                }
+                attributeList=existingAttributes;
+            }
+            attributeList.addAll(Arrays.asList(defaultAttributes));
+            attributeList.removeAll(Arrays.asList(forbiddenAttributes));
+
+            if(!attributesGiven) {
+                attributes = "";
+                for(String attribute:attributeList) {
+                    attributes+=","+attribute;
+                }
+                attributes = attributes.substring(1);
+            }
+
+            List<Sample> samples = null;
+            if((sSearch!=null && !sSearch.isEmpty()) || (iSortCol_0!=null && !iSortCol_0.isEmpty())) {
+                samples = readPersister.getAllSamples(projectIds_str, attributes, sSearch, attributeType, sortCol, sSortDir_0);
+            } else {
+                //get all samples for given project IDs
+                samples = readPersister.getSamplesForProjects(projectIds);
+            }
+
+            //paginate samples before main loop
+            iTotalDisplayRecords=iTotalRecords=samples.size();
+            samples = samples.subList(iDisplayStart, iDisplayStart+iDisplayLength>samples.size()?samples.size():iDisplayLength+iDisplayStart);
+
+            List<Long> sampleIdList = new ArrayList<Long>();
+            for (Sample sample : samples) {
+                sampleIdList.add(sample.getSampleId());
+            }
+            Map<Long, List<SampleAttribute>> sampleIdVsAttributeList = getSampleVsAttributeList(sampleIdList);
+            Map<Long, List<Event>> sampleIdVsEventList = getSampleIdVsEventList(sampleIdList);
+
+            Project currProject = null;
+
+            Map<Long, Project> projects = new HashMap<Long, Project>(); //for caching projects
+            Map<Long, Map<String, Object>> projectAttributes = new HashMap<Long, Map<String, Object>>(); // for caching project's attribute value map
+            Map<Long, Sample> parentSamples = new HashMap<Long, Sample>(); //for caching retrieved parent samples
+
+            for (Sample sample : samples) {
+                Map<String, Object> sampleAttrMap = new HashMap<String, Object>();
+                if(!projects.containsKey(sample.getProjectId())) { //recycle or get project data with attributes
+                    currProject = readPersister.getProject(sample.getProjectId());
+                    projects.put(currProject.getProjectId(), currProject);
+
+                    List<ProjectAttribute> projectAttributesList = readPersister.getProjectAttributes(currProject.getProjectId());
+                    Map<String, Object> projectAttrMap = new HashMap<String, Object>();
+                    projectAttrMap.putAll(CommonTool.getAttributeValueMap(projectAttributesList, true, null));
+
+                    if(!projectAttrMap.containsKey(Constants.ATTR_PROJECT_NAME)) { //if there is no project name attribute, use project name from project object
+                        projectAttrMap.put(Constants.ATTR_PROJECT_NAME, currProject.getProjectName());
+                    }
+                    projectAttributes.put(currProject.getProjectId(), projectAttrMap);
+                }
+
+                currProject = projects.get(sample.getProjectId());
+                sampleAttrMap.putAll(projectAttributes.get(currProject.getProjectId()));
+
+                sampleAttrMap.put(Constants.ATTR_SAMPLE_NAME, sample.getSampleName());
+                sampleAttrMap.put("sampleId", sample.getSampleId());
+
+                if (sample.getParentSampleId() != null) { //get parent sample information and cache it
+                    Sample parentSample = null;
+                    if(parentSamples.containsKey(sample.getParentSampleId())) {
+                        parentSample = parentSamples.get(sample.getParentSampleId());
+                    } else {
+                        parentSample = readPersister.getSample(sample.getParentSampleId());
+                        parentSamples.put(parentSample.getSampleId(), parentSample);
+                    }
+                    sampleAttrMap.put("Parent Sample", parentSample.getSampleName());
+                }
+
+                if(hasSampleAttribute) {
+                    List<SampleAttribute> sampleAttributes = sampleIdVsAttributeList.get(sample.getSampleId());
+                    if (sampleAttributes != null && sampleAttributes.size() > 0) {
+                        sampleAttrMap.putAll(CommonTool.getAttributeValueMap(sampleAttributes, true, null));
+                    }
+                }
+
+                if(hasEventAttribute) {
+                    List<Event> sampleEvents = sampleIdVsEventList.get(sample.getSampleId());
+                    if (sampleEvents != null && sampleEvents.size() > 0) {
+                        Map<Long, List<EventAttribute>> eventIdVsAttributes = getEventIdVsAttributeList(sampleEvents, currProject.getProjectId());
+
+                        for (Event evt : sampleEvents) {
+                            List<EventAttribute> eventAttributes = eventIdVsAttributes.get(evt.getEventId());
+                            if (eventAttributes == null)
+                                continue;
+
+                            sampleAttrMap.putAll(CommonTool.getAttributeValueMap(eventAttributes, true, new String[] {"Sample Status"}));
+                        }
+                    }
+                }
+                aaData.add(CommonTool.decorateAttributeMap(sampleAttrMap, attributeList, currProject));
+            }
+        } catch(Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return rtnVal;
+    }
+
     private Map<Long, List<SampleAttribute>> getSampleVsAttributeList(List<Long> sampleIdList) throws Exception {
         // Get all sample attributes for all samples, and remarshal them into a map of sample vs attributes.
         List<SampleAttribute> allSampleAttributes = readPersister.getSampleAttributes(sampleIdList);
@@ -390,5 +586,93 @@ public class ProductionStatus extends ActionSupport {
 
     public void setPageElementList(List<Map> pageElementList) {
         this.pageElementList = pageElementList;
+    }
+
+    public List getAaData() {
+        return aaData;
+    }
+
+    public void setAaData(List aaData) {
+        this.aaData = aaData;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getsEcho() {
+        return sEcho;
+    }
+
+    public void setSEcho(int sEcho) {
+        this.sEcho = sEcho;
+    }
+
+    public int getiColumns() {
+        return iColumns;
+    }
+
+    public void setIColumns(int iColumns) {
+        this.iColumns = iColumns;
+    }
+
+    public int getiDisplayStart() {
+        return iDisplayStart;
+    }
+
+    public void setIDisplayStart(int iDisplayStart) {
+        this.iDisplayStart = iDisplayStart;
+    }
+
+    public int getiDisplayLength() {
+        return iDisplayLength;
+    }
+
+    public void setIDisplayLength(int iDisplayLength) {
+        this.iDisplayLength = iDisplayLength;
+    }
+
+    public int getiTotalRecords() {
+        return iTotalRecords;
+    }
+
+    public void setITotalRecords(int iTotalRecords) {
+        this.iTotalRecords = iTotalRecords;
+    }
+
+    public int getiTotalDisplayRecords() {
+        return iTotalDisplayRecords;
+    }
+
+    public void setITotalDisplayRecords(int iTotalDisplayRecords) {
+        this.iTotalDisplayRecords = iTotalDisplayRecords;
+    }
+
+    public String getsSearch() {
+        return sSearch;
+    }
+
+    public void setSSearch(String sSearch) {
+        this.sSearch = sSearch;
+    }
+
+    public String getiSortCol_0() {
+        return iSortCol_0;
+    }
+
+    public void setISortCol_0(String iSortCol_0) {
+        this.iSortCol_0 = iSortCol_0;
+    }
+
+    public String getSortDir_0() {
+        return sSortDir_0;
+    }
+
+    public void setSSortDir_0(String sSortDir_0) {
+        this.sSortDir_0 = sSortDir_0;
     }
 }

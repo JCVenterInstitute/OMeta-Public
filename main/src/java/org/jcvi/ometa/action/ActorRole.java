@@ -2,6 +2,7 @@ package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.Logger;
+import org.jcvi.ometa.action.ajax.IAjaxAction;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.Actor;
@@ -23,8 +24,8 @@ import java.util.Properties;
  * Time: 3:38 PM
  * org.jcvi.ometa.action
  */
-public class UserRole extends ActionSupport {
-    private Logger logger = Logger.getLogger(UserRole.class);
+public class ActorRole extends ActionSupport implements IAjaxAction {
+    private Logger logger = Logger.getLogger(ActorRole.class);
 
     private List<Actor> actors;
     private Long actorId;
@@ -35,7 +36,7 @@ public class UserRole extends ActionSupport {
     private ReadBeanPersister readPersister;
     ProjectSampleEventWritebackBusiness psewt;
 
-    public UserRole() {
+    public ActorRole() {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
         readPersister = new ReadBeanPersister(props);
     }
@@ -76,14 +77,12 @@ public class UserRole extends ActionSupport {
         return rtnVal;
     }
 
-    public String getActorGroup() {
-        try {
-            actorGroups = readPersister.getActorGroup(actorId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @Override
+    public String runAjax() {
+        String rtnVal = SUCCESS;
 
-        return "json";
+
+        return rtnVal;
     }
 
     public List<Actor> getActors() {

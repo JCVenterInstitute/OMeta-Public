@@ -59,9 +59,7 @@
 
         <default-interceptor-ref name="defaultStack" />
 
-        <action name="forceLoginForProductionStatus"
-                class="org.jcvi.ometa.action.ForceLogin"
-                method="silentRedirect">
+        <action name="forceLoginForProductionStatus" class="org.jcvi.ometa.action.ForceLogin" method="silentRedirect">
             <result name="success" type="redirectAction">
                 <param name="actionName">productionStatus</param>
                 <param name="namespace">/</param>
@@ -71,9 +69,7 @@
             </result>
         </action>
 
-        <action name="forceLoginForEventReport"
-                class="org.jcvi.ometa.action.ForceLogin"
-                method="silentRedirect">
+        <action name="forceLoginForEventReport" class="org.jcvi.ometa.action.ForceLogin" method="silentRedirect">
             <result name="success" type="redirectAction">
                 <param name="actionName">eventReport</param>
                 <param name="namespace">/</param>
@@ -82,9 +78,7 @@
             </result>
         </action>
 
-        <action name="forceLoginForTemplateMaker"
-                class="org.jcvi.ometa.action.ForceLogin"
-                method="silentRedirect">
+        <action name="forceLoginForTemplateMaker" class="org.jcvi.ometa.action.ForceLogin" method="silentRedirect">
             <result name="success" type="redirectAction">
                 <param name="actionName">templateMaker</param>
                 <param name="namespace">/</param>
@@ -93,9 +87,7 @@
             </result>
         </action>
 
-        <action name="forceLoginForEventDetail"
-                class="org.jcvi.ometa.action.ForceLogin"
-                method="silentRedirect">
+        <action name="forceLoginForEventDetail" class="org.jcvi.ometa.action.ForceLogin" method="silentRedirect">
             <result name="success" type="redirectAction">
                 <param name="actionName">eventDetail</param>
                 <param name="namespace">/</param>
@@ -105,9 +97,7 @@
         </action>
 
 
-        <action name="productionStatus"
-                class="org.jcvi.ometa.action.ProductionStatus"
-                method="statusPage">
+        <action name="productionStatus" class="org.jcvi.ometa.action.ProductionStatus" method="statusPage">
             <result name="success">/JSP/ProductionStatus.jsp</result>
             <result name="error">/JSP/ProductionStatus.jsp</result>
             <result name="success_s">/JSP/ProductionStatusShell.jsp</result>
@@ -122,39 +112,29 @@
             <result name="forbidden">/JSP/ProductionStatus.jsp</result>
             <result name="forbidden_s">/JSP/ProductionStatus.jsp</result>
         </action>
-        <action name="productionStatusExcel"
-                class="org.jcvi.ometa.action.ProductionStatus"
-                method="statusExcel">
+        <action name="productionStatusExcel" class="org.jcvi.ometa.action.ProductionStatus" method="statusExcel">
             <result name="success">/JSP/ProductionStatusExcel.jsp</result>
         </action>
 
-        <action name="projectSetup"
-                class="org.jcvi.ometa.action.ProjectSetup"
-                method="projectSetup">
+        <action name="projectSetup" class="org.jcvi.ometa.action.ProjectSetup" method="projectSetup">
             <result name="forbidden">/JSP/ProjectSetup.jsp</result>
             <result name="success">/JSP/ProjectSetup.jsp</result>
             <result name="error">/JSP/ProjectSetup.jsp</result>
         </action>
 
-        <action name="metadataSetup"
-                class="org.jcvi.ometa.action.MetadataSetup"
-                method="process">
+        <action name="metadataSetup" class="org.jcvi.ometa.action.MetadataSetup" method="process">
             <result name="forbidden">/JSP/MetadataSetup.jsp</result>
             <result name="success">/JSP/MetadataSetup.jsp</result>
             <result name="error">/JSP/MetadataSetup.jsp</result>
         </action>
 
-        <action name="sampleLoader"
-                class="org.jcvi.ometa.action.SampleLoader"
-                method="execute">
+        <action name="sampleLoader" class="org.jcvi.ometa.action.SampleLoader" method="execute">
             <result name="forbidden">/JSP/SampleLoader.jsp</result>
             <result name="success">/JSP/SampleLoader.jsp</result>
             <result name="error">/JSP/SampleLoader.jsp</result>
         </action>
 
-        <action name="sampleDetail"
-                class="org.jcvi.ometa.action.SampleDetail"
-                method="detailPage">
+        <action name="sampleDetail" class="org.jcvi.ometa.action.SampleDetail" method="detailPage">
             <result name="success">/JSP/SampleDetail.jsp</result>
             <result name="error" type="redirectAction">
                 <param name="actionName">SampleDetail</param>
@@ -162,9 +142,7 @@
             </result>
         </action>
 
-        <action name="eventReport"
-                class="org.jcvi.ometa.action.EventReport"
-                method="eventReport">
+        <action name="eventReport" class="org.jcvi.ometa.action.EventReport" method="eventReport">
             <result name="login" type="redirectAction">
                 <param name="actionName">forceLoginForEventReport</param>
                 <param name="namespace">/</param>
@@ -175,9 +153,7 @@
             <result name="error">/JSP/EventReport.jsp</result>
         </action>
 
-        <action name="eventDetail"
-                class="org.jcvi.ometa.action.EventDetail"
-                method="eventDetail">
+        <action name="eventDetail" class="org.jcvi.ometa.action.EventDetail" method="eventDetail">
             <result name="login" type="redirectAction">
                 <param name="actionName">forceLoginForEventDetails</param>
                 <param name="namespace">/</param>
@@ -188,9 +164,7 @@
             <result name="forbidden">/JSP/EventDetail.jsp</result>
         </action>
 
-        <action name="eventLoader"
-                class="org.jcvi.ometa.action.EventLoader"
-                method="execute">
+        <action name="eventLoader" class="org.jcvi.ometa.action.EventLoader" method="execute">
             <result name="forbidden">/JSP/EventLoader.jsp</result>
             <result name="success">/JSP/EventLoader.jsp</result>
             <result name="error">/JSP/EventLoader.jsp</result>
@@ -201,9 +175,7 @@
             </result>
         </action>
 
-        <action name="sampleWithEventLoader"
-                class="org.jcvi.ometa.action.SampleWithEventLoader"
-                method="execute">
+        <action name="sampleWithEventLoader" class="org.jcvi.ometa.action.SampleWithEventLoader" method="execute">
             <result name="forbidden">/JSP/SampleWithEventLoader.jsp</result>
             <result name="success">/JSP/SampleWithEventLoader.jsp</result>
             <result name="error">/JSP/SampleWithEventLoader.jsp</result>
@@ -278,6 +250,11 @@
             </result>
             <result name="error">/JSP/AddActor.jsp</result>
         </action>
+        <action name="actorRole" class="org.jcvi.ometa.action.ActorRole">
+            <result name="input">/JSP/ActorRole.jsp</result>
+            <result name="success">/JSP/AddActor.jsp</result>
+            <result name="error">/JSP/AddActor.jsp</result>
+        </action>
         <action name="help" class="org.jcvi.ometa.action.Help" method="process">
             <result name="input">/JSP/help.jsp</result>
             <result name="success" type="redirectAction">
@@ -333,11 +310,15 @@
             <result name="success" type="json"/>
             <result name="error" type="json"/>
         </action>
-        <action name="productionStatusAjax" class="org.jcvi.ometa.action.ajax.ProductionStatusAjax" method="runAjax">
+        <action name="productionStatusAjax" class="org.jcvi.ometa.action.ProductionStatus" method="runAjax">
             <result name="success" type="json"/>
             <result name="error" type="json"/>
         </action>
         <action name="ontologyAjax" class="org.jcvi.ometa.action.ajax.OntologyAjax" method="runAjax">
+            <result name="success" type="json"/>
+            <result name="error" type="json"/>
+        </action>
+        <action name="actorRole" class="org.jcvi.ometa.action.ActorRole" method="runAjax">
             <result name="success" type="json"/>
             <result name="error" type="json"/>
         </action>
