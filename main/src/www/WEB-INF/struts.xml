@@ -101,7 +101,7 @@
             <result name="success">/JSP/ProductionStatus.jsp</result>
             <result name="error">/JSP/ProductionStatus.jsp</result>
             <result name="success_s">/JSP/ProductionStatusShell.jsp</result>
-            <result name="error_s">/JSP/ProductionStatus.jsp</result>
+            <result name="error_s">/JSP/ProductionStatusShell.jsp</result>
             <result name="login" type="redirectAction">
                 <param name="actionName">forceLoginForProductionStatus</param>
                 <param name="namespace">/</param>

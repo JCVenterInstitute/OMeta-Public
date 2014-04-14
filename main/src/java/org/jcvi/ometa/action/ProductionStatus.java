@@ -162,7 +162,7 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
         }
 
         //shell action handler
-        return rtnVal+(iss&&!rtnVal.equals(LOGIN)?"_s":"");
+        return rtnVal + (iss && !rtnVal.equals(LOGIN) ? "_s" : "");
     }
 
     public String statusExcel() {
