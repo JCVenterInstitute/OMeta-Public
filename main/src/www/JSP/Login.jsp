@@ -30,7 +30,9 @@
 <body>
 	<form method="POST" action="j_security_check" id="loginPage" name="loginPage">
 		<jsp:include page="TopMenu.jsp" />
-		<div id="pageTitle" class="panelHeader">O-META: Ontologies based Matadata Tracking Application</div>
+		<div id="HeaderPane" style="margin:15px 0 0 30px;">
+			<div class="panelHeader">O-META: Ontologies based Matadata Tracking Application</div>
+		</div>
 		<div id="middle_content_template" style="overflow:visible;width:auto;height:auto;margin:35px 25px 25px 25px;">
 			<div id="loginContents">
 				<table>
@@ -49,7 +51,7 @@
 			</div>
 			<div id="contactDiv" style="clear:both;overflow:visible;float:left;margin:10px 20px">
 				<div style="margin:5px 0 0 0;">
-					or please <input type="button" name="Register" value="Register" onclick="javascript:addActor();"/> to use the system.
+					<strong>or please <input type="button" name="Register" value="Register" onclick="javascript:addActor();"/> to use the system.</strong>
 				</div>
 				<div id="info" style="margin-top:15px;float:left;">
 					<p>The latest versions of <strong>Firefox(v.14+), IE(v.9+) or Chrome(v.22+)</strong> are recommended in using O-META.<br/>
