@@ -164,6 +164,8 @@ public class ProjectSetup extends ActionSupport {
                     loadParameter.addProjectRegistrations(Constants.EVENT_PROJECT_REGISTRATION, fbList);
                 }
                 psewt.loadAll( null, loadParameter );
+
+                addActionMessage("Project '" + loadingProject.getProjectName() + "' has been loaded successfully.");
             }
             returnValue = SUCCESS;
 

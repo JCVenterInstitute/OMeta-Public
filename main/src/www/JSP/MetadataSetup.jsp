@@ -55,24 +55,20 @@
 </head>
 
 <body>
-<s:form id="metadataSetupPage" name="metadataSetupPage"
-        namespace="/"
-        action="metadataSetup"
-        method="post" theme="simple">
+<s:form id="metadataSetupPage" name="metadataSetupPage" namespace="/" action="metadataSetup" method="post" theme="simple">
   <s:include value="TopMenu.jsp" />
   <s:hidden name="type" id="type" />
   <div id="HeaderPane" style="margin:15px 0 0 30px;">
-    <table cellpadding="0" cellspacing="0" border="0">
-      <tr><td class="panelHeader">Sample/Event Set up</td></tr>
-      <tr>
-        <td>
-          <div id="errorMessagesPanel" style="margin-top:15px;"></div>
-          <s:if test="hasActionErrors()">
-            <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
-          </s:if>
-        </td>
-      </tr>
-    </table>
+    <div class="panelHeader">Metadata</div>
+    <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+    <s:if test="hasActionErrors()">
+      <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
+    </s:if>
+    <s:if test="hasActionMessages()">
+  		<div class="alert_info" onclick="$('.alert_info').remove();">
+  			<strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
+  		</div>
+    </s:if>
   </div>
   <div id="middle_content_template">
     <div id="statusTableDiv">
@@ -236,8 +232,12 @@ var _utils = {
       async: true,
       data: 'type='+t+'&projectId='+parseInt(projectId)+'&eventName='+eventName,
       success: function(res){
-        if(res.errorMsg) {
-          utils.error.add(res.errorMsg);
+        if(res.dataMap.errorMsg) {
+        	var err = res.dataMap.errorMsg;
+        	if(err.indexOf("Forbidden") > 0) {
+        		err = "You do not have permission to access the project.";
+        	}
+          utils.error.add(err);
         } else {
           cb(res);
         }

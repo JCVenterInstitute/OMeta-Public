@@ -323,9 +323,10 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction {
                 }
                 projectId = null;
                 beanList = null;
+
+                addActionMessage("Metadata has been loaded successfully.");
             }
             returnValue = SUCCESS;
-            addActionMessage("Metadata has been loaded successfully.");
 
         } catch(Exception ex) {
             logger.error("Exception in MetadataSetup : " + ex.toString());
@@ -643,6 +644,10 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction {
 
     public List<MetadataSetupReadBean> getBeanList() {
         return beanList;
+    }
+
+    public void setBeanList(List<MetadataSetupReadBean> beanList) {
+        this.beanList = beanList;
     }
 
     public String getType() {

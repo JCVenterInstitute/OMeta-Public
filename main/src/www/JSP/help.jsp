@@ -28,45 +28,56 @@
 <head>
 </head>
 <body>
-    <s:form id="helpPage" name="helpPage" namespace="/" action="help" method="post" theme="simple">
-        <jsp:include page="TopMenu.jsp" />
-        <div id="pageTitle" class="panelHeader">O-META</div>
-        <div id="middle_content_template">
-            <div id="statusTableDiv">
-                <div style="margin:0 10px 0 0;">
-                    <h1 class="csc-firstHeader">Help</h1>
-                </div>
-                <div id="tableTop">
-                    <table>
-                        <tr class="gappedTr">
-                            <td align="right">Name</td>
-                            <td><s:textfield id="_name" name="name" size="35px"/></td>
-                        </tr>
-                        <tr class="gappedTr">
-                            <td align="right">Email</td>
-                            <td><s:textfield id="_email" name="email" size="35px"/></td>
-                        </tr>
-                        <tr class="gappedTr">
-                            <td align="right" style="vertical-align:top">Description</td>
-                            <td><s:textarea id="_msg" name="msg" cols="35" rows="10"/></td>
-                        </tr>
-                    </table>
-                </div>
-                <s:div id="submitDiv" cssStyle="margin:15px 10px 5px 200px;width:100%;">
-                    <input type="submit" id="sendButton" value="Submit"/>
-                    <input type="button" style="margin-left:15px;" onclick="javascript:_page.clear();" value="Clear" />
-                </s:div>
-            </div>
-        </div>
-    </s:form>
-    
-    <script>
-        var _page = {
-            clear: function() {
-                $("#_name, #_email, #_msg").val('');    
-            }
-        }
-    </script>
+<s:form id="helpPage" name="helpPage" namespace="/" action="help" method="post" theme="simple">
+  <jsp:include page="TopMenu.jsp" />
+  <div id="HeaderPane" style="margin:15px 0 0 30px;">
+    <div class="panelHeader">Help</div>
+    <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+    <s:if test="hasActionErrors()">
+      <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
+    </s:if>
+    <s:if test="hasActionMessages()">
+      <div class="alert_info" onclick="$('.alert_info').remove();">
+        <strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
+      </div>
+    </s:if>
+  </div>
+  <div id="middle_content_template">
+    <div id="statusTableDiv">
+      <div style="margin:0 10px 0 0;">
+        <h1 class="csc-firstHeader">Help</h1>
+      </div>
+      <div id="tableTop">
+        <table>
+          <tr class="gappedTr">
+            <td align="right">Name</td>
+            <td><s:textfield id="_name" name="name" size="35px"/></td>
+          </tr>
+          <tr class="gappedTr">
+            <td align="right">Email</td>
+            <td><s:textfield id="_email" name="email" size="35px"/></td>
+          </tr>
+          <tr class="gappedTr">
+            <td align="right" style="vertical-align:top">Description</td>
+            <td><s:textarea id="_msg" name="msg" cols="35" rows="10"/></td>
+          </tr>
+        </table>
+      </div>
+      <s:div id="submitDiv" cssStyle="margin:15px 10px 5px 200px;width:100%;">
+        <input type="submit" id="sendButton" value="Submit"/>
+        <input type="button" style="margin-left:15px;" onclick="javascript:_page.clear();" value="Clear" />
+      </s:div>
+    </div>
+  </div>
+</s:form>
+
+<script>
+  var _page = {
+    clear: function() {
+      $("#_name, #_email, #_msg").val('');
+    }
+  }
+</script>
 </body>
 </html>
 

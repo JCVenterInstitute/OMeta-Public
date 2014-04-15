@@ -129,6 +129,8 @@ public class EventLoader extends ActionSupport {
                     tx.begin();
                     psewt.loadAll(null, this.createMultiLoadParameter(projectName, loadingProject, loadingSample, beanList));
                     this.reset();
+
+                    addActionMessage("Event has been loaded successfully.");
                 } else if(jobType.equals("grid")) { //loads multiple events from grid view
                     tx = (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
                     tx.begin();
@@ -158,7 +160,7 @@ public class EventLoader extends ActionSupport {
                         }
                     }
                     this.reset();
-
+                    addActionMessage("Events have been loaded successfully.");
                 } else if (jobType.equals("file")) { //loads data from a CSV file to grid view
                     if (!this.getDataTemplate().canRead()) {
                         throw new Exception("Error in reading the file.");

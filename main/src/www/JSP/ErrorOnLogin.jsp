@@ -27,12 +27,13 @@
 <head>
 </head>
 <body>
-    <jsp:include page="TopMenu.jsp"/>
-    <div id="pageTitle" class="panelHeader">Failed Login</div>
-    <br/>
-    <div id="middle_content_template">
-        <p>Your attempt at logging in has failed.  Please check your username and password, and try again.</p>
-    </div>
+  <jsp:include page="TopMenu.jsp"/>
+  <div id="HeaderPane" style="margin:15px 0 0 30px;">
+    <div class="panelHeader">Login Failed</div>
+  </div>
+  <div id="middle_content_template">
+    <p>Your attempt at logging in has failed.  Please check your username and password, and try again.</p>
+  </div>
 </body>
 </html>
 
