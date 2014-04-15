@@ -180,7 +180,7 @@ function newAttribute(type) {
   $.openPopupLayer({
     name: "LPopupAddLookupValue",
     width: 450,
-    url: "addLookupValue.action?w="+type
+    url: "addLookupValue.action?type="+type
   });
 }
 
