@@ -107,12 +107,6 @@ var utils = {
             }    
         },
         show: function(objectId) {
-            /*if (window.showModalDialog) {
-                window.showModalDialog('./html/errorPopup.html',$('#'+objectId).val(),
-                    "dialogWidth=600px;dialogHeight=300px; resizable=yes; scroll=yes");
-            } else {
-                document.getElementById('mozillaErrorMessage').style.display = "";
-            }*/
             $.openPopupLayer({
                 name: "erroPopup",
                 width: 450,

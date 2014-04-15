@@ -364,3 +364,22 @@ tr.borderBottom > td { border-bottom: 1px gray dotted; }
     -webkit-appearance: none; -webkit-box-sizing: content-box; 
     background: #abedf3 url('../images/jqueryUI/ui-anim_basic_16x16.gif') left center no-repeat !important; 
 }
+
+/* bootstrap style alert */
+.alert_info {
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+    color: #31708f;
+    margin-bottom: 10px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 15px;
+}
+.alert_error {
+    background-color: #F2DEDE;
+    border-color: #EBCCD1;
+    color: #A94442;
+    border: 1px solid rgba(0, 0, 0, 0);
+    border-radius: 4px;
+    padding: 5px;
+}

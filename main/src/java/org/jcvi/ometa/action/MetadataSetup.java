@@ -23,14 +23,17 @@ package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.Logger;
+import org.jcvi.ometa.action.ajax.IAjaxAction;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.model.*;
+import org.jcvi.ometa.model.web.EventMetaAttributeContainer;
 import org.jcvi.ometa.model.web.MetadataSetupReadBean;
 import org.jcvi.ometa.stateless_session_bean.ForbiddenResourceException;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.PresentationActionDelegate;
 import org.jcvi.ometa.utils.UploadActionDelegate;
+import org.jcvi.ometa.validation.ModelValidator;
 
 import javax.naming.InitialContext;
 import javax.transaction.Status;
@@ -45,7 +48,7 @@ import java.util.*;
  * Date: 12/7/11
  * Time: 2:08 PM
  */
-public class MetadataSetup extends ActionSupport {
+public class MetadataSetup extends ActionSupport implements IAjaxAction {
     private Logger logger = Logger.getLogger(MetadataSetup.class);
 
     private ProjectSampleEventPresentationBusiness psept;
@@ -58,10 +61,21 @@ public class MetadataSetup extends ActionSupport {
     private List<MetadataSetupReadBean> beanList;
     private Long projectId;
 
-    private String lerror;
-    private String emsg;
+    //AJAX parameters
+    private Map<String, Object> dataMap;
+    private String eventName;
+
+    //Add Attribute lists
+    private String lvDataType;
+    private String lvName;
+    private String lvType;
+    private List<String> dataTypes;
+    private List<String> types;
 
     public MetadataSetup() {
+    }
+
+    private void getReadEJB() {
         PresentationActionDelegate pdeledate = new PresentationActionDelegate();
         psept = pdeledate.initializeEjb(logger, psept);
     }
@@ -71,6 +85,8 @@ public class MetadataSetup extends ActionSupport {
         UserTransaction tx = null;
 
         try {
+            this.getReadEJB();
+
             List<String> projectNameList = new ArrayList<String>();
             if (projectNames == null || projectNames.equals(""))
                 projectNameList.add("ALL");
@@ -80,9 +96,6 @@ public class MetadataSetup extends ActionSupport {
                 projectNameList.add(projectNames);
 
             projectList = psept.getProjects(projectNameList);
-
-            if(lerror!=null && "true".equals(lerror))
-                throw new Exception(emsg);
 
             if (projectId!=null && projectId!=0 && type!=null && !type.isEmpty() && beanList!=null && beanList.size()>0) {
                 tx=(UserTransaction)new InitialContext().lookup("java:comp/UserTransaction");
@@ -312,6 +325,7 @@ public class MetadataSetup extends ActionSupport {
                 beanList = null;
             }
             returnValue = SUCCESS;
+            addActionMessage("Metadata has been loaded successfully.");
 
         } catch(Exception ex) {
             logger.error("Exception in MetadataSetup : " + ex.toString());
@@ -346,6 +360,195 @@ public class MetadataSetup extends ActionSupport {
         }
 
         return returnValue;
+    }
+
+    public String runAjax() {
+        String rtnVal = SUCCESS;
+        boolean isError = false;
+        dataMap = new HashMap<String, Object>();
+
+        try {
+            this.getReadEJB();
+
+            if("g_ema".equals(type)) { //event meta attribute
+                LookupValue eventTypeLV=null;
+                if(eventName!=null && !eventName.isEmpty()){
+                    eventTypeLV = psept.getLookupValue(eventName, ModelValidator.EVENT_TYPE_LV_TYPE_NAME);
+                }
+                List<EventMetaAttribute> emas = psept.getEventMetaAttributes(projectId, eventTypeLV==null?null:eventTypeLV.getLookupValueId());
+                if(emas.size()>0) {
+
+                    //order by orders
+                    //group ema by event type
+                    Map<String, List<EventMetaAttribute>> groupedList = new HashMap<String, List<EventMetaAttribute>>();
+                    for (EventMetaAttribute ema : emas) {
+                        LookupValue lv = ema.getEventTypeLookupValue();
+                        if(groupedList.containsKey(lv.getName())) {
+                            groupedList.get(lv.getName()).add(ema);
+                        } else {
+                            List<EventMetaAttribute> emaList = new ArrayList<EventMetaAttribute>();
+                            emaList.add(ema);
+                            groupedList.put(lv.getName(), emaList);
+                        }
+                    }
+                    //sort by orders
+                    emas = new ArrayList<EventMetaAttribute>(emas.size());
+                    for(String et : groupedList.keySet()) {
+                        List<EventMetaAttribute> sortedList = new ArrayList<EventMetaAttribute>(groupedList.get(et).size());
+                        Map<Integer, EventMetaAttribute> treeMap = new TreeMap<Integer, EventMetaAttribute>();
+                        for(EventMetaAttribute ema : groupedList.get(et)) {
+                            if(ema.getOrder()==null) {
+                                sortedList.add(ema);
+                            } else {
+                                treeMap.put(ema.getOrder(), ema);
+                            }
+                        }
+                        sortedList.addAll(0, treeMap.values());
+                        emas.addAll(sortedList);
+                    }
+
+                    //project meta attribute
+                    List<ProjectMetaAttribute> pmas = psept.getProjectMetaAttributes(projectId);
+                    List<String> pmaNames = new ArrayList<String>(pmas.size());
+                    for(ProjectMetaAttribute pma : pmas) {
+                        pmaNames.add(pma.getAttributeName());
+                    }
+                    //sample meta attribute
+                    List<SampleMetaAttribute> smas = psept.getSampleMetaAttributes(projectId);
+                    List<String> smaNames = new ArrayList<String>();
+                    for(SampleMetaAttribute sma : smas) {
+                        smaNames.add(sma.getAttributeName());
+                    }
+
+                    List<EventMetaAttributeContainer> tempList = new ArrayList<EventMetaAttributeContainer>(emas.size());
+                    for(EventMetaAttribute ema : emas) {
+                        EventMetaAttributeContainer container = new EventMetaAttributeContainer(ema);
+                        container.setProjectMeta(pmaNames.contains(ema.getAttributeName()));
+                        container.setSampleMeta(smaNames.contains(ema.getAttributeName()));
+                        tempList.add(container);
+                    }
+
+                    dataMap.put("ema", tempList);
+                }
+            } else if("g_et".equals(type)) { //all event type
+                dataMap.put("et", psept.getLookupValueByType(ModelValidator.EVENT_TYPE_LV_TYPE_NAME));
+            } else if("g_pet".equals(type)) { //event types for a project
+                dataMap.put("pet", psept.getEventTypesForProject(projectId));
+            } else if("g_a".equals(type)) { //all available attribute
+                dataMap.put("a", psept.getLookupValueByType(ModelValidator.ATTRIBUTE_LV_TYPE_NAME));
+            } else if("g_sma".equals(type)) { //sample meta attribute
+                Long[] projectId = {this.getProjectId()};
+                dataMap.put("sma", psept.getSampleMetaAttributes(Arrays.asList(projectId)));
+            } else if("g_pma".equals(type)) { //project meta attribute
+                dataMap.put("pma", psept.getProjectMetaAttributes(this.getProjectId()));
+            } else if("a_lv".equals(type)) { //add new look up value by type
+                UploadActionDelegate udelegate = new UploadActionDelegate();
+                ProjectSampleEventWritebackBusiness psewt = null;
+                psewt = udelegate.initializeBusinessObject(logger, psewt);
+
+                if(lvDataType!=null && lvName!=null && lvType!=null) {
+                    String[] lvNames = lvName.split(",");
+                    List<LookupValue> lvList = new ArrayList<LookupValue>();
+                    for(String name : lvNames) {
+                        if(name!=null && name.trim().length()>0) {
+                            LookupValue lv = new LookupValue();
+                            lv.setName(name.trim());
+                            lv.setType(lvType);
+                            lv.setDataType(lvDataType);
+
+                            lvList.add(lv);
+                        }
+                    }
+                    psewt.loadLookupValues(lvList);
+                }
+            } else if("g_all".equals(type)) {
+                Map<String, List> listMap = new HashMap<String, List>();
+                List tempList = null;
+
+                LookupValue eventTypeLV=null;
+                if(eventName!=null && !eventName.isEmpty()){
+                    eventTypeLV = psept.getLookupValue(eventName, ModelValidator.EVENT_TYPE_LV_TYPE_NAME);
+                }
+                List<EventMetaAttribute> emas = psept.getEventMetaAttributes(projectId, eventTypeLV==null?null:eventTypeLV.getLookupValueId());
+                if(emas.size()>0) {
+
+                    //order by orders
+                    //group ema by event type
+                    Map<String, List<EventMetaAttribute>> groupedList = new HashMap<String, List<EventMetaAttribute>>();
+                    for (EventMetaAttribute ema : emas) {
+                        LookupValue lv = ema.getEventTypeLookupValue();
+                        if(groupedList.containsKey(lv.getName())) {
+                            groupedList.get(lv.getName()).add(ema);
+                        } else {
+                            List<EventMetaAttribute> emaList = new ArrayList<EventMetaAttribute>();
+                            emaList.add(ema);
+                            groupedList.put(lv.getName(), emaList);
+                        }
+                    }
+                    //sort by orders
+                    emas = new ArrayList<EventMetaAttribute>(emas.size());
+                    for(String et : groupedList.keySet()) {
+                        List<EventMetaAttribute> sortedList = new ArrayList<EventMetaAttribute>(groupedList.get(et).size());
+                        Map<Integer, EventMetaAttribute> treeMap = new TreeMap<Integer, EventMetaAttribute>();
+                        for(EventMetaAttribute ema : groupedList.get(et)) {
+                            if(ema.getOrder()==null) {
+                                sortedList.add(ema);
+                            } else {
+                                treeMap.put(ema.getOrder(), ema);
+                            }
+                        }
+                        sortedList.addAll(0, treeMap.values());
+                        emas.addAll(sortedList);
+                    }
+
+                    //project meta attribute
+                    List<ProjectMetaAttribute> pmas = psept.getProjectMetaAttributes(projectId);
+                    List<String> pmaNames = new ArrayList<String>(pmas.size());
+                    for(ProjectMetaAttribute pma : pmas) {
+                        pmaNames.add(pma.getAttributeName());
+                    }
+                    //sample meta attribute
+                    List<SampleMetaAttribute> smas = psept.getSampleMetaAttributes(projectId);
+                    List<String> smaNames = new ArrayList<String>();
+                    for(SampleMetaAttribute sma : smas) {
+                        smaNames.add(sma.getAttributeName());
+                    }
+
+                    tempList = new ArrayList<EventMetaAttributeContainer>(emas.size());
+                    for(EventMetaAttribute ema : emas) {
+                        EventMetaAttributeContainer container = new EventMetaAttributeContainer(ema);
+                        container.setProjectMeta(pmaNames.contains(ema.getAttributeName()));
+                        container.setSampleMeta(smaNames.contains(ema.getAttributeName()));
+                        tempList.add(container);
+                    }
+                }
+                dataMap.put("ema", tempList);
+
+                dataMap.put("et", psept.getLookupValueByType(ModelValidator.EVENT_TYPE_LV_TYPE_NAME));
+                dataMap.put("pet", psept.getEventTypesForProject(projectId));
+                dataMap.put("a", psept.getLookupValueByType(ModelValidator.ATTRIBUTE_LV_TYPE_NAME));
+            }
+
+        } catch (Exception ex) {
+            logger.error("Exception in runAjax of MetadataSetup : " + ex.toString());
+            ex.printStackTrace();
+            isError = true;
+            dataMap.put("errorMsg", ex.toString());
+        } finally {
+            dataMap.put("isError", isError);
+        }
+
+        return rtnVal;
+    }
+
+    public String openNewAttribute() {
+        ModelValidator modelValidator = new ModelValidator();
+        dataTypes = new ArrayList<String>();
+        dataTypes.addAll(modelValidator.getValidDataTypes());
+
+        types = new ArrayList<String>();
+        types.addAll(modelValidator.getValidLookupValueTypes());
+        return SUCCESS;
     }
 
     private boolean isUnchanged(MetadataSetupReadBean b1, MetaAttributeModelBean b2) {
@@ -416,6 +619,12 @@ public class MetadataSetup extends ActionSupport {
         return emas;
     }
 
+    private class DuplicatedOrderException extends Exception {
+        public DuplicatedOrderException( String message ) {
+            super( message ) ;
+        }
+    }
+
     public List<Project> getProjectList() {
         return projectList;
     }
@@ -436,32 +645,12 @@ public class MetadataSetup extends ActionSupport {
         return beanList;
     }
 
-    public void setBeanList(List<MetadataSetupReadBean> beanList) {
-        this.beanList = beanList;
-    }
-
     public String getType() {
         return type;
     }
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getLerror() {
-        return lerror;
-    }
-
-    public void setLerror(String lerror) {
-        this.lerror = lerror;
-    }
-
-    public String getEmsg() {
-        return emsg;
-    }
-
-    public void setEmsg(String emsg) {
-        this.emsg = emsg;
     }
 
     public Long getProjectId() {
@@ -472,9 +661,47 @@ public class MetadataSetup extends ActionSupport {
         this.projectId = projectId;
     }
 
-    private class DuplicatedOrderException extends Exception {
-        public DuplicatedOrderException( String message ) {
-            super( message ) ;
-        }
+    public Map<String, Object> getDataMap() {
+        return dataMap;
+    }
+
+    public String getEventName() {
+        return eventName;
+    }
+
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
+    }
+
+    public String getLvDataType() {
+        return lvDataType;
+    }
+
+    public void setLvDataType(String lvDataType) {
+        this.lvDataType = lvDataType;
+    }
+
+    public String getLvName() {
+        return lvName;
+    }
+
+    public void setLvName(String lvName) {
+        this.lvName = lvName;
+    }
+
+    public String getLvType() {
+        return lvType;
+    }
+
+    public void setLvType(String lvType) {
+        this.lvType = lvType;
+    }
+
+    public List<String> getDataTypes() {
+        return dataTypes;
+    }
+
+    public List<String> getTypes() {
+        return types;
     }
 }

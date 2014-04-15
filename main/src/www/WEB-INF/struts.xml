@@ -215,24 +215,12 @@
             </result>
         </action>
 
-        <action name="addLookupValue" class="org.jcvi.ometa.action.AddLookupValue" method="addLookupValueOpen">
+        <action name="addLookupValue" class="org.jcvi.ometa.action.MetadataSetup" method="openNewAttribute">
             <result name="success">/JSP/popup/LPopupAddLookupValue.jsp</result>
             <result name="error">/JSP/popup/LPopupAddLookupValue.jsp</result>
         </action>
-        <action name="addLookupValueProcess" class="org.jcvi.ometa.action.AddLookupValue" method="addLookupValueProcess">
-            <result name="success" type="redirectAction">
-                <param name="actionName">metadataSetup</param>
-                <param name="type">e</param>
-            </result>
-            <result name="error" type="redirectAction">
-                <param name="actionName">metadataSetup</param>
-                <param name="type">e</param>
-                <param name="lerror">${lerror}</param>
-                <param name="emsg">${errorMsg}</param>
-            </result>
-        </action>
-		
-		<action name="popup" class="org.jcvi.ometa.action.Popup" method="run">
+
+        <action name="popup" class="org.jcvi.ometa.action.Popup" method="run">
             <result name="SELECT_TEMPLATE">/JSP/popup/LPopupTemplateSelect.jsp</result>
         </action>
 
@@ -302,7 +290,7 @@
             <result name="success" type="json"/>
             <result name="error" type="json"/>
         </action>
-        <action name="metadataSetupAjax" class="org.jcvi.ometa.action.ajax.MetadataSetupAjax" method="runAjax">
+        <action name="metadataSetupAjax" class="org.jcvi.ometa.action.MetadataSetup" method="runAjax">
             <result name="success" type="json"/>
             <result name="error" type="json"/>
         </action>
