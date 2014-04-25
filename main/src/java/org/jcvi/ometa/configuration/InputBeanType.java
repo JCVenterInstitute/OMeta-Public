@@ -44,27 +44,19 @@ public enum InputBeanType {
         // NOTE: order below is important.
         if ( inputFilePathStr.endsWith( FileMappingSupport.PROJECT_FILE_SUFFIX ) ) {
             return project;
-        }
-        else if ( inputFilePathStr.endsWith( FileMappingSupport.SAMPLE_FILE_SUFFIX ) ) {
+        } else if ( inputFilePathStr.endsWith( FileMappingSupport.SAMPLE_FILE_SUFFIX ) ) {
             return sample;
-        }
-        else if ( inputFilePathStr.toLowerCase().endsWith(
-                    FileMappingSupport.LOOKUPVALUE_FILE_SUFFIX.toLowerCase()) ) {
+        } else if ( inputFilePathStr.toLowerCase().endsWith(FileMappingSupport.LOOKUPVALUE_FILE_SUFFIX.toLowerCase()) ) {
             return lookupValue;
-        }
-        else if ( inputFilePathStr.endsWith( FileMappingSupport.SAMPLE_META_ATTRIBUTES_FILE_SUFFIX ) ) {
+        } else if ( inputFilePathStr.endsWith( FileMappingSupport.SAMPLE_META_ATTRIBUTES_FILE_SUFFIX ) ) {
             return sampleMetaAttributes;
-        }
-        else if ( inputFilePathStr.endsWith( FileMappingSupport.EVENT_META_ATTRIBUTES_FILE_SUFFIX ) ) {
+        } else if ( inputFilePathStr.endsWith( FileMappingSupport.EVENT_META_ATTRIBUTES_FILE_SUFFIX ) ) {
             return eventMetaAttribute;
-        }
-        else if ( inputFilePathStr.endsWith( FileMappingSupport.PROJECT_META_ATTRIBUTES_FILE_SUFFIX ) ) {
+        } else if ( inputFilePathStr.endsWith( FileMappingSupport.PROJECT_META_ATTRIBUTES_FILE_SUFFIX ) ) {
             return projectMetaAttributes;
-        }
-        else if ( inputFilePathStr.endsWith( FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX  ) ) {
+        } else if ( inputFilePathStr.endsWith( FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX  ) ) {
             return eventAttributes;
-        }
-        else {
+        } else {
             throw new IllegalArgumentException( inputFilePathStr + " is of unknown file type" );
         }
     }

@@ -45,14 +45,14 @@ import java.util.*;
  */
 public class WritebackBeanPersister implements BeanPersistenceFacadeI {
 
-    protected static final String NO_SUCH_ATTRIBUTE_HUMAN_READABLE_MSG = "Could not find any attribute named %s.";
-    protected static final String BAD_LOOKUP_TYPE_HUMAN_READABLE_MSG = "Type of lookup value '%s', which is '%s', is not a true attribute type.";
-    protected static final String INVALID_LOOKUP_VALUE_TYPE_HUMAN_READABLE_MSG = "Lookup value %s has invalid lookup-value type of %s.";
-    protected static final String INVALID_LOOKUP_VALUE_DATA_TYPE_HUMAN_READABLE_MSG = "Lookup value %s has invalid data type of %s.";
-    protected static final String MISMATCH_DATATYPE_HUMAN_READABLE_MSG = "Lookup value %s has a data type of %s but you requested a data type of %s.";
-    protected static final String MISMATCH_TYPE_HUMAN_READABLE_MSG = "Lookup value %s has a lookup value type of %s but you requested a type of %s.";
-    protected static final String INCOMPATIBLE_LOOKUP_VALUE_HUMAN_READABLE_MSG = "Lookup value %s already exists. (%s, %s)";//, and is not compatible.";
-    protected static final String UNKNOWN_SAMPLE_FOR_PROJECT_HUMAN_READABLE_MSG = "Project '%s' does not have sample '%s'.";
+    protected static final String NO_SUCH_ATTRIBUTE_MSG = "Could not find any attribute named %s.";
+    protected static final String BAD_LOOKUP_TYPE_MSG = "Type of lookup value '%s', which is '%s', is not a true attribute type.";
+    protected static final String INVALID_LOOKUP_VALUE_TYPE_MSG = "Lookup value %s has invalid lookup-value type of %s.";
+    protected static final String INVALID_LOOKUP_VALUE_DATA_TYPE_MSG = "Lookup value %s has invalid data type of %s.";
+    protected static final String MISMATCH_DATATYPE_MSG = "Lookup value %s has a data type of %s but you requested a data type of %s.";
+    protected static final String MISMATCH_TYPE_MSG = "Lookup value %s has a lookup value type of %s but you requested a type of %s.";
+    protected static final String INCOMPATIBLE_LOOKUP_VALUE_MSG = "Lookup value %s already exists. (%s, %s)";//, and is not compatible.";
+    protected static final String UNKNOWN_SAMPLE_FOR_PROJECT_MSG = "Project '%s' does not have sample '%s'.";
 
     private SessionAndTransactionManagerI sessionAndTransactionManager;
     private Session session;
@@ -192,27 +192,27 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
             StringBuilder errors = new StringBuilder();
 
             LookupValueDAO lookupValueDAO = daoFactory.getLookupValueDAO();
+            List<LookupValue> loadingList = new ArrayList<LookupValue>(lookupValueList.size()); //load all or nothing list
+
             for (LookupValue lookupValue : lookupValueList) {
                 String lvName = lookupValue.getName();
                 String lvType = lookupValue.getType();
                 if (!modelValidator.isValidLookupValueType(lvType)) {
-                    String message = String.format(INVALID_LOOKUP_VALUE_TYPE_HUMAN_READABLE_MSG, lvName, lvType);
+                    String message = String.format(INVALID_LOOKUP_VALUE_TYPE_MSG, lvName, lvType);
                     errors.append(message);
                 }
                 String lvDataType = lookupValue.getDataType();
                 if (!modelValidator.isValidDataType(lvDataType)) {
-                    String message = String.format(INVALID_LOOKUP_VALUE_DATA_TYPE_HUMAN_READABLE_MSG, lvName, lvType);
+                    String message = String.format(INVALID_LOOKUP_VALUE_DATA_TYPE_MSG, lvName, lvType);
                     errors.append(message);
                 }
                 LookupValue oldValue = lookupValueDAO.getLookupValue(lvName, session);
                 if (oldValue == null) {
-                    lookupValueDAO.createLookupValue(
-                            lookupValue, sessionAndTransactionManager.getTransactionStartDate(), session);
+                    loadingList.add(lookupValue);
+                    //lookupValueDAO.createLookupValue(lookupValue, sessionAndTransactionManager.getTransactionStartDate(), session);
                 } else {
-
-                    String message = String.format(INCOMPATIBLE_LOOKUP_VALUE_HUMAN_READABLE_MSG, lvName, oldValue.getType(), oldValue.getDataType());
+                    String message = String.format(INCOMPATIBLE_LOOKUP_VALUE_MSG, lvName, oldValue.getType(), oldValue.getDataType());
                     errors.append(message);
-
                     /*
                     * commented out since it creates more confusions for user
                     * 8/7/12 by hkim
@@ -227,7 +227,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                     // Looking through all values to see if "expectation" is compatible with existing reality.
                     boolean acceptable = true;
                     if (!newDataType.equals(oldDataType)) {
-                        String message = String.format(MISMATCH_DATATYPE_HUMAN_READABLE_MSG, lvName, oldDataType, newDataType);
+                        String message = String.format(MISMATCH_DATATYPE_MSG, lvName, oldDataType, newDataType);
                         errors.append(message);
                         errors.append("\n");
                         acceptable = false;
@@ -237,17 +237,23 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                         newType = ModelValidator.ATTRIBUTE_LV_TYPE_NAME;
                     }
                     if (!newType.equals(oldType)) {
-                        String message = String.format(MISMATCH_TYPE_HUMAN_READABLE_MSG, lvName, oldType, newType);
+                        String message = String.format(MISMATCH_TYPE_MSG, lvName, oldType, newType);
                         errors.append(message);
                         errors.append("\n");
                         acceptable = false;
                     }
 
                     if (acceptable) {
-                        String message = String.format(INCOMPATIBLE_LOOKUP_VALUE_HUMAN_READABLE_MSG, lvName);
+                        String message = String.format(INCOMPATIBLE_LOOKUP_VALUE_MSG, lvName);
                         logger.info(message);
                     }
                     */
+                }
+            }
+
+            if(loadingList.size() > 0 && loadingList.size() == lookupValueList.size()) { //only load if there is no error
+                for(LookupValue lv : loadingList) {
+                    lookupValueDAO.createLookupValue(lv, sessionAndTransactionManager.getTransactionStartDate(), session);
                 }
             }
 
@@ -540,7 +546,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
             if (sameSampleName != null && sampleId != null
                     && sameProjectName != null && projectId != null
                     && !helper.isSampleBelongToProject(projectId, sampleId)) {
-                String message = UNKNOWN_SAMPLE_FOR_PROJECT_HUMAN_READABLE_MSG.format(sameProjectName, sameSampleName);
+                String message = UNKNOWN_SAMPLE_FOR_PROJECT_MSG.format(sameProjectName, sameSampleName);
                 throw new Exception(message);
             }
 
@@ -561,7 +567,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                 String attribName = bean.getAttributeName();
                 LookupValue attributeNameLookupValue = lvDAO.getLookupValue(attribName, session);
                 if (attributeNameLookupValue == null) {
-                    throw new Exception(NO_SUCH_ATTRIBUTE_HUMAN_READABLE_MSG.format(attribName));
+                    throw new Exception(NO_SUCH_ATTRIBUTE_MSG.format(attribName));
                 }
                 checkName(projectNameGiven, "project", attribName);
 
@@ -589,7 +595,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                     helper.writeBackAttribute(eventTypeLookupId, attribName, attributeNameLookupValueId, attribute);
 
                 } else {
-                    String message = BAD_LOOKUP_TYPE_HUMAN_READABLE_MSG.format(attribName, lvType);
+                    String message = BAD_LOOKUP_TYPE_MSG.format(attribName, lvType);
                     throw new Exception(message);
                 }
 
