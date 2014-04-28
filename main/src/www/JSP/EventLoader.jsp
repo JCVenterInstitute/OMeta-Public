@@ -34,7 +34,6 @@
     #gridBody .ui-autocomplete-input { width: 150px; }
     .ms-choice {line-height: 20px; }
     .ms-choice, .ms-choice > div { height: 20px; }
-
   </style>
 
 </head>
@@ -176,7 +175,7 @@
       <tr>
         <td>Loader CSV File</td>
         <td>
-          <s:file name="uploadFile" id="csvUploadFile" cssStyle="margin:0 0 0 14px;" size="75px" />
+          <s:file name="uploadFile" id="upload" cssStyle="margin:0 0 0 14px;" size="75px" />
         </td>
       </tr>
     </table>
@@ -263,6 +262,57 @@ var _utils = {
       hidePS: function() {
         $('#sampleDetailInputDiv, #projectDetailInputDiv').hide();
       },
+      ontologify: function(desc, $inputNode) {
+        var ontologyInfo = desc.substring(desc.indexOf('[')+1, desc.length-1).split(',');
+
+        if(ontologyInfo.length === 3) {
+          var ot = ontologyInfo[1].replace(/^\s+|\s+$/g, '');
+          var tid = ontologyInfo[2].replace(/^\s+|\s+$/g, '');
+          $inputNode.find('input').autocomplete({
+            source: function( request, response ) {
+              $.ajax({
+                url: "ontologyAjax.action?t=child",
+                data: {
+                  maxRows: 12,
+                  sw: request.term.replace(' ', '%20'),
+                  tid: tid,
+                  ot: ot
+                },
+                success: function( data ) {
+                  //cleans decorated input fields when fails
+                  if(!data || !data.result) {
+                    utils.error.remove();
+                    $('input[id^="ontology"]').removeClass('ui-autocomplete-loading').removeAttr('style');
+                    utils.error.add("Ontolo gy search failed. Please try again.");
+                  } else {
+                    response( $.map( data.result, function( item ) {
+                      //decorate options
+                      if(item.ontology) {
+                        return {
+                          label: item.tlabel + " - " + item.ontolabel,
+                          value: item.tlabel + "@" + item.taccession
+
+                        }
+                      } else {
+                        return {
+                          label: item,
+                          value: '',
+                          ontology: null,
+                          term: null
+                        }
+                      }
+                    }));
+                  }
+                }
+              });
+            },
+            minLength: 3,
+            select: function(event, ui) {
+              return;
+            }
+          }); //.css('width', '175px');
+        }
+      },
       validation: function() {
         var valid = true;
         if($("#_projectSelect").val()==='0' || $("#_eventSelect").val()==='0') {
@@ -311,164 +361,139 @@ var _utils = {
         return;
       },
       meta: function(data, en) {
-        var content = "", count= 0;
-        eventAttributes = []; gridLineCount=0; avDic={};
+        var content = '';
+        var count= 0;
         var $attributeDiv = $("#attributeInputDiv"); //where attributes are placed
-
         $attributeDiv.empty(); //empty any existing contents
+        
+        eventAttributes = []; 
+        gridLineCount=0; 
+        avDic={};
 
-        $.each(data.aaData, function(i1, _ma) { //build attributes input section
-          if(_ma != null && _ma.eventMetaAttributeId != null && _ma.projectId != null) {
+        var requireImgHtml = '<img class="attributeIcon" src="images/icon/req.png"/>';
+
+        // //add table headers for gird view
+        var gridHeaders = '', $gridHeaders = $('<tr/>');
+        if(utils.checkNP(en)) {
+          if(!utils.checkSR(en)) {
+            $gridHeaders.append(
+              $('<th/>').addClass('tableHeaderNoBG').append('Sample<br/>', requireImgHtml)
+            );
+          } else {
+            $gridHeaders.append(
+              $('<th/>').addClass('tableHeaderNoBG').append('Sample Name<br/>', requireImgHtml),
+              $('<th/>').addClass('tableHeaderNoBG').append('Parent Sample'),
+              $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
+            )
+          }
+        } else {
+          if(utils.checkPR(en)) {
+            $gridHeaders.append(
+              $('<th/>').addClass('tableHeaderNoBG').append('Project Name<br/>', requireImgHtml),
+              $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
+            );
+          }
+        }        
+
+        //meta attribute loop to genereate input fields
+        $.each(data.aaData, function(ma_i, _ma) { 
+          if(_ma && _ma.eventMetaAttributeId && _ma.projectId) {
             eventAttributes.push(_ma); //stores event attributes for other uses
 
             //options
-            var isDesc = (_ma.desc && _ma.desc!=='');
+            var isDesc = (_ma.desc && _ma.desc !== '');
             var isRequired = _ma.requiredDB;
-            var hasOntology = (_ma.ontology && _ma.ontology!=='');
-            var $attributeTr = $('<tr class="gappedTr"></tr>');
+            var hasOntology = (_ma.ontology && _ma.ontology !== '');
+            var $attributeTr = $('<tr class="gappedTr"/>');
 
-            $attributeTr.append(pBeanHtml.replace("$pn$",utils.getProjectName()).replace("$lt$", "beanList["+count+"]."));//project name for bean
-            $attributeTr.append(anBeanHtml.replace("$an$",_ma.lookupValue.name).replace("$lt$", "beanList["+count+"]."));//attribute name
             $attributeTr.append(//icons and hover over information
-                '<td align="right" ' +
-                    'class="' + (isDesc&&isRequired?'requiredWithDesc':isDesc?'hasDesc':'isRequired') + '" ' +
-                    (isDesc?'title="'+_ma.desc+'"':'')+'>'+
-                    (_ma.label!=null&&_ma.label!==''?_ma.label:_ma.lookupValue.name) + " " +
-                    (hasOntology?'<img style="vertical-align:bottom;" src="images/icon/ontology.png"/>':'') +
-                    '</td>'
+              $('<td align="right"/>').attr('title', (isDesc ? _ma.desc : '')).append(
+                (_ma.label != null && _ma.label !== '' ?_ma.label:_ma.lookupValue.name),
+                "&nbsp;",
+                (
+                  isDesc && isRequired ? '<img class="attributeIcon" src="images/icon/info_r.png"/>'
+                    : isDesc ? '<img class="attributeIcon" src="images/icon/info.png"/>'
+                      : isRequired ? requireImgHtml 
+                        : ''
+                ),
+                (hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
+              )
             );
 
-            var subcon='';
-            var isSelect = (_ma.options!=null&&_ma.options!=='' && _ma.options.indexOf(';')>0);
+            $gridHeaders.append(
+              $('<th/>').addClass('tableHeaderNoBG').attr('title', (isDesc ? _ma.desc : '')).append(
+                (_ma.label ? _ma.label : _ma.lookupValue.name) + '<br/>',
+                (isRequired ? requireImgHtml : ''),
+                (hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
+              )
+            );
+
+            var inputElement='';
+            var isSelect = (_ma.options && _ma.options !== '' && _ma.options.indexOf(';') > 0);
             var isMulti = false;
             var isText = false;
+
+            inputElement = '<input type="hidden" value="' + utils.getProjectName() + '" name="$lt$projectName"/>';
+            inputElement += '<input type="hidden" value="' + _ma.lookupValue.name + '" name="$lt$attributeName"/>';
 
             if(isSelect) { //select box for option values
               //is this multi select
               isMulti = (_ma.options.substring(0, multiSelectPrefix.length)===multiSelectPrefix) && (_ma.options.lastIndexOf(')')===_ma.options.length-1);
-              var opts = isMulti?'':vs.vnoption.replace("$v$","0").replace("$n$","");
-              var _options = _ma.options;
+              var options = isMulti ? '' : '<option value="0"></option>';
+              var givenOptions = _ma.options;
 
-              if(isMulti) {
-                _options = _options.substring(multiSelectPrefix.length, _options.length-1);
+              if(isMulti) { //trim multi select wrapper
+                givenOptions = givenOptions.substring(multiSelectPrefix.length, givenOptions.length-1);
               }
 
               //convert 0 or 1 options to yes/no
-              if(_options==='0;1' || _options==='1;0') {
-                opt=vs.ynoption;
+              if(givenOptions === '0;1' || givenOptions === '1;0') {
+                options = '<option value="1">Yes</option><option value="0">No</option>';
               } else {
-                $.each(_options.split(';'), function(_opti,_opt) {
-                  opts+=vs.vvoption.replace(/\\$v\\$/g,_opt);
+                $.each(givenOptions.split(';'), function(o_i,o_v) {
+                  options += '<option value="' + o_v + '">' + o_v + '</option>';
                 });
               }
-              subcon+=avSelectHtml.replace("$opts$",opts).replace("$multi$", isMulti?"multiple=\"multiple\"":"");
+              inputElement += '<select id="$id$" name="$lt$attributeValue" style="min-width:35px;width:200px;" ' + (isMulti ? 'multiple="multiple"':'') + '>' + options + '</select>';
             } else {
               if(_ma.lookupValue.dataType==='file') { //file
-                subcon+=avFileHtml;
+                inputElement += '<input type="file" id="$id$" name="$lt$upload"/>';
               } else { //text input
                 isText = true;
-                subcon+=avTextHtml;
+                inputElement += '<input type="text" id="$id$" name="$lt$attributeValue" value="$val$"/>';
               }
             }
-            subcon = subcon.replace("$an$",_ma.lookupValue.name.replace(/ /g,"_")+"_$id$");
+            inputElement = inputElement.replace("$id$",_ma.lookupValue.name.replace(/ /g,"_")+"_$id$");
 
-            avDic[_ma.lookupValue.name] = subcon; //store html contents with its attribute name for later use in adding row
+            avDic[_ma.lookupValue.name] = { //store html contents with its attribute name for later use in adding row
+              'ma': _ma,
+              'inputElement': inputElement,
+              'isText': isText,
+              'hasOntoloty': hasOntology,
+              'isSelect': isSelect,
+              'isMulti': isMulti
+            }; 
 
-            var $subcon = $('<td>'+subcon.replace(/\\$val\\$/g, '').replace("$id$", count).replace("$lt$","beanList["+count+"].")+'</td>');
+            var $inputNode = $('<td/>').append(inputElement.replace(/\\$val\\$/g, '').replace("$id$", count).replace(/\\$lt\\$/g,"beanList["+count+"]."));
 
             if(isText && hasOntology) {
-              var desc = _ma.desc;
-              var ontologyInfo = desc.substring(desc.indexOf('[')+1, desc.length-1).split(',');
-
-              if(ontologyInfo.length === 3) {
-                var ot = ontologyInfo[1].replace(/^\s+|\s+$/g, '');
-                var tid = ontologyInfo[2].replace(/^\s+|\s+$/g, '');
-                $subcon.find('input').autocomplete({
-                  source: function( request, response ) {
-                    $.ajax({
-                      url: "ontologyAjax.action?t=child",
-                      data: {
-                        maxRows: 12,
-                        sw: request.term.replace(' ', '%20'),
-                        tid: tid,
-                        ot: ot
-                      },
-                      success: function( data ) {
-                        //cleans decorated input fields when fails
-                        if(!data || !data.result) {
-                          utils.error.remove();
-                          $('input[id^="ontology"]').removeClass('ui-autocomplete-loading').removeAttr('style');
-                          utils.error.add("Ontolo gy search failed. Please try again.");
-                        } else {
-                          response( $.map( data.result, function( item ) {
-                            //decorate options
-                            if(item.ontology) {
-                              return {
-                                label: item.tlabel + " - " + item.ontolabel,
-                                value: item.tlabel + "@" + item.taccession
-
-                              }
-                            } else {
-                              return {
-                                label: item,
-                                value: '',
-                                ontology: null,
-                                term: null
-                              }
-                            }
-                          }));
-                        }
-                      }
-                    });
-                  },
-                  minLength: 3,
-                  select: function(event, ui) {
-                    return;
-                  }
-                }); //.css('width', '175px');
-              }
+              _utils.ontologify(_ma.desc, $inputNode);
             }
 
             /* multiple select jquery plugin */
             if(isMulti) {
-              $subcon.find('select').multipleSelect();
+              $inputNode.find('select').multipleSelect();
             }
-            $attributeTr.append($subcon);
-
-            $attributeDiv.append($attributeTr);
+            $attributeDiv.append($attributeTr.append($inputNode));
             count++;
           }
         });
         utils.initDatePicker(); //initialise data fields
 
-        //add table headers for gird view
-        content='';
-        if(utils.checkNP(en)) {
-          if(!utils.checkSR(en)) {
-            content+='<th class="tableHeaderNoBG isRequired">Sample</th>';
-          } else {
-            content+='<th class="tableHeaderNoBG isRequired">Sample Name</th><th class="tableHeaderNoBG">Parent Sample</th><th class="tableHeaderNoBG isRequired">Public</th>';
-          }
-        } else {
-          if(utils.checkPR(en)) {
-            content+='<th class="tableHeaderNoBG isRequired">Project Name</th><th class="tableHeaderNoBG isRequired">Public</th>';
-          }
-        }
-        //add headers for event meta attributes
-        $.each(eventAttributes, function(i1, v1) {
-          content+='<th class="tableHeaderNoBG' +
-            //(v1.desc&&v1.desc!==''?' hasTooltip':'') +
-            //(v1.requiredDB?' isRequired':'') +
-            //(v1.ontology?' hasOntology':'') +
-              '" ' +(v1.desc&&v1.desc!==''?'title="'+v1.desc+'"':'') +'>' +
-              v1.lookupValue.name +
-              '<br/><img style="vertical-align:bottom;" src="images/icon/ontology.png"/>' +
-              '<img style="vertical-align:bottom;" src="images/icon/req.png"/>' +
-              '</th>';
-        });
-        $('thead#gridHeader').html('<tr>'+content+'</tr>');
-
+        //add attribut headers to the grid view and add empty rows
+        $('thead#gridHeader').append($gridHeaders);
         _utils.addGridRows(null, en);
+
         return;
       }
     },
@@ -525,68 +550,100 @@ var button = {
     $('form#eventLoaderPage').submit();
   },
   add_event: function(pn,en,dict) { //add event to grid view
-    var _pn=pn?pn:utils.getProjectName(),
-        _en=en?en:utils.getEventName(),
-        content='',
-        selects={};
-    if(_pn&&_en) {
-      if(utils.checkNP(en)){
-        if(!utils.checkSR(en)) {
-          //add sample select box for other events
-          content+=avSampleSelectHtml.replace("$si$", "_sampleSelect"+gridLineCount).replace("$sn$", "gridList["+gridLineCount+"].sampleName").replace("$opts$",sample_options);
+    var _pn = pn ? pn : utils.getProjectName(),
+        _en = en ? en : utils.getEventName(),
+        $eventLine = $('<tr class="borderBottom"/>');
+
+    if(_pn && _en) {
+      if(utils.checkNP(_en)){ //not project related
+        if(utils.checkSR(_en)) { //add sample information fields for sample registration
+          $eventLine.append(
+            $('<td/>').append($('<input/>').attr({
+                'type': 'text',
+                'name': 'gridList[' + gridLineCount + '].sampleName',
+                'id': '_sampleName' + gridLineCount
+              })
+            )
+          );
+          $eventLine.append(
+            $('<td/>').append(
+                $('<select/>').attr({
+                  'name': 'gridList["+gridLineCount+"].parentSampleName',
+                  'id': '_parentSelect' + gridLineCount
+                }).append(sample_options)  
+              )
+          );
+          $eventLine.append(
+            $('<td/>').append(
+              $('<select/>').attr({
+                'name': 'gridList['+gridLineCount+'].samplePublic'
+              }).append(vs.ynoption)
+            )
+          );
         } else {
-          //add sample information fields for sample registration
-          content=content
-              +'<td><input type="text" name="gridList['+gridLineCount+'].sampleName" id="_sampleName'+gridLineCount+'" /></td>'
-              +avSampleSelectHtml.replace("$si$", "_parentSelect"+gridLineCount)
-              .replace("$sn$", "gridList["+gridLineCount+"].parentSampleName")
-              .replace("$opts$",sample_options)
-              +'<td><select name="gridList['+gridLineCount+'].samplePublic">'+vs.ynoption+'</select></td>';
+          $eventLine.append(
+            $('<td/>').append(
+                $('<select/>').attr({
+                  'name': 'gridList[' + gridLineCount + '].sampleName',
+                  'id': '_sampleSelect' + gridLineCount
+                }).append(sample_options)  
+              )
+          );
         }
-      } else {
-        //add project information fields for project registration
-        if(utils.checkPR(en)) {
-          content=content
-              +'<td><input type="text" name="gridList['+gridLineCount+'].projectName" id="_projectName'+gridLineCount+'" /></td>'
-              +'<td><select name="gridList['+gridLineCount+'].projectPublic">'+vs.ynoption+'</select></td>';
+      } else { 
+        if(utils.checkPR(_en)) { //add project information fields for project registration
+          $eventLine.append(
+            $('<td/>').append($('<input/>').attr({
+                'type': 'text',
+                'name': 'gridList[' + gridLineCount + '].projectName',
+                'id': '_projectName' + gridLineCount
+              })
+            )
+          );
+          $eventLine.append(
+            $('<td/>').append(
+              $('<select/>').attr({
+                'name': 'gridList[' + gridLineCount + '].projectPublic'
+              }).append(vs.ynoption)
+            )
+          );
         }
       }
-      var ltVal, beans=((dict&&dict['beans'])?dict['beans']:null), _ea, _field, bean;
+      var ltVal, bean, avCnt = 0;
+      var beans = ((dict && dict['beans']) ? dict['beans'] : null);
+
       //add event meta attribute fields
-      $.each(eventAttributes, function(i1, v1) {
+      $.each(avDic, function(av_k, av_v) {
         bean = null;
         if(beans) {
-          $.each(beans, function(i2,v2) {
-            if(v1.lookupValue.name===v2[0]) {
-              bean = v2;
+          $.each(beans, function(b_i,b_v) {
+            if(av_v.ma.lookupValue.name === b_v[0]) {
+              bean = b_v;
             }
           });
         }
 
-        ltVal="gridList["+gridLineCount+"].beanList["+i1+"].";
-        _ea=pBeanHtml.replace("$pn$", _pn);//projectName
-        _ea+=anBeanHtml.replace("$an$",(bean?bean[0]:v1.lookupValue.name));//attributeName
-        _field='<td>'+avDic[v1.lookupValue.name];
-        if(_field.indexOf('<select ')>0) {
-          _ea+=_field;
-          selects[v1.lookupValue.name.replace(/ /g,"_")+'_'+gridLineCount] = (bean?bean[1]:'');
-        } else {
-          _ea+=_field.replace('$val$', (bean?bean[1]:''));
+
+
+        ltVal = 'gridList[' + gridLineCount + '].beanList[' + (avCnt++) + '].';
+
+        var attributeField = avDic[av_v.ma.lookupValue.name]['inputElement'];
+        attributeField = attributeField.replace('$val$', (bean ? bean[1] : ''));  
+
+        var $inputNode = $('<td/>').append(
+          attributeField.replace(/\\$lt\\$/g, ltVal).replace(/\\$id\\$/g, gridLineCount)
+        );
+        if(av_v.isSelect === true && bean) {
+          utils.preSelectWithNode($inputNode, bean[1]); 
+        } 
+        if(av_v.isMulti === true) {
+          $inputNode.find('select').multipleSelect();
         }
-        _ea+='</td>';
-        content+=_ea.replace(/\\$lt\\$/g, ltVal).replace(/\\$id\\$/g, gridLineCount);
+        $eventLine.append($inputNode);
       });
+
       //add to grid body
-      $('#gridBody').append('<tr class="borderBottom">'+content+'</tr>');
-
-      if(Object.keys(selects).length>0) {
-        $.each(selects, function(k,v) {
-          utils.preSelect2(k, v);
-        });
-      }
-      utils.initDatePicker();
-      $('select[id^="_"]').combobox();
-
+      $('#gridBody').append($eventLine);
 
       if(dict) {
         //load existing data if any
@@ -601,6 +658,9 @@ var button = {
           utils.preSelect('_sampleSelect'+gridLineCount, dict['sn']);
         }
       }
+
+      utils.initDatePicker();
+      $('select[id^="_"]').combobox();
 
       //set minimum width for date and autocomplete TDs
       $('#gridBody .hasDatepicker').parent('td').attr('style', 'min-width:163px !important;');

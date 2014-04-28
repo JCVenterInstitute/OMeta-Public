@@ -61,10 +61,15 @@ var utils = {
         $selNode.change();
     },
     preSelect2: function(id, val) {
-        var $selNode=$('#'+id);
         $("#"+id+" option").filter(function() {
             return $(this).text()==val || $(this).val()==val;
-        }).attr('selected', true);  
+        }).attr('selected', true);
+    },
+    preSelectWithNode: function($node, val) {
+        var valArr = val.split(';');
+        $($node).find("select option").filter(function() {
+            return valArr.indexOf($(this).text()) >= 0 || valArr.indexOf($(this).val()) >= 0;
+        }).attr('selected', true);
     },
     listToOptions: function(l, t, k, k2) {
         var os='', o=t==='vv'?vs.vvoption:vs.vnoption;
