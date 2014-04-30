@@ -3,7 +3,7 @@
 
 ### O-META
 
-O-META (Ontologies based metadata tracking system) is a data driven application that can be configured to track project, study, sample, experiment, or clinical data. O-META is very flexible and can be configured to track any metadata, and metadata can be configured based on events like subject registration, vaccination, physical exam, treatment, diagnosis, lab test etc. O-META keeps track of all events and updates to maintain complete audit trail (who, what and when). 
+O-META (Ontologies based metadata tracking system) is a data driven application that can be configured to track project, study, sample, experiment, or clinical data. O-META is very flexible and can be configured to track any metadata, and metadata can be configured based on events like subject registration, vaccination, physical exam, treatment, diagnosis, lab test etc. O-META keeps track of all events and updates to maintain complete audit trail (who, what and when).
 
 ##### Features
 * Data driven 
@@ -27,6 +27,8 @@ O-META (Ontologies based metadata tracking system) is a data driven application 
 
 ##### License
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
+This project has been funded in whole or part with federal funds from the National Institute of Allergy and Infectious Diseases, National Institutes of Health, Department of Health and Human Services under contract numbers N01-AI30071 and or HHSN272200900007C.
 
 ======
 ![alt text](https://raw.github.com/movence/ometa/master/main/src/www/images/header-logo.png "JCVI")                  
