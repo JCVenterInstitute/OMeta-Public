@@ -21,7 +21,6 @@
 
 package org.jcvi.ometa.action;
 
-import au.com.bytecode.opencsv.CSVReader;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -41,7 +40,6 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.io.File;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.*;
@@ -77,8 +75,10 @@ public class EventLoader extends ActionSupport {
     private InputStream downloadStream;
     private String downloadContentType;
 
-    private File uploadFile;
-    private String uploadFileName;
+    private File dataTemplate;
+    private String dataTemplateFileName;
+    private String dataTemplateContentType;
+
 
     private String fileStoragePath;
     private ArrayList<String> loadedFiles;
@@ -164,65 +164,15 @@ public class EventLoader extends ActionSupport {
                     this.reset();
                     addActionMessage("Events have been loaded successfully.");
                 } else if (jobType.equals("file")) { //loads data from a CSV file to grid view
-                    if (!this.uploadFile.canRead()) {
+                    if(!this.getDataTemplate().canRead()) {
                         throw new Exception("Error in reading the file.");
                     } else {
                         try {
-                            CSVReader reader = new CSVReader(new FileReader(this.uploadFile));
-
-                            int lineCount = 0;
-                            List<String> columns = new ArrayList<String>();
-
-                            String currProjectName = null;
-
-                            gridList = new ArrayList<GridBean>();
-                            boolean hasSampleName = false;
-                            String[] line;
-                            while((line = reader.readNext()) != null) {
-                                if(lineCount != 1) {
-                                    if(lineCount == 0) {
-                                        Collections.addAll(columns, line);
-                                        hasSampleName = columns.indexOf("SampleName") >= 0;
-                                    } else {
-                                        int colIndex = 0;
-
-                                        currProjectName = line[colIndex++];
-                                        if(!isProjectRegistration && !currProjectName.equals(this.projectName)) {
-                                            throw new Exception(MULTIPLE_SUBJECT_IN_FILE_MESSAGE);
-                                        }
-
-                                        GridBean gBean = new GridBean();
-                                        gBean.setProjectName(currProjectName);
-
-                                        if(hasSampleName) {
-                                            gBean.setSampleName(line[(colIndex++)]);
-                                        }
-
-                                        if(isProjectRegistration) {
-                                            gBean.setProjectName(currProjectName);
-                                            gBean.setProjectPublic(line[(colIndex++)]);
-                                        } else if (isSampleRegistration) {
-                                            gBean.setParentSampleName(line[(colIndex++)]);
-                                            gBean.setSamplePublic(line[(colIndex++)]);
-                                        }
-
-                                        gBean.setBeanList(new ArrayList<FileReadAttributeBean>());
-                                        for(; colIndex < columns.size(); colIndex++) {
-                                            FileReadAttributeBean fBean = new FileReadAttributeBean();
-                                            fBean.setProjectName(isProjectRegistration ? currProjectName : this.projectName);
-                                            String attributeHeader = columns.get(colIndex);
-                                            if(attributeHeader.contains("[") && attributeHeader.endsWith("]")) {
-                                                attributeHeader = attributeHeader.substring(attributeHeader.indexOf("[") + 1, attributeHeader.indexOf("]"));
-                                            }
-                                            fBean.setAttributeName(attributeHeader);
-                                            fBean.setAttributeValue(line[colIndex]);
-                                            gBean.getBeanList().add(fBean);
-                                        }
-                                        this.gridList.add(gBean);
-                                    }
-                                }
-                                lineCount++;
-                            }
+                            TemplatePreProcessingUtils templateUtil = new TemplatePreProcessingUtils();
+                            gridList = templateUtil.parseEventFile(
+                                    this.getDataTemplateFileName(), this.getDataTemplate(),
+                                    projectName, isProjectRegistration, isSampleRegistration
+                            );
                             jobType = "grid";
                         } catch(Exception ex) {
                             throw ex;
@@ -295,8 +245,8 @@ public class EventLoader extends ActionSupport {
                     tx.commit();
                 }
 
-                if(jobType!=null && jobType.equals("grid") && this.uploadFile!=null) {
-                    this.uploadFile.delete();
+                if(jobType != null && jobType.equals("grid") && this.dataTemplate != null) {
+                    this.dataTemplate.delete();
                 }
             } catch(Exception ex) {
                 ex.printStackTrace();
@@ -520,7 +470,7 @@ public class EventLoader extends ActionSupport {
     }
 
     private String getUnknownErrorMessage() {
-        return "Unknown error uploading file " + this.getUploadFileName();
+        return "Unknown error uploading file " + this.getDataTemplateFileName();
     }
 
     public String getProjectName() {
@@ -643,19 +593,27 @@ public class EventLoader extends ActionSupport {
         this.downloadContentType = downloadContentType;
     }
 
-    public File getUploadFile() {
-        return uploadFile;
+    public String getDataTemplateContentType() {
+        return dataTemplateContentType;
     }
 
-    public void setUploadFile(File uploadFile) {
-        this.uploadFile = uploadFile;
+    public void setDataTemplateContentType(String dataTemplateContentType) {
+        this.dataTemplateContentType = dataTemplateContentType;
     }
 
-    public String getUploadFileName() {
-        return uploadFileName;
+    public String getDataTemplateFileName() {
+        return dataTemplateFileName;
     }
 
-    public void setUploadFileName(String uploadFileName) {
-        this.uploadFileName = uploadFileName;
+    public void setDataTemplateFileName(String dataTemplateFileName) {
+        this.dataTemplateFileName = dataTemplateFileName;
+    }
+
+    public File getDataTemplate() {
+        return dataTemplate;
+    }
+
+    public void setDataTemplate(File dataTemplate) {
+        this.dataTemplate = dataTemplate;
     }
 }

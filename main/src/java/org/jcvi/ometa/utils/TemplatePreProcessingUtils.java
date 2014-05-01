@@ -1,19 +1,22 @@
 package org.jcvi.ometa.utils;
 
+import au.com.bytecode.opencsv.CSVReader;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellRangeAddressList;
 import org.apache.poi.ss.usermodel.*;
+import org.jcvi.ometa.model.Event;
 import org.jcvi.ometa.model.EventMetaAttribute;
+import org.jcvi.ometa.model.FileReadAttributeBean;
+import org.jcvi.ometa.model.GridBean;
 import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.scratch.ScratchUtils;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -214,6 +217,173 @@ public class TemplatePreProcessingUtils {
         }
     }
 
+    public List<GridBean> parseEventFile(String originalFileName, File uploadedFile, String projectName, boolean isProjectRegistration, boolean isSampleRegistration) throws Exception {
+        List<GridBean> gridBeans = new ArrayList<GridBean>();
+
+        String fileType = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
+
+        List<String> columns = new ArrayList<String>();
+        String currProjectName = null;
+        boolean hasSampleName = false;
+
+        //Excel or CSV
+        if(fileType.startsWith("xls")) {
+            Workbook workbook = WorkbookFactory.create(uploadedFile);
+            if(workbook != null && workbook.getNumberOfSheets() > 0) {
+                //only cares the first sheet
+                Sheet sheet = workbook.getSheetAt(0);
+                //check if the sheet has any data by skipping attribute and comment lines
+                if(sheet != null && sheet.getLastRowNum() > 1) {
+                    //get columns from excel sheet
+                    Row attributeNames = sheet.getRow(0);
+                    for(int i = 0; i < attributeNames.getLastCellNum(); i++) {
+                        columns.add(attributeNames.getCell(i).getStringCellValue());
+                    }
+                    hasSampleName = columns.indexOf("SampleName") >= 0;
+
+                    int startingRow = 1;
+                    Row metaRow = sheet.getRow(startingRow);
+                    String firstMetaColumn = metaRow.getCell(0).getStringCellValue();
+                    if(!firstMetaColumn.isEmpty() && firstMetaColumn.startsWith("#") && firstMetaColumn.indexOf("string") > 0) {
+                        startingRow = 2; //skip the second line that holds metadata of each column
+                    }
+
+
+                    for(int i = startingRow; i <= sheet.getLastRowNum(); i++) {
+                        Row row = sheet.getRow(i);
+                        int colIndex = 0;
+
+                        currProjectName = row.getCell(colIndex++).getStringCellValue();
+                        if(!isProjectRegistration && !currProjectName.equals(projectName)) {
+                            throw new Exception("Multiple projects are found in the file");
+                        }
+
+                        GridBean gBean = new GridBean();
+                        gBean.setProjectName(currProjectName);
+
+                        if(hasSampleName) {
+                            gBean.setSampleName(this.getExcelCellValue(row.getCell(colIndex++)));
+                        }
+
+                        if(isProjectRegistration) {
+                            gBean.setProjectName(currProjectName);
+                            gBean.setProjectPublic(this.getExcelCellValue(row.getCell(colIndex++)));
+                        } else if(isSampleRegistration) {
+                            gBean.setParentSampleName(this.getExcelCellValue(row.getCell(colIndex++)));
+                            gBean.setSamplePublic(this.getExcelCellValue(row.getCell(colIndex++)));
+                        }
+
+                        gBean.setBeanList(new ArrayList<FileReadAttributeBean>());
+                        for (; colIndex < columns.size(); colIndex++) {
+                            FileReadAttributeBean fBean = new FileReadAttributeBean();
+                            fBean.setProjectName(isProjectRegistration ? currProjectName : projectName);
+                            fBean.setAttributeName(columns.get(colIndex));
+                            fBean.setAttributeValue(this.getExcelCellValue(row.getCell(colIndex)));
+                            gBean.getBeanList().add(fBean);
+                        }
+                        gridBeans.add(gBean);
+                    }
+                }
+            }
+        } else {
+            CSVReader reader = new CSVReader(new FileReader(uploadedFile));
+
+            String[] line;
+            int lineCount = 0;
+
+            while ((line = reader.readNext()) != null) {
+                if(lineCount == 0) { //headers
+                    Collections.addAll(columns, line);
+                    hasSampleName = columns.indexOf(Event.SAMPLE_NAME_HEADER) >= 0;
+                } else {
+                    int colIndex = 0;
+
+                    if(lineCount == 1) {
+                        //skip the second line that holds metadata of each column
+                        String firstMetaColumn = line[colIndex];
+                        if(!firstMetaColumn.isEmpty() && firstMetaColumn.startsWith("#") && firstMetaColumn.indexOf("string") > 0) {
+                            lineCount++;
+                            continue;
+                        }
+                    }
+
+                    currProjectName = line[colIndex++];
+                    if(projectName == null) { //assign the first project
+                        projectName = currProjectName;
+                    }
+
+                    if(!currProjectName.isEmpty()) {
+                        if(!isProjectRegistration && !currProjectName.equals(projectName)) {
+                            throw new Exception("Multiple projects are found in the file");
+                        }
+
+                        GridBean gBean = new GridBean();
+                        gBean.setProjectName(currProjectName);
+
+                        if(hasSampleName) {
+                            gBean.setSampleName(line[(colIndex++)]);
+                        }
+
+                        if(isProjectRegistration) {
+                            gBean.setProjectName(currProjectName);
+                            gBean.setProjectPublic(line[(colIndex++)]);
+                        } else if(isSampleRegistration) {
+                            gBean.setParentSampleName(line[(colIndex++)]);
+                            gBean.setSamplePublic(line[(colIndex++)]);
+                        }
+
+                        gBean.setBeanList(new ArrayList<FileReadAttributeBean>());
+                        for (; colIndex < columns.size(); colIndex++) {
+                            FileReadAttributeBean fBean = new FileReadAttributeBean();
+                            fBean.setProjectName(isProjectRegistration ? currProjectName : projectName);
+                            fBean.setSampleName(hasSampleName ? gBean.getSampleName() : null);
+                            fBean.setAttributeName(columns.get(colIndex));
+                            fBean.setAttributeValue(line[colIndex]);
+                            gBean.getBeanList().add(fBean);
+                        }
+                        gridBeans.add(gBean);
+                    }
+                }
+                lineCount++;
+            }
+        }
+
+        return gridBeans;
+    }
+
+    /**
+     * parse project, sample, meta attribute files into a list of maps
+     * @param beanFile
+     * @return list of maps containing field name and value pairs
+     * @throws Exception
+     */
+    public List<Map<String, String>> parseNonEventFile(File beanFile) throws Exception {
+        List<Map<String, String>> dataList = new ArrayList<Map<String, String>>();
+
+        CSVReader reader = new CSVReader(new FileReader(beanFile));
+
+        String[] line;
+        int lineCount = 0;
+        List<String> columns = new ArrayList<String>();
+
+        while((line = reader.readNext()) != null) {
+            if(lineCount == 0) { //headers
+                Collections.addAll(columns, line);
+            } else {
+
+                Map<String, String> data = new HashMap<String, String>();
+                for(int i = 0;i < columns.size();i++) {
+                    data.put(columns.get(i), line[i]);
+                }
+                dataList.add(data);
+            }
+            lineCount++;
+        }
+
+        return dataList;
+    }
+
+
     public File preProcessTemplateFile(File originalFile) {
         File outputFile = null;
         try {
@@ -244,6 +414,68 @@ public class TemplatePreProcessingUtils {
         }
         return outputFile;
     }
+
+    /*
+     * Will get rid of files created as temporaries by this process.
+     * This method is copied over from original template processor, TsvPreProcessingUtils.java
+     * 3/10/14 by hkim
+    */
+    public void deletePreProcessedFile( File file ) {
+        try {
+            if(file.exists()) {
+                file.delete();
+                File parentFile = file.getParentFile();
+                // If parent exists, definitely should be deleted.  Separate directory
+                // created for each temporary file.  But the grandparent should only be deleted
+                // if it is just a numeric value.  Numerically-named directories may be
+                // included as grandparents.
+                if( parentFile.canWrite() ) {
+                    parentFile.delete();
+
+                    parentFile = parentFile.getParentFile();
+                    try {
+                        Long.parseLong( parentFile.getName() );
+                        parentFile.delete();
+                    } catch ( NumberFormatException nfe ) {
+                        // Do nothing.  Just don't try and delete anything.
+                    }
+                }
+            }
+        } catch ( Exception ex ) {
+            System.out.println("WARNING: failed to dispose of an intermediate file " + file.getAbsolutePath() );
+            throw new IllegalArgumentException( ex );
+        }
+    }
+
+    private String getExcelCellValue(Cell cell) {
+        String value = "";
+        if(cell != null) {
+            switch(cell.getCellType()) {
+                case Cell.CELL_TYPE_BLANK:
+                    break;
+                case Cell.CELL_TYPE_BOOLEAN:
+                    value = Boolean.toString(cell.getBooleanCellValue());
+                    break;
+                case Cell.CELL_TYPE_NUMERIC:
+                    if(HSSFDateUtil.isCellDateFormatted(cell)) {
+                        value = CommonTool.convertTimestampToDate(cell.getDateCellValue());
+                    } else {
+                        value += cell.getNumericCellValue();
+                        //remove '.0' portion for integer values
+                        if(value.endsWith(".0")) {
+                            value = value.substring(0, value.indexOf("."));
+                        }
+                    }
+                    break;
+                default:
+                    value = cell.getStringCellValue();
+
+
+            }
+        }
+        return value;
+    }
+
 
     private class HeaderDetail {
         private String name;

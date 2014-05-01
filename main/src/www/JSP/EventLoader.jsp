@@ -175,7 +175,7 @@
       <tr>
         <td>Loader CSV File</td>
         <td>
-          <s:file name="uploadFile" id="upload" cssStyle="margin:0 0 0 14px;" size="75px" />
+          <s:file name="dataTemplate" id="upload" cssStyle="margin:0 0 0 14px;" size="75px" />
         </td>
       </tr>
     </table>
