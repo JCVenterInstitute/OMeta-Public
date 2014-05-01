@@ -21,6 +21,7 @@
 
 package org.jcvi.ometa.action;
 
+import au.com.bytecode.opencsv.CSVReader;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -40,6 +41,7 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.io.File;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.*;
@@ -75,14 +77,14 @@ public class EventLoader extends ActionSupport {
     private InputStream downloadStream;
     private String downloadContentType;
 
-    private File dataTemplate;
-    private String dataTemplateFileName;
-    private String dataTemplateContentType;
+    private File uploadFile;
+    private String uploadFileName;
 
     private String fileStoragePath;
     private ArrayList<String> loadedFiles;
 
     private static final String DEFAULT_USER_MESSAGE = "Not yet entered";
+    private final String MULTIPLE_SUBJECT_IN_FILE_MESSAGE = "Multiple projects are found in the file";
     private final String UNSUPPORTED_UPLOAD_FILE_TYPE_MESSAGE = "File type is not supported. Supported file types are JPG, JPEG, GIF and BMP.";
     private String message = DEFAULT_USER_MESSAGE;
 
@@ -162,17 +164,71 @@ public class EventLoader extends ActionSupport {
                     this.reset();
                     addActionMessage("Events have been loaded successfully.");
                 } else if (jobType.equals("file")) { //loads data from a CSV file to grid view
-                    if (!this.getDataTemplate().canRead()) {
+                    if (!this.uploadFile.canRead()) {
                         throw new Exception("Error in reading the file.");
                     } else {
-                        TemplatePreProcessingUtils templateUtil = new TemplatePreProcessingUtils();
-                        gridList = templateUtil.parseEventFile(
-                                this.getDataTemplateFileName(), this.getDataTemplate(),
-                                projectName, isProjectRegistration, isSampleRegistration
-                        );
-                        jobType = "grid";
+                        try {
+                            CSVReader reader = new CSVReader(new FileReader(this.uploadFile));
+
+                            int lineCount = 0;
+                            List<String> columns = new ArrayList<String>();
+
+                            String currProjectName = null;
+
+                            gridList = new ArrayList<GridBean>();
+                            boolean hasSampleName = false;
+                            String[] line;
+                            while((line = reader.readNext()) != null) {
+                                if(lineCount != 1) {
+                                    if(lineCount == 0) {
+                                        Collections.addAll(columns, line);
+                                        hasSampleName = columns.indexOf("SampleName") >= 0;
+                                    } else {
+                                        int colIndex = 0;
+
+                                        currProjectName = line[colIndex++];
+                                        if(!isProjectRegistration && !currProjectName.equals(this.projectName)) {
+                                            throw new Exception(MULTIPLE_SUBJECT_IN_FILE_MESSAGE);
+                                        }
+
+                                        GridBean gBean = new GridBean();
+                                        gBean.setProjectName(currProjectName);
+
+                                        if(hasSampleName) {
+                                            gBean.setSampleName(line[(colIndex++)]);
+                                        }
+
+                                        if(isProjectRegistration) {
+                                            gBean.setProjectName(currProjectName);
+                                            gBean.setProjectPublic(line[(colIndex++)]);
+                                        } else if (isSampleRegistration) {
+                                            gBean.setParentSampleName(line[(colIndex++)]);
+                                            gBean.setSamplePublic(line[(colIndex++)]);
+                                        }
+
+                                        gBean.setBeanList(new ArrayList<FileReadAttributeBean>());
+                                        for(; colIndex < columns.size(); colIndex++) {
+                                            FileReadAttributeBean fBean = new FileReadAttributeBean();
+                                            fBean.setProjectName(isProjectRegistration ? currProjectName : this.projectName);
+                                            String attributeHeader = columns.get(colIndex);
+                                            if(attributeHeader.contains("[") && attributeHeader.endsWith("]")) {
+                                                attributeHeader = attributeHeader.substring(attributeHeader.indexOf("[") + 1, attributeHeader.indexOf("]"));
+                                            }
+                                            fBean.setAttributeName(attributeHeader);
+                                            fBean.setAttributeValue(line[colIndex]);
+                                            gBean.getBeanList().add(fBean);
+                                        }
+                                        this.gridList.add(gBean);
+                                    }
+                                }
+                                lineCount++;
+                            }
+                            jobType = "grid";
+                        } catch(Exception ex) {
+                            throw ex;
+                        }
                     }
-                } else if (jobType.startsWith("template")) { //download template
+                } else if(jobType.startsWith("template")) { //download template
                     List<EventMetaAttribute> emaList = readPersister.getEventMetaAttributes(projectName, eventName);
                     emaList = CommonTool.filterActiveEventMetaAttribute(emaList);
 
@@ -182,9 +238,9 @@ public class EventLoader extends ActionSupport {
                     ModelValidator validator = new ModelValidator();
                     validator.validateEventTemplateSanity(emaList, projectName, sampleName, eventName);
                     */
-                    TemplatePreProcessingUtils templateUtil = new TemplatePreProcessingUtils();
-                    String templateType = jobType.substring(jobType.indexOf("_") + 1);
-                    downloadStream = templateUtil.buildFileContent(templateType, emaList, projectName, sampleName, eventName);
+                    TemplatePreProcessingUtils cvsUtils = new TemplatePreProcessingUtils();
+                    String templateType = jobType.substring(jobType.indexOf("_")+1);
+                    downloadStream = cvsUtils.buildFileContent(templateType, emaList, projectName, sampleName, eventName);
                     downloadContentType = templateType.equals("c")?"csv":"vnd.ms-excel";
                     rtnVal = Constants.FILE_DOWNLOAD_MSG;
                 }
@@ -239,8 +295,8 @@ public class EventLoader extends ActionSupport {
                     tx.commit();
                 }
 
-                if(jobType!=null && jobType.equals("grid") && this.getDataTemplate()!=null) {
-                    this.getDataTemplate().delete();
+                if(jobType!=null && jobType.equals("grid") && this.uploadFile!=null) {
+                    this.uploadFile.delete();
                 }
             } catch(Exception ex) {
                 ex.printStackTrace();
@@ -464,7 +520,7 @@ public class EventLoader extends ActionSupport {
     }
 
     private String getUnknownErrorMessage() {
-        return "Unknown error uploading file " + this.getDataTemplate();
+        return "Unknown error uploading file " + this.getUploadFileName();
     }
 
     public String getProjectName() {
@@ -587,27 +643,19 @@ public class EventLoader extends ActionSupport {
         this.downloadContentType = downloadContentType;
     }
 
-    public File getDataTemplate() {
-        return dataTemplate;
+    public File getUploadFile() {
+        return uploadFile;
     }
 
-    public void setDataTemplate(File dataTemplate) {
-        this.dataTemplate = dataTemplate;
+    public void setUploadFile(File uploadFile) {
+        this.uploadFile = uploadFile;
     }
 
-    public String getDataTemplateFileName() {
-        return dataTemplateFileName;
+    public String getUploadFileName() {
+        return uploadFileName;
     }
 
-    public void setDataTemplateFileName(String dataTemplateFileName) {
-        this.dataTemplateFileName = dataTemplateFileName;
-    }
-
-    public String getDataTemplateContentType() {
-        return dataTemplateContentType;
-    }
-
-    public void setDataTemplateContentType(String dataTemplateContentType) {
-        this.dataTemplateContentType = dataTemplateContentType;
+    public void setUploadFileName(String uploadFileName) {
+        this.uploadFileName = uploadFileName;
     }
 }

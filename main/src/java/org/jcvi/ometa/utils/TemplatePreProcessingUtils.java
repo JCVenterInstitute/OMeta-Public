@@ -37,14 +37,14 @@ public class TemplatePreProcessingUtils {
 
         List<HeaderDetail> headers = new ArrayList<HeaderDetail>();
 
-        headers.add(new HeaderDetail("ProjectName", true, "string", ""));
+        headers.add(new HeaderDetail("ProjectName", true, "string", "", null));
 
         if (isSampleRegistration) { // parent sample name for sample registration
-            headers.add(new HeaderDetail("ParentSample", false, "string", ""));
+            headers.add(new HeaderDetail("ParentSample", false, "string", "", null));
         }
 
         if (isProjectRegistration || isSampleRegistration) { //public flag
-            headers.add(new HeaderDetail("Public", true, "int", ""));
+            headers.add(new HeaderDetail("Public", true, "int", "", null));
         }
 
         boolean sampleRequired = false;
@@ -52,12 +52,13 @@ public class TemplatePreProcessingUtils {
             sampleRequired |= ema.isSampleRequired();
             headers.add(new HeaderDetail(
                     ema.getLookupValue().getName(), ema.isRequired(),
-                    ema.getLookupValue().getDataType(), ema.getOptions()
+                    ema.getLookupValue().getDataType(), ema.getOptions(),
+                    ema.getLabel()
             ));
         }
 
         if(isSampleRegistration || sampleRequired) {
-            headers.add(1, new HeaderDetail("SampleName", true, "string", ""));
+            headers.add(1, new HeaderDetail("SampleName", true, "string", "", null));
         }
 
         InputStream templateStream = null;
@@ -78,18 +79,23 @@ public class TemplatePreProcessingUtils {
 
         int i = 0;
         for(HeaderDetail detail : attributes) {
-            csvContents.append((i > 0 ? "," : "") + "\"" + detail.getName() + "\"");
-            comments.append((i > 0 ? "," : "")
-                    + "\""
-                    + this.getComment(detail) + (detail.hasOptions()?detail.getOptionsString():"")
-                    + "\"");
+            if(i > 0) {
+                csvContents.append(",");
+                comments.append(",");
+            }
+            String attributeHeader = detail.getName();
+            if(detail.getLabel() != null) {
+                attributeHeader = detail.getLabel() + "[" + attributeHeader + "]";
+            }
+            csvContents.append(attributeHeader);
+            comments.append(this.getComment(detail) + (detail.hasOptions()?detail.getOptionsString():""));
             i++;
         }
 
         csvContents.append("\n" + comments.toString());
         csvContents.append("\n" +
-                (!isProjectRegistration ? "\""+projectName+"\"": "") +
-                (sampleName != null && !sampleName.trim().isEmpty() ? ",\"" + sampleName + "\"" : "")
+                (!isProjectRegistration ? projectName : "") +
+                (sampleName != null && !sampleName.trim().isEmpty() ? "," + sampleName : "")
         );
         return IOUtils.toInputStream(csvContents.toString());
     }
@@ -244,12 +250,14 @@ public class TemplatePreProcessingUtils {
         private boolean required;
         private String dataType;
         private String options;
+        private String label;
 
-        public HeaderDetail(String name, boolean required, String dataType, String options) {
+        public HeaderDetail(String name, boolean required, String dataType, String options, String label) {
             this.name = name;
             this.required = required;
             this.dataType = dataType;
             this.options = options;
+            this.label = label;
         }
 
         public String getName() { return name; }
@@ -257,11 +265,11 @@ public class TemplatePreProcessingUtils {
         public boolean isRequired() { return required; }
         public void setRequired(boolean required) { this.required = required; }
         public boolean hasOptions() {
-            return this.getOptions()!=null && this.getOptions().length()>0;
+            return this.getOptions() != null && this.getOptions().length() > 0;
         }
         public String getOptions() { return options; }
         public String getOptionsString() {
-            return (this.hasOptions()? ("["+this.getOptions()+"]") : "");
+            return (this.hasOptions() ? ("[" + this.getOptions() + "]") : "");
         }
         public String[] getOptionsArray() {
             return (this.hasOptions() ? this.getOptions().split(";") : null);
@@ -269,5 +277,8 @@ public class TemplatePreProcessingUtils {
         public void setOptions(String options) { this.options = options; }
         public String getDataType() { return dataType; }
         public void setDataType(String dataType) { this.dataType = dataType; }
+
+        public String getLabel() { return label; }
+        public void setLabel(String label) { this.label = label; }
     }
 }
