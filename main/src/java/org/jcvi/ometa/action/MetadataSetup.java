@@ -73,6 +73,11 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction {
     private List<String> types;
 
     public MetadataSetup() {
+        getReadEJB();
+    }
+
+    public MetadataSetup(ProjectSampleEventPresentationBusiness ejb) {
+        psept = ejb;
     }
 
     private void getReadEJB() {
@@ -85,19 +90,17 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction {
         UserTransaction tx = null;
 
         try {
-            this.getReadEJB();
-
             List<String> projectNameList = new ArrayList<String>();
-            if (projectNames == null || projectNames.equals(""))
+            if(projectNames == null || projectNames.equals(""))
                 projectNameList.add("ALL");
-            else if (projectNames.contains(","))
+            else if(projectNames.contains(","))
                 projectNameList.addAll(Arrays.asList(projectNames.split(",")));
             else
                 projectNameList.add(projectNames);
 
             projectList = psept.getProjects(projectNameList);
 
-            if (projectId!=null && projectId!=0 && type!=null && !type.isEmpty() && beanList!=null && beanList.size()>0) {
+            if(projectId!=null && projectId!=0 && type!=null && !type.isEmpty() && beanList!=null && beanList.size()>0) {
                 tx=(UserTransaction)new InitialContext().lookup("java:comp/UserTransaction");
                 tx.begin();
 
@@ -110,85 +113,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction {
                 //existing EMA for current project
                 List<EventMetaAttribute> refEmaList = psept.getEventMetaAttributes(loadingProject.getProjectId());
 
-                if("p".equals(type)) {
-                    Map<String, ProjectMetaAttribute> existingPmaMap = this.getPmaMap(loadingProject.getProjectId());
-                    Map<String, List<EventMetaAttribute>> refEmaMap = this.getEmaMap(refEmaList);
-
-                    List<ProjectMetaAttribute> pmaList = new ArrayList<ProjectMetaAttribute>();
-                    List<EventMetaAttribute> emaList = new ArrayList<EventMetaAttribute>();
-                    for (MetadataSetupReadBean bean : beanList) {
-                        ProjectMetaAttribute pma;
-                        if(existingPmaMap.containsKey(bean.getName())) {
-                            pma = existingPmaMap.get(bean.getName());
-                            if(this.isUnchanged(bean, pma)) {
-                                continue; //skip unchanged MA
-                            }
-                        } else {
-                            pma = new ProjectMetaAttribute();
-                            pma.setProjectId(loadingProject.getProjectId());
-                            pma.setAttributeName(bean.getName());
-                            //pma.setDataType(refEmaMap.get(bean.getName()).get(0).getDataType());
-                        }
-                        this.setMAValues(pma,
-                                bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
-                                bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName());
-                        pmaList.add(pma);
-
-                        List<EventMetaAttribute> emas = refEmaMap.get(bean.getName());
-                        if(emas!=null && emas.size()>0) {
-                            for(EventMetaAttribute ema : emas) {
-                                this.setMAValues(ema,
-                                        bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
-                                        bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName());
-                                emaList.add(ema);
-                            }
-                        }
-                    }
-                    if(emaList.size()>0)
-                        psewt.loadEventMetaAttributes(emaList);
-                    if(pmaList.size()>0)
-                        psewt.loadProjectMetaAttributes(pmaList);
-
-                } else if ("s".equals(type)) { //sample meta attribute
-                    Map<String, SampleMetaAttribute> exsitingSmaMap = this.getSmaMap(loadingProject.getProjectId());
-                    Map<String, List<EventMetaAttribute>> refEmaMap = this.getEmaMap(refEmaList);
-
-                    List<SampleMetaAttribute> smaList = new ArrayList<SampleMetaAttribute>();
-                    List<EventMetaAttribute> emaList = new ArrayList<EventMetaAttribute>();
-                    for (MetadataSetupReadBean bean : beanList) {
-                        SampleMetaAttribute sma;
-                        if(exsitingSmaMap.containsKey(bean.getName())) {
-                            sma = exsitingSmaMap.get(bean.getName());
-                            if(this.isUnchanged(bean, sma)) {
-                                continue; //skip unchanged MA
-                            }
-                        } else {
-                            sma = new SampleMetaAttribute();
-                            sma.setProjectId(loadingProject.getProjectId());
-                            sma.setAttributeName(bean.getName());
-                            //sma.setDataType(refEmaMap.get(bean.getName()).get(0).getDataType());
-                        }
-                        this.setMAValues(sma,
-                                bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
-                                bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName());
-                        smaList.add(sma);
-
-                        List<EventMetaAttribute> emas = refEmaMap.get(bean.getName());
-                        if(emas!=null && emas.size()>0) {
-                            for(EventMetaAttribute ema : emas) {
-                                this.setMAValues(ema,
-                                        bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
-                                        bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName());
-                                emaList.add(ema);
-                            }
-                        }
-                    }
-                    if(emaList.size()>0)
-                        psewt.loadEventMetaAttributes(emaList);
-                    if(smaList.size()>0)
-                        psewt.loadSampleMetaAttributes(smaList);
-
-                } else if ("e".equals(type)) {
+                if("e".equals(type)) {  //event metadata setup
                     Map<String, Map<String, EventMetaAttribute>> existingEmaMap = new HashMap<String, Map<String, EventMetaAttribute>>();
                     for(EventMetaAttribute ema : refEmaList) {
                         if(existingEmaMap.containsKey(ema.getEventName())) {
@@ -320,6 +245,84 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction {
                         psewt.loadProjectMetaAttributes(pmaList);
                     if(smaList.size()>0)
                         psewt.loadSampleMetaAttributes(smaList);
+                } else if("p".equals(type)) { //project metadata setup
+                    Map<String, ProjectMetaAttribute> existingPmaMap = this.getPmaMap(loadingProject.getProjectId());
+                    Map<String, List<EventMetaAttribute>> refEmaMap = this.getEmaMap(refEmaList);
+
+                    List<ProjectMetaAttribute> pmaList = new ArrayList<ProjectMetaAttribute>();
+                    List<EventMetaAttribute> emaList = new ArrayList<EventMetaAttribute>();
+                    for (MetadataSetupReadBean bean : beanList) {
+                        ProjectMetaAttribute pma;
+                        if(existingPmaMap.containsKey(bean.getName())) {
+                            pma = existingPmaMap.get(bean.getName());
+                            if(this.isUnchanged(bean, pma)) {
+                                continue; //skip unchanged MA
+                            }
+                        } else {
+                            pma = new ProjectMetaAttribute();
+                            pma.setProjectId(loadingProject.getProjectId());
+                            pma.setAttributeName(bean.getName());
+                            //pma.setDataType(refEmaMap.get(bean.getName()).get(0).getDataType());
+                        }
+                        this.setMAValues(pma,
+                                bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
+                                bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName());
+                        pmaList.add(pma);
+
+                        List<EventMetaAttribute> emas = refEmaMap.get(bean.getName());
+                        if(emas!=null && emas.size()>0) {
+                            for(EventMetaAttribute ema : emas) {
+                                this.setMAValues(ema,
+                                        bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
+                                        bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName());
+                                emaList.add(ema);
+                            }
+                        }
+                    }
+                    if(emaList.size()>0)
+                        psewt.loadEventMetaAttributes(emaList);
+                    if(pmaList.size()>0)
+                        psewt.loadProjectMetaAttributes(pmaList);
+
+                } else if ("s".equals(type)) {  //sample metadata setup
+                    Map<String, SampleMetaAttribute> exsitingSmaMap = this.getSmaMap(loadingProject.getProjectId());
+                    Map<String, List<EventMetaAttribute>> refEmaMap = this.getEmaMap(refEmaList);
+
+                    List<SampleMetaAttribute> smaList = new ArrayList<SampleMetaAttribute>();
+                    List<EventMetaAttribute> emaList = new ArrayList<EventMetaAttribute>();
+                    for (MetadataSetupReadBean bean : beanList) {
+                        SampleMetaAttribute sma;
+                        if(exsitingSmaMap.containsKey(bean.getName())) {
+                            sma = exsitingSmaMap.get(bean.getName());
+                            if(this.isUnchanged(bean, sma)) {
+                                continue; //skip unchanged MA
+                            }
+                        } else {
+                            sma = new SampleMetaAttribute();
+                            sma.setProjectId(loadingProject.getProjectId());
+                            sma.setAttributeName(bean.getName());
+                            //sma.setDataType(refEmaMap.get(bean.getName()).get(0).getDataType());
+                        }
+                        this.setMAValues(sma,
+                                bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
+                                bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName());
+                        smaList.add(sma);
+
+                        List<EventMetaAttribute> emas = refEmaMap.get(bean.getName());
+                        if(emas!=null && emas.size()>0) {
+                            for(EventMetaAttribute ema : emas) {
+                                this.setMAValues(ema,
+                                        bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
+                                        bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName());
+                                emaList.add(ema);
+                            }
+                        }
+                    }
+                    if(emaList.size()>0)
+                        psewt.loadEventMetaAttributes(emaList);
+                    if(smaList.size()>0)
+                        psewt.loadSampleMetaAttributes(smaList);
+
                 }
                 projectId = null;
                 beanList = null;
@@ -369,17 +372,13 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction {
         dataMap = new HashMap<String, Object>();
 
         try {
-            this.getReadEJB();
-
             if("g_ema".equals(type)) { //event meta attribute
                 LookupValue eventTypeLV=null;
-                if(eventName!=null && !eventName.isEmpty()){
+                if(eventName != null && !eventName.isEmpty()){
                     eventTypeLV = psept.getLookupValue(eventName, ModelValidator.EVENT_TYPE_LV_TYPE_NAME);
                 }
                 List<EventMetaAttribute> emas = psept.getEventMetaAttributes(projectId, eventTypeLV==null?null:eventTypeLV.getLookupValueId());
                 if(emas.size()>0) {
-
-                    //order by orders
                     //group ema by event type
                     Map<String, List<EventMetaAttribute>> groupedList = new HashMap<String, List<EventMetaAttribute>>();
                     for (EventMetaAttribute ema : emas) {
@@ -395,16 +394,16 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction {
                     //sort by orders
                     emas = new ArrayList<EventMetaAttribute>(emas.size());
                     for(String et : groupedList.keySet()) {
-                        List<EventMetaAttribute> sortedList = new ArrayList<EventMetaAttribute>(groupedList.get(et).size());
-                        Map<Integer, EventMetaAttribute> treeMap = new TreeMap<Integer, EventMetaAttribute>();
-                        for(EventMetaAttribute ema : groupedList.get(et)) {
-                            if(ema.getOrder()==null) {
-                                sortedList.add(ema);
-                            } else {
-                                treeMap.put(ema.getOrder(), ema);
+                        List<EventMetaAttribute> sortedList = groupedList.get(et);
+                        Collections.sort(sortedList, new Comparator<EventMetaAttribute>() {
+                            @Override
+                            public int compare(EventMetaAttribute o1, EventMetaAttribute o2) {
+                                return o1.getOrder() == null && o2.getOrder() == null ? 0
+                                        : o1.getOrder() == null ? -1
+                                        : o2.getOrder() == null ? 1
+                                        : o1.getOrder().compareTo(o2.getOrder());
                             }
-                        }
-                        sortedList.addAll(0, treeMap.values());
+                        });
                         emas.addAll(sortedList);
                     }
 

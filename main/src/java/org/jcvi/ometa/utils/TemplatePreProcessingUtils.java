@@ -91,7 +91,7 @@ public class TemplatePreProcessingUtils {
                 attributeHeader = detail.getLabel() + "[" + attributeHeader + "]";
             }
             csvContents.append(attributeHeader);
-            comments.append(this.getComment(detail) + (detail.hasOptions()?detail.getOptionsString():""));
+            comments.append("\"" + this.getComment(detail) + (detail.hasOptions() ? detail.getOptionsString() : "") + "\"");
             i++;
         }
 
@@ -237,7 +237,7 @@ public class TemplatePreProcessingUtils {
                     //get columns from excel sheet
                     Row attributeNames = sheet.getRow(0);
                     for(int i = 0; i < attributeNames.getLastCellNum(); i++) {
-                        columns.add(attributeNames.getCell(i).getStringCellValue());
+                        columns.add(this.extractRealAttributeName(attributeNames.getCell(i).getStringCellValue()));
                     }
                     hasSampleName = columns.indexOf("SampleName") >= 0;
 
@@ -337,7 +337,7 @@ public class TemplatePreProcessingUtils {
                             FileReadAttributeBean fBean = new FileReadAttributeBean();
                             fBean.setProjectName(isProjectRegistration ? currProjectName : projectName);
                             fBean.setSampleName(hasSampleName ? gBean.getSampleName() : null);
-                            fBean.setAttributeName(columns.get(colIndex));
+                            fBean.setAttributeName(this.extractRealAttributeName(columns.get(colIndex)));
                             fBean.setAttributeValue(line[colIndex]);
                             gBean.getBeanList().add(fBean);
                         }
@@ -474,6 +474,14 @@ public class TemplatePreProcessingUtils {
             }
         }
         return value;
+    }
+
+    private String extractRealAttributeName(String attributeHeader) {
+        String realAttributeName = attributeHeader;
+        if(attributeHeader.contains("[") && attributeHeader.endsWith("]")) {
+            realAttributeName = attributeHeader.substring(attributeHeader.indexOf("[") + 1, attributeHeader.indexOf("]"));
+        }
+        return realAttributeName;
     }
 
 
