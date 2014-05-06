@@ -60,7 +60,6 @@
     td._details table td { border:1px solid white; }
 
     .datatable_top, .datatable_table, .datatable_bottom { float:left; clear:both; width:100%;}
-
   </style>
 </head>
 <body>
@@ -121,7 +120,7 @@
         <table name="sampleTable" id="sampleTable" class="contenttable" style="width:95%;">
           <thead id="sampleTableHeader">
           <tr>
-            <th style="width:23px;text-align:center"><img id="table_openBtn"/></th>
+            <th style="width:23px !important;text-align:center"><img id="table_openBtn"/></th>
             <th class="tableHeaderStyle">Sample Name</th>
             <th class="tableHeaderStyle">Parent</th>
             <th class="tableHeaderStyle">User</th>
@@ -147,7 +146,7 @@
         <table name="eventTable" id="eventTable" class="contenttable" style="width:95%;">
           <thead id="eventTableHeader">
           <tr>
-            <th style="width:23px;text-align:center"><img id="table_openBtn"/></th>
+            <th style="width:23px !important;text-align:center"><img id="table_openBtn"/></th>
             <th class="tableHeaderStyle">Event Type</th>
             <th class="tableHeaderStyle">Sample Name</th>
             <th class="tableHeaderStyle">Date</th>
@@ -381,9 +380,14 @@ $(document).ready(function() {
         });
       }
     },
+    "bAutoWidth" : false,
     "aoColumnDefs": [
-      {"bSearchable": true, "bVisible": false, "aTargets": [ 5 ]},
-      {"sWidth": "7px", "bSortable": false, "aTargets": [ 0 ]}
+      {"sWidth": "23px", "bSortable": false, "aTargets": [ 0 ]},
+      {"sWidth": "30%", "aTargets":[1]},
+      {"sWidth": "30%", "aTargets":[2]},
+      {"sWidth": "20%", "aTargets":[3]},
+      {"sWidth": "20%", "aTargets":[4]},
+      {"bSearchable": true, "bVisible": false, "aTargets": [ 5 ]}
     ]
   }).fnFilterOnReturn();
 
@@ -393,7 +397,7 @@ $(document).ready(function() {
     "bProcessing": true,
     "bServerSide": true,
     "sPaginationType": "full_numbers",
-    "sAjaxSource": "",
+    "sAjaxSource": "",  
     "fnServerData": function ( sSource, aoData, fnCallback ) {
       if(sSource!=='') {
         $.ajax({
@@ -407,10 +411,15 @@ $(document).ready(function() {
         });
       }
     },
+    "bAutoWidth" : false,
     "aoColumnDefs": [
-      {"bSearchable": true, "bVisible": false, "aTargets": [ 6 ]},
-      {"sWidth": "7px", "bSortable": false, "aTargets": [ 0 ]},
-      {"bSortable":false, "aTargets":[5]}
+      {"sWidth": "23px", "bSortable": false, "aTargets": [ 0 ]},
+      {"sWidth": "20%", "aTargets":[1]},
+      {"sWidth": "30%", "aTargets":[2]},
+      {"sWidth": "20%", "aTargets":[3]},
+      {"sWidth": "20%", "aTargets":[4]},
+      {"sWidth": "10%", "aTargets":[5]},
+      {"bSearchable": true, "bVisible": false, "aTargets": [ 6 ]}
     ]
   }).fnFilterOnReturn();
 
