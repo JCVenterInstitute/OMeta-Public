@@ -186,4 +186,16 @@ public class CommonTool {
         }
         return filtered;
     }
+
+    public static void sortEventMetaAttributeByOrder(List<EventMetaAttribute> emaList) {
+        Collections.sort(emaList, new Comparator<EventMetaAttribute>() {
+            @Override
+            public int compare(EventMetaAttribute o1, EventMetaAttribute o2) {
+                return o1.getOrder() == null && o2.getOrder() == null ? 0
+                        : o1.getOrder() == null ? -1
+                        : o2.getOrder() == null ? 1
+                        : o1.getOrder().compareTo(o2.getOrder());
+            }
+        });
+    }
 }

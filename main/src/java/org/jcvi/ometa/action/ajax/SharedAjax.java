@@ -196,15 +196,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
             } else if ("ea".equals(type)) { //attribute for an event
                 List<EventMetaAttribute> emaList = readPersister.getEventMetaAttributes(projectName, eventName);
                 emaList = CommonTool.filterActiveEventMetaAttribute(emaList);
-                Collections.sort(emaList, new Comparator<EventMetaAttribute>() {
-                    @Override
-                    public int compare(EventMetaAttribute o1, EventMetaAttribute o2) {
-                        return o1.getOrder() == null && o2.getOrder() == null ? 0
-                                : o1.getOrder() == null ? -1
-                                : o2.getOrder() == null ? 1
-                                : o1.getOrder().compareTo(o2.getOrder());
-                    }
-                });
+                CommonTool.sortEventMetaAttributeByOrder(emaList);
                 aaData = emaList;
             } else if ("ces".equals(type)) { //Change Event Status
                 Editor editor = new Editor();

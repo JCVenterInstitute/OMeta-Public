@@ -30,6 +30,7 @@ import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.model.web.EventMetaAttributeContainer;
 import org.jcvi.ometa.model.web.MetadataSetupReadBean;
 import org.jcvi.ometa.stateless_session_bean.ForbiddenResourceException;
+import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.PresentationActionDelegate;
 import org.jcvi.ometa.utils.UploadActionDelegate;
@@ -395,15 +396,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction {
                     emas = new ArrayList<EventMetaAttribute>(emas.size());
                     for(String et : groupedList.keySet()) {
                         List<EventMetaAttribute> sortedList = groupedList.get(et);
-                        Collections.sort(sortedList, new Comparator<EventMetaAttribute>() {
-                            @Override
-                            public int compare(EventMetaAttribute o1, EventMetaAttribute o2) {
-                                return o1.getOrder() == null && o2.getOrder() == null ? 0
-                                        : o1.getOrder() == null ? -1
-                                        : o2.getOrder() == null ? 1
-                                        : o1.getOrder().compareTo(o2.getOrder());
-                            }
-                        });
+                        CommonTool.sortEventMetaAttributeByOrder(sortedList);
                         emas.addAll(sortedList);
                     }
 
