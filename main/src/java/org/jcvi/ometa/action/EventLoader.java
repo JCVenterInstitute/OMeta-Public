@@ -129,13 +129,17 @@ public class EventLoader extends ActionSupport {
                 if (jobType.equals("insert")) { //loads single event
                     tx = (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
                     tx.begin();
-                    psewt.loadAll(null, this.createMultiLoadParameter(projectName, loadingProject, loadingSample, beanList));
+                    MultiLoadParameter loadParameter = new MultiLoadParameter();
+                    psewt.loadAll(null, this.createMultiLoadParameter(loadParameter, projectName, loadingProject, loadingSample, beanList));
                     this.reset();
 
                     addActionMessage("Event has been loaded successfully.");
                 } else if(jobType.equals("grid")) { //loads multiple events from grid view
                     tx = (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
                     tx.begin();
+
+                    MultiLoadParameter loadParameter = new MultiLoadParameter();
+
                     for(GridBean gBean : gridList) {
                         if(gBean!=null) {
                             if(isProjectRegistration && gBean.getProjectName()!=null && gBean.getProjectPublic()!=null) {
@@ -157,20 +161,23 @@ public class EventLoader extends ActionSupport {
                             }
                             List<FileReadAttributeBean> fBeanList = gBean.getBeanList();
                             if(fBeanList!=null && fBeanList.size()>0) {
-                                psewt.loadAll(null, this.createMultiLoadParameter(projectName, loadingProject,  loadingSample, fBeanList));
+                                this.createMultiLoadParameter(loadParameter, projectName, loadingProject,  loadingSample, fBeanList);
                             }
                         }
                     }
+
+                    psewt.loadAll(null, loadParameter);
+
                     this.reset();
                     addActionMessage("Events have been loaded successfully.");
                 } else if (jobType.equals("file")) { //loads data from a CSV file to grid view
-                    if(!this.getDataTemplate().canRead()) {
+                    if(!this.dataTemplate.canRead()) {
                         throw new Exception("Error in reading the file.");
                     } else {
                         try {
                             TemplatePreProcessingUtils templateUtil = new TemplatePreProcessingUtils();
                             gridList = templateUtil.parseEventFile(
-                                    this.getDataTemplateFileName(), this.getDataTemplate(),
+                                    this.dataTemplateFileName, this.dataTemplate,
                                     projectName, isProjectRegistration, isSampleRegistration
                             );
                             jobType = "grid";
@@ -248,6 +255,9 @@ public class EventLoader extends ActionSupport {
 
                 if(jobType != null && jobType.equals("grid") && this.dataTemplate != null) {
                     this.dataTemplate.delete();
+                    this.dataTemplate = null;
+                    this.dataTemplateContentType = null;
+                    this.dataTemplateFileName = null;
                 }
             } catch(Exception ex) {
                 ex.printStackTrace();
@@ -257,9 +267,8 @@ public class EventLoader extends ActionSupport {
         return rtnVal;
     }
 
-    private MultiLoadParameter createMultiLoadParameter(String projectName, Project project, Sample sample, List<FileReadAttributeBean> frab) throws Exception {
-
-        MultiLoadParameter loadParameter = new MultiLoadParameter();
+    private MultiLoadParameter createMultiLoadParameter(MultiLoadParameter loadParameter, String projectName, Project project, Sample sample, List<FileReadAttributeBean> frab)
+            throws Exception {
         boolean isSampleRegistration = false;
         boolean isProjectRegistration = false;
 
@@ -471,7 +480,7 @@ public class EventLoader extends ActionSupport {
     }
 
     private String getUnknownErrorMessage() {
-        return "Unknown error uploading file " + this.getDataTemplateFileName();
+        return "Unknown error uploading file " + this.dataTemplateFileName;
     }
 
     public String getProjectName() {
@@ -594,24 +603,12 @@ public class EventLoader extends ActionSupport {
         this.downloadContentType = downloadContentType;
     }
 
-    public String getDataTemplateContentType() {
-        return dataTemplateContentType;
-    }
-
     public void setDataTemplateContentType(String dataTemplateContentType) {
         this.dataTemplateContentType = dataTemplateContentType;
     }
 
-    public String getDataTemplateFileName() {
-        return dataTemplateFileName;
-    }
-
     public void setDataTemplateFileName(String dataTemplateFileName) {
         this.dataTemplateFileName = dataTemplateFileName;
-    }
-
-    public File getDataTemplate() {
-        return dataTemplate;
     }
 
     public void setDataTemplate(File dataTemplate) {
