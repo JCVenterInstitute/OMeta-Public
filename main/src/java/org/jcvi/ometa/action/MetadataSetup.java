@@ -22,6 +22,7 @@
 package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.Preparable;
 import org.apache.log4j.Logger;
 import org.jcvi.ometa.action.ajax.IAjaxAction;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
@@ -49,7 +50,7 @@ import java.util.*;
  * Date: 12/7/11
  * Time: 2:08 PM
  */
-public class MetadataSetup extends ActionSupport implements IAjaxAction {
+public class MetadataSetup extends ActionSupport implements IAjaxAction, Preparable {
     private Logger logger = Logger.getLogger(MetadataSetup.class);
 
     private ProjectSampleEventPresentationBusiness psept;
@@ -84,6 +85,11 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction {
     private void getReadEJB() {
         PresentationActionDelegate pdeledate = new PresentationActionDelegate();
         psept = pdeledate.initializeEjb(logger, psept);
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        //may need to split ajax operations from action
     }
 
     public String process() {
