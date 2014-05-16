@@ -86,11 +86,7 @@ public class TemplatePreProcessingUtils {
                 csvContents.append(",");
                 comments.append(",");
             }
-            String attributeHeader = detail.getName();
-            if(detail.getLabel() != null) {
-                attributeHeader = detail.getLabel() + "[" + attributeHeader + "]";
-            }
-            csvContents.append(attributeHeader);
+            csvContents.append(detail.getDisplayHeader());
             comments.append("\"" + this.getComment(detail) + (detail.hasOptions() ? detail.getOptionsString() : "") + "\"");
             i++;
         }
@@ -103,9 +99,7 @@ public class TemplatePreProcessingUtils {
         return IOUtils.toInputStream(csvContents.toString());
     }
 
-    private InputStream createExcel(
-            List<HeaderDetail> attributes, boolean isProjectRegistration,
-            String projectName, String sampleName, String eventName) throws Exception {
+    private InputStream createExcel(List<HeaderDetail> attributes, boolean isProjectRegistration, String projectName, String sampleName, String eventName) throws Exception {
         Workbook wb = new HSSFWorkbook();
         //CreationHelper createHelper = wb.getCreationHelper();
         Sheet sheet = wb.createSheet(eventName);
@@ -129,7 +123,7 @@ public class TemplatePreProcessingUtils {
         Cell cell = null;
         for(HeaderDetail detail : attributes) {
             cell = attributeRow.createCell(headerIndex);
-            cell.setCellValue(detail.getName());
+            cell.setCellValue(detail.getDisplayHeader());
             cell.setCellStyle(boldCS);
 
             cell = commentRow.createCell(headerIndex++);
@@ -520,5 +514,13 @@ public class TemplatePreProcessingUtils {
 
         public String getLabel() { return label; }
         public void setLabel(String label) { this.label = label; }
+
+        public String getDisplayHeader() { //append square brackets wrapped attribute name with a label
+            String displayHeader = this.getName();
+            if(this.getLabel() != null && !this.getLabel().isEmpty()) {
+                displayHeader = this.getLabel() + "[" + displayHeader + "]";
+            }
+            return displayHeader;
+        }
     }
 }
