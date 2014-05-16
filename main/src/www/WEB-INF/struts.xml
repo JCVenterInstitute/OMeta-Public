@@ -29,6 +29,7 @@
     <constant name="struts.action.extension" value="action" />
     <constant name="struts.devMode" value="true" />
     <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+    <constant name="struts.multipart.maxSize" value="5242880" />
 
     <package name="productionStatus" namespace="/" extends="struts-default">
 
@@ -168,6 +169,7 @@
             <result name="forbidden">/JSP/EventLoader.jsp</result>
             <result name="success">/JSP/EventLoader.jsp</result>
             <result name="error">/JSP/EventLoader.jsp</result>
+            <result name="input" type="redirectAction">error</result>
             <result name="FILE_DOWNLOAD" type="stream">
                 <param name="contentType">application/${downloadContentType}</param>
                 <param name="contentDisposition">attachment;filename="${downloadFileName}"</param>
@@ -260,7 +262,7 @@
                 <param name="inputName">fileInputStream</param>
                 <param name="bufferSize">2048</param>
             </result>
-            <result name="error">/JSP/error.jsp</result>
+            <result name="error" type="redirectAction">error</result>
         </action>
 
         <!-- Some forwarding actions, to pump login/logout through the struts2 'treatment' -->
@@ -280,6 +282,9 @@
             <result>/JSP/securedIndex.jsp</result>
         </action>
         <action name="unsecureIndex">
+            <result>/JSP/index.jsp</result>
+        </action>
+        <action name="error">
             <result>/JSP/index.jsp</result>
         </action>
     </package>

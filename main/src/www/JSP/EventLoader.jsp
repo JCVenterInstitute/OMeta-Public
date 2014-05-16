@@ -40,7 +40,7 @@
 
 <body>
 
-<s:form id="eventLoaderPage" name="eventLoaderPage" namespace="/" action="eventLoader" method="post" theme="simple" enctype="multipart/form-data">
+<s:form id="eventLoaderPage" name="eventLoaderPage" namespace="/" action="eventLoader" method="post" theme="simple">
   <s:hidden name="jobType" id="jobType"/>
   <s:hidden name="label" id="label"/>
   <s:hidden name="eventName" id="eventName" />
@@ -547,6 +547,9 @@ var button = {
     $("#sampleName").val(utils.getSampleName());
     $("#eventName").val(utils.getEventName());
     $("#jobType").val(type);
+    if(type === 'file') {
+      $("form#eventLoaderPage").attr("enctype", "multipart/form-data");
+    }
     $('form#eventLoaderPage').submit();
   },
   add_event: function(pn,en,dict) { //add event to grid view
