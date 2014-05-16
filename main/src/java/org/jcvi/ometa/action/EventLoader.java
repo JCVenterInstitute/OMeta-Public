@@ -22,6 +22,7 @@
 package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
@@ -51,7 +52,7 @@ import java.util.*;
  * Time: 9:27 AM
  * To change this template use File | Settings | File Templates.
  */
-public class EventLoader extends ActionSupport {
+public class EventLoader extends ActionSupport implements Preparable {
     private ReadBeanPersister readPersister;
     private ProjectSampleEventWritebackBusiness psewt;
 
@@ -103,6 +104,20 @@ public class EventLoader extends ActionSupport {
 
         UploadActionDelegate udelegate = new UploadActionDelegate();
         psewt = udelegate.initializeBusinessObject(logger, psewt);
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        //get project list for the drop down box
+        List<String> projectNameList = new ArrayList<String>();
+        if (projectNames == null || projectNames.equals("")) {
+            projectNameList.add("ALL");
+        } else if (projectNames.contains(",")) {
+            projectNameList.addAll(Arrays.asList(projectNames.split(",")));
+        } else {
+            projectNameList.add(projectNames);
+        }
+        projectList = readPersister.getProjects(projectNameList);
     }
 
     /**
@@ -238,17 +253,6 @@ public class EventLoader extends ActionSupport {
             rtnVal = ERROR;
         } finally {
             try {
-                //get project list for the drop down box
-                List<String> projectNameList = new ArrayList<String>();
-                if (projectNames == null || projectNames.equals("")) {
-                    projectNameList.add("ALL");
-                } else if (projectNames.contains(",")) {
-                    projectNameList.addAll(Arrays.asList(projectNames.split(",")));
-                } else {
-                    projectNameList.add(projectNames);
-                }
-                projectList = readPersister.getProjects(projectNameList);
-
                 if(tx !=null && tx.getStatus() != Status.STATUS_NO_TRANSACTION) {
                     tx.commit();
                 }
