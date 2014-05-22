@@ -236,6 +236,7 @@
         <!--<li><a href="metadataSetup.action?type=p">Project Metadata Setup</a></li>
      <li><a href="metadataSetup.action?type=s">Sample Metadata Setup</a></li>-->
         <li><a href="metadataSetup.action?type=e">Event Metadata Setup</a></li>
+        <li><a href="actorRole.action">Actor/Role Management</a></li>
       </ul>
     </li>
     <li id="event_li"><a href="#">Project Events</a>

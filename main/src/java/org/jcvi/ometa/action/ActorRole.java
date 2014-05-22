@@ -7,6 +7,7 @@ import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.Actor;
 import org.jcvi.ometa.model.ActorGroup;
+import org.jcvi.ometa.model.Group;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.UploadActionDelegate;
 import org.jtc.common.util.property.PropertyHelper;
@@ -28,6 +29,7 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
     private Logger logger = Logger.getLogger(ActorRole.class);
 
     private List<Actor> actors;
+    private List<Group> groups;
     private Long actorId;
     private String groupNames;
 
@@ -56,6 +58,7 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
                 addActionMessage("Actor Roles have been updated.");
             } else {
                 actors = readPersister.getAllActor();
+                groups = readPersister.getAllGroup();
             }
         } catch (Exception ex) {
             rtnVal = ERROR;
@@ -89,8 +92,8 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
         return actors;
     }
 
-    public void setActors(List<Actor> actors) {
-        this.actors = actors;
+    public List<Group> getGroups() {
+        return groups;
     }
 
     public Long getActorId() {
