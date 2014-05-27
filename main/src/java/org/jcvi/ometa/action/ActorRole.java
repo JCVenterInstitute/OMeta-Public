@@ -16,8 +16,7 @@ import javax.naming.InitialContext;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * User: movence
@@ -30,10 +29,15 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
 
     private List<Actor> actors;
     private List<Group> groups;
+
     private Long actorId;
-    private String groupNames;
+    private List<String> groupIds;
 
     private List<ActorGroup> actorGroups;
+
+    private List<String> roleTypes;
+
+    private String errorMsg;
 
     private ReadBeanPersister readPersister;
     ProjectSampleEventWritebackBusiness psewt;
@@ -47,12 +51,34 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
         String rtnVal = INPUT;
         UserTransaction tx = null;
         try {
-            if(actorId != null && groupNames != null && !groupNames.isEmpty()) {
+            if(actorId != null && groupIds != null && !groupIds.isEmpty()) {
                 tx = (UserTransaction)new InitialContext().lookup("java:comp/UserTransaction");
                 tx.begin();
 
                 UploadActionDelegate udelegate = new UploadActionDelegate();
                 psewt = udelegate.initializeBusinessObject(logger, psewt);
+
+                List<ActorGroup> currentGroups = readPersister.getActorGroup(actorId);
+                if(currentGroups.size() != groupIds.size()) {
+                    psewt.deleteActorGroup(currentGroups);
+                }
+
+                List<Group> availableGroups = readPersister.getAllGroup();
+                Map<Long, Group> availableGroupsMap = new HashMap<Long, Group>(availableGroups.size());
+                for(Group group : availableGroups) {
+                    availableGroupsMap.put(group.getGroupId(), group);
+                }
+
+                List<ActorGroup> newActorGroups = new ArrayList<ActorGroup>();
+                for(String id : groupIds) {
+                    Long groupId = Long.parseLong(id);
+                    ActorGroup actorGroup = new ActorGroup();
+                    actorGroup.setActorId(actorId);
+                    actorGroup.setGroup(availableGroupsMap.get(groupId));
+                    actorGroup.setGroupId(groupId);
+                    newActorGroups.add(actorGroup);
+                }
+                psewt.loadActorGroup(newActorGroups);
 
                 rtnVal = SUCCESS;
                 addActionMessage("Actor Roles have been updated.");
@@ -84,6 +110,13 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
     public String runAjax() {
         String rtnVal = SUCCESS;
 
+        try {
+            if(actorId != null && actorId != 0) {
+                actorGroups = readPersister.getActorGroup(actorId);
+            }
+        } catch (Exception ex) {
+            errorMsg = "Error while getting actor roles";
+        }
 
         return rtnVal;
     }
@@ -104,12 +137,12 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
         this.actorId = actorId;
     }
 
-    public String getGroupNames() {
-        return groupNames;
+    public List<String> getGroupIds() {
+        return groupIds;
     }
 
-    public void setGroupNames(String groupNames) {
-        this.groupNames = groupNames;
+    public void setGroupIds(List<String> groupIds) {
+        this.groupIds = groupIds;
     }
 
     public List<ActorGroup> getActorGroups() {
@@ -118,5 +151,13 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
 
     public void setActorGroups(List<ActorGroup> actorGroups) {
         this.actorGroups = actorGroups;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
+    public List<String> getRoleTypes() {
+        return roleTypes;
     }
 }

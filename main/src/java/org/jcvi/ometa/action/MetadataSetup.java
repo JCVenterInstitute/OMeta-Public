@@ -546,7 +546,13 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
         dataTypes.addAll(modelValidator.getValidDataTypes());
 
         types = new ArrayList<String>();
-        types.addAll(modelValidator.getValidLookupValueTypes());
+        if(type.equals("gr")) { //actor group lookup value
+            types.add(ModelValidator.VIEW_GROUP_LV_TYPE_NAME);
+            types.add(ModelValidator.EDIT_GROUP_LV_TYPE_NAME);
+        } else {
+            types.addAll(modelValidator.getValidLookupValueTypes());
+        }
+
         return SUCCESS;
     }
 

@@ -127,6 +127,25 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
     @Override
     @WebMethod
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void deleteActorGroup(List<ActorGroup> actorGroups) throws Exception {
+        BeanPersistenceFacadeI beanPersister = getBeanPersister();
+        beanPersister.open();
+        try {
+            beanPersister.deleteActorGroup(actorGroups);
+        } catch (Exception ex) {
+            logger.error(ex);
+            beanPersister.error();
+            throw ex;
+        } finally {
+            beanPersister.close();
+        }
+    }
+
+    @ExcludeClassInterceptors
+    @ExcludeDefaultInterceptors
+    @Override
+    @WebMethod
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void loadGroup(Group group) throws Exception {
         BeanPersistenceFacadeI beanPersister = getBeanPersister();
         beanPersister.open();

@@ -64,5 +64,7 @@ public interface BeanPersistenceFacadeI {
 
     void writeBackActorGroup(List<ActorGroup> actorGroups) throws Exception;
 
+    void deleteActorGroup(List<ActorGroup> actorgroups) throws Exception;
+
     void writeBackGroup(Group group) throws Exception;
 }

@@ -183,6 +183,17 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
         }
     }
 
+    public void deleteActorGroup(List<ActorGroup> actorGroups) throws Exception {
+        try {
+            ActorDAO actorDAO = daoFactory.getActorDAO();
+            actorDAO.deleteActorGroup(actorGroups, session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        }
+    }
+
 
     /**
      * Save things to be referenced by attributes later.
