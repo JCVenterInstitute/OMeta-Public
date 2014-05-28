@@ -242,8 +242,8 @@
         </action>
         <action name="actorRole" class="org.jcvi.ometa.action.ActorRole">
             <result name="input">/JSP/ActorRole.jsp</result>
-            <result name="success">/JSP/AddActor.jsp</result>
-            <result name="error">/JSP/AddActor.jsp</result>
+            <result name="success">/JSP/ActorRole.jsp</result>
+            <result name="error">/JSP/ActorRole.jsp</result>
         </action>
         <action name="help" class="org.jcvi.ometa.action.Help" method="process">
             <result name="input">/JSP/help.jsp</result>
@@ -311,7 +311,7 @@
             <result name="success" type="json"/>
             <result name="error" type="json"/>
         </action>
-        <action name="actorRole" class="org.jcvi.ometa.action.ActorRole" method="runAjax">
+        <action name="actorRoleAjax" class="org.jcvi.ometa.action.ActorRole" method="runAjax">
             <result name="success" type="json"/>
             <result name="error" type="json"/>
         </action>

@@ -72,6 +72,9 @@
             <url-pattern>sampleWithEventLoader.action</url-pattern>
             <url-pattern>/JSP/SampleWithEventLoader.jsp</url-pattern>
 
+            <url-pattern>actorRole.action</url-pattern>
+            <url-pattern>/JSP/ActorRole.jsp</url-pattern>
+
         </web-resource-collection>
         <auth-constraint>
             <role-name>pstuser</role-name>

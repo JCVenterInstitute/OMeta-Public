@@ -47,11 +47,18 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
         readPersister = new ReadBeanPersister(props);
     }
 
+    public ActorRole(ReadBeanPersister readPersister) {
+        this.readPersister = readPersister;
+    }
+
     public String execute() {
         String rtnVal = INPUT;
         UserTransaction tx = null;
         try {
-            if(actorId != null && groupIds != null && !groupIds.isEmpty()) {
+            actors = readPersister.getAllActor();
+            groups = readPersister.getAllGroup();
+
+            if(actorId != null && groupIds != null) {
                 tx = (UserTransaction)new InitialContext().lookup("java:comp/UserTransaction");
                 tx.begin();
 
@@ -59,8 +66,16 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
                 psewt = udelegate.initializeBusinessObject(logger, psewt);
 
                 List<ActorGroup> currentGroups = readPersister.getActorGroup(actorId);
-                if(currentGroups.size() != groupIds.size()) {
-                    psewt.deleteActorGroup(currentGroups);
+
+                List<Long> currentGroupsList = new ArrayList<Long>(currentGroups.size());
+                List<ActorGroup> removedActorGroups = new ArrayList<ActorGroup>();
+
+                for(ActorGroup actorGroup : currentGroups) {
+                    if(!groupIds.contains(Long.toString(actorGroup.getGroupId()))) { //actor groups to be removed
+                        removedActorGroups.add(actorGroup);
+                    } else {
+                        currentGroupsList.add(actorGroup.getGroupId());
+                    }
                 }
 
                 List<Group> availableGroups = readPersister.getAllGroup();
@@ -72,20 +87,26 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
                 List<ActorGroup> newActorGroups = new ArrayList<ActorGroup>();
                 for(String id : groupIds) {
                     Long groupId = Long.parseLong(id);
-                    ActorGroup actorGroup = new ActorGroup();
-                    actorGroup.setActorId(actorId);
-                    actorGroup.setGroup(availableGroupsMap.get(groupId));
-                    actorGroup.setGroupId(groupId);
-                    newActorGroups.add(actorGroup);
+                    if(!currentGroupsList.contains(groupId)) {
+                        ActorGroup actorGroup = new ActorGroup();
+                        actorGroup.setActorId(actorId);
+                        actorGroup.setGroup(availableGroupsMap.get(groupId));
+                        actorGroup.setGroupId(groupId);
+                        newActorGroups.add(actorGroup);
+                    }
                 }
-                psewt.loadActorGroup(newActorGroups);
+
+                if(removedActorGroups.size() > 0) {
+                    psewt.deleteActorGroup(removedActorGroups);
+                }
+                if(newActorGroups.size() > 0) {
+                    psewt.loadActorGroup(newActorGroups);
+                }
 
                 rtnVal = SUCCESS;
                 addActionMessage("Actor Roles have been updated.");
-            } else {
-                actors = readPersister.getAllActor();
-                groups = readPersister.getAllGroup();
             }
+
         } catch (Exception ex) {
             rtnVal = ERROR;
             try {
@@ -115,6 +136,7 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
                 actorGroups = readPersister.getActorGroup(actorId);
             }
         } catch (Exception ex) {
+            ex.printStackTrace();
             errorMsg = "Error while getting actor roles";
         }
 

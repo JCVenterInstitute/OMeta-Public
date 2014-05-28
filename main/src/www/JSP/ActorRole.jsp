@@ -19,7 +19,7 @@
 </head>
 
 <body>
-<s:form id="addActorPage" name="addActorPage" namespace="/" action="addActor" method="post" theme="simple">
+<s:form id="actorRolePage" name="actorRolePage" namespace="/" action="actorRole" method="post" theme="simple">
   <s:include value="TopMenu.jsp" />
   <div id="HeaderPane" style="margin:15px 0 0 30px;">
     <table cellpadding="0" cellspacing="0" border="0">
@@ -54,7 +54,7 @@
               <td style="padding-left:10px" class="ui-combobox" width="450px">
                 <s:select id="groupSelect"
                             list="groups" name="groupIds"
-                            listValue="groupNameLookupValue.name" listKey="groupNameLookupValue.lookupValueId" 
+                            listValue="groupNameLookupValue.name" listKey="groupId" 
                             multiple="true" required="true" style="width:400px;height:19px;
                             "/>
               </td>
@@ -64,7 +64,7 @@
       </div>
     </div>
     <div id="buttonDiv" style="margin:15px 10px 5px 0;width:100%;">
-      <input type="button" onclick="doSubmit();" id="submit" value="Setup Role"/>
+      <input type="button" onclick="submit();" id="setup" value="Setup Role"/>
       <input type="button" onclick="popup();" id="addRole" value="Add Actor Role"/>
       <input type="button" onclick="doClear();" value="Clear" />
     </div>
@@ -77,9 +77,9 @@
   (function() {
     utils.error.check();
     $('#actorSelect').chosen().change(function() {
+      $("#groupSelect option:selected").removeAttr("selected");
       var selectedUser = $(this).find("option:selected");
       makeAjax(selectedUser.val());
-      console.log(selectedUser.text(), selectedUser.val());
     });
     $('#groupSelect').chosen();
   })();
@@ -90,7 +90,7 @@
 
   function makeAjax(actorId, cb) {
     $.ajax({
-      url: 'actorRole.action',
+      url: 'actorRoleAjax.action',
       cache: false,
       async: true,
       data: 'actorId='+parseInt(actorId),
@@ -101,7 +101,14 @@
           if(cb) {
             cb(res);
           } else {
-            //preselect current actor's roles
+            var actorGroups = res.actorGroups;
+            if(actorGroups) {
+              var $groupOptions = $('#groupSelect option');
+              $.each(actorGroups, function(i, ag) {
+                $('#groupSelect option[value="' + ag.groupId + '"]').attr('selected', 'selected');
+              })
+            }
+
             $("#groupSelect").trigger("chosen:updated");
           }
         }
@@ -120,7 +127,7 @@
     });  
   }
 
-  function doSubmit() {
+  function submit() {
     var actorId = $('#actorSelect').val();
     if(actorId && actorId != 0) {
       $('form').submit();
