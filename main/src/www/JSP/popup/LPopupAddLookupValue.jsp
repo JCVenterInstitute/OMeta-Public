@@ -27,64 +27,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; {$charset|default:'charset=utf-8'}" />
-  <script>
-    var _popup = {
-      init: function(which) {
-        var type = which==='et' ? 'Event Type' : 'Attribute';
-        $('#popupHeader').append(type);
-        $('#popupLegend').prepend(type)
-        $('#lvType').val(type);
-        $('#lvDataType').val('string');
-
-        if(which==='et') {
-          $('#dataTypeSelectTr').hide();
-        }
-        utils.error.remove();
-      },
-      add: function() {
-        if(!$('input[name="lvName"]').val()) {
-          alert("Name field is empty!");
-          return;
-        } else {
-          $.ajax({
-            url: 'metadataSetupAjax.action',
-            cache: false,
-            async: false,
-            data: 'type=a_lv&lvName='+$('#lvName').val()+'&lvType='+$('#lvType').val()+'&lvDataType='+$('#lvDataType').val(),
-            success: function(res){
-              if(res.dataMap) {
-                var dataMap = res.dataMap;
-
-                if(dataMap.isError && dataMap.isError === true) {
-                  var $errorMsg = $('<div id="errorMsg" style="clear:both;" class="alert_error" onclick="_popup.closeError()">' +
-                    dataMap.errorMsg + 
-                    //'<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' +
-                    '</div>');
-                  $('fieldset').append($errorMsg);   
-                } else {
-                  var newOption = vs.vvoption.replace(/\\$v\\$/g, res.lvName);
-                  if(res.lvType==='Attribute') {
-                    if(typeof emaOptions!='undefined' && emaOptions.length>0) {
-                      emaOptions+=newOption;
-                    } else if(typeof pmaOptions!='undefined' && emaOptions.length>0) {
-                      pmaOptions+=newOption;
-                    }
-                  } else if(res.lvType==='Event Type' && typeof etOptions==='string' && etOptions.length>0) {
-                    etOptions+=newOption;
-                  }
-                  $.closePopupLayer('LPopupAddLookupValue');
-                }
-              }
-            }
-          });
-        }
-      },
-      closeError: function() {
-        $('#errorMsg').remove();
-      }
-    }
-    $(document).ready(_popup.init('${type}'));
-  </script>
 </head>
 
 <body>
@@ -93,7 +35,7 @@
   <div class="popup">
     <div class="popup-header">
       <h2 id="popupHeader">Add </h2>
-      <a href="#" onclick="$.closePopupLayer('LPopupAddLookupValue')" title="Close" class="close-link">Close</a>
+      <a href="#" onclick="$.closePopupLayer('LPopupAddLookupValue');" title="Close" class="close-link">Close</a>
       <br clear="both" />
     </div>
     <div style="padding:10px;">
@@ -102,7 +44,7 @@
         <div style="margin:5px 5px 5px 5px;">
           <table>
             <tr>
-              <td><strong>Type</strong></td><td><s:select list="types" name="lvType" id="lvType" disabled="true"/></td>
+              <td><strong>Type</strong></td><td><s:select list="types" name="lvType" id="lvType"/></td>
             </tr>
             <tr class="gappedTr">
               <td><strong>Name</strong></td><td><s:textfield id="lvName" name="lvName" size="30"/></td>
@@ -122,5 +64,71 @@
     </div>
   </div>
 </s:form>
+<script>
+  function initPopup(which) {
+    var type = which==='et' ? 'Event Type' : which==='gr' ? 'Actor Group' : 'Attribute';
+    $('#popupHeader').append(type);
+    $('#popupLegend').prepend(type);
+    $('#lvDataType').val('string');
+
+    if(which === 'et' || which === 'a') { //preselect lookup value type
+      $('#lvType').val(type).attr('disabled', 'disabled');
+    }
+
+    if(which === 'et' || which === 'gr') { //hide lookup value datatype for Event Type and Actor Group
+      $('#dataTypeSelectTr').hide();
+    }
+    
+    utils.error.remove();
+  }
+
+  var _popup = {
+    add: function() {
+      if(!$('input[name="lvName"]').val()) {
+        alert("Name field is empty!");
+        return;
+      } else {
+        $.ajax({
+          url: 'metadataSetup.action',
+          cache: false,
+          async: false,
+          data: 'type=a_lv&lvName='+$('#lvName').val()+'&lvType='+$('#lvType').val()+'&lvDataType='+$('#lvDataType').val(),
+          success: function(res){
+            if(res.dataMap) {
+              var dataMap = res.dataMap;
+
+              if(dataMap.isError && dataMap.isError === true) {
+                var $errorMsg = $('<div id="errorMsg" style="clear:both;" class="alert_error" onclick="_popup.closeError()">' +
+                  dataMap.errorMsg + 
+                  //'<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' +
+                  '</div>');
+                $('fieldset').append($errorMsg);   
+              } else {
+                var newOption = vs.vvoption.replace(/\\$v\\$/g, res.lvName);
+                if(res.lvType==='Attribute') {
+                  if(typeof emaOptions!='undefined' && emaOptions.length>0) {
+                    emaOptions+=newOption;
+                  } else if(typeof pmaOptions!='undefined' && emaOptions.length>0) {
+                    pmaOptions+=newOption;
+                  }
+                } else if(res.lvType==='Event Type' && typeof etOptions==='string' && etOptions.length>0) {
+                  etOptions+=newOption;
+                }
+                $.closePopupLayer('LPopupAddLookupValue');
+              }
+            }
+          }
+        });
+      }
+    },
+    closeError: function() {
+      $('#errorMsg').remove();
+    }
+  };
+
+  (function() {
+    initPopup('${type}');
+  })();
+</script>
 </body>
 </html>

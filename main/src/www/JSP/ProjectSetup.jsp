@@ -120,10 +120,10 @@
         </table>
       </div>
       <s:div id="submitDiv" cssStyle="margin:15px 10px 5px 0;width:100%;">
-        <input type="button" onclick="javascript:loadProject();" id="projectLoadButton" value="Load Project"/>
-        <input type="button" onclick="javascript:addAttribute();" id="attributeAddButton" value="Add Project Attribute" />
-        <input type="button" onclick="javascript:newAttribute('a');" id="newAttributeButton" value="New Attribute" />
-        <input type="button" onclick="javascript:doClear();" value="Clear" />
+        <input type="button" onclick="loadProject();" id="projectLoadButton" value="Load Project"/>
+        <input type="button" onclick="addAttribute();" id="attributeAddButton" value="Add Project Attribute" />
+        <input type="button" onclick="newAttribute('a');" id="newAttributeButton" value="New Attribute" />
+        <input type="button" onclick="doClear();" value="Clear" />
       </s:div>
     </div>
   </div>
