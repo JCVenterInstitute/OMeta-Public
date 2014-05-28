@@ -157,7 +157,7 @@ public class ActorDAO extends HibernateDAO {
     }
     public void deleteActorGroup(ActorGroup ag, Session session) throws DAOException {
         try {
-            session.delete(ag);
+            session.delete(session.contains(ag) ? ag : session.merge(ag));
         } catch(Exception ex) {
             throw new DAOException(ex);
         }
@@ -167,7 +167,7 @@ public class ActorDAO extends HibernateDAO {
         List<ActorGroup> groups = new ArrayList<ActorGroup>();
         try {
             Criteria crit = session.createCriteria(ActorGroup.class);
-            crit.add( Restrictions.eq( "actgrp_actor_id", userId ) );
+            crit.add( Restrictions.eq( "actorId", userId ) );
             List modelObjects = crit.list();
             if (modelObjects != null && modelObjects.size() > 0) {
                 for(int i = 0;i < modelObjects.size();i++) {
