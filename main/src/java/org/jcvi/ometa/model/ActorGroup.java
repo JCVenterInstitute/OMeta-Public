@@ -22,6 +22,7 @@
 package org.jcvi.ometa.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -33,7 +34,7 @@ import java.util.Date;
 
 @Entity
 @Table(name="actor_group")
-public class ActorGroup {
+public class ActorGroup implements Serializable {
     private Long actorGroupId;
     private Long actorId;
     private Long groupId;

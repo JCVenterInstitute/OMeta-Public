@@ -31,10 +31,11 @@ package org.jcvi.ometa.model;
  */
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name="groups")
-public class Group {
+public class Group implements Serializable {
     private Long groupId;
     private Long nameLookupId;
     private LookupValue groupNameLookupValue;
