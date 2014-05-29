@@ -158,11 +158,13 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
         }
     }
 
-    public void writeBackGroup(Group group) throws Exception {
+    public void writeBackGroups(List<Group> groups) throws Exception {
         try {
             GroupDAO groupDAO = daoFactory.getGroupDAO();
-            group.setGroupId(guidGetter.getGuid());
-            groupDAO.addGroup(group, session);
+            for(Group group : groups) {
+                group.setGroupId(guidGetter.getGuid());
+                groupDAO.addGroup(group, session);
+            }
         } catch (Exception ex) {
             sessionAndTransactionManager.rollBackTransaction();
             throw ex;

@@ -146,11 +146,11 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
     @Override
     @WebMethod
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
-    public void loadGroup(Group group) throws Exception {
+    public void loadGroups(List<Group> groups) throws Exception {
         BeanPersistenceFacadeI beanPersister = getBeanPersister();
         beanPersister.open();
         try {
-            beanPersister.writeBackGroup(group);
+            beanPersister.writeBackGroups(groups);
         } catch (Exception ex) {
             logger.error(ex);
             beanPersister.error();

@@ -40,7 +40,7 @@ public interface ProjectSampleEventWritebackBusiness {
     void loadActorGroup(List<ActorGroup> actorGroups) throws Exception;
     void deleteActorGroup(List<ActorGroup> actorGroups) throws Exception;
 
-    void loadGroup(Group group) throws Exception;
+    void loadGroups(List<Group> groups) throws Exception;
     /**
      * Implement this to load one+ files representing new projects.
      *
