@@ -445,20 +445,33 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                 ProjectSampleEventWritebackBusiness psewt = null;
                 psewt = udelegate.initializeBusinessObject(logger, psewt);
 
-                if(lvDataType!=null && lvName!=null && lvType!=null) {
+                if(lvDataType != null && lvName != null && lvType != null) {
                     String[] lvNames = lvName.split(",");
+                    boolean isGroupInsert = lvType.endsWith("Group");
+
                     List<LookupValue> lvList = new ArrayList<LookupValue>();
                     for(String name : lvNames) {
-                        if(name!=null && name.trim().length()>0) {
+                        if(name != null && name.trim().length() > 0) {
                             LookupValue lv = new LookupValue();
                             lv.setName(name.trim());
                             lv.setType(lvType);
                             lv.setDataType(lvDataType);
-
                             lvList.add(lv);
                         }
                     }
                     psewt.loadLookupValues(lvList);
+
+                    if(isGroupInsert && lvList.size() > 0) {
+                        List<Group> groups = new ArrayList<Group>(lvNames.length);
+                        for(LookupValue lv : lvList) {
+                            LookupValue loadedLookupValue = psept.getLookupValue(lv.getName(), lv.getType());
+                            Group group = new Group();
+                            group.setGroupNameLookupValue(loadedLookupValue);
+                            group.setNameLookupId(loadedLookupValue.getLookupValueId());
+                            groups.add(group);
+                        }
+                        psewt.loadGroups(groups);
+                    }
                 }
             } else if("g_all".equals(type)) {
                 Map<String, List> listMap = new HashMap<String, List>();
