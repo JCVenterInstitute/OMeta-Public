@@ -22,17 +22,16 @@
 <s:form id="actorRolePage" name="actorRolePage" namespace="/" action="actorRole" method="post" theme="simple">
   <s:include value="TopMenu.jsp" />
   <div id="HeaderPane" style="margin:15px 0 0 30px;">
-    <table cellpadding="0" cellspacing="0" border="0">
-      <tr><td class="panelHeader">Actor Role Management</td></tr>
-      <tr>
-        <td>
-          <div id="errorMessagesPanel" style="margin-top:15px;"></div>
-          <s:if test="hasActionErrors()">
-            <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
-          </s:if>
-        </td>
-      </tr>
-    </table>
+    <div class="panelHeader">Actor Role Management</div>
+    <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+    <s:if test="hasActionErrors()">
+      <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
+    </s:if>
+    <s:if test="hasActionMessages()">
+      <div class="alert_info" onclick="$('.alert_info').remove();">
+        <strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
+      </div>
+    </s:if>
   </div>
   <div id="middle_content_template">
     <div id="mainDiv">
@@ -76,11 +75,12 @@
 <script type="text/javascript">
   (function() {
     utils.error.check();
-    $('#actorSelect').chosen().change(function() {
-      $("#groupSelect option:selected").removeAttr("selected");
-      var selectedUser = $(this).find("option:selected");
-      makeAjax(selectedUser.val());
-    });
+    $('#actorSelect').combobox();
+    // $('#actorSelect').chosen().change(function() {
+    //   $("#groupSelect option:selected").removeAttr("selected");
+    //   var selectedUser = $(this).find("option:selected");
+    //   makeAjax(selectedUser.val());
+    // });
     $('#groupSelect').chosen();
   })();
 
@@ -117,6 +117,14 @@
         utils.error.add("Ajax Process has Failed.");
       }
     });
+  }
+
+  function comboBoxChanged(option, id) {
+    if(id === 'actorSelect') {
+      if(option && option.value !== 0) {
+        makeAjax(option.value);
+      }
+    } 
   }
 
   function popup() {

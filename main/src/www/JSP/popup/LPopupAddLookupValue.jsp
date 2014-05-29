@@ -89,7 +89,7 @@
         return;
       } else {
         $.ajax({
-          url: 'metadataSetup.action',
+          url: 'metadataSetupAjax.action',
           cache: false,
           async: false,
           data: 'type=a_lv&lvName='+$('#lvName').val()+'&lvType='+$('#lvType').val()+'&lvDataType='+$('#lvDataType').val(),
