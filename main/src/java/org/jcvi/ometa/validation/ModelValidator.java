@@ -155,7 +155,7 @@ public class ModelValidator {
         }
 
         boolean sampleGiven = sampleName != null && !sampleName.equals("0") && sampleName.trim().length() > 0;
-        if (sampleRequired && (!sampleGiven) && !eventName.equals(Constants.EVENT_SAMPLE_REGISTRATION)) {
+        if (sampleRequired && (!sampleGiven) && !eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
             String msg = NO_SAMPLE_ERR_MSG_FMT.format(new Object[]{eventName, listBuilder.toString()});
             throw new IllegalArgumentException(msg);
         }

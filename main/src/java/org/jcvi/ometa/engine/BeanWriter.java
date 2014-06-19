@@ -322,7 +322,7 @@ public class BeanWriter {
         File processedFile = templateUtils.preProcessTemplateFile(inputFile);
 
         boolean isProjectRegistration = eventName.equals(Constants.EVENT_PROJECT_REGISTRATION);
-        boolean isSampleRegistration = eventName.equals(Constants.EVENT_SAMPLE_REGISTRATION);
+        boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);
 
         List<GridBean> parsedList = templateUtils.parseEventFile(
                 processedFile.getName(),

@@ -373,9 +373,9 @@ public class EventLoader extends ActionSupport implements Preparable {
         }
         if (loadingList != null && loadingList.size() > 0) {
             if (isProjectRegistration) {
-                loadParameter.addProjectRegistrations(Constants.EVENT_PROJECT_REGISTRATION, loadingList);
+                loadParameter.addProjectRegistrations(this.eventName, loadingList);
             } else if (isSampleRegistration) {
-                loadParameter.addSampleRegistrations(Constants.EVENT_SAMPLE_REGISTRATION, loadingList);
+                loadParameter.addSampleRegistrations(this.eventName, loadingList);
             } else {
                 loadParameter.addEvents(this.eventName, loadingList);
             }

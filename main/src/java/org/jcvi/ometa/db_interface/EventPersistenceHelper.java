@@ -470,7 +470,7 @@ public class EventPersistenceHelper {
      * @throws DAOException if the sample is required and not given.
      */
     private void checkSampleGivenForEventAttribute(String attribName, EventMetaAttribute ema) throws DAOException {
-        if (ema.isSampleRequired() || this.eventType.equals(Constants.EVENT_SAMPLE_REGISTRATION)) {
+        if (ema.isSampleRequired() || this.eventType.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
             isSampleRequiredForEvent = true;
             if ( sampleId == null ) {
                 throw new DAOException( "Event " + eventType + " requires a sample for event attribute " + attribName +
