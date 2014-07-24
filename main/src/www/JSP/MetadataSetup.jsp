@@ -246,7 +246,7 @@ var _utils = {
         utils.error.add("Ajax Process has Failed.");
       },
       complete: function() {
-        _utils.loading.hide();
+        //_utils.loading.hide();
       }
     });
   },
@@ -258,7 +258,7 @@ var _utils = {
         render.et(dataMap.et);
         render.at(dataMap.a);
         render.pet(dataMap.pet);
-        render.ema(dataMap.ema);
+        //render.ema(dataMap.ema);
       }
     },
     ema: function(res) {
@@ -278,6 +278,7 @@ var _utils = {
         });
       }
       $('input:button[id$="AddButton"]').prop('disabled', false);	
+      _utils.loading.hide();
   	},
     ema_d: function(res) {
       var projectId = null;
@@ -333,6 +334,8 @@ var _utils = {
           }
         });
         $('#_eventSelect').html(eo);
+        comboBoxChanged({value: list[0].name}, '_eventSelect');
+        utils.preSelect('_eventSelect', list[0].name);
       }
     }
   },
