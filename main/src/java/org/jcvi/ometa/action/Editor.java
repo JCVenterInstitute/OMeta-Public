@@ -313,30 +313,32 @@ public class Editor extends ActionSupport {
 
                     for (SampleAttribute sa : sampleAttributes) {
                         for (SampleAttribute ssa : sampleElements) {
-                            if (sa.getId().compareTo(ssa.getId()) == 0) {
-                                oldValue = ModelValidator.getModelValue(sa.getMetaAttribute().getLookupValue(), sa);
-                                newValue = ModelValidator.getModelValue(sa.getMetaAttribute().getLookupValue(), ssa);
+                            if(sa != null && ssa != null) {
+                                if (sa.getId().compareTo(ssa.getId()) == 0) {
+                                    oldValue = ModelValidator.getModelValue(sa.getMetaAttribute().getLookupValue(), sa);
+                                    newValue = ModelValidator.getModelValue(sa.getMetaAttribute().getLookupValue(), ssa);
 
-                                if (ssa.getAttributeDateValue() != null && ssa.getAttributeDateValue().compareTo(sa.getAttributeDateValue()) != 0) {
-                                    sa.setAttributeDateValue(ssa.getAttributeDateValue());
-                                } else if (ssa.getAttributeFloatValue() != null && ssa.getAttributeFloatValue().compareTo(sa.getAttributeFloatValue()) != 0) {
-                                    sa.setAttributeFloatValue(ssa.getAttributeFloatValue());
-                                } else if (ssa.getAttributeIntValue() != null && ssa.getAttributeIntValue().compareTo(sa.getAttributeIntValue()) != 0) {
-                                    sa.setAttributeIntValue(ssa.getAttributeIntValue());
-                                } else if (ssa.getAttributeStringValue() != null && !ssa.getAttributeStringValue().equals(sa.getAttributeStringValue())) {
-                                    sa.setAttributeStringValue(ssa.getAttributeStringValue());
-                                } else
-                                    break;
+                                    if (ssa.getAttributeDateValue() != null && ssa.getAttributeDateValue().compareTo(sa.getAttributeDateValue()) != 0) {
+                                        sa.setAttributeDateValue(ssa.getAttributeDateValue());
+                                    } else if (ssa.getAttributeFloatValue() != null && ssa.getAttributeFloatValue().compareTo(sa.getAttributeFloatValue()) != 0) {
+                                        sa.setAttributeFloatValue(ssa.getAttributeFloatValue());
+                                    } else if (ssa.getAttributeIntValue() != null && ssa.getAttributeIntValue().compareTo(sa.getAttributeIntValue()) != 0) {
+                                        sa.setAttributeIntValue(ssa.getAttributeIntValue());
+                                    } else if (ssa.getAttributeStringValue() != null && !ssa.getAttributeStringValue().equals(sa.getAttributeStringValue())) {
+                                        sa.setAttributeStringValue(ssa.getAttributeStringValue());
+                                    } else
+                                        break;
 
-                                if (!existingEmaNames.contains(sa.getMetaAttribute().getAttributeName()))
-                                    emaList.add(
-                                            this.createEventMetaAttribute(
-                                                    projectId, projectName, LOOKUP_VALUE_NAME_SAMPLE_UPDATE, sa.getMetaAttribute().getAttributeName(),
-                                                    false, true, sa.getMetaAttribute().getDataType(), sa.getMetaAttribute().getAttributeName(), true
-                                            )
-                                    );
-                                attrBeanList.add(createFileReadBean(sa.getMetaAttribute().getAttributeName(), "" + newValue, projectName, sampleName));
+                                    if (!existingEmaNames.contains(sa.getMetaAttribute().getAttributeName()))
+                                        emaList.add(
+                                                this.createEventMetaAttribute(
+                                                        projectId, projectName, LOOKUP_VALUE_NAME_SAMPLE_UPDATE, sa.getMetaAttribute().getAttributeName(),
+                                                        false, true, sa.getMetaAttribute().getDataType(), sa.getMetaAttribute().getAttributeName(), true
+                                                )
+                                        );
+                                    attrBeanList.add(createFileReadBean(sa.getMetaAttribute().getAttributeName(), "" + newValue, projectName, sampleName));
 
+                                }
                             }
                         }
                     }
