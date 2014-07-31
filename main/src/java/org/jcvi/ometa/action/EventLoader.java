@@ -276,7 +276,7 @@ public class EventLoader extends ActionSupport implements Preparable {
         boolean isSampleRegistration = false;
         boolean isProjectRegistration = false;
 
-        if (this.eventName.equals(Constants.EVENT_PROJECT_REGISTRATION) && project.getProjectName() != null && !project.getProjectName().isEmpty()) {
+        if (this.eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) && project.getProjectName() != null && !project.getProjectName().isEmpty()) {
             isProjectRegistration = true;
 
             List<Project> projectList = new ArrayList<Project>();
