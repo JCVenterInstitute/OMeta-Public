@@ -180,30 +180,32 @@ public class Editor extends ActionSupport {
 
                     for (ProjectAttribute pa : projectAttributes) {
                         for (ProjectAttribute spa : projectElements) {
-                            if (pa.getId().compareTo(spa.getId()) == 0) {
-                                oldValue = ModelValidator.getModelValue(pa.getMetaAttribute().getLookupValue(), pa);
-                                newValue = ModelValidator.getModelValue(pa.getMetaAttribute().getLookupValue(), spa);
+                            if(pa != null && spa != null) {
+                                if (pa.getId().compareTo(spa.getId()) == 0) {
+                                    oldValue = ModelValidator.getModelValue(pa.getMetaAttribute().getLookupValue(), pa);
+                                    newValue = ModelValidator.getModelValue(pa.getMetaAttribute().getLookupValue(), spa);
 
-                                if (spa.getAttributeDateValue() != null && spa.getAttributeDateValue().compareTo(pa.getAttributeDateValue()) != 0) {
-                                    pa.setAttributeDateValue(spa.getAttributeDateValue());
-                                } else if (spa.getAttributeFloatValue() != null && spa.getAttributeFloatValue().compareTo(pa.getAttributeFloatValue()) != 0) {
-                                    pa.setAttributeFloatValue(spa.getAttributeFloatValue());
-                                } else if (spa.getAttributeIntValue() != null && spa.getAttributeIntValue().compareTo(pa.getAttributeIntValue()) != 0) {
-                                    pa.setAttributeIntValue(spa.getAttributeIntValue());
-                                } else if (spa.getAttributeStringValue() != null && !spa.getAttributeStringValue().equals(pa.getAttributeStringValue())) {
-                                    pa.setAttributeStringValue(spa.getAttributeStringValue());
-                                } else
-                                    break;
+                                    if (spa.getAttributeDateValue() != null && spa.getAttributeDateValue().compareTo(pa.getAttributeDateValue()) != 0) {
+                                        pa.setAttributeDateValue(spa.getAttributeDateValue());
+                                    } else if (spa.getAttributeFloatValue() != null && spa.getAttributeFloatValue().compareTo(pa.getAttributeFloatValue()) != 0) {
+                                        pa.setAttributeFloatValue(spa.getAttributeFloatValue());
+                                    } else if (spa.getAttributeIntValue() != null && spa.getAttributeIntValue().compareTo(pa.getAttributeIntValue()) != 0) {
+                                        pa.setAttributeIntValue(spa.getAttributeIntValue());
+                                    } else if (spa.getAttributeStringValue() != null && !spa.getAttributeStringValue().equals(pa.getAttributeStringValue())) {
+                                        pa.setAttributeStringValue(spa.getAttributeStringValue());
+                                    } else
+                                        break;
 
-                                if (!existingEmaNames.contains(pa.getMetaAttribute().getAttributeName()))
-                                    emaList.add(
-                                            this.createEventMetaAttribute(
-                                                    projectId, projectName, LOOKUP_VALUE_NAME_PROJECT_UPDATE, pa.getMetaAttribute().getAttributeName(),
-                                                    false, true, pa.getMetaAttribute().getDataType(), pa.getMetaAttribute().getAttributeName(), false
-                                            )
-                                    );
-                                attrBeanList.add(createFileReadBean(pa.getMetaAttribute().getAttributeName(), "" + newValue, projectName, null));
+                                    if (!existingEmaNames.contains(pa.getMetaAttribute().getAttributeName()))
+                                        emaList.add(
+                                                this.createEventMetaAttribute(
+                                                        projectId, projectName, LOOKUP_VALUE_NAME_PROJECT_UPDATE, pa.getMetaAttribute().getAttributeName(),
+                                                        false, true, pa.getMetaAttribute().getDataType(), pa.getMetaAttribute().getAttributeName(), false
+                                                )
+                                        );
+                                    attrBeanList.add(createFileReadBean(pa.getMetaAttribute().getAttributeName(), "" + newValue, projectName, null));
 
+                                }
                             }
                         }
                     }
