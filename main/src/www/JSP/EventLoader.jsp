@@ -419,7 +419,6 @@ var _utils = {
                 (hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
               )
             );
-
             $gridHeaders.append(
               $('<th/>').addClass('tableHeaderNoBG').attr('title', (isDesc ? _ma.desc : '')).append(
                 (_ma.label ? _ma.label : _ma.lookupValue.name) + '<br/>',
@@ -460,7 +459,7 @@ var _utils = {
                 inputElement += '<input type="file" id="$id$" name="$lt$upload"/>';
               } else { //text input
                 isText = true;
-                inputElement += '<input type="text" id="$id$" name="$lt$attributeValue" value="$val$"/>';
+                inputElement += '<input type="text" id="' + _ma.lookupValue.dataType + '_$id$" name="$lt$attributeValue" value="$val$"/>';
               }
             }
             inputElement = inputElement.replace("$id$",_ma.lookupValue.name.replace(/ /g,"_")+"_$id$");
@@ -488,7 +487,7 @@ var _utils = {
             count++;
           }
         });
-        utils.initDatePicker(); //initialise data fields
+        //utils.smartDatePicker(); //initialise date fields
 
         //add attribut headers to the grid view and add empty rows
         $('thead#gridHeader').append($gridHeaders);
@@ -662,7 +661,7 @@ var button = {
         }
       }
 
-      utils.initDatePicker();
+      utils.smartDatePicker();
       $('select[id^="_"]').combobox();
 
       //set minimum width for date and autocomplete TDs

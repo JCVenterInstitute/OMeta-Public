@@ -89,6 +89,12 @@ var utils = {
             buttonImageOnly: true, buttonImage: 'images/jqueryUI/icon_cal_21x19.png'
         });   
     },
+    smartDatePicker: function() {
+        $('input[id^="date_"]').datepicker({
+            dateFormat: 'yy-mm-dd',showOn: 'button',
+            buttonImageOnly: true, buttonImage: 'images/jqueryUI/icon_cal_21x19.png'
+        });   
+    },
     error: {
         check: function() {
             var _error = $('#error_messages').val();
