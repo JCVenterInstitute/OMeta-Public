@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +17,8 @@ import java.util.List;
  * org.jcvi.ometa.ontology
  */
 public class BioportalOntologyService {
-    private final String bioportalAddress = "http://rest.bioontology.org/bioportal/";
-    private final String bioportalApiKey = "apikey=c6ae1b27-9f86-4e3c-9dcf-087e1156eabe";
+    private final String bioportalAddress = "http://data.bioontology.org/";
+    private final String bioportalApiKey = "a6b4dbc7-d18d-40ce-a5d0-93e5e5a88468";
 
     public BioportalOntologyService() {
 
@@ -42,21 +41,22 @@ public class BioportalOntologyService {
         // /virtual/ontology/1516?conceptid=http%3A%2F%2Fpurl.bioontology.org%2Fontology%2FICD10%2FO80-O84.9&light=0
         // /search/?query=tangle&ontologyids=1084&subtreerootconceptid=http%3A%2F%2Fontology.neuinfo.org%2FNIF%2FBiomaterialEntities%2FNIF-Subcellular.owl%23sao120573470
 
-        final String responsePageParams = "&pagesize=all&pagenum=1&maxnumhits=1000";
+        final String responsePageParams = "&pagesize=1000&pagenum=1&maxnumhits=1000";
 
         StringBuilder urlBuilder = new StringBuilder(bioportalAddress);
         if(type.equals("search")) {
-            urlBuilder.append("search/?query=" + search);
+            urlBuilder.append("search/?q=" + search);
         }
 
         if(searchRootId!=null && !searchRootId.isEmpty() && ontologyId!=null && !ontologyId.isEmpty()) {
-            urlBuilder.append("&ontologyids=" + ontologyId);
-            urlBuilder.append("&subtreerootconceptid=" + URLEncoder.encode(searchRootId));
-            urlBuilder.append("&isexactmatch=0");
-            urlBuilder.append("&includeproperties=1");
+            urlBuilder.append("&ontologies=" + ontologyId);
+            //urlBuilder.append("&subtreerootconceptid=" + URLEncoder.encode(searchRootId));
+            urlBuilder.append("&exact_match=false");
+            urlBuilder.append("&include_properties=true");
+            urlBuilder.append("&include=all");
         }
 
-        urlBuilder.append("&" + bioportalApiKey);
+        //urlBuilder.append("&" + bioportalApiKey); moved to request property
         return urlBuilder.toString();
     }
 
@@ -66,8 +66,9 @@ public class BioportalOntologyService {
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection)obj.openConnection();
         con.setRequestMethod("GET");
-        con.setRequestProperty("User-Agent", "Mozilla/5.0");
+        //con.setRequestProperty("User-Agent", "Mozilla/5.0");
         con.setRequestProperty("Accept", "application/json");
+        con.setRequestProperty("Authorization", "apikey token=" + bioportalApiKey);
         con.setConnectTimeout(15000); //times out after 15 secs
 
         int responseCode = con.getResponseCode();
