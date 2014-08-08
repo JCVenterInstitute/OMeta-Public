@@ -452,6 +452,10 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                     List<LookupValue> lvList = new ArrayList<LookupValue>();
                     for(String name : lvNames) {
                         if(name != null && name.trim().length() > 0) {
+                            if(name.contains("[") || name.contains("]")) {
+                                throw new Exception("Attribute names cannot contain '[' or ']'.");
+                            }
+
                             LookupValue lv = new LookupValue();
                             lv.setName(name.trim());
                             lv.setType(lvType);
