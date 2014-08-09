@@ -30,14 +30,12 @@ import java.util.List;
  * Time: 12:02 PM
  */
 public class OntologyTerm {
+    String term;
     String termId; //term id
-    String shortId;
     String ontologyAbbr; //abbreviated ontology
     String ontologyFull; //full string ontology
-    String ontologyId;
-    String ontologyVersion;
-    String term;
-    String preferredName;
+    String childUrl;
+    String descendantsUrl;
 
     String parentTermId;
     String relationship;
@@ -47,18 +45,17 @@ public class OntologyTerm {
         this("", termId, term);
     }
     public OntologyTerm(String ontologyFull, String termId, String term) {
-        this(ontologyFull, null, null, termId, term);
+        this(ontologyFull, null, termId, term);
     }
-    public OntologyTerm(String ontologyFull, String ontologyAbbr, String ontologyId, String termId, String term) {
+    public OntologyTerm(String ontologyFull, String ontologyAbbr, String termId, String term) {
         this.ontologyFull = ontologyFull;
-        if(ontologyAbbr==null) {
-            if(!termId.startsWith("http://") && termId.contains(":")) { //OLS term ID has ontology acronym in it. Bioportal uses URL as term ID
-                this.ontologyAbbr = termId.substring(0, termId.indexOf(":"));
+        if(ontologyAbbr == null) {
+            if(ontologyFull.startsWith("http://")) { //OLS term ID has ontology acronym in it. Bioportal uses URL as term ID
+                this.ontologyAbbr = ontologyFull.substring(ontologyFull.lastIndexOf("/") + 1);
             }
         } else {
             this.ontologyAbbr = ontologyAbbr;
         }
-        this.ontologyId = ontologyId;
         this.termId = termId;
         this.term = term;
     }
@@ -70,14 +67,6 @@ public class OntologyTerm {
 
     public void setTermId(String termId) {
         this.termId = termId;
-    }
-
-    public String getShortId() {
-        return shortId;
-    }
-
-    public void setShortId(String shortId) {
-        this.shortId = shortId;
     }
 
     public String getOntologyAbbr() {
@@ -94,14 +83,6 @@ public class OntologyTerm {
 
     public void setOntologyFull(String ontologyFull) {
         this.ontologyFull = ontologyFull;
-    }
-
-    public String getOntologyId() {
-        return ontologyId;
-    }
-
-    public void setOntologyId(String ontologyId) {
-        this.ontologyId = ontologyId;
     }
 
     public String getTerm() {
@@ -136,19 +117,19 @@ public class OntologyTerm {
         this.children = children;
     }
 
-    public String getOntologyVersion() {
-        return ontologyVersion;
+    public String getChildUrl() {
+        return childUrl;
     }
 
-    public void setOntologyVersion(String ontologyVersion) {
-        this.ontologyVersion = ontologyVersion;
+    public void setChildUrl(String childUrl) {
+        this.childUrl = childUrl;
     }
 
-    public String getPreferredName() {
-        return preferredName;
+    public String getDescendantsUrl() {
+        return descendantsUrl;
     }
 
-    public void setPreferredName(String preferredName) {
-        this.preferredName = preferredName;
+    public void setDescendantsUrl(String descendantsUrl) {
+        this.descendantsUrl = descendantsUrl;
     }
 }

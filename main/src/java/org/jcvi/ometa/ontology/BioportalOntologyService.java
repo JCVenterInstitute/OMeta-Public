@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,11 +38,8 @@ public class BioportalOntologyService {
     }
 
     private String buildUrl(String type, String search, String searchRootId, String ontologyId) {
-        // /search/nephroblastoma/?maxnumhits=5&level=1&includeproperties=1&isexactmatch=0&ontologyids=null";
-        // /virtual/ontology/1516?conceptid=http%3A%2F%2Fpurl.bioontology.org%2Fontology%2FICD10%2FO80-O84.9&light=0
-        // /search/?query=tangle&ontologyids=1084&subtreerootconceptid=http%3A%2F%2Fontology.neuinfo.org%2FNIF%2FBiomaterialEntities%2FNIF-Subcellular.owl%23sao120573470
-
-        final String responsePageParams = "&pagesize=1000&pagenum=1&maxnumhits=1000";
+        // search?q=melanoma
+        // search?q=intraocular&ontology=HP&subtree_root=http%3A%2F%2Fpurl.obolibrary.org%2Fobo%2FHP_0002861
 
         StringBuilder urlBuilder = new StringBuilder(bioportalAddress);
         if(type.equals("search")) {
@@ -49,14 +47,15 @@ public class BioportalOntologyService {
         }
 
         if(searchRootId!=null && !searchRootId.isEmpty() && ontologyId!=null && !ontologyId.isEmpty()) {
-            urlBuilder.append("&ontologies=" + ontologyId);
-            //urlBuilder.append("&subtreerootconceptid=" + URLEncoder.encode(searchRootId));
-            urlBuilder.append("&exact_match=false");
-            urlBuilder.append("&include_properties=true");
-            urlBuilder.append("&include=all");
+            urlBuilder.append("&ontology=" + ontologyId);
+            urlBuilder.append("&subtree_root=" + URLEncoder.encode(ontologyId));
         }
 
-        //urlBuilder.append("&" + bioportalApiKey); moved to request property
+        urlBuilder.append("&pagesize=150");
+        urlBuilder.append("&include_context=false");
+        urlBuilder.append("&include_views=true");
+        urlBuilder.append("&require_definition=true");
+
         return urlBuilder.toString();
     }
 
@@ -66,7 +65,6 @@ public class BioportalOntologyService {
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection)obj.openConnection();
         con.setRequestMethod("GET");
-        //con.setRequestProperty("User-Agent", "Mozilla/5.0");
         con.setRequestProperty("Accept", "application/json");
         con.setRequestProperty("Authorization", "apikey token=" + bioportalApiKey);
         con.setConnectTimeout(15000); //times out after 15 secs
@@ -91,46 +89,42 @@ public class BioportalOntologyService {
         List<OntologyTerm> terms = new ArrayList<OntologyTerm>();
 
         JSONObject json = new JSONObject(result);
-        JSONArray dataArray = json.getJSONObject("success").getJSONArray("data");
+        JSONArray dataArray = json.getJSONArray("collection");
         for(int i=0;i<dataArray.length();i++) {
-            JSONObject data = dataArray.getJSONObject(i);
-            JSONObject contents = data.getJSONObject("page").getJSONObject("contents");
-            JSONArray resultArray = contents.getJSONObject("searchResultList").getJSONArray("searchBean");
-            for(int j=0;j<resultArray.length();j++) {
-                JSONObject termJson = resultArray.getJSONObject(j);
-                /*
-                    {
-                        "ontologyVersionId":49697,
-                        "ontologyId":1640,
-                        "ontologyDisplayLabel":"Pediatric Terminology",
-                        "recordType":"apreferredname",
-                        "objectType":"class",
-                        "conceptId":"http:\/\/www.owl-ontologies.com\/Ontology1358660052.owl#Nephroblastoma",
-                        "conceptIdShort":"Nephroblastoma",
-                        "preferredName":"Nephroblastoma",
-                        "contents":"Nephroblastoma",
-                        "isObsolete":0
-                    }
-                 */
-                OntologyTerm term = new OntologyTerm(
-                    termJson.getString("ontologyDisplayLabel"),
-                    null,
-                    termJson.getString("ontologyId"),
-                    termJson.getString("conceptId"),
-                    termJson.getString("contents")
-                );
-                term.setShortId(termJson.getString("conceptIdShort"));
-                term.setOntologyVersion(termJson.getString("ontologyVersionId"));
-                term.setPreferredName(termJson.getString("preferredName"));
-                terms.add(term);
-            }
+            JSONObject termJson = dataArray.getJSONObject(i);
             /*
-            * list of ontologies found in a search result
-            JSONArray hitOntologyArray = contents.getJSONObject("ontologyHitList").getJSONArray("ontologyHitBean");
-            for(int j=0;j<hitOntologyArray.length();j++) {
-                System.out.println(hitOntologyArray.getJSONObject(j));
+            {
+            prefLabel: "Melanoma"
+            cui: [1]
+                0:  "C0025202"
+            -
+            semanticType: [1]
+                0:  "T191"
+            -
+            obsolete: false
+            @id: "http://purl.bioontology.org/ontology/MEDDRA/10053571"
+            @type: "http://www.w3.org/2002/07/owl#Class"
+            links: {
+                self: "http://data.bioontology.org/ontologies/MEDDRA/classes/http%3A%2F%2Fpurl.bioontology.org%2Fontology%2FMEDDRA%2F10053571"
+                ontology: "http://data.bioontology.org/ontologies/MEDDRA"
+                children: "http://data.bioontology.org/ontologies/MEDDRA/classes/http%3A%2F%2Fpurl.bioontology.org%2Fontology%2FMEDDRA%2F10053571/children"
+                parents: "http://data.bioontology.org/ontologies/MEDDRA/classes/http%3A%2F%2Fpurl.bioontology.org%2Fontology%2FMEDDRA%2F10053571/parents"
+                descendants: "http://data.bioontology.org/ontologies/MEDDRA/classes/http%3A%2F%2Fpurl.bioontology.org%2Fontology%2FMEDDRA%2F10053571/descendants"
+                ancestors: "http://data.bioontology.org/ontologies/MEDDRA/classes/http%3A%2F%2Fpurl.bioontology.org%2Fontology%2FMEDDRA%2F10053571/ancestors"
+                tree: "http://data.bioontology.org/ontologies/MEDDRA/classes/http%3A%2F%2Fpurl.bioontology.org%2Fontology%2FMEDDRA%2F10053571/tree"
+                notes: "http://data.bioontology.org/ontologies/MEDDRA/classes/http%3A%2F%2Fpurl.bioontology.org%2Fontology%2FMEDDRA%2F10053571/notes"
+                mappings: "http://data.bioontology.org/ontologies/MEDDRA/classes/http%3A%2F%2Fpurl.bioontology.org%2Fontology%2FMEDDRA%2F10053571/mappings"
+                ui: "http://bioportal.bioontology.org/ontologies/MEDDRA?p=classes&conceptid=http%3A%2F%2Fpurl.bioontology.org%2Fontology%2FMEDDRA%2F10053571"
+            }
             }
             */
+            JSONObject links = termJson.getJSONObject("links");
+
+            OntologyTerm term = new OntologyTerm(links.getString("ontology"), termJson.getString("@id"), termJson.getString("prefLabel"));
+            term.setChildUrl(links.getString("children"));
+            term.setDescendantsUrl(links.getString("descendants"));
+            terms.add(term);
+
         }
 
         return terms;

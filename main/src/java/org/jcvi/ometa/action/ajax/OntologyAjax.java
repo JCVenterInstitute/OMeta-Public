@@ -87,8 +87,8 @@ public class OntologyAjax extends ActionSupport implements IAjaxAction {
                 if(terms!=null && terms.size()>0) {
                     for(OntologyTerm term : terms) {
                         Map<String, Object> ot = new HashMap<String, Object>();
-                        ot.put("ontology", term.getOntologyId());
-                        ot.put("ontolabel", term.getOntologyFull());
+                        ot.put("ontology", term.getOntologyFull());
+                        ot.put("ontolabel", term.getOntologyAbbr());
                         ot.put("taccession", term.getTermId());
                         ot.put("tlabel", term.getTerm());
                         ot.put("uri", null);
@@ -150,8 +150,8 @@ public class OntologyAjax extends ActionSupport implements IAjaxAction {
                 if(terms!=null && terms.size()>0) {
                     for(OntologyTerm term : terms) {
                         Map<String, Object> ot = new HashMap<String, Object>();
-                        ot.put("ontology", term.getOntologyId());
-                        ot.put("ontolabel", term.getOntologyFull());
+                        ot.put("ontology", term.getOntologyFull());
+                        ot.put("ontolabel", term.getOntologyAbbr());
                         ot.put("taccession", term.getTermId());
                         ot.put("tlabel", term.getTerm());
                         ot.put("uri", null);
