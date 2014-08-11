@@ -48,13 +48,14 @@ public class BioportalOntologyService {
 
         if(searchRootId!=null && !searchRootId.isEmpty() && ontologyId!=null && !ontologyId.isEmpty()) {
             urlBuilder.append("&ontology=" + ontologyId);
-            urlBuilder.append("&subtree_root=" + URLEncoder.encode(ontologyId));
+            urlBuilder.append("&subtree_root=" + URLEncoder.encode(searchRootId));
         }
 
         urlBuilder.append("&pagesize=150");
         urlBuilder.append("&include_context=false");
         urlBuilder.append("&include_views=true");
-        urlBuilder.append("&require_definition=true");
+        urlBuilder.append("&include_properties=true");
+        //urlBuilder.append("&require_definition=true");
 
         return urlBuilder.toString();
     }

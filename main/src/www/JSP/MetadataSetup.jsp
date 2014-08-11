@@ -214,7 +214,7 @@ var _html = {
 };
 var _utils = {
   ontology: function() {
-    window.open('http://www.ebi.ac.uk/ontology-lookup/init.do',
+    window.open('http://bioportal.bioontology.org/search?opt=advanced',
         'ontologyWindow',
         'scrollbars=yes,toolbar=no,resizable=yes,width=800,height=600,left=50,top=50'
     );
@@ -457,7 +457,7 @@ var _utils = {
           //insert ontology term to meta attribute description wrapped square brackets
           $(this).parent('td').prev('td').find('textarea:first-child').val(function(i,v){
             return (v==null ? '' : v.indexOf('[')>=0 ? v.substring(0,v.indexOf('[')) : v+' ')
-                +(ui.item.accession?'['+ui.item.ontologyLabel+','+ui.item.ontologyId+','+ui.item.accession+']':'');
+                +(ui.item.accession?'['+ui.item.accession+','+ui.item.ontologyLabel+']':'');
           })
         }
       }).css('width', '100px');

@@ -263,11 +263,11 @@ var _utils = {
         $('#sampleDetailInputDiv, #projectDetailInputDiv').hide();
       },
       ontologify: function(desc, $inputNode) {
-        var ontologyInfo = desc.substring(desc.indexOf('[')+1, desc.length-1).split(',');
+        var ontologyInfo = desc.substring(desc.lastIndexOf('[')+1, desc.length-1).split(',');
 
-        if(ontologyInfo.length === 3) {
+        if(ontologyInfo.length === 2) {
+          var tid = ontologyInfo[0].replace(/^\s+|\s+$/g, '');
           var ot = ontologyInfo[1].replace(/^\s+|\s+$/g, '');
-          var tid = ontologyInfo[2].replace(/^\s+|\s+$/g, '');
           $inputNode.find('input').autocomplete({
             source: function( request, response ) {
               $.ajax({
@@ -290,8 +290,7 @@ var _utils = {
                       if(item.ontology) {
                         return {
                           label: item.tlabel + " - " + item.ontolabel,
-                          value: item.tlabel + "@" + item.taccession
-
+                          value: item.tlabel + "[" + item.taccession + "]"
                         }
                       } else {
                         return {
