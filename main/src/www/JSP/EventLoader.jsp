@@ -437,7 +437,7 @@ var _utils = {
             if(isSelect) { //select box for option values
               //is this multi select
               isMulti = (_ma.options.substring(0, multiSelectPrefix.length)===multiSelectPrefix) && (_ma.options.lastIndexOf(')')===_ma.options.length-1);
-              var options = isMulti ? '' : '<option value="0"></option>';
+              var options = isMulti ? '' : '<option value=""></option>';
               var givenOptions = _ma.options;
 
               if(isMulti) { //trim multi select wrapper
@@ -569,7 +569,7 @@ var button = {
           $eventLine.append(
             $('<td/>').append(
                 $('<select/>').attr({
-                  'name': 'gridList["+gridLineCount+"].parentSampleName',
+                  'name': 'gridList['+gridLineCount+'].parentSampleName',
                   'id': '_parentSelect' + gridLineCount
                 }).append(sample_options)  
               )
