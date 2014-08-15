@@ -29,6 +29,7 @@ import org.jcvi.ometa.configuration.ResponseToFailedAuthorization;
 import org.jcvi.ometa.hibernate.dao.*;
 import org.jcvi.ometa.intf.BeanPersistenceFacadeI;
 import org.jcvi.ometa.model.*;
+import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.GuidGetter;
 import org.jcvi.ometa.validation.ModelValidator;
 
@@ -521,7 +522,9 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
 
         // Pre-emptive bail.
         if (aBeans.size() == 0) {
-            throw new Exception("0 attribute values found: no event may be created which creates no attributes.");
+            if(!eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) && !eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)) { //still record project or sample registration events
+                throw new Exception("0 attribute values found: no event may be created which creates no attributes.");
+            }
         }
 
         // Check in with Security.  Do this early to avoid wasting cycles on other things.  This process will

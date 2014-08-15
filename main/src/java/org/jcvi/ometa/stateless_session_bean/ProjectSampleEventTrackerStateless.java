@@ -310,14 +310,12 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
             }
             if (multiLoadParameter.getProjectRegistrationEventAttributes() != null) {
                 for (List<FileReadAttributeBean> eas : multiLoadParameter.getProjectRegistrationEventAttributes()) {
-                    beanPersister.writeBackAttributes(
-                            eas, multiLoadParameter.getProjectRegistrationEventName(), getUserName());
+                    beanPersister.writeBackAttributes(eas, multiLoadParameter.getProjectRegistrationEventName(), getUserName());
                 }
             }
             if (multiLoadParameter.getSampleRegistrationEventAttributes() != null) {
                 for (List<FileReadAttributeBean> eas : multiLoadParameter.getSampleRegistrationEventAttributes()) {
-                    beanPersister.writeBackAttributes(
-                            eas, multiLoadParameter.getSampleRegistrationEventName(), getUserName());
+                    beanPersister.writeBackAttributes(eas, multiLoadParameter.getSampleRegistrationEventName(), getUserName());
                 }
             }
             if (multiLoadParameter.getOtherEvents() != null) {

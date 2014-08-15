@@ -182,11 +182,13 @@ public class LoadingEngine {
 
         String eventFileName = usage.getInputFilename();
         String eventType = usage.getEventName();
+        String projectName = usage.getProjectName();
+
         try {
             BeanWriter writer = new BeanWriter(serverUrl, userName, passWord);
 
             File eventFile = new File(eventFileName);
-            writer.writeEvent(eventFile, eventType);
+            writer.writeEvent(eventFile, eventType, projectName);
 
         } catch (Exception ex) {
             throw ex;
@@ -315,7 +317,7 @@ public class LoadingEngine {
                     writer.writePMAs(file);
                     break;
                 case eventAttributes:
-                    writer.writeEvent(file, null);
+                    writer.writeEvent(file, null, null);
                     break;
                 default:
                     throw new IllegalArgumentException(
