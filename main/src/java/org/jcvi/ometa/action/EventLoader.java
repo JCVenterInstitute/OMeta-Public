@@ -399,18 +399,20 @@ public class EventLoader extends ActionSupport implements Preparable {
         sample.setProjectName(projectName);
 
         //set project level by adding 1 to selected parent project's level
-        if(sample.getParentSampleName()==null || sample.getParentSampleName().equals("0"))
+        if(sample.getParentSampleName()==null || sample.getParentSampleName().equals("0")) {
             sample.setParentSampleName(null);
-
-        String parentSampleName = sample.getParentSampleName();
-        if (parentSampleName != null && !parentSampleName.isEmpty() && !parentSampleName.equals("0")) {
-            Sample selectedParentSample = readPersister.getSample(projectId, parentSampleName);
-            sample.setSampleLevel(selectedParentSample.getSampleLevel() + 1);
-        } else {
             sample.setParentSampleId(null);
             sample.setSampleLevel(1);
+        } else {
+            String parentSampleName = sample.getParentSampleName();
+            if (parentSampleName != null && !parentSampleName.isEmpty() && !parentSampleName.equals("0")) {
+                Sample selectedParentSample = readPersister.getSample(projectId, parentSampleName);
+                if(selectedParentSample != null && selectedParentSample.getSampleId() != null) {
+                    sample.setSampleLevel(selectedParentSample.getSampleLevel() + 1);
+                    sample.setParentSampleId(selectedParentSample.getSampleId());
+                }
+            }
         }
-
         return sample;
     }
 
@@ -458,10 +460,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                 }
             }
 
-            if (!fBean.getAttributeName().equals("0")
-                    && fBean.getAttributeValue()!=null
-                    && !fBean.getAttributeValue().equals("0")
-                    && !fBean.getAttributeValue().isEmpty()) {
+            if (!fBean.getAttributeName().equals("0") && fBean.getAttributeValue()!=null && !fBean.getAttributeValue().isEmpty()) { //&& !fBean.getAttributeValue().equals("0")
                 processedList.add(fBean);
             }
         }
