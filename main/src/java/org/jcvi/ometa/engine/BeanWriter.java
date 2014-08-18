@@ -23,6 +23,7 @@ package org.jcvi.ometa.engine;
 
 import org.apache.log4j.Logger;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
+import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationRemote;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackRemote;
 import org.jcvi.ometa.configuration.BeanPopulator;
@@ -55,7 +56,7 @@ public class BeanWriter {
         writeEjb = (ProjectSampleEventWritebackRemote)writeDelegate.getEjb(UploadActionDelegate.EJB_NAME, server, userName, password, logger);
 
         PresentationActionDelegate readDelegate = new PresentationActionDelegate();
-        readEjb = readDelegate.getEjb(PresentationActionDelegate.EJB_NAME, server, userName, password, logger);
+        readEjb = (ProjectSampleEventPresentationRemote)readDelegate.getEjb(PresentationActionDelegate.EJB_NAME, server, userName, password, logger);
     }
 
     public void writePMAs(File... files) throws Exception {
@@ -106,11 +107,13 @@ public class BeanWriter {
         }
     }
 
-    public void writeEvent(File eventFile, String eventName, String projectName) throws Exception {
+    public String writeEvent(File eventFile, String eventName, String projectName, boolean processInput) throws Exception {
+        String lastSampleName = null;
+
         boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION);
         boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);
 
-        List<GridBean> gridList = this.getEventBeans(eventFile, eventName);
+        List<GridBean> gridList = this.getEventBeans(eventFile, eventName, processInput);
 
         MultiLoadParameter loadParameter = new MultiLoadParameter();
 
@@ -123,12 +126,12 @@ public class BeanWriter {
                     loadingProject = new Project();
                     loadingProject.setProjectName(gBean.getProjectName());
                     loadingProject.setIsPublic(Integer.valueOf(gBean.getProjectPublic()));
-                } else if(isSampleRegistration && gBean.getSampleName()!=null && gBean.getSamplePublic()!=null) {
+                } else {
                     projectName = gBean.getProjectName();
                     loadingProject = readEjb.getProject(projectName);
 
                     Sample existingSample = readEjb.getSample(loadingProject.getProjectId(), gBean.getSampleName());
-                    if(existingSample == null) {
+                    if(existingSample == null && isSampleRegistration) {
                         loadingSample = new Sample();
                         loadingSample.setSampleName(gBean.getSampleName());
                         loadingSample.setParentSampleName(gBean.getParentSampleName());
@@ -141,11 +144,14 @@ public class BeanWriter {
                 List<FileReadAttributeBean> fBeanList = gBean.getBeanList();
                 if(fBeanList!=null && fBeanList.size()>0) {
                     this.createMultiLoadParameter(loadParameter, eventName, projectName, loadingProject,  loadingSample, fBeanList);
+                    lastSampleName = gBean.getSampleName();
                 }
             }
         }
-        System.out.println("stop");
+
         writeEjb.loadAll(null, loadParameter);
+
+        return lastSampleName;
     }
 
     /**
@@ -354,11 +360,15 @@ public class BeanWriter {
 
     }
 
-    public List<GridBean> getEventBeans(File inputFile, String eventName) throws Exception {
+    public List<GridBean> getEventBeans(File inputFile, String eventName, boolean processInput) throws Exception {
 
         // Assume the file contains right kind of data for this tye of bean.
         TemplatePreProcessingUtils templateUtils = new TemplatePreProcessingUtils();
-        File processedFile = templateUtils.preProcessTemplateFile(inputFile);
+
+        File processedFile = inputFile;
+        if(processInput) {
+            processedFile = templateUtils.preProcessTemplateFile(inputFile);
+        }
 
         boolean isProjectRegistration = eventName.equals(Constants.EVENT_PROJECT_REGISTRATION);
         boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);

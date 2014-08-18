@@ -48,6 +48,7 @@ public class LoadingEngineUsage {
     protected static final String PROJECT_NAME_PARAM_NAME = "project";
     protected static final String SAMPLE_NAME_PARAM_NAME = "sample";
     protected static final String EVENT_NAME_PARAM_NAME = "event";
+    protected static final String SEQUENTIAL_PARAM_NAME = "seq";
 
     private OptionParameter usernameParam;
     private OptionParameter passwordParam;
@@ -60,6 +61,7 @@ public class LoadingEngineUsage {
     private OptionParameter projectNameParam;
     private OptionParameter sampleNameParam;
     private OptionParameter outputLocationParam;
+    private FlagParameter sequentialFlag;
     private StringBuilder errors;
 
 
@@ -104,11 +106,14 @@ public class LoadingEngineUsage {
         errors = new StringBuilder();
 
         try {
-            if(isMakeEventTemplate()) { //template generation
+            if(isMakeEventTemplate() || isSequentialLoad()) { //template generation
                 validateOutputLocation(outputLocationParam.getValue(), rtnVal);
                 if(isEmpty(projectNameParam) || isEmpty(eventNameParam)) {
-                    errors.append("Template generation requires values for project and event.\n");
+                    errors.append("need values for project and event.\n");
                     rtnVal = false;
+                }
+                if(isSequentialLoad()) { //check input file for sequential load
+                    rtnVal = validateInputfile(inputFileNameParam.getValue(), rtnVal);
                 }
             } else {
                 int count = 0;
@@ -121,7 +126,6 @@ public class LoadingEngineUsage {
                 if(!isEmpty(multiDirectoryParam)) {
                     ++count;
                 }
-
                 if(count > 1) { //only one
                     errors.append("Only one of " + inputFileNameParam.getName() + "," + multiInputFileParam.getName() + " or " + multiDirectoryParam.getName() + "is allowed.\n");
                     rtnVal = false;
@@ -132,6 +136,8 @@ public class LoadingEngineUsage {
                     if(!isEmpty(multiDirectoryParam)) {
                         File directory = new File(multiDirectoryParam.getValue());
                         rtnVal = (directory.isDirectory() && directory.canRead());
+                    } else if(!isEmpty(multiInputFileParam)) {
+                        rtnVal = validateInputfile(multiInputFileParam.getValue(), rtnVal);
                     } else {
                         rtnVal = validateInputfile(inputFileNameParam.getValue(), rtnVal);
                     }
@@ -193,6 +199,7 @@ public class LoadingEngineUsage {
                 projectNameParam,
                 sampleNameParam,
                 outputLocationParam,
+                sequentialFlag,
                 serverUrlParam,
         };
 
@@ -233,6 +240,8 @@ public class LoadingEngineUsage {
         sampleNameParam.setUsageInfo("Optional sample name to be used when generating template. Use with -" + MAKE_EVENT_PARAM_NAME);
         outputLocationParam = commandLineHandler.addOptionParameter(OUTPUTLOC_PARAM_NAME);
         outputLocationParam.setUsageInfo("Output directory for use with -" + MAKE_EVENT_PARAM_NAME + " only.");
+        sequentialFlag = commandLineHandler.addFlagParameter(SEQUENTIAL_PARAM_NAME);
+        sequentialFlag.setUsageInfo("Load large event file line by line with a log file.");
 
         return commandLineHandler;
     }
@@ -367,5 +376,9 @@ public class LoadingEngineUsage {
 
     public String getErrors() {
         return errors.toString();
+    }
+
+    public boolean isSequentialLoad() {
+        return sequentialFlag.getValue();
     }
 }

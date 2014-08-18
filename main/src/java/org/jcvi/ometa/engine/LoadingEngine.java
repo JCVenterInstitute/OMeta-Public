@@ -21,6 +21,8 @@
 
 package org.jcvi.ometa.engine;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import org.apache.log4j.Logger;
 import org.apache.poi.util.IOUtils;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
@@ -61,14 +63,14 @@ public class LoadingEngine {
     public static void main(String[] args) {
         try {
             LoadingEngineUsage usage = new LoadingEngineUsage(args);
-            boolean isValid = usage.validate();
-            if(!isValid) {
-                System.out.println(usage.getErrors());
-                throw new IllegalArgumentException("Invalid Usage");
-            }
+
             LoadingEngine engine = new LoadingEngine(usage);
             if(usage.isCmdLineNamedEvent()) {
-                engine.loadEventFile();
+                if(usage.isSequentialLoad()) {
+                    engine.sequentialLoad();
+                } else {
+                    engine.loadEventFile();
+                }
             } else if(usage.isMultiFile()) {
                 engine.digestMultipart();
             } else if(usage.isDirectory()) {
@@ -188,7 +190,7 @@ public class LoadingEngine {
             BeanWriter writer = new BeanWriter(serverUrl, userName, passWord);
 
             File eventFile = new File(eventFileName);
-            writer.writeEvent(eventFile, eventType, projectName);
+            writer.writeEvent(eventFile, eventType, projectName, true);
 
         } catch (Exception ex) {
             throw ex;
@@ -317,7 +319,7 @@ public class LoadingEngine {
                     writer.writePMAs(file);
                     break;
                 case eventAttributes:
-                    writer.writeEvent(file, null, null);
+                    writer.writeEvent(file, null, null, true);
                     break;
                 default:
                     throw new IllegalArgumentException(
@@ -326,6 +328,79 @@ public class LoadingEngine {
             }
         } catch (Exception ex) {
             throw ex;
+        }
+    }
+
+    public void sequentialLoad() throws Exception {
+        String userName = usage.getUsername();
+        String passWord = usage.getPassword();
+        String serverUrl = usage.getServerUrl();
+
+        String eventFileName = usage.getInputFilename();
+        String eventName = usage.getEventName();
+        String projectName = usage.getProjectName();
+        String logPath = usage.getOutputLocation();
+
+        File eventFile = new File(eventFileName);
+
+        Long timeStamp = new Date().getTime();
+        File logFile = new File(logPath + File.separator + "result_" + timeStamp + ".log");
+        FileWriter logWriter = new FileWriter(logFile,true);
+
+        // Must break this file up, and deposit it into a temporary output directory.
+        String userBase = System.getProperty("user.home");
+        ScratchUtils.setScratchBaseLocation(userBase + "/" + Constants.SCRATCH_BASE_LOCATION);
+        File scratchLoc = ScratchUtils.getScratchLocation(timeStamp, "LoadingEngine__" + eventFile.getName());
+
+        try {
+            BeanWriter writer = new BeanWriter(serverUrl, userName, passWord);
+
+            LineIterator lineIterator = FileUtils.lineIterator(eventFile);
+            int lineCount = 0;
+            int processedLineCount = 0;
+
+            String headerLine = null;
+            while(lineIterator.hasNext()) {
+                ++lineCount;
+                String currLine = lineIterator.nextLine();
+
+                if(lineCount == 1) {
+                    headerLine = currLine;
+                    continue;
+                } else if(lineCount == 2 && (currLine.startsWith("#") || currLine.startsWith("\"#"))) {
+                    continue;
+                } else {
+                    File singleEventFile = new File(scratchLoc.getAbsoluteFile() + File.separator + "temp.csv");
+                    List<String> lines = new ArrayList<String>(2);
+                    lines.add(headerLine);
+                    lines.add(currLine);
+                    FileUtils.writeLines(singleEventFile, lines);
+
+                    String eventTarget = writer.writeEvent(singleEventFile, eventName, projectName, true);
+
+                    logWriter.write(String.format("[line# %d] loaded event for %s\n", lineCount, eventTarget));
+
+                    System.out.println(++processedLineCount + " event(s) loaded.");
+                }
+            }
+        } catch(IOException ioe) {
+            System.err.println("IOException: " + ioe.getMessage());
+        } catch (Exception ex) {
+            logWriter.write(ex.toString());
+            throw ex;
+        } finally {
+            if(scratchLoc != null  &&  scratchLoc.exists()) {
+                File cleanupDir = scratchLoc;
+                String parentDirName = cleanupDir.getParentFile().getName();
+                try {
+                    Long.parseLong(parentDirName);
+                    cleanupDir = cleanupDir.getParentFile();
+                } catch (NumberFormatException nf) {}
+                FileUtils.forceDelete(cleanupDir);
+            }
+
+            logWriter.close();
+            System.out.println("log file: " + logFile.getAbsolutePath());
         }
     }
 }
