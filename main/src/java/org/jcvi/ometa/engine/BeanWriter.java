@@ -136,6 +136,7 @@ public class BeanWriter {
                         loadingSample.setSampleName(gBean.getSampleName());
                         loadingSample.setParentSampleName(gBean.getParentSampleName());
                         loadingSample.setIsPublic(Integer.valueOf(gBean.getSamplePublic()));
+                        loadingSample.setSampleLevel(1);
                     } else {
                         loadingSample = existingSample;
                     }

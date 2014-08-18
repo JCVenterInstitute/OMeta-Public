@@ -347,6 +347,10 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                 if (sample.getParentSampleId() == null && sample.getParentSampleName() != null && !isEmpty(sample.getParentSampleName())) {
                     sample.setParentSampleId(getSampleId(sample.getProjectId(), sample.getParentSampleName(), session));
                 }
+
+                if(sample.getSampleLevel() == null || sample.getSampleLevel() == 0) {
+                    sample.setSampleLevel(1);
+                }
                 validateSampleInput(sample);
                 sample.setCreatedBy(actorId);
                 sample.setSampleId(guidGetter.getGuid());
