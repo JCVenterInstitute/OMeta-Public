@@ -345,7 +345,9 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                     sample.setProjectId(projectId);
                 }
                 if (sample.getParentSampleId() == null && sample.getParentSampleName() != null && !isEmpty(sample.getParentSampleName())) {
-                    sample.setParentSampleId(getSampleId(sample.getProjectId(), sample.getParentSampleName(), session));
+                    Sample parentSample = getSample(sample.getProjectId(), sample.getParentSampleName(), session);
+                    sample.setParentSampleId(parentSample.getSampleId());
+                    sample.setSampleLevel(parentSample.getSampleLevel() + 1);
                 }
 
                 if(sample.getSampleLevel() == null || sample.getSampleLevel() == 0) {
@@ -722,10 +724,10 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
         return project.getProjectId();
     }
 
-    private Long getSampleId(Long projectId, String sampleName, Session session) throws Exception {
+    private Sample getSample(Long projectId, String sampleName, Session session) throws Exception {
         SampleDAO sampleDAO = daoFactory.getSampleDAO();
         Sample sample = sampleDAO.getSample(projectId, sampleName, session);
-        return sample.getSampleId();
+        return sample;
     }
 
     /**

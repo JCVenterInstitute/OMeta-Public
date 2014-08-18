@@ -122,10 +122,11 @@ public class BeanWriter {
                 Project loadingProject = null;
                 Sample loadingSample = null;
 
-                if(isProjectRegistration && gBean.getProjectName()!=null && gBean.getProjectPublic()!=null) {
+                if(isProjectRegistration && gBean.getProjectName() != null && gBean.getProjectPublic() != null) {
                     loadingProject = new Project();
                     loadingProject.setProjectName(gBean.getProjectName());
                     loadingProject.setIsPublic(Integer.valueOf(gBean.getProjectPublic()));
+                    loadingProject.setProjectLevel(1);
                 } else {
                     projectName = gBean.getProjectName();
                     loadingProject = readEjb.getProject(projectName);
