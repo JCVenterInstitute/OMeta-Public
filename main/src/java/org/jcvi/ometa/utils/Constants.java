@@ -47,7 +47,7 @@ public class Constants {
     public static String ANNOTATION_URL= "http://www.ncbi.nlm.nih.gov/sites/entrez?db=nucleotide&cmd=Search&term=";
     public static String SAMPLE_DETAIL_URL = "/"+SERVICE_NAME+"/sampleDetail.action?";
     public static String dbSNP_URL = "#";
-    public static String INTERNAL_PROJECT_PAGE = "http://%s.jcvi.org/projects/%s/%s/index.php";
+    public static String PROJECT_SPECIFIC_PAGE = "http://%s.jcvi.org/projects/%s/%s/index.php";
     public static String NCBI_PROJECT_PAGE = "http://www.ncbi.nlm.nih.gov/bioproject/";
     public static String FGSC_URL="http://www.fgsc.net/";
     public static String NARSA_URL="http://www.narsa.net/control/member/repositories";

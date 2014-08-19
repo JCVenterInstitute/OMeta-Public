@@ -271,8 +271,13 @@ public class JsonProducer implements Schedulable {
                 Map<String, Object> projectAttrMap = new HashMap<String, Object>();
                 if (paList != null) {
                     for (ProjectAttribute pa : paList) {
-                        tempLookupValue = pa.getMetaAttribute().getLookupValue();
+                        ProjectMetaAttribute projectMeta = pa.getMetaAttribute();
+                        tempLookupValue = projectMeta.getLookupValue();
                         projectAttrMap.put(tempLookupValue.getName(), ModelValidator.getModelValue(tempLookupValue, pa));
+
+                        if(projectMeta.getLabel() != null) { //add another key-value pair for a labeled attribute
+                            projectAttrMap.put(projectMeta.getLabel(), ModelValidator.getModelValue(tempLookupValue, pa));
+                        }
                     }
                 }
 
@@ -301,9 +306,14 @@ public class JsonProducer implements Schedulable {
                         for (SampleAttribute sa : sampleAttributes) {
                             if(sa.getMetaAttribute()==null)
                                 continue;
-                            tempLookupValue = sa.getMetaAttribute().getLookupValue();
+                            SampleMetaAttribute sampleMeta = sa.getMetaAttribute();
+                            tempLookupValue = sampleMeta.getLookupValue();
                             Object sav = ModelValidator.getModelValue(tempLookupValue, sa);
                             sampleAttrMap.put(tempLookupValue.getName(), sav);
+
+                            if(sampleMeta.getLabel() != null) { //add another key-value pair for a labeled attribute
+                                sampleAttrMap.put(sampleMeta.getLabel(), sav);
+                            }
 
                             if(SAMPLE_STATUS.equals(tempLookupValue.getName())) {
                                 String currStatus = (String)sav;
@@ -330,12 +340,19 @@ public class JsonProducer implements Schedulable {
                         }
                     }
 
+                    if(!sampleAttrMap.containsKey("Organism")) { //manually add Organism attribute if not exist for GCID projects
+                        sampleAttrMap.put("Organism", "");
+                    }
+
                     JSONObject sampleJsonObj = new JSONObject();
                     for (String key : sampleAttrMap.keySet()) {
                         //this is custom decorating process for json data file only
                         //in status.shtml page, link on an organism should land to the project page rather than sample detail page
                         if(key.equals("Organism")) {
                             String organismVal = (String)sampleAttrMap.get(key);
+                            if(organismVal == null) { //get different attribute value for GCID projects
+                                organismVal = (String)sampleAttrMap.get("Species Source Common Name(CS4)");
+                            }
 
                             sampleJsonObj.put("OrganismUrl",
                                     (PROD_SERVER_ADDRESS + Constants.SAMPLE_DETAIL_URL +
@@ -347,11 +364,11 @@ public class JsonProducer implements Schedulable {
                             );
                             if(domain!=null && !"none".equals(domain)) {
                                 organismVal = convertIntoATag(
-                                        String.format(Constants.INTERNAL_PROJECT_PAGE,
+                                        String.format(Constants.PROJECT_SPECIFIC_PAGE,
                                                 domain, //hostName != null && hostName.contains("spike") ? fileName + "-dev" : fileName,
                                                 ((String) sampleAttrMap.get("Project Group")).toLowerCase(),
                                                 project.getProjectName().replaceAll(" ", "_")
-                                        ), (String)sampleAttrMap.get(key)
+                                        ), organismVal
                                 );
                             }
                             sampleJsonObj.put(key, organismVal);
