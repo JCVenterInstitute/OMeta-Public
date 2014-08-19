@@ -39,29 +39,37 @@ public class LoadingEngineUsage {
 
     protected static final String USERNAME_PARAM_NAME = "username";
     protected static final String PASSWORD_PARAM_NAME = "password";
-    protected static final String INPUTFILE_PARAM_NAME = "inputfile";
-    protected static final String MULTIPART_INPUTFILE_PARAM_NAME = "multifile";
-    protected static final String MULTIPART_DIRECTORY_PARAM_NAME = "multidir";
-    protected static final String DATABASE_ENVIRONMENT_PARAM_NAME = "server";
-    protected static final String OUTPUTLOC_PARAM_NAME = "output";
+    protected static final String INPUTFILE_PARAM_NAME = "i";
+    protected static final String MULTIPART_INPUTFILE_PARAM_NAME = "mf";
+    protected static final String MULTIPART_DIRECTORY_PARAM_NAME = "md";
+    protected static final String PROJECT_NAME_PARAM_NAME = "p";
+    protected static final String SAMPLE_NAME_PARAM_NAME = "s";
+    protected static final String EVENT_NAME_PARAM_NAME = "e";
+    protected static final String OUTPUTLOC_PARAM_NAME = "o";
+    protected static final String SUCCESS_RECORD_PARAM_NAME = "sl";
+    protected static final String FAILED_RECORD_PARAM_NAME = "fl";
+    protected static final String LOG_PARAM_NAME = "l";
+    protected static final String BATCH_SIZE_PARAM_NAME = "b";
     protected static final String MAKE_EVENT_PARAM_NAME = "template";
-    protected static final String PROJECT_NAME_PARAM_NAME = "project";
-    protected static final String SAMPLE_NAME_PARAM_NAME = "sample";
-    protected static final String EVENT_NAME_PARAM_NAME = "event";
     protected static final String SEQUENTIAL_PARAM_NAME = "seq";
+    protected static final String DATABASE_ENVIRONMENT_PARAM_NAME = "server";
 
     private OptionParameter usernameParam;
     private OptionParameter passwordParam;
     private OptionParameter inputFileNameParam;
     private OptionParameter multiInputFileParam;
     private OptionParameter multiDirectoryParam;
-    private OptionParameter serverUrlParam;
-    private OptionParameter eventNameParam;
-    private FlagParameter makeTemplateFlag;
     private OptionParameter projectNameParam;
     private OptionParameter sampleNameParam;
+    private OptionParameter eventNameParam;
     private OptionParameter outputLocationParam;
+    private OptionParameter successRecordParam;
+    private OptionParameter failedRecordParam;
+    private OptionParameter logParam;
+    private OptionParameter batchSizeParam;
+    private FlagParameter makeTemplateFlag;
     private FlagParameter sequentialFlag;
+    private OptionParameter serverUrlParam;
     private StringBuilder errors;
 
 
@@ -106,7 +114,7 @@ public class LoadingEngineUsage {
         errors = new StringBuilder();
 
         try {
-            if(isMakeEventTemplate() || isSequentialLoad()) { //template generation
+            if(isMakeEventTemplate() || (isSequentialLoad() && outputLocationParam.getValue() != null)) { //validate on an output location
                 validateOutputLocation(outputLocationParam.getValue(), rtnVal);
                 if(isEmpty(projectNameParam) || isEmpty(eventNameParam)) {
                     errors.append("need values for project and event.\n");
@@ -193,14 +201,19 @@ public class LoadingEngineUsage {
                 usernameParam,
                 passwordParam,
                 inputFileNameParam,
-                eventNameParam,
                 multiInputFileParam,
                 multiDirectoryParam,
                 projectNameParam,
                 sampleNameParam,
+                eventNameParam,
                 outputLocationParam,
+                successRecordParam,
+                failedRecordParam,
+                logParam,
+                batchSizeParam,
+                makeTemplateFlag,
                 sequentialFlag,
-                serverUrlParam,
+                serverUrlParam
         };
 
         String blurb = "Loading engine: loads files of events and settings, to be written to the events database.  " +
@@ -228,20 +241,28 @@ public class LoadingEngineUsage {
         multiInputFileParam.setUsageInfo("Input file to be loaded, which applies multiple types of settings.");
         multiDirectoryParam = commandLineHandler.addOptionParameter(MULTIPART_DIRECTORY_PARAM_NAME);
         multiDirectoryParam.setUsageInfo("Directory that has files to be loaded, which applies multiple types of settings.");
-        serverUrlParam = commandLineHandler.addOptionParameter(DATABASE_ENVIRONMENT_PARAM_NAME);
-        serverUrlParam.setUsageInfo("Specify server host/port(hostname.domain:port) to be used. please check with Project Websites team for values");
-        eventNameParam = commandLineHandler.addOptionParameter(EVENT_NAME_PARAM_NAME);
-        eventNameParam.setUsageInfo("Event Name for loading or creating a template.");
-        makeTemplateFlag = commandLineHandler.addFlagParameter(MAKE_EVENT_PARAM_NAME);
-        makeTemplateFlag.setUsageInfo("Output file template of the event name given will be created, with headers and prompts to help fill it in.");
         projectNameParam = commandLineHandler.addOptionParameter(PROJECT_NAME_PARAM_NAME);
         projectNameParam.setUsageInfo("Project name to be used when generating template. Use with -" + MAKE_EVENT_PARAM_NAME);
         sampleNameParam = commandLineHandler.addOptionParameter(SAMPLE_NAME_PARAM_NAME);
         sampleNameParam.setUsageInfo("Optional sample name to be used when generating template. Use with -" + MAKE_EVENT_PARAM_NAME);
+        eventNameParam = commandLineHandler.addOptionParameter(EVENT_NAME_PARAM_NAME);
+        eventNameParam.setUsageInfo("Event Name for loading or creating a template.");
         outputLocationParam = commandLineHandler.addOptionParameter(OUTPUTLOC_PARAM_NAME);
         outputLocationParam.setUsageInfo("Output directory for use with -" + MAKE_EVENT_PARAM_NAME + " only.");
+        successRecordParam = commandLineHandler.addOptionParameter(SUCCESS_RECORD_PARAM_NAME);
+        successRecordParam.setUsageInfo("CSV template file with processed events.");
+        failedRecordParam = commandLineHandler.addOptionParameter(FAILED_RECORD_PARAM_NAME);
+        failedRecordParam.setUsageInfo("CSV template file with failed events.");
+        logParam = commandLineHandler.addOptionParameter(OUTPUTLOC_PARAM_NAME);
+        logParam.setUsageInfo("log file that the loader writes.");
+        batchSizeParam = commandLineHandler.addOptionParameter(OUTPUTLOC_PARAM_NAME);
+        batchSizeParam.setUsageInfo("User configurable batch size per transaction. default is 1.");
+        makeTemplateFlag = commandLineHandler.addFlagParameter(MAKE_EVENT_PARAM_NAME);
+        makeTemplateFlag.setUsageInfo("Output file template of the event name given will be created, with headers and prompts to help fill it in.");
         sequentialFlag = commandLineHandler.addFlagParameter(SEQUENTIAL_PARAM_NAME);
         sequentialFlag.setUsageInfo("Load large event file line by line with a log file.");
+        serverUrlParam = commandLineHandler.addOptionParameter(DATABASE_ENVIRONMENT_PARAM_NAME);
+        serverUrlParam.setUsageInfo("Specify server host/port(hostname.domain:port) to be used. please check with Project Websites team for values");
 
         return commandLineHandler;
     }
