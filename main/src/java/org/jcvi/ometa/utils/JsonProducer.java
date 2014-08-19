@@ -363,10 +363,11 @@ public class JsonProducer implements Schedulable {
                                             "&sampleId=" + sampleAttrMap.get("sampleId")).replaceAll("\\\"", "\\\\\"")
                             );
                             if(domain!=null && !"none".equals(domain)) {
+                                String projectGroup = (String)sampleAttrMap.get("Project Group");
                                 organismVal = convertIntoATag(
                                         String.format(Constants.PROJECT_SPECIFIC_PAGE,
                                                 domain, //hostName != null && hostName.contains("spike") ? fileName + "-dev" : fileName,
-                                                ((String) sampleAttrMap.get("Project Group")).toLowerCase(),
+                                                (projectGroup == null? "" : projectGroup.toLowerCase()),
                                                 project.getProjectName().replaceAll(" ", "_")
                                         ), organismVal
                                 );
