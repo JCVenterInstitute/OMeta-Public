@@ -46,14 +46,14 @@
         </s:if>
         <s:else>
             <jsp:include page="TopMenu.jsp"/>
+            <div id="HeaderPane" style="margin:15px 0 0 30px;">
+               <div class="panelHeader" style="margin:0;">Sample Detail</div>
+            </div>
         </s:else>
-        <div id="HeaderPane" style="margin:15px 0 0 30px;">
-           <div class="panelHeader" style="margin:0;">Sample Detail</div>
-        </div>
         <div id="middle_content_template">
             <h1 class="csc-firstHeader">
-                <s:if test="detailMap.Organism==null">
-                    <s:property value="sample.name" />
+                <s:if test="detailMap.get(\"Organism\")==null">
+                    <s:property value="sample.sampleName" />
                 </s:if>
                 <s:else>
                     <s:property value="detailMap.Organism" />
@@ -96,7 +96,6 @@
     <script src="scripts/jquery/jquery.dataTables.js"></script>
     <script>
         $(document).ready(function() {
-            console.log('${iss}');
             $('#statusTable tbody tr:even').addClass('even');
             $('#statusTable tbody tr:odd').addClass('odd');
         })

@@ -46,12 +46,9 @@ public class LoadingEngineUsage {
     protected static final String SAMPLE_NAME_PARAM_NAME = "s";
     protected static final String EVENT_NAME_PARAM_NAME = "e";
     protected static final String OUTPUTLOC_PARAM_NAME = "o";
-    protected static final String SUCCESS_RECORD_PARAM_NAME = "sl";
-    protected static final String FAILED_RECORD_PARAM_NAME = "fl";
-    protected static final String LOG_PARAM_NAME = "l";
     protected static final String BATCH_SIZE_PARAM_NAME = "b";
     protected static final String MAKE_EVENT_PARAM_NAME = "template";
-    protected static final String SEQUENTIAL_PARAM_NAME = "seq";
+    protected static final String BATCH_PARAM_NAME = "batch";
     protected static final String DATABASE_ENVIRONMENT_PARAM_NAME = "server";
 
     private OptionParameter usernameParam;
@@ -63,12 +60,9 @@ public class LoadingEngineUsage {
     private OptionParameter sampleNameParam;
     private OptionParameter eventNameParam;
     private OptionParameter outputLocationParam;
-    private OptionParameter successRecordParam;
-    private OptionParameter failedRecordParam;
-    private OptionParameter logParam;
     private OptionParameter batchSizeParam;
     private FlagParameter makeTemplateFlag;
-    private FlagParameter sequentialFlag;
+    private FlagParameter batchFlag;
     private OptionParameter serverUrlParam;
     private StringBuilder errors;
 
@@ -114,13 +108,13 @@ public class LoadingEngineUsage {
         errors = new StringBuilder();
 
         try {
-            if(isMakeEventTemplate() || (isSequentialLoad() && outputLocationParam.getValue() != null)) { //validate on an output location
+            if(isMakeEventTemplate() || (isBatchLoad() && outputLocationParam.getValue() != null)) { //validate on an output location
                 validateOutputLocation(outputLocationParam.getValue(), rtnVal);
                 if(isEmpty(projectNameParam) || isEmpty(eventNameParam)) {
                     errors.append("need values for project and event.\n");
                     rtnVal = false;
                 }
-                if(isSequentialLoad()) { //check input file for sequential load
+                if(isBatchLoad()) { //check input file for sequential load
                     rtnVal = validateInputfile(inputFileNameParam.getValue(), rtnVal);
                 }
             } else {
@@ -207,12 +201,9 @@ public class LoadingEngineUsage {
                 sampleNameParam,
                 eventNameParam,
                 outputLocationParam,
-                successRecordParam,
-                failedRecordParam,
-                logParam,
                 batchSizeParam,
                 makeTemplateFlag,
-                sequentialFlag,
+                batchFlag,
                 serverUrlParam
         };
 
@@ -249,18 +240,12 @@ public class LoadingEngineUsage {
         eventNameParam.setUsageInfo("Event Name for loading or creating a template.");
         outputLocationParam = commandLineHandler.addOptionParameter(OUTPUTLOC_PARAM_NAME);
         outputLocationParam.setUsageInfo("Output directory for use with -" + MAKE_EVENT_PARAM_NAME + " only.");
-        successRecordParam = commandLineHandler.addOptionParameter(SUCCESS_RECORD_PARAM_NAME);
-        successRecordParam.setUsageInfo("CSV template file with processed events.");
-        failedRecordParam = commandLineHandler.addOptionParameter(FAILED_RECORD_PARAM_NAME);
-        failedRecordParam.setUsageInfo("CSV template file with failed events.");
-        logParam = commandLineHandler.addOptionParameter(OUTPUTLOC_PARAM_NAME);
-        logParam.setUsageInfo("log file that the loader writes.");
-        batchSizeParam = commandLineHandler.addOptionParameter(OUTPUTLOC_PARAM_NAME);
+        batchSizeParam = commandLineHandler.addOptionParameter(BATCH_SIZE_PARAM_NAME);
         batchSizeParam.setUsageInfo("User configurable batch size per transaction. default is 1.");
         makeTemplateFlag = commandLineHandler.addFlagParameter(MAKE_EVENT_PARAM_NAME);
         makeTemplateFlag.setUsageInfo("Output file template of the event name given will be created, with headers and prompts to help fill it in.");
-        sequentialFlag = commandLineHandler.addFlagParameter(SEQUENTIAL_PARAM_NAME);
-        sequentialFlag.setUsageInfo("Load large event file line by line with a log file.");
+        batchFlag = commandLineHandler.addFlagParameter(BATCH_PARAM_NAME);
+        batchFlag.setUsageInfo("Load large event file line by line with a log file.");
         serverUrlParam = commandLineHandler.addOptionParameter(DATABASE_ENVIRONMENT_PARAM_NAME);
         serverUrlParam.setUsageInfo("Specify server host/port(hostname.domain:port) to be used. please check with Project Websites team for values");
 
@@ -399,7 +384,11 @@ public class LoadingEngineUsage {
         return errors.toString();
     }
 
-    public boolean isSequentialLoad() {
-        return sequentialFlag.getValue();
+    public boolean isBatchLoad() {
+        return batchFlag.getValue();
+    }
+
+    public String getBatchSize() {
+        return batchSizeParam.getValue();
     }
 }

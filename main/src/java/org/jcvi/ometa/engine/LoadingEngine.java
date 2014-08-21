@@ -66,8 +66,8 @@ public class LoadingEngine {
 
             LoadingEngine engine = new LoadingEngine(usage);
             if(usage.isCmdLineNamedEvent()) {
-                if(usage.isSequentialLoad()) {
-                    engine.sequentialLoad();
+                if(usage.isBatchLoad()) {
+                    engine.batchLoad();
                 } else {
                     engine.loadEventFile();
                 }
@@ -331,7 +331,7 @@ public class LoadingEngine {
         }
     }
 
-    public void sequentialLoad() throws Exception {
+    public void batchLoad() throws Exception {
         String userName = usage.getUsername();
         String passWord = usage.getPassword();
         String serverUrl = usage.getServerUrl();
@@ -339,25 +339,38 @@ public class LoadingEngine {
         String eventFileName = usage.getInputFilename();
         String eventName = usage.getEventName();
         String projectName = usage.getProjectName();
-        String logPath = usage.getOutputLocation();
+        String outputPath = usage.getOutputLocation();
+
+        int batchSizeInt = 1;
+        String batchSize = usage.getBatchSize();
+        if(batchSize != null && !batchSize.isEmpty()) {
+            batchSizeInt = Integer.parseInt(batchSize);
+        }
 
         File eventFile = new File(eventFileName);
 
         Long timeStamp = new Date().getTime();
-        File logFile = new File(logPath + File.separator + "result_" + timeStamp + ".log");
-        FileWriter logWriter = new FileWriter(logFile,true);
+        File logFile = new File(outputPath + File.separator + "ometa.log");
+        FileWriter logWriter = new FileWriter(logFile, false);
+
+        int successCount = 0;
+        File processedFile = new File(outputPath + File.separator + "ometa_processed.csv");
+        FileWriter processedWriter = new FileWriter(processedFile, false);
+        int failedCount = 0;
+        File failedFile = new File(outputPath + File.separator + "ometa_failed.csv");
+        FileWriter failedWriter = new FileWriter(failedFile, false);
 
         // Must break this file up, and deposit it into a temporary output directory.
         String userBase = System.getProperty("user.home");
         ScratchUtils.setScratchBaseLocation(userBase + "/" + Constants.SCRATCH_BASE_LOCATION);
         File scratchLoc = ScratchUtils.getScratchLocation(timeStamp, "LoadingEngine__" + eventFile.getName());
 
+        int processedLineCount = 0;
         try {
             BeanWriter writer = new BeanWriter(serverUrl, userName, passWord);
 
             LineIterator lineIterator = FileUtils.lineIterator(eventFile);
             int lineCount = 0;
-            int processedLineCount = 0;
 
             String headerLine = null;
             while(lineIterator.hasNext()) {
@@ -366,8 +379,10 @@ public class LoadingEngine {
 
                 if(lineCount == 1) {
                     headerLine = currLine;
+                    processedWriter.write(currLine + "\n");
+                    failedWriter.write(currLine + "\n");
                     continue;
-                } else if(lineCount == 2 && (currLine.startsWith("#") || currLine.startsWith("\"#"))) {
+                } else if(lineCount == 2 && (currLine.startsWith("#") || currLine.startsWith("\"#"))) { //skip comment line
                     continue;
                 } else {
                     File singleEventFile = new File(scratchLoc.getAbsoluteFile() + File.separator + "temp.csv");
@@ -376,11 +391,18 @@ public class LoadingEngine {
                     lines.add(currLine);
                     FileUtils.writeLines(singleEventFile, lines);
 
-                    String eventTarget = writer.writeEvent(singleEventFile, eventName, projectName, true);
-
-                    logWriter.write(String.format("[line# %d] loaded event for %s\n", lineCount, eventTarget));
-
-                    System.out.println(++processedLineCount + " event(s) loaded.");
+                    try {
+                        String eventTarget = writer.writeEvent(singleEventFile, eventName, projectName, true);
+                        logWriter.write(String.format("[#%d] loaded event for %s\n", lineCount, eventTarget));
+                        processedWriter.write(currLine + "\n");
+                        successCount++;
+                    } catch (Exception ex) {
+                        failedWriter.write(currLine + "\n");
+                        logWriter.write(String.format("[#%d] loading event failed.\n", lineCount));
+                        logWriter.write(ex.toString() + "\n");
+                        failedCount++;
+                    }
+                    processedLineCount++;
                 }
             }
         } catch(IOException ioe) {
@@ -400,6 +422,9 @@ public class LoadingEngine {
             }
 
             logWriter.close();
+            processedWriter.close();
+            failedWriter.close();
+            System.out.printf("total: %d, processed: %d, failed: %d\n", processedLineCount, successCount, failedCount);
             System.out.println("log file: " + logFile.getAbsolutePath());
         }
     }
