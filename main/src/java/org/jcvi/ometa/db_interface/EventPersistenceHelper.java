@@ -48,7 +48,7 @@ public class EventPersistenceHelper {
     protected static final MessageFormat UNKNOWN_ATTRIB_TYPE_HUMAN_READABLE_MSG = new MessageFormat(
             "Unknown attribute type {0} " );
     protected static final MessageFormat CONTROLLED_VOCAB_VIOLATED_HUMAN_READABLE_MSG = new MessageFormat(
-            "{0} {1} attribute may not be set to {2}.  Instead, use one or more of these values: {3} " );
+            "{0} {1} attribute may not be set to {2}.  Possible values: {3} " );
     protected static final MessageFormat EVENT_NOT_IN_PROJECT_HUMAN_READABLE_MSG = new MessageFormat(
             "Event attribute of {0} does not belong to project {1} " );
     protected static final MessageFormat INVALID_PROJECT_META_ATTRIB_HUMAN_READABLE_MSG = new MessageFormat(

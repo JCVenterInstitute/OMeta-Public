@@ -46,10 +46,10 @@ import java.util.*;
  */
 public class WritebackBeanPersister implements BeanPersistenceFacadeI {
 
-    protected static final String NO_SUCH_ATTRIBUTE_MSG = "Could not find any attribute named %s.";
-    protected static final String BAD_LOOKUP_TYPE_MSG = "Type of lookup value '%s', which is '%s', is not a true attribute type.";
-    protected static final String INVALID_LOOKUP_VALUE_TYPE_MSG = "Lookup value %s has invalid lookup-value type of %s.";
-    protected static final String INVALID_LOOKUP_VALUE_DATA_TYPE_MSG = "Lookup value %s has invalid data type of %s.";
+    protected static final String NO_SUCH_ATTRIBUTE_MSG = "attribute %s not found.";
+    protected static final String BAD_LOOKUP_TYPE_MSG = "'%s' is not an attribute.";
+    protected static final String INVALID_LOOKUP_VALUE_TYPE_MSG = "invalid lookup value type '%s'.";
+    protected static final String INVALID_LOOKUP_VALUE_DATA_TYPE_MSG = "invalid data type '%s'.";
     protected static final String MISMATCH_DATATYPE_MSG = "Lookup value %s has a data type of %s but you requested a data type of %s.";
     protected static final String MISMATCH_TYPE_MSG = "Lookup value %s has a lookup value type of %s but you requested a type of %s.";
     protected static final String INCOMPATIBLE_LOOKUP_VALUE_MSG = "Lookup value %s already exists. (%s, %s)";//, and is not compatible.";
@@ -214,7 +214,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                 String lvName = lookupValue.getName();
                 String lvType = lookupValue.getType();
                 if (!modelValidator.isValidLookupValueType(lvType)) {
-                    String message = String.format(INVALID_LOOKUP_VALUE_TYPE_MSG, lvName, lvType);
+                    String message = String.format(INVALID_LOOKUP_VALUE_TYPE_MSG, lvType);
                     errors.append(message);
                 }
                 String lvDataType = lookupValue.getDataType();
