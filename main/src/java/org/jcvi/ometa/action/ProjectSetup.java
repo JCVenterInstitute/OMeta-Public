@@ -181,7 +181,7 @@ public class ProjectSetup extends ActionSupport {
             } else if (ex.getClass() == ParseException.class)
                 addActionError(Constants.INVALID_DATE_MESSAGE);
             else
-                addActionError(ex.toString());
+                addActionError(ex.getMessage());
 
             try {
                 if(tx!=null)

@@ -115,7 +115,7 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
             } catch (SystemException se) {
                 ex = se;
             }
-            addActionError(ex.toString());
+            addActionError(ex.getMessage());
         } finally {
             try {
                 if(tx !=null && tx.getStatus() != Status.STATUS_NO_TRANSACTION)

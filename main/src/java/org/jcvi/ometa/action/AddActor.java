@@ -64,8 +64,9 @@ public class AddActor extends ActionSupport {
                 if(tx!=null)
                     tx.rollback();
             } catch (SystemException se) {
-                addActionError(se.toString());
+                ex = se;
             }
+            addActionError(ex.getMessage());
         } finally {
             try {
                 if(tx !=null && tx.getStatus() != Status.STATUS_NO_TRANSACTION)
