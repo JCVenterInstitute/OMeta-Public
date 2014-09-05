@@ -242,7 +242,7 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
         return canEdit;
     }
 
-    private Object attributeDecorator(LookupValue lookupValue, Object attrVal) {
+    private Object attributeDecorator(LookupValue lookupValue, Object attrVal) throws Exception {
         if(attrVal!=null) {
             if(attrVal.getClass() == Timestamp.class || attrVal.getClass() == Date.class) {
                 attrVal = CommonTool.convertTimestampToDate(attrVal);

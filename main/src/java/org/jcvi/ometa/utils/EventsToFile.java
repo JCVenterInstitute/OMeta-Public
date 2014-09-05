@@ -183,7 +183,7 @@ public class EventsToFile {
         }
     }
 
-    private <E extends AttributeModelBean> void getValueMap(List<String> requested, List<E> attributeList, Map<String, Object> attributeMap) {
+    private <E extends AttributeModelBean> void getValueMap(List<String> requested, List<E> attributeList, Map<String, Object> attributeMap) throws Exception {
         for(AttributeModelBean attributeBean : attributeList) {
             if(attributeBean.getMetaAttribute() == null) {
                 continue;

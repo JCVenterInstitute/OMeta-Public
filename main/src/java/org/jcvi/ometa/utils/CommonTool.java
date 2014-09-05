@@ -131,7 +131,7 @@ public class CommonTool {
         return "<a href=\"getFile.action?fn="+fileName+"\">"+justFileName+"</a>";
     }
 
-    public static <M extends AttributeModelBean> Map<String, Object> getAttributeValueMap(List<M> attributeList, boolean decorate, String[] skipArr) {
+    public static <M extends AttributeModelBean> Map<String, Object> getAttributeValueMap(List<M> attributeList, boolean decorate, String[] skipArr) throws Exception {
         Map<String, Object> valueMap = new HashMap<String, Object>();
         List<String> skipList = (skipArr!=null && skipArr.length>0) ? Arrays.asList(skipArr) : null;
 
@@ -160,7 +160,8 @@ public class CommonTool {
         return valueMap;
     }
 
-    public static String convertTimestampToDate(Object value) {
+    public static String convertTimestampToDate(Object value) throws Exception {
+        String formattedDate = null;
         String[] formats = {"MM/dd/yyyy", Constants.DEFAULT_DATE_FORMAT};
         Date parsedDate = null;
         boolean isString = (value.getClass() == String.class);
@@ -169,12 +170,19 @@ public class CommonTool {
             for(String format : formats) {
                 try {
                     parsedDate = new SimpleDateFormat(format).parse((String)value);
-                } catch(ParseException e) {}
+                } catch(ParseException e) { //ignore parse exception
+                }
             }
         } else {
             parsedDate = (Date)value;
         }
-        return ModelValidator.PST_DEFAULT_DATE_FORMAT.format(parsedDate);
+
+        try {
+            formattedDate = ModelValidator.PST_DEFAULT_DATE_FORMAT.format(parsedDate);
+        } catch(Exception ex) {
+            throw new ParseException("invalid date value: '" + value + "'", 0);
+        }
+        return formattedDate;
     }
 
     public static List<EventMetaAttribute> filterActiveEventMetaAttribute(List<EventMetaAttribute> list) {

@@ -441,7 +441,7 @@ public class TemplatePreProcessingUtils {
         }
     }
 
-    private String getExcelCellValue(Cell cell) {
+    private String getExcelCellValue(Cell cell) throws Exception {
         String value = "";
         if(cell != null) {
             switch(cell.getCellType()) {
