@@ -225,13 +225,13 @@ public class EventLoader extends ActionSupport implements Preparable {
             if (ex.getClass() == ForbiddenResourceException.class) {
                 addActionError(Constants.DENIED_USER_EDIT_MESSAGE);
                 return Constants.FORBIDDEN_ACTION_RESPONSE;
-            } else if (ex.getClass() == ForbiddenResourceException.class) {
+            /*} else if (ex.getClass() == ForbiddenResourceException.class) {
                 addActionError(Constants.DENIED_USER_EDIT_MESSAGE);
-                return LOGIN;
-            } else if (ex.getClass() == ParseException.class)
+                return LOGIN;*/
+            } else if (ex.getClass() == ParseException.class) {
                 addActionError(Constants.INVALID_DATE_MESSAGE);
-            else {
-                addActionError(ex.toString());
+            } else {
+                addActionError(ex.getMessage());
             }
 
             //deletes uploaded files in event of error
