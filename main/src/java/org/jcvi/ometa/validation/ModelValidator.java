@@ -272,7 +272,7 @@ public class ModelValidator {
         // This test should never fail, or it means loader has a flaw elsewhere, or someone is loading
         // project meta attributes outside this code.
         if (!isValidDataType(dataType)) {
-            throw new Exception("Data type provided in project meta attribute " + dataType + " is invalid.");
+            throw new Exception("invalid data type '" + dataType + "'");
         }
 
         if (dataType.equals(ModelValidator.FLOAT_DATA_TYPE)) {
@@ -290,17 +290,19 @@ public class ModelValidator {
 
     private Date validateAndSetDate(StringBuilder errors, String sourceName, AttributeModelBean attribute, String value) {
         // Two tries to get the date/time right.
-        String trimmedValue = CommonTool.convertTimestampToDate(value.trim());
         SimpleDateFormat chosenFormat = PST_DEFAULT_DATE_FORMAT;//US_SLASHED_DATE_TIME_FMT;
         chosenFormat.setLenient(false);
         Date rtnDate = null;
         try {
+            String trimmedValue = CommonTool.convertTimestampToDate(value.trim());
             rtnDate = chosenFormat.parse(trimmedValue);
             attribute.setAttributeDateValue(new java.sql.Date(rtnDate.getTime()));
         } catch (NullPointerException npe) {
-            errors.append("Attribute value of null not acceptable for "+sourceName + ".\n");
+            errors.append("empty value for " + sourceName + ".\n");
         } catch (ParseException pe) {
-            errors.append("Attribute '"+sourceName+"' ("+value+") not parsable as date, Required date format is '"+chosenFormat.toPattern()+"'\n");
+            errors.append("date parse error: " + sourceName + " - " + value + ", correct format is '" + chosenFormat.toPattern() + "'\n");
+        } catch(Exception e) {
+            e.printStackTrace();
         }
         return rtnDate;
     }
@@ -310,9 +312,9 @@ public class ModelValidator {
             Double fValue = Double.parseDouble(value.trim());
             attribute.setAttributeFloatValue(fValue);
         } catch (NullPointerException npe) {
-            errors.append("Attribute value of null not acceptable for " + sourceName + ".\n");
+            errors.append("empty value for " + sourceName + ".\n");
         } catch (NumberFormatException nfe) {
-            errors.append("Attribute value string "+value+" not parsable as float, per requirements of all "+sourceName + " values.\n");
+            errors.append("float parse error: " + sourceName + " - " + value + ".\n");
         }
     }
 
@@ -322,10 +324,10 @@ public class ModelValidator {
             if (testableValue.matches(ACCEPTABLE_CHARACTERS_REGEXP)) {
                 attribute.setAttributeStringValue(value.trim());
             } else {
-                errors.append("Value (" + testableValue + ") contains characters other than ("+ACCEPTABLE_CHARACTERS +") and therefore cannot be loaded.");
+                errors.append("invalid character(s) in '" + testableValue + "', use " + ACCEPTABLE_CHARACTERS + "\n");
             }
         } catch (NullPointerException npe) {
-            errors.append("Attribute value of null not acceptable for " + sourceName + ".\n");
+            errors.append("empty value for " + sourceName + ".\n");
         }
     }
 
@@ -335,9 +337,9 @@ public class ModelValidator {
             URL url = new URL(trimmedValue);
             attribute.setAttributeStringValue(trimmedValue);
         } catch (NullPointerException npe) {
-            errors.append("Attribute value of null not acceptable as URL for " + sourceName + ".\n");
+            errors.append("empty value for " + sourceName + ".\n");
         } catch (MalformedURLException npe) {
-            errors.append("Attribute value of " + value + " not parsable as URL for " + sourceName + ".\n");
+            errors.append("invalid url: " + sourceName + " - " + value + ".\n");
         }
     }
 
@@ -348,7 +350,7 @@ public class ModelValidator {
         } catch (NullPointerException npe) {
             errors.append("Attribute value of null not acceptable for " + sourceName + ".\n");
         } catch (NumberFormatException nfe) {
-            errors.append("Attribute value string \"" + value + "\" not parsable as int, per requirements of all " + sourceName + " values.\n");
+            errors.append("int parse error: " + sourceName + " - " + value + "\n");
         }
     }
 
