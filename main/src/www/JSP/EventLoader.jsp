@@ -702,14 +702,14 @@ function comboBoxChanged(option, id) {
       changes.event(option.text);
     }
   } else if(id==='_sampleSelect') {
-    if(option.value && option.value!=0 && option.text && option.text!='' && $('#_eventSelect').val() != 0) {
+    /*if(option.value && option.value!=0 && option.text && option.text!='' && $('#_eventSelect').val() != 0) {
       _utils.makeAjax(
           'sharedAjax.action',
           'type=ea&projectName='+utils.getProjectName()+'&eventName='+utils.getEventName(),
           utils.getEventName(),
           callbacks.meta
       );
-    }
+    }*/
   } else if(id==='a_patientSelect') {
     var label=$('input:hidden#label').val()
     if(label==='FM')
