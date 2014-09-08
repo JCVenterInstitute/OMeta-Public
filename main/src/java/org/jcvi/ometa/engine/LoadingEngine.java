@@ -408,7 +408,8 @@ public class LoadingEngine {
         } catch(IOException ioe) {
             System.err.println("IOException: " + ioe.getMessage());
         } catch (Exception ex) {
-            logWriter.write(ex.toString());
+            String exceptionString = ex.getCause() == null ? ex.getMessage() : ex.getCause().getMessage();
+            logWriter.write(exceptionString);
             throw ex;
         } finally {
             if(scratchLoc != null  &&  scratchLoc.exists()) {
