@@ -50,7 +50,6 @@ public class StandaloneSessionAndTransactionManager implements SessionAndTransac
     private static final String STANDALONE_DEVELOPMENT_CFG_XML_PROP = "standalone_dev_hibernate_config_xml";
     private static final String FAILED_TO_OBTAIN_SESSION_FACTORY_ERROR = "Failed to obtain session factory: ";
 
-    private Transaction trax;
     private static SessionFactory sessionFactoryObject;
     private Session session;
     private Timestamp traxStartDate;
@@ -75,28 +74,43 @@ public class StandaloneSessionAndTransactionManager implements SessionAndTransac
         if ( session == null ) {
             throw new DAOException( "No session yet established." );
         }
-        trax = session.beginTransaction();
+        session.beginTransaction();
         Timestamp ts = new Timestamp( new java.util.Date().getTime() );
         traxStartDate = ts;
     }
 
     @Override
     public void commitTransaction() throws DAOException {
-        if ( trax != null  &&  trax.isActive() ) {
-            try {
-                trax.commit();
-            } catch ( Exception ex ) {
-                throw new DAOException( ex );
+        if(session != null) {
+            Transaction tx = session.getTransaction();
+            if(logger.isDebugEnabled()) {
+                logger.debug("Commit-Transaction:: TRAX ref: " + tx);
+            }
+            if(tx == null) {
+                logger.warn("Transaction was null at commit time: TRAX ref: null");
+                new Exception().printStackTrace();
+            }
+            if(transactionCanBeEnded(tx) && tx.isActive()) {
+                tx.commit();
+                tx = null;  // Pushing this away, to guarantee won't be re-used.
             }
         }
     }
 
     @Override
     public void rollBackTransaction() {
-        if ( trax != null   &&   trax.isActive() ) {
-            trax.rollback();
-        }
         traxStartDate = null;
+        if(session != null) {
+            Transaction tx = session.getTransaction();
+            if(tx == null) {
+                logger.warn("Transaction was null at rollback time: TRAX ref: null");
+                new Exception().printStackTrace();
+            }
+            if(transactionCanBeEnded(tx) && tx.isActive()) {
+                tx.rollback();
+                tx = null;  // Pushing this away, to guarantee won't be re-used.
+            }
+        }
     }
 
     /** Refer to this date for all "creation" or "modification" dates under the transaction. */
@@ -179,7 +193,7 @@ public class StandaloneSessionAndTransactionManager implements SessionAndTransac
             String message =
                     "Attempt at creating a session factory from scratch when a container session factory /" +
                             sessionFactoryName +
-                    "/ may be available.";
+                            "/ may be available.";
             logger.error(message);
             throw new DAOException(message);
         }
@@ -205,6 +219,10 @@ public class StandaloneSessionAndTransactionManager implements SessionAndTransac
             throw new DAOException(ex);
 
         }
+    }
+
+    private boolean transactionCanBeEnded(Transaction tx) {
+        return tx != null && !(tx.wasCommitted() || tx.wasRolledBack());
     }
 
 }
