@@ -432,6 +432,7 @@ $(document).ready(function() {
     } else {
       this.src = closeBtn;
       _table.fnOpen(_row, subrow_html.replace(/\\$d\\$/, _table.fnGetData(_row)[(_is_event?6:5)]), '_details');
+      $('td._details').attr('colspan', 7); //fix misalignment issue in chrome by incresing colspan by 1
       $('td._details>div').css('width', $('#projectTableDiv').width()-90);
     }
   });
