@@ -393,13 +393,13 @@ public class LoadingEngine {
 
                     try {
                         String eventTarget = writer.writeEvent(singleEventFile, eventName, projectName, true);
-                        logWriter.write(String.format("[#%d] loaded event for %s\n", lineCount, eventTarget));
+                        logWriter.write(String.format("[%d] loaded event for %s\n", lineCount, eventTarget));
                         processedWriter.write(currLine + "\n");
                         successCount++;
                     } catch (Exception ex) {
                         failedWriter.write(currLine + "\n");
-                        logWriter.write(String.format("[#%d] loading event failed.\n", lineCount));
-                        logWriter.write(ex.toString() + "\n");
+                        logWriter.write(String.format("[%d] failed :\n", lineCount));
+                        logWriter.write(ex.getMessage() + "\n");
                         failedCount++;
                     }
                     processedLineCount++;
