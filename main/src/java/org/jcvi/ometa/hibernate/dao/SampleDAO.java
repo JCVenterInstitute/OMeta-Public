@@ -220,12 +220,8 @@ public class SampleDAO extends HibernateDAO {
         crit.add( Restrictions.eq("sampleName", sampleName) );
         crit.add( Restrictions.eq("projectId", sample.getProjectId()) );
         List results = crit.list();
-        if ( results != null  &&  results.size() > 0 ) {
-            throw new DAOException(
-                    "Do not call writeback loop with an existing sample.  Sample " +
-                            sampleName +
-                            " is in the database."
-            );
+        if(results != null  &&  results.size() > 0) {
+            throw new DAOException("Sample '" + sampleName + "' already exists.");
         }
     }
 
