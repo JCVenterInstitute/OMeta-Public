@@ -32,6 +32,7 @@
   <style>
     .loadRadio { margin-left: 10px; margin-right: 3px; }
     #gridBody .ui-autocomplete-input { width: 150px; }
+    .gridIndex { max-width: 5px !important; text-align: center;}
     .ms-choice {line-height: 20px; }
     .ms-choice, .ms-choice > div { height: 20px; }
   </style>
@@ -371,13 +372,12 @@ var _utils = {
 
         var requireImgHtml = '<img class="attributeIcon" src="images/icon/req.png"/>';
 
-        // //add table headers for gird view
+        // //add table headers for grid view
         var gridHeaders = '', $gridHeaders = $('<tr/>');
+        $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG gridIndex').append('#')); //grid row index
         if(utils.checkNP(en)) {
           if(!utils.checkSR(en)) {
-            $gridHeaders.append(
-              $('<th/>').addClass('tableHeaderNoBG').append('Sample<br/>', requireImgHtml)
-            );
+            $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG').append('Sample<br/>', requireImgHtml));
           } else {
             $gridHeaders.append(
               $('<th/>').addClass('tableHeaderNoBG').append('Sample Name<br/>', requireImgHtml),
@@ -554,6 +554,8 @@ var button = {
     var _pn = pn ? pn : utils.getProjectName(),
         _en = en ? en : utils.getEventName(),
         $eventLine = $('<tr class="borderBottom"/>');
+
+    $eventLine.append('<td class="gridIndex">' + (gridLineCount + 1)+ '</td>'); //grid row index
 
     if(_pn && _en) {
       if(utils.checkNP(_en)){ //not project related
