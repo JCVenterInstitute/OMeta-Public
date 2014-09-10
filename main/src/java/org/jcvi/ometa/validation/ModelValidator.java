@@ -300,7 +300,7 @@ public class ModelValidator {
         } catch (NullPointerException npe) {
             errors.append("empty value for " + sourceName + ".\n");
         } catch (ParseException pe) {
-            errors.append("date parse error: " + sourceName + " - " + value + ", correct format is '" + chosenFormat.toPattern() + "'\n");
+            errors.append("date parse error: '" + sourceName + "' - " + value + ", use '" + chosenFormat.toPattern() + "'\n");
         } catch(Exception e) {
             e.printStackTrace();
         }
