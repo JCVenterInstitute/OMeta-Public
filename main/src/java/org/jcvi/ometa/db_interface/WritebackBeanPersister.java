@@ -48,10 +48,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
 
     protected static final String NO_SUCH_ATTRIBUTE_MSG = "attribute %s not found.";
     protected static final String BAD_LOOKUP_TYPE_MSG = "'%s' is not an attribute.";
-    protected static final String INVALID_LOOKUP_VALUE_TYPE_MSG = "invalid lookup value type '%s'.";
     protected static final String INVALID_LOOKUP_VALUE_DATA_TYPE_MSG = "invalid data type '%s'.";
-    protected static final String MISMATCH_DATATYPE_MSG = "Lookup value %s has a data type of %s but you requested a data type of %s.";
-    protected static final String MISMATCH_TYPE_MSG = "Lookup value %s has a lookup value type of %s but you requested a type of %s.";
     protected static final String INCOMPATIBLE_LOOKUP_VALUE_MSG = "Lookup value %s already exists. (%s, %s)";//, and is not compatible.";
     protected static final String UNKNOWN_SAMPLE_FOR_PROJECT_MSG = "Project '%s' does not have sample '%s'.";
 
@@ -120,7 +117,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
             //check if another user with same user name exists
             Actor existingUser = actorDAO.getActorByLoginName(actor.getUsername(), session);
             if(existingUser!=null) {
-                throw new Exception("User ID already exists!");
+                throw new Exception("user id already exists!");
             }
 
             actor.setLoginId(guidGetter.getGuid());
@@ -214,13 +211,11 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                 String lvName = lookupValue.getName();
                 String lvType = lookupValue.getType();
                 if (!modelValidator.isValidLookupValueType(lvType)) {
-                    String message = String.format(INVALID_LOOKUP_VALUE_TYPE_MSG, lvType);
-                    errors.append(message);
+                    errors.append(lvName + ":invalid lookup value type - " + lvType);
                 }
                 String lvDataType = lookupValue.getDataType();
                 if (!modelValidator.isValidDataType(lvDataType)) {
-                    String message = String.format(INVALID_LOOKUP_VALUE_DATA_TYPE_MSG, lvName, lvType);
-                    errors.append(message);
+                    errors.append(lvName + ":invalid data type - " + lvDataType);
                 }
                 LookupValue oldValue = lookupValueDAO.getLookupValue(lvName, session);
                 if (oldValue == null) {
@@ -228,7 +223,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                     //lookupValueDAO.createLookupValue(lookupValue, sessionAndTransactionManager.getTransactionStartDate(), session);
                 } else {
                     String message = String.format(INCOMPATIBLE_LOOKUP_VALUE_MSG, lvName, oldValue.getType(), oldValue.getDataType());
-                    errors.append(message);
+                    errors.append(lvName + ":lookup value already exists");
                     /*
                     * commented out since it creates more confusions for user
                     * 8/7/12 by hkim
