@@ -21,7 +21,6 @@
 
 package org.jcvi.ometa.db_interface;
 
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.jcvi.ometa.configuration.AccessLevel;
 import org.jcvi.ometa.configuration.QueryEntityType;
@@ -58,7 +57,6 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
 
     private GuidGetter guidGetter;
     private ModelValidator modelValidator;
-    private Logger logger = Logger.getLogger(WritebackBeanPersister.class);
 
     public WritebackBeanPersister(Properties props, SessionAndTransactionManagerI sessionAndTransactionManager) {
         String sessionFactoryName = null;
@@ -256,7 +254,6 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
 
                     if (acceptable) {
                         String message = String.format(INCOMPATIBLE_LOOKUP_VALUE_MSG, lvName);
-                        logger.info(message);
                     }
                     */
                 }
