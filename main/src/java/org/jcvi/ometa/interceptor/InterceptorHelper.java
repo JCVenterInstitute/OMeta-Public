@@ -177,9 +177,7 @@ public class InterceptorHelper implements Serializable {
                 }
                 else if ( typeArgClass == Long.class ) {
                     // We have a collection of Longs.
-                    approved = this.getApprovedById(
-                            queryEntityType, o, user
-                    );
+                    approved = this.getApprovedById(queryEntityType, o, user);
                 }
                 else if ( Arrays.asList( typeArgClass.getInterfaces() ).contains( ProjectNamerOnFileRead.class ) ) {
                     // Rather obscure error message: meant for programmers.
@@ -195,9 +193,10 @@ public class InterceptorHelper implements Serializable {
                         if ( ! projectNames.contains( projectName ) )
                             projectNames.add( projectName );
                     }
-                    approved = this.getApprovedByName(
-                            queryEntityType, projectNames, user
-                    );
+
+                    if(projectNames.size() > 0) {
+                        approved = this.getApprovedByName(queryEntityType, projectNames, user);
+                    }
                 }
 
 
