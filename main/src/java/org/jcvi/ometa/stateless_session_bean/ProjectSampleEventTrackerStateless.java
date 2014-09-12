@@ -291,10 +291,18 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
                     List<Project> projectList = new ArrayList<Project>(1);
                     projectList.add(projectPair.getProject());
                     beanPersister.writeBackProjects(projectList, userName);
-                    beanPersister.writeBackEventMetaAttributes(projectPair.getEmas(), userName);
-                    beanPersister.writeBackSampleMetaAttributes(projectPair.getSmas(), userName);
-                    beanPersister.writeBackProjectMetaAttributes(projectPair.getPmas(), userName);
-                    beanPersister.writeBackAttributes(projectPair.getAttributes(), multiLoadParameter.getEventName(), userName);
+                    if(projectPair.getEmas() != null) {
+                        beanPersister.writeBackEventMetaAttributes(projectPair.getEmas(), userName);
+                    }
+                    if(projectPair.getSmas() != null) {
+                        beanPersister.writeBackSampleMetaAttributes(projectPair.getSmas(), userName);
+                    }
+                    if(projectPair.getPmas() != null) {
+                        beanPersister.writeBackProjectMetaAttributes(projectPair.getPmas(), userName);
+                    }
+                    if(projectPair.getAttributes() != null) {
+                        beanPersister.writeBackAttributes(projectPair.getAttributes(), multiLoadParameter.getEventName(), userName);
+                    }
                 }
             }
             if(multiLoadParameter.getSamplePairs() != null) {
