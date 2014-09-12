@@ -117,6 +117,7 @@ public class BeanWriter {
 
         MultiLoadParameter loadParameter = new MultiLoadParameter();
 
+        int rowIndex = 0;
         for(GridBean gBean : gridList) {
             if(gBean!=null) {
                 Project loadingProject = null;
@@ -145,7 +146,7 @@ public class BeanWriter {
 
                 List<FileReadAttributeBean> fBeanList = gBean.getBeanList();
                 if(fBeanList!=null && fBeanList.size()>0) {
-                    this.createMultiLoadParameter(loadParameter, eventName, projectName, loadingProject,  loadingSample, fBeanList);
+                    this.createMultiLoadParameter(loadParameter, eventName, projectName, loadingProject,  loadingSample, fBeanList, ++rowIndex);
                     lastSampleName = gBean.getSampleName();
                 }
             }
@@ -292,14 +293,6 @@ public class BeanWriter {
             }
         }
 
-        if (parameter.getSampleRegistrationEventAttributes() != null) {
-            for (List<FileReadAttributeBean> eas: parameter.getSampleRegistrationEventAttributes()) {
-                for (FileReadAttributeBean ea: eas) {
-                    addNonExcludedProjects(projectsToSecure, exclusionSet, ea);
-                }
-            }
-        }
-
         if (parameter.getOtherEvents() != null) {
             for (MultiLoadParameter.LoadableEventBean eventBean: parameter.getOtherEvents()) {
                 for (FileReadAttributeBean attribute: eventBean.getAttributes()) {
@@ -434,50 +427,31 @@ public class BeanWriter {
         }
     }
 
-
-
-    /*
-    * Get the name of the event, from the input file name.
-    private String getEventName(String inputFilePathStr) throws Exception {
-        int pos = inputFilePathStr.indexOf(FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX);
-        String eventName = null;
-        if (pos <= 0 || inputFilePathStr.charAt(pos - 1) != '_') {
-            throw new Exception(inputFilePathStr + " ends with " + FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX + " but has no event name prefixing that.");
-        } else {
-            int pos2 = inputFilePathStr.lastIndexOf("_");
-            int pos3 = pos2 - 1;
-            while (pos3 >= 0  &&  inputFilePathStr.charAt(pos3) != '_') {
-                pos3--;
-            }
-            if (pos3 < 0) pos3 = 0;
-            else pos3 ++;
-
-            eventName = inputFilePathStr.substring(pos3, pos2);
-        }
-        return eventName;
-    }
-    */
-
-    private MultiLoadParameter createMultiLoadParameter(MultiLoadParameter loadParameter, String eventName, String projectName, Project project, Sample sample, List<FileReadAttributeBean> frab)
+    private MultiLoadParameter createMultiLoadParameter(MultiLoadParameter loadParameter, String eventName, String projectName, Project project, Sample sample, List<FileReadAttributeBean> frab, int index)
             throws Exception {
         boolean isSampleRegistration = false;
         boolean isProjectRegistration = false;
 
         if (eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) && project.getProjectName() != null && !project.getProjectName().isEmpty()) {
             isProjectRegistration = true;
+        } else if (eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) && sample.getSampleName() != null && !sample.getSampleName().isEmpty()) {
+            isSampleRegistration = true;
+        }
 
-            List<Project> projectList = new ArrayList<Project>();
-            projectList.add(feedProjectData(project, projectName));
-            loadParameter.addProjects(projectList);
+        List<FileReadAttributeBean> loadingList = null;
+        if (frab != null && frab.size() > 0) {
+            loadingList = processFileReadBeans(eventName, isProjectRegistration ? project.getProjectName() : projectName, sample.getSampleName(), frab);
+        }
 
+        if (isProjectRegistration) {
             /*
-            *   loads all event meta attributes from the parent
+            *   loads all meta attributes from the parent
             *   by hkim 6/11/13
             */
             List<EventMetaAttribute> emas = readEjb.getEventMetaAttributes(projectName, null); //, Constants.EVENT_PROJECT_REGISTRATION);
+            List<EventMetaAttribute> newEmas = null;
             if (emas != null && emas.size() > 0) {
-                List<EventMetaAttribute> newEmas = new ArrayList<EventMetaAttribute>(emas.size());
-
+                newEmas = new ArrayList<EventMetaAttribute>(emas.size());
                 for (EventMetaAttribute ema : emas) {
                     EventMetaAttribute newEma = new EventMetaAttribute();
                     newEma.setProjectName(project.getProjectName());
@@ -495,16 +469,12 @@ public class BeanWriter {
                     newEma.setSampleRequired(ema.isSampleRequired());
                     newEmas.add(newEma);
                 }
-                loadParameter.addEventMetaAttributes(newEmas);
-            } else {
-                throw new Exception(
-                        String.format("Event Metadata has not been set up for the parent project and the '%s' event type.", Constants.EVENT_PROJECT_REGISTRATION)
-                );
             }
 
             List<SampleMetaAttribute> smas = readEjb.getSampleMetaAttributes(project.getProjectId());
+            List<SampleMetaAttribute> newSmas = null;
             if(smas != null && smas.size() > 0) {
-                List<SampleMetaAttribute> newSmas = new ArrayList<SampleMetaAttribute>(smas.size());
+                newSmas = new ArrayList<SampleMetaAttribute>(smas.size());
                 for(SampleMetaAttribute sma : smas) {
                     SampleMetaAttribute newSma = new SampleMetaAttribute();
                     newSma.setProjectName(project.getProjectName());
@@ -519,12 +489,12 @@ public class BeanWriter {
                     newSma.setActive(sma.isActive());
                     newSmas.add(newSma);
                 }
-                loadParameter.addSampleMetaAttributes(newSmas);
             }
 
             List<ProjectMetaAttribute> pmas = readEjb.getProjectMetaAttributes(projectName);
+            List<ProjectMetaAttribute> newPmas = null;
             if (pmas != null && pmas.size() > 0) {
-                List<ProjectMetaAttribute> newPmas = new ArrayList<ProjectMetaAttribute>(pmas.size());
+                newPmas = new ArrayList<ProjectMetaAttribute>(pmas.size());
                 for (ProjectMetaAttribute pma : pmas) {
                     ProjectMetaAttribute newPma = new ProjectMetaAttribute();
                     newPma.setProjectName(project.getProjectName());
@@ -539,34 +509,12 @@ public class BeanWriter {
                     newPma.setActive(pma.isActive());
                     newPmas.add(newPma);
                 }
-                loadParameter.addProjectMetaAttributes(newPmas);
             }
-        }
-        else if (eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) && sample.getSampleName() != null && !sample.getSampleName().isEmpty()) {
-            isSampleRegistration = true;
-
-            List<Sample> sampleList = new ArrayList<Sample>();
-            sampleList.add(feedSampleData(sample, project));
-            loadParameter.addSamples(sampleList);
-        }
-
-        List<FileReadAttributeBean> loadingList = null;
-        if (frab != null && frab.size() > 0) {
-            loadingList = processFileReadBeans(eventName,
-                    isProjectRegistration ? project.getProjectName() : projectName,
-                    sample.getSampleName(),
-                    frab
-            );
-        }
-
-        if (isProjectRegistration) {
-            loadParameter.addProjectRegistrations(eventName, loadingList);
+            loadParameter.addProjectPair(feedProjectData(project, projectName), loadingList, newPmas, newSmas, newEmas, index);
         } else if (isSampleRegistration) {
-            loadParameter.addSampleRegistrations(eventName, loadingList);
+            loadParameter.addSamplePair(feedSampleData(sample, project), loadingList, index);
         } else {
-            if (loadingList != null && loadingList.size() > 0) {
-                loadParameter.addEvents(eventName, loadingList);
-            }
+            loadParameter.addEvents(eventName, loadingList);
         }
         return loadParameter;
     }
@@ -622,4 +570,26 @@ public class BeanWriter {
         return processedList;
     }
 
+
+    /*
+    * Get the name of the event, from the input file name.
+    private String getEventName(String inputFilePathStr) throws Exception {
+        int pos = inputFilePathStr.indexOf(FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX);
+        String eventName = null;
+        if (pos <= 0 || inputFilePathStr.charAt(pos - 1) != '_') {
+            throw new Exception(inputFilePathStr + " ends with " + FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX + " but has no event name prefixing that.");
+        } else {
+            int pos2 = inputFilePathStr.lastIndexOf("_");
+            int pos3 = pos2 - 1;
+            while (pos3 >= 0  &&  inputFilePathStr.charAt(pos3) != '_') {
+                pos3--;
+            }
+            if (pos3 < 0) pos3 = 0;
+            else pos3 ++;
+
+            eventName = inputFilePathStr.substring(pos3, pos2);
+        }
+        return eventName;
+    }
+    */
 }
