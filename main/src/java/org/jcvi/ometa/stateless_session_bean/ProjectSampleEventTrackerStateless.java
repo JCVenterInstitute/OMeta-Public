@@ -44,10 +44,7 @@ import javax.interceptor.ExcludeDefaultInterceptors;
 import javax.interceptor.Interceptors;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -276,6 +273,9 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
 
         BeanPersistenceFacadeI beanPersister = getBeanPersister();
         beanPersister.open();
+
+        int rowIndex = 1;
+
         try {
             // Order: write back lookup values; projects
             if (multiLoadParameter.getLookupValues() != null) {
@@ -283,14 +283,41 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
                     beanPersister.writeBackLookupValues(lv);
                 }
             }
+            if(multiLoadParameter.getProjectPairs() != null) {
+                String userName = this.getUserName();
+                for(MultiLoadParameter.ProjectPair projectPair : multiLoadParameter.getProjectPairs()) {
+                    rowIndex = projectPair.getRowIndex();
+
+                    List<Project> projectList = new ArrayList<Project>(1);
+                    projectList.add(projectPair.getProject());
+                    beanPersister.writeBackProjects(projectList, userName);
+                    beanPersister.writeBackEventMetaAttributes(projectPair.getEmas(), userName);
+                    beanPersister.writeBackSampleMetaAttributes(projectPair.getSmas(), userName);
+                    beanPersister.writeBackProjectMetaAttributes(projectPair.getPmas(), userName);
+                    beanPersister.writeBackAttributes(projectPair.getAttributes(), multiLoadParameter.getEventName(), userName);
+                }
+            }
+            if(multiLoadParameter.getSamplePairs() != null) {
+                String userName = this.getUserName();
+                for(MultiLoadParameter.SamplePair samplePair : multiLoadParameter.getSamplePairs()) {
+                    rowIndex = samplePair.getRowIndex();
+
+                    List<Sample> sampleList = new ArrayList<Sample>(1);
+                    sampleList.add(samplePair.getSample());
+                    beanPersister.writeBackSamples(sampleList, userName);
+                    beanPersister.writeBackAttributes(samplePair.getAttribtues(), multiLoadParameter.getEventName(), userName);
+                }
+            }
             if (multiLoadParameter.getProjects() != null) {
                 for (List<Project> projects : multiLoadParameter.getProjects()) {
                     beanPersister.writeBackProjects(projects, getUserName());
+                    rowIndex++;
                 }
             }
             if (multiLoadParameter.getSamples() != null) {
                 for (List<Sample> samples : multiLoadParameter.getSamples()) {
                     beanPersister.writeBackSamples(samples, getUserName());
+                    rowIndex++;
                 }
             }
             if (multiLoadParameter.getPmas() != null) {
@@ -308,25 +335,18 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
                     beanPersister.writeBackEventMetaAttributes(emas, getUserName());
                 }
             }
-            if (multiLoadParameter.getProjectRegistrationEventAttributes() != null) {
-                for (List<FileReadAttributeBean> eas : multiLoadParameter.getProjectRegistrationEventAttributes()) {
-                    beanPersister.writeBackAttributes(eas, multiLoadParameter.getProjectRegistrationEventName(), getUserName());
-                }
-            }
-            if (multiLoadParameter.getSampleRegistrationEventAttributes() != null) {
-                for (List<FileReadAttributeBean> eas : multiLoadParameter.getSampleRegistrationEventAttributes()) {
-                    beanPersister.writeBackAttributes(eas, multiLoadParameter.getSampleRegistrationEventName(), getUserName());
-                }
-            }
             if (multiLoadParameter.getOtherEvents() != null) {
                 for (MultiLoadParameter.LoadableEventBean bean : multiLoadParameter.getOtherEvents()) {
                     beanPersister.writeBackAttributes(bean.getAttributes(), bean.getEventName(), getUserName());
+                    rowIndex++;
                 }
             }
+        } catch(ForbiddenResourceException fre) {
+            throw fre;
         } catch (Exception ex) {
-            logger.error(ex);
+            ex.printStackTrace();
             beanPersister.error();
-            throw ex;
+            throw new Exception(rowIndex + ":" + ex.getMessage());
         } finally {
             beanPersister.close();
         }
@@ -398,8 +418,9 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
             public void load(List<LookupValue> beans, BeanPersistenceFacadeI beanPersister) throws Exception {
                 // User better be logged in by this point.
                 String userName = getUserName();
-                if (userName == null)
+                if (userName == null) {
                     throw new IllegalAccessException("User must be logged in, to write lookup values.");
+                }
                 beanPersister.writeBackLookupValues(beans);
             }
         };
