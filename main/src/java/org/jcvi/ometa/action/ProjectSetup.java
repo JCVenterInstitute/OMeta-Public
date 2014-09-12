@@ -108,11 +108,14 @@ public class ProjectSetup extends ActionSupport {
                 List<Project> projectList = new ArrayList<Project>();
                 projectList.add(loadingProject);
 
-                List<ProjectMetaAttribute> pmaList = new ArrayList<ProjectMetaAttribute>();
-                List<EventMetaAttribute> emaList = new ArrayList<EventMetaAttribute>();
-                List<FileReadAttributeBean> fbList = new ArrayList<FileReadAttributeBean>();
+                List<ProjectMetaAttribute> pmaList = null;
+                List<EventMetaAttribute> emaList = null;
+                List<FileReadAttributeBean> fbList = null;
 
                 if (beanList != null && beanList.size() > 0) {
+                    pmaList = new ArrayList<ProjectMetaAttribute>();
+                    emaList = new ArrayList<EventMetaAttribute>();
+                    fbList = new ArrayList<FileReadAttributeBean>();
 
                     for (MetadataSetupReadBean bean : beanList) {
                         if (bean.getName() != null && bean.getValue()!=null) {
@@ -171,13 +174,13 @@ public class ProjectSetup extends ActionSupport {
             if (ex.getClass() == ForbiddenResourceException.class) {
                 addActionError(Constants.DENIED_USER_EDIT_MESSAGE);
                 return Constants.FORBIDDEN_ACTION_RESPONSE;
-            } else if (ex.getClass() == ForbiddenResourceException.class) {
+            /*} else if (ex.getClass() == ForbiddenResourceException.class) {
                 addActionError(Constants.DENIED_USER_EDIT_MESSAGE);
-                return LOGIN;
+                return LOGIN;*/
             } else if (ex.getClass() == ParseException.class)
                 addActionError(Constants.INVALID_DATE_MESSAGE);
             else
-                addActionError(ex.getMessage());
+                addActionError(ex.toString());
 
             try {
                 if(tx!=null)
