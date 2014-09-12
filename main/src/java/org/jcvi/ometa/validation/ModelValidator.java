@@ -298,9 +298,9 @@ public class ModelValidator {
             rtnDate = chosenFormat.parse(trimmedValue);
             attribute.setAttributeDateValue(new java.sql.Date(rtnDate.getTime()));
         } catch (NullPointerException npe) {
-            errors.append("empty value for " + sourceName + ".\n");
+            errors.append(sourceName + ":cannot be empty");
         } catch (ParseException pe) {
-            errors.append("date parse error: '" + sourceName + "' - " + value + ", use '" + chosenFormat.toPattern() + "'\n");
+            errors.append(sourceName + ":date parse error:'" + value + "', use '" + chosenFormat.toPattern());
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -312,9 +312,9 @@ public class ModelValidator {
             Double fValue = Double.parseDouble(value.trim());
             attribute.setAttributeFloatValue(fValue);
         } catch (NullPointerException npe) {
-            errors.append("empty value for " + sourceName + ".\n");
+            errors.append(sourceName + ":cannot be empty");
         } catch (NumberFormatException nfe) {
-            errors.append("float parse error: " + sourceName + " - " + value + ".\n");
+            errors.append(sourceName + ":float parse error:'" + value + "'");
         }
     }
 
@@ -327,7 +327,7 @@ public class ModelValidator {
                 errors.append("invalid character(s) in '" + testableValue + "', use " + ACCEPTABLE_CHARACTERS + "\n");
             }
         } catch (NullPointerException npe) {
-            errors.append("empty value for " + sourceName + ".\n");
+            errors.append(sourceName + ":cannot be empty");
         }
     }
 
@@ -337,9 +337,9 @@ public class ModelValidator {
             URL url = new URL(trimmedValue);
             attribute.setAttributeStringValue(trimmedValue);
         } catch (NullPointerException npe) {
-            errors.append("empty value for " + sourceName + ".\n");
+            errors.append(sourceName + ":cannot be empty");
         } catch (MalformedURLException npe) {
-            errors.append("invalid url: " + sourceName + " - " + value + ".\n");
+            errors.append(sourceName + ":invalid url:'" + value + "'");
         }
     }
 
@@ -348,9 +348,9 @@ public class ModelValidator {
             Integer iValue = Integer.parseInt(value.isEmpty()||value.trim().isEmpty()?"0":value.trim());
             attribute.setAttributeIntValue(iValue);
         } catch (NullPointerException npe) {
-            errors.append("Attribute value of null not acceptable for " + sourceName + ".\n");
+            errors.append(sourceName + ":cannot be empty");
         } catch (NumberFormatException nfe) {
-            errors.append("int parse error: " + sourceName + " - " + value + "\n");
+            errors.append(sourceName + ":int parse error: '" + value + "'");
         }
     }
 
