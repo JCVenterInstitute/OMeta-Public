@@ -25,7 +25,6 @@ import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.Logger;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
-import org.jcvi.ometa.engine.MultiLoadParameter;
 import org.jcvi.ometa.model.FileReadAttributeBean;
 import org.jcvi.ometa.model.Project;
 import org.jcvi.ometa.model.Sample;
@@ -122,11 +121,11 @@ public class SampleLoader extends ActionSupport {
                     }
                 }
 
-                MultiLoadParameter loadParameter = new MultiLoadParameter();
+                /*MultiLoadParameter loadParameter = new MultiLoadParameter();
                 loadParameter.addSamples(sampleList);
                 if (loadedBeanList.size() > 0)
                     loadParameter.addSampleRegistrations(Constants.EVENT_SAMPLE_REGISTRATION, loadedBeanList);
-                psewt.loadAll(null, loadParameter);
+                psewt.loadAll(null, loadParameter);*/
             }
 
             beanList = null;
