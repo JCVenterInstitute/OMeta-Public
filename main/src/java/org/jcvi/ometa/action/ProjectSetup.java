@@ -157,13 +157,9 @@ public class ProjectSetup extends ActionSupport {
                 }
 
                 MultiLoadParameter loadParameter = new MultiLoadParameter();
-                loadParameter.addProjects(projectList);
-                loadParameter.addProjectMetaAttributes(pmaList);
-                loadParameter.addEventMetaAttributes(emaList);
-                if(fbList.size()>0) {
-                    loadParameter.addProjectRegistrations(Constants.EVENT_PROJECT_REGISTRATION, fbList);
-                }
-                psewt.loadAll( null, loadParameter );
+                loadParameter.setEventName(Constants.EVENT_PROJECT_REGISTRATION);
+                loadParameter.addProjectPair(loadingProject, fbList, pmaList, null, emaList, 1);
+                psewt.loadAll(null, loadParameter);
 
                 addActionMessage("Project '" + loadingProject.getProjectName() + "' has been loaded successfully.");
             }
