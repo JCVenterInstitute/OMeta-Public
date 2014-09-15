@@ -140,7 +140,7 @@ public class MultiLoadParameter implements Serializable {
         }
         SamplePair samplePair = new SamplePair();
         samplePair.setSample(sample);
-        samplePair.setAttribtues(attributes);
+        samplePair.setAttributes(attributes);
         samplePair.setRowIndex(rowIndex);
         this.getSamplePairs().add(samplePair);
     }
@@ -254,7 +254,7 @@ public class MultiLoadParameter implements Serializable {
 
     public class SamplePair implements Serializable {
         private Sample sample;
-        private List<FileReadAttributeBean> attribtues;
+        private List<FileReadAttributeBean> attributes;
         private int rowIndex;
 
         public Sample getSample() {
@@ -265,12 +265,12 @@ public class MultiLoadParameter implements Serializable {
             this.sample = sample;
         }
 
-        public List<FileReadAttributeBean> getAttribtues() {
-            return attribtues;
+        public List<FileReadAttributeBean> getAttributes() {
+            return attributes;
         }
 
-        public void setAttribtues(List<FileReadAttributeBean> attribtues) {
-            this.attribtues = attribtues;
+        public void setAttributes(List<FileReadAttributeBean> attributes) {
+            this.attributes = attributes;
         }
 
         public int getRowIndex() {
