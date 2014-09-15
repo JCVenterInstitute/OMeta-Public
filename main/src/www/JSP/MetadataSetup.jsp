@@ -254,15 +254,18 @@ var _utils = {
     all: function(res) {
       var render = _utils.render;
       var dataMap = res.dataMap;
-      if(dataMap && dataMap.et && dataMap.a && dataMap.pet && dataMap.ema) {
+      if(dataMap && dataMap.et && dataMap.a && dataMap.pet) {
         render.et(dataMap.et);
         render.at(dataMap.a);
         render.pet(dataMap.pet);
-        //render.ema(dataMap.ema);
+        //render.ema(dataMap.ema); skip it for loading all meta attributes for faster rendering
+      }
+      if(!dataMap.ema) { //force loading image hide when there is no meta attributes
+        _utils.loading.hide();
       }
     },
     ema: function(res) {
-    	if(res.dataMap && res.dataMap.ema) {
+    	if(res.dataMap) {
 	      _utils.render.ema(res.dataMap.ema);
 	    }
     }
@@ -277,7 +280,7 @@ var _utils = {
               _ema.projectMeta, _ema.sampleMeta, _ema.ema.order);
         });
       }
-      $('input:button[id$="AddButton"]').prop('disabled', false);	
+      $('input:button[id$="AddButton"]').prop('disabled', false);
       _utils.loading.hide();
   	},
     ema_d: function(res) {
@@ -334,8 +337,10 @@ var _utils = {
           }
         });
         $('#_eventSelect').html(eo);
-        comboBoxChanged({value: list[0].name}, '_eventSelect');
-        utils.preSelect('_eventSelect', list[0].name);
+        if(list[0]) {
+          comboBoxChanged({value: list[0].name}, '_eventSelect');
+          utils.preSelect('_eventSelect', list[0].name);
+        }
       }
     }
   },
@@ -513,7 +518,7 @@ function comboBoxChanged(option, id) {
   if(id==='_projectSelect') {
     _utils.loading.show();
     if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
-      //cleans attributes divisiona dn disabling buttons
+      //cleans attributes division and disable buttons
       _utils.clean.all();
       //for project or sample metatdata setup
       if(type==='s' || type==='p') {
