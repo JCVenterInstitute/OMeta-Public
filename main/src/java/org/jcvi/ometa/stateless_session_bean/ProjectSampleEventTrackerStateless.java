@@ -44,7 +44,10 @@ import javax.interceptor.ExcludeDefaultInterceptors;
 import javax.interceptor.Interceptors;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
-import java.util.*;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by IntelliJ IDEA.
@@ -354,7 +357,13 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
         } catch (Exception ex) {
             ex.printStackTrace();
             beanPersister.error();
-            throw new Exception(rowIndex + ":" + ex.getMessage());
+
+            DetailedException dex = new DetailedException(rowIndex, ex.getMessage());
+            dex.initCause(ex.getCause());
+            dex.setStackTrace(ex.getStackTrace());
+            dex.setForbidden(ex.getClass() == ForbiddenResourceException.class);
+            dex.setParse(ex.getClass() == ParseException.class);
+            throw dex;
         } finally {
             beanPersister.close();
         }
