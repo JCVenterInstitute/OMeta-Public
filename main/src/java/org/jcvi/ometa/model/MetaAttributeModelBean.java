@@ -36,9 +36,6 @@ public interface MetaAttributeModelBean extends ModelBean {
     String getAttributeName();
     void setAttributeName( String name );
 
-    /** Constrains type of data to assume, among all data type supportable by the model. */
-    String getDataType();
-
     /** Link to lookup table. */
     Long getNameLookupId();
     void setNameLookupId( Long lookupId );
@@ -59,6 +56,8 @@ public interface MetaAttributeModelBean extends ModelBean {
     void setOptions(String options);
     String getLabel();
     void setLabel(String label);
+    String getDataType();
+    void setDataType(String dataType);
 
     LookupValue getLookupValue();
 }
