@@ -29,6 +29,7 @@ import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.engine.MultiLoadParameter;
 import org.jcvi.ometa.model.*;
+import org.jcvi.ometa.stateless_session_bean.DetailedException;
 import org.jcvi.ometa.stateless_session_bean.ForbiddenResourceException;
 import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
@@ -43,7 +44,6 @@ import javax.transaction.UserTransaction;
 import java.io.File;
 import java.io.InputStream;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -222,25 +222,8 @@ public class EventLoader extends ActionSupport implements Preparable {
             }
 
         } catch (Exception ex) {
-            //<Date>:<Project>:<Sample>: <Type>:<User ID>:<Row Number>: <Data attribute Name>:<Error message>
-            StringBuilder error = new StringBuilder(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()) + ":");
-            error.append(this.projectName + ":");
-            error.append(this.sampleName + ":");
-            error.append(this.eventName + ":");
-            error.append(ex.getMessage());
-            logger.error(error.toString());
 
-            if (ex.getClass() == ForbiddenResourceException.class) {
-                addActionError(Constants.DENIED_USER_EDIT_MESSAGE);
-                return Constants.FORBIDDEN_ACTION_RESPONSE;
-            } else if (ex.getClass() == ParseException.class) {
-                addActionError(Constants.INVALID_DATE_MESSAGE);
-            } else {
-                addActionError(ex.getMessage());
-            }
-
-            //deletes uploaded files in event of error
-            if(loadedFiles!=null && loadedFiles.size()>0) {
+            if(loadedFiles!=null && loadedFiles.size()>0) { //deletes uploaded files in event of error
                 for(String filePath : loadedFiles) {
                     File tempFile = new File(fileStoragePath + filePath);
                     if(tempFile.exists())
@@ -248,14 +231,31 @@ public class EventLoader extends ActionSupport implements Preparable {
                 }
             }
 
-            try {
+            try { //transaction rollback
                 if(tx!=null)
                     tx.rollback();
             } catch (SystemException se) {
                 addActionError(se.toString());
             }
 
-            rtnVal = ERROR;
+            //<Date>:<Project>:<Sample>: <Type>:<User ID>:<Row Number>: <Data attribute Name>:<Error message>
+            StringBuilder error = new StringBuilder(DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()) + ":");
+            error.append(this.projectName + ":");
+            error.append((this.sampleName == null ? "" : this.sampleName) + ":");
+            error.append(this.eventName + ":");
+
+            String errorMsg = "";
+            if (ex.getClass() == ForbiddenResourceException.class) {
+                errorMsg = Constants.DENIED_USER_EDIT_MESSAGE;
+                rtnVal = Constants.FORBIDDEN_ACTION_RESPONSE;
+            } else {
+                errorMsg = (ex.getClass() == DetailedException.class ? ((DetailedException)ex).getRowIndex() + ":" : "") + ex.getMessage();
+                rtnVal = ERROR;
+            }
+
+            addActionError(errorMsg);
+            error.append(errorMsg);
+            logger.error(error.toString());
         } finally {
             try {
                 if(tx !=null && tx.getStatus() != Status.STATUS_NO_TRANSACTION) {
