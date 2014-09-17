@@ -93,13 +93,17 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
 
                 List<ProjectAttribute> projectAttributes = readPersister.getProjectAttributes(this.projectId);
                 for (ProjectAttribute projAttr : projectAttributes) {
+                    ProjectMetaAttribute pma = projAttr.getMetaAttribute();
+                    if(!pma.isActive()) { //skip inactive attribute
+                        continue;
+                    }
                     LookupValue tempLookupValue = projAttr.getMetaAttribute().getLookupValue();
                     Object attrValue = ModelValidator.getModelValue(tempLookupValue, projAttr);
-                    if(tempLookupValue!=null && tempLookupValue.getName()!=null) {
+                    if(tempLookupValue != null && tempLookupValue.getName() != null) {
                         if(attrValue!=null) {
                             if (tempLookupValue.getName().toLowerCase().contains("status")
                                     && attrValue.getClass() == java.lang.Integer.class) {
-                                attrValue = (Integer)attrValue==0?"Ongoing":"Completed";
+                                attrValue = (Integer)attrValue == 0 ? "Ongoing" : "Completed";
                             } else if(attrValue.getClass() == Timestamp.class || attrValue.getClass() == Date.class) {
                                 attrValue = CommonTool.convertTimestampToDate(attrValue);
                             }
@@ -151,8 +155,9 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                         if (subType.equals("A"))
                             projectMetaList.add("Project Name");
                         for (ProjectMetaAttribute pma : allProjectMetaAttributes) {
-                            if (!projectMetaList.contains(pma.getLookupValue().getName()))
+                            if (!projectMetaList.contains(pma.getLookupValue().getName()) && pma.isActive()) {
                                 projectMetaList.add(pma.getLookupValue().getName());
+                            }
                         }
                         containerMap.put("project", projectMetaList);
                     }
@@ -164,8 +169,9 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                             sampleMetaList.add("Parent Sample");
                         }
                         for (SampleMetaAttribute sma : allSampleMetaAttributes) {
-                            if (!sampleMetaList.contains(sma.getLookupValue().getName()))
+                            if (!sampleMetaList.contains(sma.getLookupValue().getName()) && sma.isActive()) {
                                 sampleMetaList.add(sma.getLookupValue().getName());
+                            }
                         }
                         containerMap.put("sample", sampleMetaList);
                     }
@@ -173,7 +179,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                         List<EventMetaAttribute> allEventMetaAttributes = readPersister.getEventMetaAttributes(projectIds);
                         Map<String, List<String>> groupedEMA = new HashMap<String, List<String>>();
                         for (EventMetaAttribute ema : allEventMetaAttributes) {
-                            if(ema.getEventTypeLookupValue()!=null && ema.getLookupValue()!=null) {
+                            if(ema.getEventTypeLookupValue() != null && ema.getLookupValue() != null && ema.isActive()) {
                                 String et = ema.getEventTypeLookupValue().getName();
                                 String name = ema.getLookupValue().getName();
                                 if(groupedEMA.containsKey(et)) {

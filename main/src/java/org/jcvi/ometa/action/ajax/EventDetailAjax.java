@@ -264,12 +264,14 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
         List<SampleAttribute> allSampleAttributes = readPersister.getSampleAttributes(allSampleIds);
         Map<Long, List<SampleAttribute>> sampleIdVsAttributeList = new HashMap<Long, List<SampleAttribute>>();
         for (SampleAttribute att : allSampleAttributes) {
-            List<SampleAttribute> atts = sampleIdVsAttributeList.get(att.getSampleId());
-            if (atts == null) {
-                atts = new ArrayList<SampleAttribute>();
-                sampleIdVsAttributeList.put(att.getSampleId(), atts);
+            if(att.getMetaAttribute().isActive()) {
+                List<SampleAttribute> attributeList = sampleIdVsAttributeList.get(att.getSampleId());
+                if (attributeList == null) {
+                    attributeList = new ArrayList<SampleAttribute>();
+                    sampleIdVsAttributeList.put(att.getSampleId(), attributeList);
+                }
+                attributeList.add(att);
             }
-            atts.add(att);
         }
 
         return sampleIdVsAttributeList;
