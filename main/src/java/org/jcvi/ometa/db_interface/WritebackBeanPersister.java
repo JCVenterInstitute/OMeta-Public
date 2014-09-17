@@ -519,9 +519,9 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
             throws Exception {
 
         // Pre-emptive bail.
-        if (aBeans.size() == 0) {
+        if (aBeans == null || aBeans.size() == 0) {
             if(!eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) && !eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)) { //still record project or sample registration events
-                throw new Exception("0 attribute values found: no event may be created which creates no attributes.");
+                throw new Exception("event cannot be created with empty attributes");
             }
         }
 
@@ -581,6 +581,12 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
 
                 // Associate the attribute with the lookup-value for its attribute name.
                 String attribName = bean.getAttributeName();
+                if(attribName == null) {
+                    // skips bean without attribute name
+                    // it is necessary to record empty project/sample registration events without any attributes
+                    continue;
+                }
+
                 LookupValue attributeNameLookupValue = lvDAO.getLookupValue(attribName, session);
                 if (attributeNameLookupValue == null) {
                     throw new Exception(NO_SUCH_ATTRIBUTE_MSG.format(attribName));
