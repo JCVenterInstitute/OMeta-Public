@@ -303,9 +303,15 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
                     if(projectPair.getPmas() != null) {
                         beanPersister.writeBackProjectMetaAttributes(projectPair.getPmas(), userName);
                     }
-                    if(projectPair.getAttributes() != null) {
-                        beanPersister.writeBackAttributes(projectPair.getAttributes(), multiLoadParameter.getEventName(), userName);
+                    if(projectPair.getAttributes() == null || projectPair.getAttributes().size() == 0) {
+                        //still record project registration events with no attributes
+                        List<FileReadAttributeBean> fakeList = new ArrayList<FileReadAttributeBean>(1);
+                        FileReadAttributeBean fakeAttributeBean = new FileReadAttributeBean();
+                        fakeAttributeBean.setProjectName(projectPair.getProject().getProjectName());
+                        fakeList.add(fakeAttributeBean);
+                        projectPair.setAttributes(fakeList);
                     }
+                    beanPersister.writeBackAttributes(projectPair.getAttributes(), multiLoadParameter.getEventName(), userName);
                 }
             }
             if(multiLoadParameter.getSamplePairs() != null) {
@@ -316,7 +322,16 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
                     List<Sample> sampleList = new ArrayList<Sample>(1);
                     sampleList.add(samplePair.getSample());
                     beanPersister.writeBackSamples(sampleList, userName);
-                    beanPersister.writeBackAttributes(samplePair.getAttribtues(), multiLoadParameter.getEventName(), userName);
+
+                    if(samplePair.getAttributes() == null || samplePair.getAttributes().size() == 0) {
+                        //still record project registration events with no attributes
+                        List<FileReadAttributeBean> fakeList = new ArrayList<FileReadAttributeBean>(1);
+                        FileReadAttributeBean fakeAttributeBean = new FileReadAttributeBean();
+                        fakeAttributeBean.setProjectName(samplePair.getSample().getProjectName());
+                        fakeList.add(fakeAttributeBean);
+                        samplePair.setAttributes(fakeList);
+                    }
+                    beanPersister.writeBackAttributes(samplePair.getAttributes(), multiLoadParameter.getEventName(), userName);
                 }
             }
             if (multiLoadParameter.getProjects() != null) {
