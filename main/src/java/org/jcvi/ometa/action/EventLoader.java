@@ -176,9 +176,12 @@ public class EventLoader extends ActionSupport implements Preparable {
                                     this.sampleName = gBean.getSampleName();
                                 }
                             }
-                            List<FileReadAttributeBean> fBeanList = gBean.getBeanList();
-                            if(fBeanList!=null && fBeanList.size()>0) {
-                                this.createMultiLoadParameter(loadParameter, projectName, loadingProject,  loadingSample, fBeanList, ++gridRowIndex);
+
+                            // process empty attribute lists events for project/sample registrations
+                            if((gBean.getBeanList() != null && gBean.getBeanList().size() > 0)
+                                    || this.eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)
+                                    || this.eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
+                                this.createMultiLoadParameter(loadParameter, projectName, loadingProject,  loadingSample, gBean.getBeanList(), ++gridRowIndex);
                             }
                         }
                     }
@@ -249,7 +252,8 @@ public class EventLoader extends ActionSupport implements Preparable {
                 errorMsg = Constants.DENIED_USER_EDIT_MESSAGE;
                 rtnVal = Constants.FORBIDDEN_ACTION_RESPONSE;
             } else {
-                errorMsg = (ex.getClass() == DetailedException.class ? ((DetailedException)ex).getRowIndex() + ":" : "") + ex.getMessage();
+                errorMsg = (ex.getClass() == DetailedException.class ? ((DetailedException)ex).getRowIndex() + ":" : "") +
+                        (ex.getCause() == null ? ex.getMessage() : ex.getCause());
                 rtnVal = ERROR;
             }
 
@@ -367,8 +371,11 @@ public class EventLoader extends ActionSupport implements Preparable {
         } else if (isSampleRegistration) {
             loadParameter.addSamplePair(feedSampleData(sample), loadingList, index);
         } else {
-            loadParameter.addEvents(this.eventName, loadingList);
+            if(loadingList != null && loadingList.size() > 0)  {
+                loadParameter.addEvents(this.eventName, loadingList);
+            }
         }
+        loadParameter.setEventName(this.eventName);
         return loadParameter;
     }
 
