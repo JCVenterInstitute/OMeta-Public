@@ -41,7 +41,7 @@ import java.util.Set;
  */
 public class ModelValidator {
 
-    public static final String ACCEPTABLE_CHARACTERS = "A-Za-z0-9=.,;:!?@$%#+()/\\-_'\" ";
+    public static final String ACCEPTABLE_CHARACTERS = "A-Za-z0-9=.,;:!?@$%#+()\\[\\]/\\-_'\" ";
     public static final String ACCEPTABLE_CHARACTERS_REGEXP = "[" + ACCEPTABLE_CHARACTERS + "]*";
 
     public static final String DATE_DATA_TYPE = "date";
