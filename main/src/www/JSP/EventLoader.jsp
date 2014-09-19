@@ -41,7 +41,7 @@
 
 <body>
 
-<s:form id="eventLoaderPage" name="eventLoaderPage" namespace="/" action="eventLoader" method="post" theme="simple">
+<s:form id="eventLoaderPage" name="eventLoaderPage" namespace="/" action="eventLoader" method="post" theme="simple" enctype="multipart/form-data">
   <s:hidden name="jobType" id="jobType"/>
   <s:hidden name="label" id="label"/>
   <s:hidden name="eventName" id="eventName" />
