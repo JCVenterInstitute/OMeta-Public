@@ -253,11 +253,13 @@ var _utils = {
         }
       },
       showPS:function(et) {
+        $('.sampleSelectTr').hide();
         if(utils.checkSR(et)) { // triggers sample loader
           $('#sampleDetailInputDiv').show();
-          $('.sampleSelectTr').hide();
         } else if(utils.checkPR(et)) {
           $('#projectDetailInputDiv').show();
+        } else {
+          $('.sampleSelectTr').show();
         }
       },
       hidePS: function() {
