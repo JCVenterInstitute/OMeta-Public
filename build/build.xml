@@ -50,7 +50,7 @@
     <property name="hibernate.lib.dir" value="${thirdparty.lib.dir}/Hibernate-3.3.1/"/>
     <property name="mysql.lib.dir" value="${thirdparty.lib.dir}/MySQL-5.1.14"/>
     <property name="displaytag.lib.dir" value="${thirdparty.lib.dir}/displaytag-1.2"/>
-    <property name="apachepoi.lib.dir" value="${thirdparty.lib.dir}/ApachePOI-3.7"/>
+    <property name="apachepoi.lib.dir" value="${thirdparty.lib.dir}/ApachePOI"/>
     <property name="ebi.lib.dir" value="${thirdparty.lib.dir}/ebi"/>
     <property name="struts.lib.dir" value="${thirdparty.lib.dir}/Struts-2.2.1.1/"/>
     <property name="servlet.lib.dir" value="${thirdparty.lib.dir}/Servlet-2.4/"/>
