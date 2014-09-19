@@ -836,7 +836,7 @@ $(document).ready(function() {
     _utils.addGridRows(null,_oldEventName);
   } else if('${beanList}'!=='') {
     //remove any existing dom elements
-    $('[name^="beanList"]').remove();
+    //$('[name^="beanList"]').remove();
   <s:iterator value="beanList" var="bean" status="bstat">
     $("[name='beanList[${bstat.count-1}].attributeValue']").val("${bean.attributeValue}");
   </s:iterator>

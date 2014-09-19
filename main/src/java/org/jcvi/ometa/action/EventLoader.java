@@ -145,6 +145,8 @@ public class EventLoader extends ActionSupport implements Preparable {
                 if (jobType.equals("insert")) { //loads single event
                     tx = (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
                     tx.begin();
+
+                    gridList = null; // force grid list to be empty
                     MultiLoadParameter loadParameter = new MultiLoadParameter();
                     psewt.loadAll(null, this.createMultiLoadParameter(loadParameter, projectName, loadingProject, loadingSample, beanList, 1));
                     this.reset();
