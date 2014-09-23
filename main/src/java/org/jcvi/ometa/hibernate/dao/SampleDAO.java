@@ -181,7 +181,7 @@ public class SampleDAO extends HibernateDAO {
             prepareSampleForWriteback(sample, null, transactionDate, session);
             session.saveOrUpdate( sample );
         } catch ( Exception ex ) {
-            throw new DAOException( ex );
+            throw (ex.getClass() == DAOException.class ? (DAOException)ex : new DAOException(ex));
         }
 
     }
