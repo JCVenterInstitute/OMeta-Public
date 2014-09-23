@@ -259,7 +259,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                 rtnVal = ERROR;
             }
 
-            addActionError(errorMsg);
+            addActionError(errorMsg.replaceAll("\\\n", "<br/>"));
             error.append(errorMsg);
             logger.error(error.toString());
         } finally {
