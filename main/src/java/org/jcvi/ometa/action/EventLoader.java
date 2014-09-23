@@ -172,6 +172,8 @@ public class EventLoader extends ActionSupport implements Preparable {
                                     loadingSample.setSampleName(gBean.getSampleName());
                                     loadingSample.setParentSampleName(gBean.getParentSampleName());
                                     loadingSample.setIsPublic(Integer.valueOf(gBean.getSamplePublic()));
+                                } else {
+                                    loadingSample = existingSample;
                                 }
                             } else {
                                 if(gBean.getSampleName()!=null) {
