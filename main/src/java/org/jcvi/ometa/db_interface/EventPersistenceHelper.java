@@ -455,7 +455,7 @@ public class EventPersistenceHelper {
             Boolean satisfied = requiredToSatisfied.get( attributeName );
             if ( ! satisfied )
                 builder.append( "\n" )
-                       .append( logStr + " attribute " + attributeName + " required, but not provided.");
+                       .append( logStr + " attribute '" + attributeName + "' required.");
         }
 
         if ( builder.length() > 0 )
@@ -473,7 +473,7 @@ public class EventPersistenceHelper {
         if (ema.isSampleRequired() || this.eventType.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
             isSampleRequiredForEvent = true;
             if ( sampleId == null ) {
-                throw new DAOException( "Event " + eventType + " requires a sample for event attribute " + attribName +
+                throw new DAOException( "Event '" + eventType + "' requires a sample for event attribute " + attribName +
                                         " but no sample was given.");
             }
         }
