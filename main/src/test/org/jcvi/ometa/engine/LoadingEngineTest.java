@@ -27,7 +27,6 @@ import org.jcvi.ometa.configuration.FileMappingSupport;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.Project;
 import org.jcvi.ometa.model.ProjectMetaAttribute;
-import org.jcvi.ometa.utils.TsvPreProcessingUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,7 +73,6 @@ public class LoadingEngineTest extends PSTTestAbstract {
     //building one big test to minimize user inputs
     @Test //(expected = FileNotFoundException.class)
     public void bigTest() throws Exception {
-        TsvPreProcessingUtils tsvUtils = new TsvPreProcessingUtils();
         this.testProject();
         this.testPMA();
     }
