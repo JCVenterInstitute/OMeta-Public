@@ -187,6 +187,7 @@
   </table>
 </div>
 <div id="nav">
+  <ul>
     <li id="admin_li"><a href="#">Admin</a>
       <ul class="submenu">
         <li><a href="projectSetup.action">Project Setup</a></li>
