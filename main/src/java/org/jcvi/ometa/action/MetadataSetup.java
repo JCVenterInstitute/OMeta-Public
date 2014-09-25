@@ -252,7 +252,11 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                         psewt.loadProjectMetaAttributes(pmaList);
                     if(smaList.size()>0)
                         psewt.loadSampleMetaAttributes(smaList);
-                } else if("p".equals(type)) { //project metadata setup
+                }
+                /* Event Metadata Setup handles all metadata setup
+                 * with checkboxes for project/sample meta attribute
+                 *
+                else if("p".equals(type)) { //project metadata setup
                     Map<String, ProjectMetaAttribute> existingPmaMap = this.getPmaMap(loadingProject.getProjectId());
                     Map<String, List<EventMetaAttribute>> refEmaMap = this.getEmaMap(refEmaList);
 
@@ -330,7 +334,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                     if(smaList.size()>0)
                         psewt.loadSampleMetaAttributes(smaList);
 
-                }
+                }*/
                 projectId = null;
                 beanList = null;
 
