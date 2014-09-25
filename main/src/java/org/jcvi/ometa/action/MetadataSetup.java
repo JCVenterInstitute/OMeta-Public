@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.jcvi.ometa.action.ajax.IAjaxAction;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
+import org.jcvi.ometa.engine.MultiLoadParameter;
 import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.model.web.EventMetaAttributeContainer;
 import org.jcvi.ometa.model.web.MetadataSetupReadBean;
@@ -41,7 +42,6 @@ import javax.naming.InitialContext;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -113,6 +113,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
 
                 UploadActionDelegate udelegate = new UploadActionDelegate();
                 psewt = udelegate.initializeBusinessObject(logger, psewt);
+                MultiLoadParameter multiLoader = new MultiLoadParameter();
 
                 //user selected project
                 Project loadingProject = psept.getProject(projectId);
@@ -247,11 +248,12 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                             }
                         }
                     }
-                    psewt.loadEventMetaAttributes(emaList);
-                    if(pmaList.size()>0)
-                        psewt.loadProjectMetaAttributes(pmaList);
-                    if(smaList.size()>0)
-                        psewt.loadSampleMetaAttributes(smaList);
+
+                    multiLoader.addEventMetaAttributes(emaList);
+                    multiLoader.addProjectMetaAttributes(pmaList);
+                    multiLoader.addSampleMetaAttributes(smaList);
+
+                    psewt.loadAll(null, multiLoader);
                 }
                 /* Event Metadata Setup handles all metadata setup
                  * with checkboxes for project/sample meta attribute
@@ -335,6 +337,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                         psewt.loadSampleMetaAttributes(smaList);
 
                 }*/
+
                 projectId = null;
                 beanList = null;
 
@@ -345,18 +348,13 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
         } catch(Exception ex) {
             logger.error("Exception in MetadataSetup : " + ex.toString());
             ex.printStackTrace();
-            if( ex.getClass() == ForbiddenResourceException.class ) {
-                addActionError( Constants.DENIED_USER_EDIT_MESSAGE );
+            if(ex.getClass() == ForbiddenResourceException.class) {
+                addActionError(Constants.DENIED_USER_EDIT_MESSAGE);
                 return Constants.FORBIDDEN_ACTION_RESPONSE;
-            } else if( ex.getClass() == ForbiddenResourceException.class ) {
-                addActionError( Constants.DENIED_USER_EDIT_MESSAGE );
-                return LOGIN;
-            } else if( ex.getClass() == ParseException.class ) {
-                addActionError( Constants.INVALID_DATE_MESSAGE );
-            } else if( ex.getClass() == DuplicatedOrderException.class ) {
-                addActionError( "Error while processing meta attribute positions. Check for any duplicated position values." );
+            } else if(ex.getClass() == DuplicatedOrderException.class) {
+                addActionError("Error while processing meta attribute positions. Check for any duplicated position values.");
             } else {
-                addActionError( "Error while adding or updating metadata." );
+                addActionError(ex.getMessage());
             }
 
             try {
@@ -646,8 +644,8 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
     }
 
     private class DuplicatedOrderException extends Exception {
-        public DuplicatedOrderException( String message ) {
-            super( message ) ;
+        public DuplicatedOrderException(String message) {
+            super(message) ;
         }
     }
 
