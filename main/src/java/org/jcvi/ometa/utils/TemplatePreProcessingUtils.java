@@ -134,7 +134,7 @@ public class TemplatePreProcessingUtils {
                 DataFormat df = wb.createDataFormat();
                 CellStyle dateCS = wb.createCellStyle();
                 CreationHelper createHelper = wb.getCreationHelper();
-                dateCS.setDataFormat(createHelper.createDataFormat().getFormat(Constants.DEFAULT_DATE_FORMAT));
+                dateCS.setDataFormat(createHelper.createDataFormat().getFormat(Constants.DATE_DEFAULT_FORMAT));
 
                 sheet.setDefaultColumnStyle(headerIndex-1, dateCS);
             }
@@ -183,12 +183,12 @@ public class TemplatePreProcessingUtils {
             constraint = DVConstraint.createDateConstraint(
                     DVConstraint.OperatorType.GREATER_THAN,
                     "1900-01-01", "0000-00-00",
-                    Constants.DEFAULT_DATE_FORMAT
+                    Constants.DATE_DEFAULT_FORMAT
             );
             validation = new HSSFDataValidation(addressList, constraint);
             validation.setSuppressDropDownArrow(true);
             validation.setErrorStyle(DataValidation.ErrorStyle.STOP);
-            validation.createErrorBox("Use a valid date format!", Constants.DEFAULT_DATE_FORMAT);
+            validation.createErrorBox("Use a valid date format!", Constants.DATE_DEFAULT_FORMAT);
             sheet.addValidationData(validation);
         } else if(detail.getDataType().equals(ModelValidator.INT_DATA_TYPE)) {
             constraint = DVConstraint.createNumericConstraint(
