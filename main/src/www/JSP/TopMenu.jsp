@@ -113,24 +113,7 @@
     <jsp:useBean id="userBean" class="org.jcvi.ometa.web_bean.UserInfoWebBean"/>
     <jsp:setProperty name="userBean" property="userId" value="<%=request.getRemoteUser()%>"/>
 
-    var _searchArr = window.location.search.substr(1).split("&"),
-        paramP, _temparr;
-    if(_searchArr) {
-      $(_searchArr).each(function() {
-        _temparr=this.split("=");
-        _temparr[0]==='p'?sessionStorage.setItem('pst.project', _temparr[1]):null;
-      });
-    }
-
     $(document).ready(function() {
-      paramP = sessionStorage.getItem('pst.project');
-      $('#project_li,#cnmc_li,#gates_li').hide();
-      !paramP ? $('li#project_li').show()
-          :paramP==='T1D-CNMC' ? $('li#cnmc_li').show()
-          :paramP==='GATES' ? $('li#gates_li').show()
-          :$('li#project_li').show();
-
-
       $('div#nav ul li').mouseover(function() {
         $(this).find('ul:first').show();
       });
@@ -140,7 +123,7 @@
 
       var userName='<jsp:getProperty name="userBean" property="fullname"/>',
           isAdmin='<jsp:getProperty name="userBean" property="admin"/>';
-      _=(isAdmin!=null && isAdmin!=='null' && isAdmin==='true')?$('#admin_li').show():$('#admin_li').hide();
+      (isAdmin!=null && isAdmin!=='null' && isAdmin==='true')?$('#admin_li').show():$('#admin_li').hide();
       if(userName!=null && userName!=='null') {
         $('div#currUserName').html(userName+', <a class="headerLink" href="logout.action">Log Out</a>');
         $('.noauthuser').hide();
@@ -204,37 +187,11 @@
   </table>
 </div>
 <div id="nav">
-  <ul>
-    <li id="project_li"><a href="#">Project</a>
-      <ul class="submenu">
-        <li><a href="productionStatus.action?projectNames=GSC&iss=true">GSC</a></li>
-        <li><a href="productionStatus.action?projectNames=HMP&iss=true">HMP</a></li>
-        <li><a href="?p=T1D-CNMC">CNMC</a></li>
-        <li><a href="?p=GATES">GATES</a></li>
-      </ul>
-    </li>
-    <li id="cnmc_li"><a href="#">CNMC</a>
-      <ul class="submenu">
-        <li><a href="sampleWithEventLoader.action?label=Family">Register Family</a></li>
-        <li><a href="sampleWithEventLoader.action?label=Person">Register Person</a></li>
-        <li><a href="sampleWithEventLoader.action?label=Sample">Register Sample</a></li>
-        <li><a href="eventLoader.action?label=SR">Sample Receipt</a></li>
-        <li><a href="sampleWithEventLoader.action?label=Aliquot">Register Aliquot</a></li>
-      </ul>
-    </li>
-    <li id="gates_li"><a href="#">GATES</a>
-      <ul class="submenu">
-        <li><a href="eventLoader.action?label=PM">Patient Metadata</a></li>
-        <li><a href="eventLoader.action?label=HM">Household Metadata</a></li>
-        <li><a href="eventLoader.action?label=FM">Family Metadata</a></li>
-        <li><a href="eventLoader.action?label=SM">Sample Metadata</a></li>
-      </ul>
-    </li>
     <li id="admin_li"><a href="#">Admin</a>
       <ul class="submenu">
         <li><a href="projectSetup.action">Project Setup</a></li>
         <!--<li><a href="metadataSetup.action?type=p">Project Metadata Setup</a></li>
-     <li><a href="metadataSetup.action?type=s">Sample Metadata Setup</a></li>-->
+        <li><a href="metadataSetup.action?type=s">Sample Metadata Setup</a></li>-->
         <li><a href="metadataSetup.action?type=e">Event Metadata Setup</a></li>
         <li><a href="actorRole.action">Actor/Role Management</a></li>
       </ul>
@@ -248,7 +205,7 @@
     <li id="report_li"><a href="#">Report</a>
       <ul class="submenu">
         <li><a href="eventDetail.action">Event Detail</a></li>
-        <li><a href="eventReport.action">Event Report</a></li>
+        <li><a href="eventReport.action">Create Report</a></li>
       </ul>
     </li>
   </ul>
