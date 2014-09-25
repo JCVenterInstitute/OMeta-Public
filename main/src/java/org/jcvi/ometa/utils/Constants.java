@@ -45,6 +45,16 @@ public class Constants {
     public static final String ACCEPTABLE_CHARACTERS = "A-Za-z0-9=.,;:!?@$%#+()\\[\\]/\\-_'\" ";
     public final static String DATE_DEFAULT_FORMAT = "yyyy-MM-dd";
     public final static String DATE_ALTERNATIVE_FORMAT = "dd-MMM-yyyy";
+    public final static String[] DATE_ALL_POSSIBLE_FORMATS = {
+            "yyyy",
+            "MMM-yyyy",
+            "MM/dd/yyyy",
+            "yyyy/MM/dd",
+            Constants.DATE_DEFAULT_FORMAT,
+            Constants.DATE_ALTERNATIVE_FORMAT,
+            "yyyy-MM-dd'T'HH:mm:ss"
+    };
+    public final static String[] DATE_NO_VALUES = {"Unknown", "Not applicable", "Not available", "Available upon request"};
 
     public static final String DATE_DATA_TYPE = "date";
     public static final String STRING_DATA_TYPE = "string";
