@@ -128,6 +128,8 @@ public interface ProjectSampleEventPresentationBusiness {
 
     public List<Event> getEventByTypeAndSample(Long sampleId, Long eventTypeId) throws Exception;
 
+    public Event getLatestEventForSample(Long sampleId, Long eventTypeId) throws Exception;
+
     public List<Event> getUniqueEventTypes() throws Exception;
 
     public List<LookupValue> getEventTypesForProject(Long projectId) throws Exception;

@@ -772,6 +772,25 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
     }
 
     @WebMethod
+    public Event getLatestEventForSample(@JCVI_Sample Long sampleId, Long eventTypeId) throws Exception {
+        Session session = startTransactedSession();
+
+        Event latestEvent = null;
+        try {
+            EventDAO evtDao = daoFactory.getEventDAO();
+            latestEvent = evtDao.getLatestEventForSample(sampleId, eventTypeId, session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+
+        return latestEvent;
+    }
+
+    @WebMethod
     public List<Event> getUniqueEventTypes() throws Exception {
         Session session = startTransactedSession();
 
