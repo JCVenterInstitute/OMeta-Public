@@ -177,12 +177,6 @@
             </result>
         </action>
 
-        <action name="sampleWithEventLoader" class="org.jcvi.ometa.action.SampleWithEventLoader" method="execute">
-            <result name="forbidden">/JSP/SampleWithEventLoader.jsp</result>
-            <result name="success">/JSP/SampleWithEventLoader.jsp</result>
-            <result name="error">/JSP/SampleWithEventLoader.jsp</result>
-        </action>
-
         <!-- POPUP -->
         <action name="projectEditOpen" class="org.jcvi.ometa.action.Editor" method="projectEditOpen">
             <result name="success">/JSP/popup/LPopupProjectEdit.jsp</result>
