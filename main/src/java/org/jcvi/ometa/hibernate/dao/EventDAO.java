@@ -283,12 +283,19 @@ public class EventDAO extends HibernateDAO {
         return eventList;
     }
 
-    public Event getLatestEventForSample(Long sampleId, Long eventTypeId, Session session) throws DAOException {
+    public Event getLatestEventForSample(Long projectId, Long sampleId, Long eventTypeId, Session session) throws DAOException {
         Event latestEvent = null;
 
         try {
-            Query query = session.createQuery("from Event where sampleId = :sampleId and eventType = :eventTypeId order by creationDate DESC");
-            query.setLong("sampleId", sampleId);
+            String where = "where eventType = :eventTypeId and projectId = :projectId";
+            if(sampleId != null) {
+                where += " and sampleId = :sampleId";
+            }
+            Query query = session.createQuery("from Event " + where + " order by creationDate DESC");
+            query.setLong("projectId", projectId);
+            if(sampleId != null) {
+                query.setLong("sampleId", sampleId);
+            }
             query.setLong("eventTypeId", eventTypeId);
             query.setMaxResults(1);
             latestEvent = (Event)query.uniqueResult();
