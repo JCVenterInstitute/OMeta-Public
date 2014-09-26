@@ -183,7 +183,9 @@
   </div>
 
   <div id="submitDiv" style="margin:15px 10px 5px 0;width:100%;">
-    <input type="button" onclick="javascript:button.submit_event();" id="eventLoadButton" value="Submit Event" disabled="true"/>
+    <input type="button" onclick="javascript:button.submit_event();" id="saveButton" value="Save" disabled="true"/>
+    <input type="button" onclick="javascript:button.submit_event();" id="validateButton" value="Validate" disabled="true"/>
+    <input type="button" onclick="javascript:button.submit_event();" id="submitButton" value="Submit" disabled="true"/>
     <input type="button" onclick="javascript:button.add_event();" id="gridAddLineBtn" value="Add Event Line" style="display:none;"/>
     <input type="button" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
     <input type="button" onclick="javascript:button.clear_form();" value="Clear" />
@@ -205,23 +207,6 @@ var pBeanHtml='<input type="hidden" value="$pn$" name="$lt$projectName"/>',
     avHtml, sample_options;
 
 var _utils = {
-      labeling: function(l) {
-        var headerT;
-        if(l==='SampleReceipt') {
-          headerT = 'Sample Receipt';
-          l='Sample';
-        } else if(l.indexOf("Metadata")>0) {
-          headerT = l;
-          var l_arr = l.split(' ');
-          l=l_arr[0];
-        } else {
-          headerT = 'Register ' + l;
-        }
-
-        $('.panelHeader').html(headerT);
-        $('.csc-firstHeader').html(l+' Information');
-        $('#sampleNameLabel').html(l+' ID');
-      },
       makeAjax: function(u,d,p,cb) {
         $.ajax({
           url:u,
@@ -501,16 +486,6 @@ var _utils = {
       project: function(projectId) {
         $("#_sampleSelect").attr("disabled", false);
         _utils.hidePS();
-
-        var label=$('input:hidden#label').val(), level=0;
-        switch(label) {
-          case 'SR': label=3; break;
-          case 'HM':case 'FM':case 'PM':level=1; break;
-          default: level=0;
-        }
-        if(label!=='FM' && label!=='SM') {
-          _utils.makeAjax('sharedAjax.action', 'type=Sample&projectId='+projectId+'&sampleLevel='+level, null, callbacks.sample);
-        }
         $("#_eventSelect").attr("disabled", false);
         _utils.makeAjax('sharedAjax.action', 'type=Event&projectId='+projectId+'&eventTypeId=0', null, callbacks.event);
         $('#_sampleSelect+.ui-autocomplete-input, #_eventSelect+.ui-autocomplete-input').val('');
@@ -519,7 +494,7 @@ var _utils = {
       event: function(et) {
         _utils.hidePS();
 
-        $("#eventLoadButton").attr("disabled", false);
+        $("#submitButton").attr("disabled", false);
         if(utils.getLoadType()==='form') {
           _utils.showPS(et);
         }
@@ -692,7 +667,7 @@ var button = {
 function comboBoxChanged(option, id) {
   if(id==='_projectSelect') {
     button.clear_attr();
-    $("#eventLoadButton").attr("disabled", true);
+    $("#submitButton").attr("disabled", true);
     $("#_eventSelect").html(vs.empty);
     if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
       changes.project(option.value);
@@ -714,67 +689,10 @@ function comboBoxChanged(option, id) {
           callbacks.meta
       );
     }*/
-  } else if(id==='a_patientSelect') {
-    var label=$('input:hidden#label').val()
-    if(label==='FM')
-      _utils.makeAjax(
-          'sharedAjax.action',
-          'type=Sample&projectId='+$('#_projectSelect').val()+'&sampleId='+option.value+'&sampleLevel=2',
-          null,
-          callbacks.sample
-      );
-    else if(label==='SM')
-      _utils.makeAjax(
-          'sharedAjax.action',
-          'type=Sample&projectId='+$('#_projectSelect').val()+'&sampleId='+option.value+'&sampleLevel=2',
-          'family',
-          callbacks.added
-      );
-  } else if(id==='a_familySelect') {
-    _utils.makeAjax(
-        'sharedAjax.action',
-        'type=Sample&projectId='+$('#_projectSelect').val()+'&sampleId='+option.value+'&sampleLevel=3',
-        null,
-        callbacks.sample
-    );
   }
 }
 
 $(document).ready(function() {
-  //customization for labels
-  var label=$('input:hidden#label').val();
-  switch(label) {
-    case 'SR': label="SampleReceipt"; break;
-    case 'PM': label="Patient Metadata"; break;
-    case 'HM': label="Household Metadata"; break;
-    case 'FM': label="Family Metadata"; break;
-    case "SM": label="Sample Metadata"; break;
-    default: label=null;
-  }
-  if(label!=null&&label.length>0) {
-    $.each($('#_projectSelect').find('option'), function(i1,v1) {
-      if(v1.text===paramP || v1.text.indexOf(paramP)>=0) {
-        $('#_projectSelect').val(parseInt(v1.value));
-        changes.project(v1.value);
-        $.each($('#_eventSelect').find('option'), function(i2,v2) {
-          if(v2.text.indexOf(label)!=-1) {
-            $('#_eventSelect').val(parseInt(v2.value));
-            changes.event(v2.text);
-            $('#_eventSelect').attr('disabled', true);
-          }
-        });
-      }
-    });
-    if(label==='Family Metadata') {
-      _utils.addDD('patient', $('#_projectSelect').val(), 1);
-    } else if(label==='Sample Metadata') {
-      _utils.addDD('patient', $('#_projectSelect').val(), 1);
-      _utils.addDD('family', $('#_projectSelect').val(), 2);
-    }
-
-    _utils.labeling(label);
-  }
-
   $('select[id$="Select"]').combobox();
 
   //retrieve existing values for preload
