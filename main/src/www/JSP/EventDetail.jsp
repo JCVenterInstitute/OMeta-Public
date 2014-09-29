@@ -375,6 +375,33 @@ $(document).ready(function() {
           url: sSource,
           data: aoData,
           success: function(json) {
+            if(json && json.aaData) {
+              var rows = [];
+              $.each(json.aaData, function(ri,rowData) {
+                var row = [], attributes;
+                row.push(
+                  "<img src='images/dataTables/details_open.png' id='rowDetail_openBtn'/>",
+                  rowData.sampleName,
+                  rowData.parentSampleName,
+                  rowData.actor,
+                  rowData.createdOn
+                );
+                if(rowData.attributes) {
+                  var headers = '', values = '';
+                  $.each(rowData.attributes, function(ai, av) {
+                    headers += '<td>' + ai + '</td>';
+                    values += '<td>' + av + '</td>';
+                  })
+                  attributes = '<tr class="even">' + headers + '</tr><tr class="odd">' + values + '</tr>';
+                } else {
+                  attributes = '<tr class="odd"><td colspan="6">No Data</td></tr>';
+                }
+                row.push(attributes);
+
+                rows.push(row);
+              })
+            }
+            json.aaData = rows;
             fnCallback(json);
           }
         });
@@ -406,6 +433,36 @@ $(document).ready(function() {
           url: sSource,
           data: aoData,
           success: function(json) {
+            if(json && json.aaData) {
+              var rows = [];
+              $.each(json.aaData, function(ri,rowData) {
+                var row = [], attributes;
+                row.push(
+                  "<img src='images/dataTables/details_open.png' id='rowDetail_openBtn'/>",
+                  rowData.eventName,
+                  rowData.sampleName,
+                  rowData.createdOn,
+                  rowData.actor
+                );
+                if(rowData.eventStatus) {
+                  row.push(rowData.eventStatus + "<a href='javascript:changeEventStatus(" + rowData.eventId + ");'><img src='images/blue/" + (rowData.eventStatus === 'Active' ? 'cross' : 'tick') + ".png'/></a>");
+                }
+                if(rowData.attributes) {
+                  var headers = '', values = '';
+                  $.each(rowData.attributes, function(ai, av) {
+                    headers += '<td>' + ai + '</td>';
+                    values += '<td>' + av + '</td>';
+                  })
+                  attributes = '<tr class="even">' + headers + '</tr><tr class="odd">' + values + '</tr>';
+                } else {
+                  attributes = '<tr class="odd"><td colspan="7">No Data</td></tr>';
+                }
+                row.push(attributes);
+
+                rows.push(row);
+              })
+            }
+            json.aaData = rows;
             fnCallback(json);
           }
         });

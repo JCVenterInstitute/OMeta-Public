@@ -73,13 +73,6 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
     private String fd;
     private String td;
 
-    private final String HTML_NO_DATA = "<tr class=\"odd\"><td colspan=\"6\">No Data</td></tr>";
-    private final String HTML_TD = "<td>%s</td>";
-    private final String HTML_TR = "<tr class='%s'>%s</tr>";
-    private final String HTML_ROW_EXPANDER_IMG = "<img src='images/dataTables/details_open.png' id='rowDetail_openBtn'/>";
-    private final String HTML_EVENT_EDIT = "&nbsp;&nbsp;<a href=\"javascript:changeEventStatus(%d);\"><img src=\"images/blue/%s.png\"/></a>";
-    private final String HTML_SAMPLE_EDIT = "&nbsp;&nbsp;<a color=\"white\" href=\"javascript:openSampleEditPopup('%s');\"><img src=\"images/editBtn.gif\"/></a>";
-
     public EventDetailAjax() {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
         readPersister = new ReadBeanPersister(props);
@@ -121,30 +114,24 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                         actors.put(tempActor.getLoginId(), tempActor.getLastName() + ", " + tempActor.getFirstName());
                     }
 
-                    Map<String, String> sampleMap = new HashMap<String, String>();
-                    sampleMap.put("0", HTML_ROW_EXPANDER_IMG);
-                    sampleMap.put("1", sample.getSampleName() + (canEdit==1?String.format(HTML_SAMPLE_EDIT, sample.getSampleId()):""));
-                    sampleMap.put("2", sampleNameById.get(sample.getParentSampleId()));
-                    sampleMap.put("3", actors.get(sample.getCreatedBy()));
-                    sampleMap.put("4", ModelValidator.PST_DEFAULT_TIMESTAMP_FORMAT.format(sample.getCreationDate()));
+                    Map<String, Object> sampleMap = new HashMap<String, Object>();
+                    sampleMap.put("sample", sample);
+                    sampleMap.put("sampleName", sample.getSampleName());
+                    sampleMap.put("parentSampleName", sampleNameById.get(sample.getParentSampleId()));
+                    sampleMap.put("actor", actors.get(sample.getCreatedBy()));
+                    sampleMap.put("createdOn", ModelValidator.PST_DEFAULT_TIMESTAMP_FORMAT.format(sample.getCreationDate()));
 
-                    String attrStr;
                     if(sampleIdVsAttributes.containsKey(sample.getSampleId())) {
-                        StringBuffer headers = new StringBuffer();
-                        StringBuffer bodys = new StringBuffer();
+                        Map<String, Object> attributeMap = new HashMap<String, Object>();
                         for (SampleAttribute sa : sampleIdVsAttributes.get(sample.getSampleId())) {
                             if(sa.getMetaAttribute()!=null) {
                                 LookupValue tempLookupValue = sa.getMetaAttribute().getLookupValue();
                                 Object attrValue = ModelValidator.getModelValue(tempLookupValue, sa);
-                                headers.append(String.format(HTML_TD, tempLookupValue.getName()));
-                                bodys.append(String.format(HTML_TD, attributeDecorator(tempLookupValue, attrValue)));
+                                attributeMap.put(tempLookupValue.getName(), attributeDecorator(tempLookupValue, attrValue));
                             }
                         }
-                        attrStr=String.format(HTML_TR, "even", headers)+String.format(HTML_TR, "odd", bodys);
-                    } else {
-                        attrStr = HTML_NO_DATA;
+                        sampleMap.put("attributes", attributeMap);
                     }
-                    sampleMap.put("5", attrStr);
                     aaData.add(sampleMap);
 
                     iTotalDisplayRecords = iTotalRecords = samples.size();
@@ -183,30 +170,26 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
 
                     String eventStatus = event.getEventStatusLookupValue().getName();
 
-                    eventMap.put("0", HTML_ROW_EXPANDER_IMG);
-                    eventMap.put("1", event.getEventTypeLookupValue().getName());
-                    eventMap.put("2", sampleName);
-                    eventMap.put("3", ModelValidator.PST_DEFAULT_TIMESTAMP_FORMAT.format(event.getCreationDate()));
-                    eventMap.put("4", actors.get(event.getCreatedBy()));
-                    eventMap.put("5", eventStatus+(canEdit==1?String.format(HTML_EVENT_EDIT, event.getEventId(), eventStatus.equals("Active")?"cross":"tick"):""));
+                    eventMap.put("event", event);
+                    eventMap.put("eventId", event.getEventId());
+                    eventMap.put("eventName", event.getEventTypeLookupValue().getName());
+                    eventMap.put("sampleName", sampleName);
+                    eventMap.put("createdOn", ModelValidator.PST_DEFAULT_TIMESTAMP_FORMAT.format(event.getCreationDate()));
+                    eventMap.put("actor", actors.get(event.getCreatedBy()));
+                    eventMap.put("eventStatus", eventStatus);
+                    eventMap.put("canEdit", canEdit);
 
-                    String attrStr;
                     if(eventIdVsAttributes.containsKey(event.getEventId())) {
-                        StringBuffer headers = new StringBuffer();
-                        StringBuffer bodys = new StringBuffer();
+                        Map<String, Object> attributeMap = new HashMap<String, Object>();
                         for (EventAttribute ea : eventIdVsAttributes.get(event.getEventId())) {
                             if(ea.getMetaAttribute()!=null) {
                                 LookupValue tempLookupValue = ea.getMetaAttribute().getLookupValue();
                                 Object attrValue = ModelValidator.getModelValue(tempLookupValue, ea);
-                                headers.append(String.format(HTML_TD, tempLookupValue.getName()));
-                                bodys.append(String.format(HTML_TD, attributeDecorator(tempLookupValue, attrValue)));
+                                attributeMap.put(tempLookupValue.getName(), attributeDecorator(tempLookupValue, attrValue));
                             }
                         }
-                        attrStr=String.format(HTML_TR, "even", headers)+String.format(HTML_TR, "odd", bodys);
-                    } else {
-                        attrStr = HTML_NO_DATA;
+                        eventMap.put("attributes", attributeMap);
                     }
-                    eventMap.put("6", attrStr);
                     aaData.add(eventMap);
 
                     iTotalRecords = eventList.size();
