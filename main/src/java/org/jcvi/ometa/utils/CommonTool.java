@@ -223,4 +223,12 @@ public class CommonTool {
         rtnVal.setOptions(options);
         return rtnVal;
     }
+
+    public static LookupValue createLV(String name, String type, String dataType) {
+        LookupValue rtnVal = new LookupValue();
+        rtnVal.setName(name);
+        rtnVal.setType(type);
+        rtnVal.setDataType(dataType);
+        return rtnVal;
+    }
 }
