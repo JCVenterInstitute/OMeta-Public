@@ -21,10 +21,7 @@
 
 package org.jcvi.ometa.utils;
 
-import org.jcvi.ometa.model.AttributeModelBean;
-import org.jcvi.ometa.model.EventMetaAttribute;
-import org.jcvi.ometa.model.LookupValue;
-import org.jcvi.ometa.model.Project;
+import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.validation.ModelValidator;
 
 import java.io.File;
@@ -205,5 +202,25 @@ public class CommonTool {
                         : o1.getOrder().compareTo(o2.getOrder());
             }
         });
+    }
+
+    public static EventMetaAttribute createEMA(
+            Long projectId, String projectName, String eventName, String attrName,
+            boolean required, boolean active, String dataType, String desc,
+            String ontology, String label, String options, boolean sampleRequired) {
+        EventMetaAttribute rtnVal = new EventMetaAttribute();
+        rtnVal.setProjectId(projectId);
+        rtnVal.setProjectName(projectName);
+        rtnVal.setEventName(eventName);
+        rtnVal.setAttributeName(attrName);
+        rtnVal.setRequired(required);
+        rtnVal.setActive(active);
+        rtnVal.setDataType(dataType);
+        rtnVal.setDesc(desc);
+        rtnVal.setSampleRequired(sampleRequired);
+        rtnVal.setLabel(label);
+        rtnVal.setOntology(ontology);
+        rtnVal.setOptions(options);
+        return rtnVal;
     }
 }

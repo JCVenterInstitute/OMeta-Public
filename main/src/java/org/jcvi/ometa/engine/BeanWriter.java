@@ -29,10 +29,7 @@ import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackRemote;
 import org.jcvi.ometa.configuration.BeanPopulator;
 import org.jcvi.ometa.configuration.InputBeanType;
 import org.jcvi.ometa.model.*;
-import org.jcvi.ometa.utils.Constants;
-import org.jcvi.ometa.utils.PresentationActionDelegate;
-import org.jcvi.ometa.utils.TemplatePreProcessingUtils;
-import org.jcvi.ometa.utils.UploadActionDelegate;
+import org.jcvi.ometa.utils.*;
 
 import java.io.File;
 import java.util.*;
@@ -453,20 +450,12 @@ public class BeanWriter {
             if (emas != null && emas.size() > 0) {
                 newEmas = new ArrayList<EventMetaAttribute>(emas.size());
                 for (EventMetaAttribute ema : emas) {
-                    EventMetaAttribute newEma = new EventMetaAttribute();
-                    newEma.setProjectName(project.getProjectName());
-                    newEma.setEventName(ema.getEventName());
+                    EventMetaAttribute newEma = CommonTool.createEMA(
+                            null, project.getProjectName(), ema.getEventName(), ema.getAttributeName(),
+                            ema.isRequired(), ema.isActive(), ema.getDataType(), ema.getDesc(),
+                            ema.getOntology(), ema.getLabel(), ema.getOptions(), ema.isSampleRequired());
                     newEma.setEventTypeLookupId(ema.getEventTypeLookupId());
-                    newEma.setAttributeName(ema.getAttributeName());
                     newEma.setNameLookupId(ema.getNameLookupId());
-                    newEma.setActive(ema.isActive());
-                    newEma.setRequired(ema.isRequired());
-                    newEma.setDesc(ema.getDesc());
-                    newEma.setDataType(ema.getDataType());
-                    newEma.setLabel(ema.getLabel());
-                    newEma.setOntology(ema.getOntology());
-                    newEma.setOptions(ema.getOptions());
-                    newEma.setSampleRequired(ema.isSampleRequired());
                     newEmas.add(newEma);
                 }
             }

@@ -29,6 +29,7 @@ import org.jcvi.ometa.engine.MultiLoadParameter;
 import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.model.web.MetadataSetupReadBean;
 import org.jcvi.ometa.stateless_session_bean.ForbiddenResourceException;
+import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.UploadActionDelegate;
 import org.jcvi.ometa.validation.ModelValidator;
@@ -132,16 +133,10 @@ public class ProjectSetup extends ActionSupport {
                             pma.setRequiredDB(bean.getRequiredDB());
                             pmaList.add(pma);
 
-                            EventMetaAttribute ema = new EventMetaAttribute();
-                            ema.setProjectName(loadingProject.getProjectName());
-                            ema.setEventName(Constants.EVENT_PROJECT_REGISTRATION);
-                            ema.setAttributeName(pma.getAttributeName());
-                            ema.setDataType(pma.getDataType());
-                            ema.setDesc(pma.getDesc());
-                            ema.setOptions(pma.getOptions());
-                            ema.setRequiredDB(pma.getRequiredDB());
-                            ema.setActiveDB(pma.getActiveDB());
-                            ema.setSampleRequired(false);
+                            EventMetaAttribute ema = CommonTool.createEMA(
+                                    null, loadingProject.getProjectName(), Constants.EVENT_PROJECT_REGISTRATION,
+                                    pma.getAttributeName(), pma.isRequired(), pma.isActive(),
+                                    pma.getDataType(), pma.getDesc(), false);
                             emaList.add(ema);
 
                             if(bean.getValue()!=null && !bean.getValue().isEmpty()) {
