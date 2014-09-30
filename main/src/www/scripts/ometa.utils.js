@@ -123,6 +123,12 @@ var utils = {
                 width: 450,
                 url: "html/errorPopup.html?msg="+$('#'+objectId).val()
             });
+        },
+        baloon: function(msg) {
+            var $errorNode = $('<div class="alert_error" onclick="$(\'.alert_error\').remove();">').html(
+                "<strong>" + msg + "</strong>"
+            );
+            $('#errorMessagesPanel').append($errorNode);
         }
     }
 };

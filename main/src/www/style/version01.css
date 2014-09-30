@@ -335,10 +335,11 @@ tr.borderBottom > td { border-bottom: 1px gray dotted; }
     padding: 15px;
 }
 .alert_error {
+    width: 95%;
     background-color: #F2DEDE;
     border-color: #EBCCD1;
     color: #A94442;
     border: 1px solid rgba(0, 0, 0, 0);
     border-radius: 4px;
-    padding: 5px;
+    padding: 15px;
 }
