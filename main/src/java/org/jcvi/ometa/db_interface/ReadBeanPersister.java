@@ -62,6 +62,10 @@ public class ReadBeanPersister implements WebDataFacadeI {
         return pseb.getActor( loginId );
     }
 
+    public Actor getActorByUserName(String loginName) throws Exception {
+        return pseb.getActorByUserName(loginName);
+    }
+
     public String isUserAdmin(String loginName) throws Exception {
         return pseb.isUserAdmin(loginName);
     }

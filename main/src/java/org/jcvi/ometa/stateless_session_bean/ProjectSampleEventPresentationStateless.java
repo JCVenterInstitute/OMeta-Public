@@ -100,6 +100,23 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return actor;
     }
 
+    @WebMethod
+    public Actor getActorByUserName(String loginName) throws Exception {
+        Actor actor;
+        try {
+            ActorDAO actorDao = daoFactory.getActorDAO();
+            Session session = this.startTransactedSession();
+            actor = actorDao.getActorByLoginName(loginName, session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+        return actor;
+    }
+
     @ExcludeClassInterceptors
     @WebMethod
     public List<Actor> getAllActor() throws Exception {

@@ -39,6 +39,8 @@ import java.util.List;
 public interface ProjectSampleEventPresentationBusiness {
     public Actor getActor(Long loginId) throws Exception;
 
+    public Actor getActorByUserName(String loginName) throws Exception;
+
     public String isUserAdmin(String loginName) throws Exception;
 
     public List<Actor> getAllActor() throws Exception;
