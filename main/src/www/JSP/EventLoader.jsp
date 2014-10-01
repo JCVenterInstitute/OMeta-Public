@@ -725,7 +725,7 @@ $(document).ready(function() {
   <s:set name="oldGridList" value="gridList" />
   <s:set name="oldBeanList" value="beanList" />
 
-  if('<s:property value="#oldGridList"/>' !== '' && '<s:property value="#oldGridList.size()"/>' !== '' && '<s:property value="#oldGridList.size()"/>' !== '0') {
+  <s:if test="%{#oldGridList != null && #oldGridList.size() > 0}">
     //remove any existing dom elements
     gridLineCount = 0;
     $('#gridBody').html('');
@@ -744,7 +744,8 @@ $(document).ready(function() {
       button.add_event(null,null,gridLine);
     </s:iterator>
     _utils.addGridRows(null,_oldEventName);
-  } else if('<s:property value="#oldBeanList"/>' !== '' && '<s:property value="#oldBeanList.size()"/>' !== '' && '<s:property value="#oldBeanList.size()"/>' !== '0') {
+  </s:if>
+  <s:elseif test="%{#oldBeanList != null && #oldBeanList.size() >0}">
     //preload form view
 
     //remove any existing dom elements
@@ -753,19 +754,22 @@ $(document).ready(function() {
       $("[name='beanList[${bstat.count-1}].attributeValue']").val("${bean.attributeValue}");
     </s:iterator>
     <s:set name="oldLoadingSample" value="loadingSample" />
-    if('<s:property value="#oldLoadingSample.sampleName"/>' !== '') {
+    <s:if test="%{#oldLoadingSample != null && #oldLoadingSample.getSampleName() != null}">
       $('#_sampleName').val('<s:property value="#oldLoadingSample.sampleName"/>');
       utils.preSelect('_parentSampleSelect', '<s:property value="#oldLoadingSample.parentSampleName"/>');
       utils.preSelect('_isSamplePublic', '<s:property value="#oldLoadingSample.isPublic"/>');
-    } else {
+    </s:if>
+    <s:else>
       <s:set name="oldLoadingProject" value="loadingProject" />
-      if('<s:property value="#oldLoadingProject.projectName"/>' !== '') {
+      <s:if test="%{#oldLoadingProject != null && #oldLoadingProject.getProjectName() != null}">
         $('#_projectName').val('<s:property value="#oldLoadingProject.projectName"/>');
         utils.preSelect('_isProjectPublic', '<s:property value="#oldLoadingProject.isPublic"/>');
-      }
-    }
-  }
+      </s:if>
+    </s:else>
+  </s:elseif>
   utils.error.check();
+
+  console.log('${ids}');
 });
 </script>
 </body>
