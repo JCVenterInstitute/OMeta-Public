@@ -56,13 +56,7 @@ public class GuidGetter {
                 }
 
                 String hostName = java.net.InetAddress.getLocalHost().getHostName();
-                String port = hostName.contains("localhost")?"8280":"8380";
-                retVal = guidBlock.getGuidBlock(DEFAULT_GUID_NAMESPACE, String.format(DEFAULT_GUID_HTTP_PREFIX, hostName, port), 1);
-                /*
-                if(hostName.contains("dmzweb"))
-                    retVal = guidBlock.getGuidBlock(DEFAULT_GUID_NAMESPACE, DEFAULT_GUID_HTTP_PREFIX, 1);
-                else
-                    retVal = guidBlock.getGuidBlock(1);*/
+                retVal = guidBlock.getGuidBlock(DEFAULT_GUID_NAMESPACE, String.format(DEFAULT_GUID_HTTP_PREFIX, hostName, "8380"), 1);
             } catch ( Exception ex ) {
                 latestException = ex;
                 Thread.sleep( BETWEEN_RETRIES );
