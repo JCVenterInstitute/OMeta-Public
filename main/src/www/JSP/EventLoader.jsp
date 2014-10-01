@@ -43,6 +43,7 @@
 
 <s:form id="eventLoaderPage" name="eventLoaderPage" namespace="/" action="eventLoader" method="post" theme="simple" enctype="multipart/form-data">
   <s:hidden name="jobType" id="jobType"/>
+  <s:hidden name="status" id="status"/>
   <s:hidden name="label" id="label"/>
   <s:hidden name="eventName" id="eventName" />
   <s:hidden name="projectName" id="projectName" />
@@ -183,10 +184,10 @@
   </div>
 
   <div id="submitDiv" style="margin:15px 10px 5px 0;width:100%;">
-    <input type="button" onclick="javascript:button.submit_event();" id="saveButton" value="Save" disabled="true"/>
-    <input type="button" onclick="javascript:button.submit_event();" id="validateButton" value="Validate" disabled="true"/>
-    <input type="button" onclick="javascript:button.submit_event();" id="submitButton" value="Submit" disabled="true"/>
-    <input type="button" onclick="javascript:button.add_event();" id="gridAddLineBtn" value="Add Event Line" style="display:none;"/>
+    <input type="button" onclick="javascript:button.submit('save');" id="saveButton" value="Save" disabled="true"/>
+    <input type="button" onclick="javascript:button.submit('validate');" id="validateButton" value="Validate" disabled="true"/>
+    <input type="button" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to DPCC" disabled="true"/>
+    <input type="button" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Event Line" style="display:none;"/>
     <input type="button" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
     <input type="button" onclick="javascript:button.clear_form();" value="Clear" />
     <div>
@@ -216,20 +217,6 @@ var _utils = {
           success: function(data){ cb(data,p); },
           fail: function() { alert("Ajax Process has failed."); }
         });
-      },
-      addDD: function(n,p,l) {
-        $(
-            '<tr>'+
-                '    <div id="'+n.replace(' ', '')+'Dropbox">'+
-                '        <td>'+n.charAt(0).toUpperCase()+n.substring(1)+' ID</td>'+
-                '        <td style="padding-left:10px" class="ui-combobox" id="td_'+n+'Select"><select id="a_'+n+'Select"></select></td>'+
-                '    </div>'+
-                '</tr>'
-        ).insertBefore($('table#ddTable tr:last-child'));
-        if(l===1) {
-          this.makeAjax('sharedAjax.action', 'type=Sample&projectId='+p+'&sampleLevel='+l, n, callbacks.added);
-        }
-        $('#a_'+n+'Select').combobox();
       },
       addGridRows: function(pn,en) {
         //have at least 5 event lines for the grid view
@@ -488,13 +475,14 @@ var _utils = {
         _utils.hidePS();
         $("#_eventSelect").attr("disabled", false);
         _utils.makeAjax('sharedAjax.action', 'type=Event&projectId='+projectId+'&eventTypeId=0', null, callbacks.event);
+        _utils.makeAjax('sharedAjax.action', 'type=Sample&projectId='+projectId, null, callbacks.sample);
         $('#_sampleSelect+.ui-autocomplete-input, #_eventSelect+.ui-autocomplete-input').val('');
       },
       sample: function(){ /*nothing to do when sample changes*/ },
       event: function(et) {
         _utils.hidePS();
 
-        $("#submitButton").attr("disabled", false);
+        $("#saveButton, #validateButton, #submitButton").attr("disabled", false);
         if(utils.getLoadType()==='form') {
           _utils.showPS(et);
         }
@@ -503,9 +491,9 @@ var _utils = {
     };
 
 var button = {
-  submit_event: function() {
+  submit: function(status) {
     var loadType = $('input[name="loadType"]:radio:checked').val();
-    this.submit_form(loadType==='form'?'insert':loadType);
+    this.submit_form(loadType==='form'? 'insert' : loadType, status);
   },
   template: function() {
     if(_utils.validation()) {
@@ -517,11 +505,12 @@ var button = {
       //this.submit_form("template");
     }
   },
-  submit_form: function(type) {
+  submit_form: function(type, status) {
     $("#projectName").val(utils.getProjectName());
     $("#sampleName").val(utils.getSampleName());
     $("#eventName").val(utils.getEventName());
     $("#jobType").val(type);
+    $("#status").val(status);
     if(type === 'file') {
       $("form#eventLoaderPage").attr("enctype", "multipart/form-data");
     }
@@ -667,7 +656,7 @@ var button = {
 function comboBoxChanged(option, id) {
   if(id==='_projectSelect') {
     button.clear_attr();
-    $("#submitButton").attr("disabled", true);
+    $("#saveButton, #validateButton, #submitButton").attr("disabled", true);
     $("#_eventSelect").html(vs.empty);
     if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
       changes.project(option.value);
@@ -703,11 +692,11 @@ $(document).ready(function() {
 
   //load type radio button change event
   $('input[name="loadType"]').change(function() {
-    $('div[id$="InputDiv"], #gridAddLineBtn, .sampleSelectTr').hide();
+    $('div[id$="InputDiv"], #gridAddLineButton, .sampleSelectTr').hide();
     utils.preSelect('_sampleSelect', '');
     var _selectedType = $(this).val();
     if(_selectedType==='grid') {
-      $('#gridInputDiv, #gridAddLineBtn').show();
+      $('#gridInputDiv, #gridAddLineButton').show();
       _utils.addGridRows(utils.getProjectName(), utils.getEventName());
     } else if(_selectedType==='file') {
       $('#fileInputDiv').show();
@@ -732,34 +721,50 @@ $(document).ready(function() {
     }
   }
 
-  //preload grid body
-  if('${gridList}'!=='') {
+  //keep any existing data
+  <s:set name="oldGridList" value="gridList" />
+  <s:set name="oldBeanList" value="beanList" />
+
+  if('<s:property value="#oldGridList"/>' !== '' && '<s:property value="#oldGridList.size()"/>' !== '' && '<s:property value="#oldGridList.size()"/>' !== '0') {
     //remove any existing dom elements
     gridLineCount = 0;
     $('#gridBody').html('');
     $('[name^="gridList"]').remove();
-  <s:iterator value="gridList" var="gbean" status="gstat">
-    var gridLine={}, beans=[];
-  <s:iterator value="beanList" var="fbean" status="fstat">
-    beans.push(["${fbean.attributeName}", "${attributeValue}"]);
-  </s:iterator>
-    gridLine['pn']="${gbean.projectName}";
-    gridLine['pp']="${gbean.projectPublic}";
-    gridLine['sn']="${gbean.sampleName}";
-    gridLine['psn']="${gbean.parentSampleName}";
-    gridLine['sp']="${gbean.samplePublic}";
-    gridLine['beans']=beans;
-    button.add_event(null,null,gridLine);
-  </s:iterator>
+    <s:iterator value="#oldGridList" var="gbean" status="gstat">
+      var gridLine={}, beans=[];
+      <s:iterator value="beanList" var="fbean" status="fstat">
+        beans.push(["${fbean.attributeName}", "${attributeValue}"]);
+      </s:iterator>
+      gridLine['pn']="${gbean.projectName}";
+      gridLine['pp']="${gbean.projectPublic}";
+      gridLine['sn']="${gbean.sampleName}";
+      gridLine['psn']="${gbean.parentSampleName}";
+      gridLine['sp']="${gbean.samplePublic}";
+      gridLine['beans']=beans;
+      button.add_event(null,null,gridLine);
+    </s:iterator>
     _utils.addGridRows(null,_oldEventName);
-  } else if('${beanList}'!=='') {
+  } else if('<s:property value="#oldBeanList"/>' !== '' && '<s:property value="#oldBeanList.size()"/>' !== '' && '<s:property value="#oldBeanList.size()"/>' !== '0') {
+    //preload form view
+
     //remove any existing dom elements
     //$('[name^="beanList"]').remove();
-  <s:iterator value="beanList" var="bean" status="bstat">
-    $("[name='beanList[${bstat.count-1}].attributeValue']").val("${bean.attributeValue}");
-  </s:iterator>
+    <s:iterator value="#oldBeanList" var="bean" status="bstat">
+      $("[name='beanList[${bstat.count-1}].attributeValue']").val("${bean.attributeValue}");
+    </s:iterator>
+    <s:set name="oldLoadingSample" value="loadingSample" />
+    if('<s:property value="#oldLoadingSample.sampleName"/>' !== '') {
+      $('#_sampleName').val('<s:property value="#oldLoadingSample.sampleName"/>');
+      utils.preSelect('_parentSampleSelect', '<s:property value="#oldLoadingSample.parentSampleName"/>');
+      utils.preSelect('_isSamplePublic', '<s:property value="#oldLoadingSample.isPublic"/>');
+    } else {
+      <s:set name="oldLoadingProject" value="loadingProject" />
+      if('<s:property value="#oldLoadingProject.projectName"/>' !== '') {
+        $('#_projectName').val('<s:property value="#oldLoadingProject.projectName"/>');
+        utils.preSelect('_isProjectPublic', '<s:property value="#oldLoadingProject.isPublic"/>');
+      }
+    }
   }
-
   utils.error.check();
 });
 </script>

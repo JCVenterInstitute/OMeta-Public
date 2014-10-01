@@ -35,6 +35,7 @@ import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.TemplatePreProcessingUtils;
 import org.jcvi.ometa.utils.UploadActionDelegate;
+import org.jcvi.ometa.validation.DPCCValidator;
 import org.jtc.common.util.property.PropertyHelper;
 
 import javax.naming.InitialContext;
@@ -66,6 +67,7 @@ public class EventLoader extends ActionSupport implements Preparable {
     private Long projectId;
     private Long eventId;
 
+    private String status;
     private String jobType;
     private String label;
 
@@ -81,9 +83,10 @@ public class EventLoader extends ActionSupport implements Preparable {
     private String dataTemplateFileName;
     private String dataTemplateContentType;
 
-
     private String fileStoragePath;
     private ArrayList<String> loadedFiles;
+
+    private String sampleIds;
 
     private static final String DEFAULT_USER_MESSAGE = "Not yet entered";
     private final String MULTIPLE_SUBJECT_IN_FILE_MESSAGE = "Multiple projects are found in the file";
@@ -133,13 +136,13 @@ public class EventLoader extends ActionSupport implements Preparable {
         UserTransaction tx = null;
 
         try {
-            sampleName = sampleName!=null && sampleName.equals("0")?null:sampleName;
+            this.sampleName = (this.sampleName!=null && this.sampleName.equals("0") ? null : this.sampleName);
 
             if (jobType != null) {
                 boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION);
                 boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);
 
-                if(projectName==null || projectName.equals("0") || eventName==null || eventName.equals("0"))
+                if(this.projectName==null || this.projectName.equals("0") || eventName==null || eventName.equals("0"))
                     throw new Exception("Project or Event type is not selected.");
 
                 if (jobType.equals("insert")) { //loads single event
@@ -148,7 +151,7 @@ public class EventLoader extends ActionSupport implements Preparable {
 
                     gridList = null; // force grid list to be empty
                     MultiLoadParameter loadParameter = new MultiLoadParameter();
-                    psewt.loadAll(null, this.createMultiLoadParameter(loadParameter, projectName, loadingProject, loadingSample, beanList, 1));
+                    psewt.loadAll(null, this.createMultiLoadParameter(loadParameter, loadingProject, loadingSample, beanList, 1));
                     this.reset();
 
                     addActionMessage("Event has been loaded successfully.");
@@ -166,7 +169,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                                 loadingProject.setProjectName(gBean.getProjectName());
                                 loadingProject.setIsPublic(Integer.valueOf(gBean.getProjectPublic()));
                             } else if(isSampleRegistration && gBean.getSampleName()!=null && gBean.getSamplePublic()!=null) {
-                                Sample existingSample = readPersister.getSample(projectId, gBean.getSampleName());
+                                Sample existingSample = readPersister.getSample(this.projectId, gBean.getSampleName());
                                 if(existingSample == null) {
                                     loadingSample = new Sample();
                                     loadingSample.setSampleName(gBean.getSampleName());
@@ -176,7 +179,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                                     loadingSample = existingSample;
                                 }
                             } else {
-                                if(gBean.getSampleName()!=null) {
+                                if(gBean.getSampleName() != null) {
                                     this.sampleName = gBean.getSampleName();
                                 }
                             }
@@ -185,7 +188,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                             if((gBean.getBeanList() != null && gBean.getBeanList().size() > 0)
                                     || this.eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)
                                     || this.eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
-                                this.createMultiLoadParameter(loadParameter, projectName, loadingProject,  loadingSample, gBean.getBeanList(), ++gridRowIndex);
+                                this.createMultiLoadParameter(loadParameter, loadingProject,  loadingSample, gBean.getBeanList(), ++gridRowIndex);
                             }
                         }
                     }
@@ -202,7 +205,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                             TemplatePreProcessingUtils templateUtil = new TemplatePreProcessingUtils();
                             gridList = templateUtil.parseEventFile(
                                     this.dataTemplateFileName, this.dataTemplate,
-                                    projectName, isProjectRegistration, isSampleRegistration
+                                    this.projectName, isProjectRegistration, isSampleRegistration
                             );
                             jobType = "grid";
                         } catch(Exception ex) {
@@ -210,7 +213,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                         }
                     }
                 } else if(jobType.startsWith("template")) { //download template
-                    List<EventMetaAttribute> emaList = readPersister.getEventMetaAttributes(projectName, eventName);
+                    List<EventMetaAttribute> emaList = readPersister.getEventMetaAttributes(this.projectName, this.eventName);
                     emaList = CommonTool.filterActiveEventMetaAttribute(emaList);
                     CommonTool.sortEventMetaAttributeByOrder(emaList);
 
@@ -222,9 +225,10 @@ public class EventLoader extends ActionSupport implements Preparable {
                     */
                     TemplatePreProcessingUtils cvsUtils = new TemplatePreProcessingUtils();
                     String templateType = jobType.substring(jobType.indexOf("_")+1);
-                    downloadStream = cvsUtils.buildFileContent(templateType, emaList, projectName, sampleName, eventName);
+                    downloadStream = cvsUtils.buildFileContent(templateType, emaList, this.projectName, this.sampleName, this.eventName);
                     downloadContentType = templateType.equals("c")?"csv":"vnd.ms-excel";
                     rtnVal = Constants.FILE_DOWNLOAD_MSG;
+                } else if(jobType.startsWith("edit")) { //project or sample edit from EventDetail
                 }
             }
 
@@ -284,7 +288,7 @@ public class EventLoader extends ActionSupport implements Preparable {
         return rtnVal;
     }
 
-    private MultiLoadParameter createMultiLoadParameter(MultiLoadParameter loadParameter, String projectName, Project project, Sample sample, List<FileReadAttributeBean> frab, int index)
+    private MultiLoadParameter createMultiLoadParameter(MultiLoadParameter loadParameter, Project project, Sample sample, List<FileReadAttributeBean> frab, int index)
             throws Exception {
         boolean isSampleRegistration = false;
         boolean isProjectRegistration = false;
@@ -295,10 +299,12 @@ public class EventLoader extends ActionSupport implements Preparable {
             isSampleRegistration = true;
         }
 
+        this.sampleName = isSampleRegistration ? sample.getSampleName() : this.sampleName;
+
         List<FileReadAttributeBean> loadingList = null;
         if (frab != null && frab.size() > 0) {
             loadingList = processFileReadBeans(
-                    isProjectRegistration ? project.getProjectName() : projectName,
+                    isProjectRegistration ? project.getProjectName() : this.projectName,
                     isSampleRegistration ? sample.getSampleName() : this.sampleName,
                     frab
             );
@@ -309,25 +315,17 @@ public class EventLoader extends ActionSupport implements Preparable {
             *   loads all meta attributes from the parent
             *   by hkim 6/11/13
             */
-            List<EventMetaAttribute> emas = this.readPersister.getEventMetaAttributes(projectName, null); //, Constants.EVENT_PROJECT_REGISTRATION);
+            List<EventMetaAttribute> emas = this.readPersister.getEventMetaAttributes(this.projectName, null); //, Constants.EVENT_PROJECT_REGISTRATION);
             List<EventMetaAttribute> newEmas = null;
             if (emas != null && emas.size() > 0) {
                 newEmas = new ArrayList<EventMetaAttribute>(emas.size());
                 for (EventMetaAttribute ema : emas) {
-                    EventMetaAttribute newEma = new EventMetaAttribute();
-                    newEma.setProjectName(project.getProjectName());
-                    newEma.setEventName(ema.getEventName());
+                    EventMetaAttribute newEma = CommonTool.createEMA(
+                            null, project.getProjectName(), ema.getEventName(), ema.getAttributeName(),
+                            ema.isRequired(), ema.isActive(), ema.getDataType(), ema.getDesc(),
+                            ema.getOntology(), ema.getLabel(), ema.getOptions(), ema.isSampleRequired());
                     newEma.setEventTypeLookupId(ema.getEventTypeLookupId());
-                    newEma.setAttributeName(ema.getAttributeName());
                     newEma.setNameLookupId(ema.getNameLookupId());
-                    newEma.setActive(ema.isActive());
-                    newEma.setRequired(ema.isRequired());
-                    newEma.setDesc(ema.getDesc());
-                    newEma.setDataType(ema.getDataType());
-                    newEma.setLabel(ema.getLabel());
-                    newEma.setOntology(ema.getOntology());
-                    newEma.setOptions(ema.getOptions());
-                    newEma.setSampleRequired(ema.isSampleRequired());
                     newEmas.add(newEma);
                 }
             }
@@ -352,7 +350,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                 }
             }
 
-            List<ProjectMetaAttribute> pmas = this.readPersister.getProjectMetaAttributes(projectName);
+            List<ProjectMetaAttribute> pmas = this.readPersister.getProjectMetaAttributes(this.projectName);
             List<ProjectMetaAttribute> newPmas = null;
             if (pmas != null && pmas.size() > 0) {
                 newPmas = new ArrayList<ProjectMetaAttribute>(pmas.size());
@@ -372,11 +370,23 @@ public class EventLoader extends ActionSupport implements Preparable {
                 }
             }
             loadParameter.addProjectPair(feedProjectData(project), loadingList, newPmas, newSmas, newEmas, index);
-        } else if (isSampleRegistration) {
-            loadParameter.addSamplePair(feedSampleData(sample), loadingList, index);
         } else {
-            if(loadingList != null && loadingList.size() > 0)  {
-                loadParameter.addEvents(this.eventName, loadingList);
+            boolean notEmptyList = loadingList != null && loadingList.size() > 0;
+            if(!this.eventName.contains("Project")) {
+                if((status.equals("submit") || status.equals("validate")) && notEmptyList) {
+                    this.validateDataForDPCC(loadingList, index);
+                }
+                if(isSampleRegistration) {
+                    this.updateSampleStatus(loadingList, status, index);
+                    loadParameter.addSamplePair(feedSampleData(sample), loadingList, index);
+                } else {
+                    if(notEmptyList)  {
+                        if(this.eventName.contains(Constants.EVENT_SAMPLE_UPDATE)) {
+                            this.updateSampleStatus(loadingList, status, index);
+                        }
+                        loadParameter.addEvents(this.eventName, loadingList);
+                    }
+                }
             }
         }
         loadParameter.setEventName(this.eventName);
@@ -384,9 +394,9 @@ public class EventLoader extends ActionSupport implements Preparable {
     }
 
     private Project feedProjectData(Project project) throws Exception {
-        project.setParentProjectName(projectName);
+        project.setParentProjectName(this.projectName);
 
-        Project parentProject = readPersister.getProject(projectName);
+        Project parentProject = readPersister.getProject(this.projectName);
         project.setParentProjectId(parentProject.getProjectId());
         project.setProjectLevel(parentProject.getProjectLevel()+1);
         project.setEditGroup(parentProject.getEditGroup());
@@ -395,8 +405,8 @@ public class EventLoader extends ActionSupport implements Preparable {
     }
 
     private Sample feedSampleData(Sample sample) throws Exception {
-        sample.setProjectId(projectId);
-        sample.setProjectName(projectName);
+        sample.setProjectId(this.projectId);
+        sample.setProjectName(this.projectName);
 
         //set project level by adding 1 to selected parent project's level
         if(sample.getParentSampleName()==null || sample.getParentSampleName().equals("0")) {
@@ -406,7 +416,7 @@ public class EventLoader extends ActionSupport implements Preparable {
         } else {
             String parentSampleName = sample.getParentSampleName();
             if (parentSampleName != null && !parentSampleName.isEmpty() && !parentSampleName.equals("0")) {
-                Sample selectedParentSample = readPersister.getSample(projectId, parentSampleName);
+                Sample selectedParentSample = readPersister.getSample(this.projectId, parentSampleName);
                 if(selectedParentSample != null && selectedParentSample.getSampleId() != null) {
                     sample.setSampleLevel(selectedParentSample.getSampleLevel() + 1);
                     sample.setParentSampleId(selectedParentSample.getSampleId());
@@ -418,11 +428,16 @@ public class EventLoader extends ActionSupport implements Preparable {
 
     private List<FileReadAttributeBean> processFileReadBeans(String _projectName, String _sampleName, List<FileReadAttributeBean> loadingList) throws Exception {
         List<FileReadAttributeBean> processedList = new ArrayList<FileReadAttributeBean>();
-        for(FileReadAttributeBean fBean:loadingList) {
-            if(fBean.getProjectName()==null || eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)) {
+        for(FileReadAttributeBean fBean : loadingList) {
+            if (fBean.getAttributeName().equals("0") || fBean.getAttributeValue() == null
+                    || fBean.getAttributeValue().isEmpty() || fBean.getAttributeValue().toLowerCase().equals("null")) { //&& !fBean.getAttributeValue().equals("0")
+                continue;
+            }
+
+            if(fBean.getProjectName() == null || eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)) {
                 fBean.setProjectName(_projectName);
             }
-            if(fBean.getSampleName()==null) {
+            if(fBean.getSampleName() == null) {
                 fBean.setSampleName(_sampleName);
             }
 
@@ -459,11 +474,77 @@ public class EventLoader extends ActionSupport implements Preparable {
                 }
             }
 
-            if (!fBean.getAttributeName().equals("0") && fBean.getAttributeValue()!=null && !fBean.getAttributeValue().isEmpty()) { //&& !fBean.getAttributeValue().equals("0")
-                processedList.add(fBean);
-            }
+            processedList.add(fBean);
         }
         return processedList;
+    }
+
+    private void updateSampleStatus(List<FileReadAttributeBean> loadingList, String status, int index) throws Exception {
+        boolean foundSampleStatus = false;
+        String strStatus = status.equals("submit") ? "Data submitted to DPCC" : status.equals("validate") ? "Validated" : "Editing";
+
+        try {
+            if(this.sampleName == null || this.sampleName.isEmpty()) {
+                throw new Exception("Sample is required.");
+            }
+
+            Sample sample = this.readPersister.getSample(this.projectId, this.sampleName);
+            if(sample != null) { //it could be sample registration event
+                List<SampleAttribute> saList = this.readPersister.getSampleAttributes(sample.getSampleId());
+                for(SampleAttribute sa : saList) {
+                    if(sa.getMetaAttribute().getLookupValue().getName().equals(Constants.ATTR_SAMPLE_STATUS)) {
+                        if(sa.getAttributeStringValue() != null && sa.getAttributeStringValue().equals("Data submitted to DPCC")) {
+                            throw new Exception("You cannot load any events for samples that has been submitted to DPCC.");
+                        }
+                    }
+                }
+            }
+
+            for(FileReadAttributeBean fBean : loadingList) {
+                if(fBean.getAttributeName().equals(Constants.ATTR_SAMPLE_STATUS)) {
+                    fBean.setAttributeValue(strStatus);
+                    foundSampleStatus = true;
+                }
+            }
+            if(!foundSampleStatus) {
+                List<SampleMetaAttribute> smaList = this.readPersister.getSampleMetaAttributes(this.projectId);
+                for(SampleMetaAttribute sma : smaList) {
+                    if(sma.getLookupValue().getName().equals(Constants.ATTR_SAMPLE_STATUS)) {
+                        foundSampleStatus = true;
+                    }
+                }
+
+                if(foundSampleStatus) {
+                    FileReadAttributeBean statusBean = new FileReadAttributeBean();
+                    statusBean.setAttributeName(Constants.ATTR_SAMPLE_STATUS);
+                    statusBean.setAttributeValue(strStatus);
+                    statusBean.setProjectName(this.projectName);
+                    statusBean.setSampleName(this.sampleName);
+                    loadingList.add(statusBean);
+                } else {
+                    throw new Exception("'" + Constants.ATTR_SAMPLE_STATUS + "' attribute not found.");
+                }
+            }
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            DetailedException dex = new DetailedException(index, ex.getMessage());
+            throw dex;
+        }
+    }
+
+    private void validateDataForDPCC(List<FileReadAttributeBean> loadingList, int index) throws Exception {
+        String attributeName = null;
+        try {
+            for(FileReadAttributeBean fBean : loadingList) {
+                if(fBean.getAttributeName().toLowerCase().contains("date")) {
+                    attributeName = fBean.getAttributeName();
+                    DPCCValidator.validateDate(fBean.getAttributeValue());
+                }
+            }
+        } catch(Exception ex) {
+            DetailedException dex = new DetailedException(index, "date parse error: '" + attributeName + "'");
+            throw dex;
+        }
     }
 
     private void reset() {
@@ -507,6 +588,14 @@ public class EventLoader extends ActionSupport implements Preparable {
 
     public void setEventName(String eventName) {
         this.eventName = eventName;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getJobType() {
@@ -615,5 +704,13 @@ public class EventLoader extends ActionSupport implements Preparable {
 
     public void setDataTemplate(File dataTemplate) {
         this.dataTemplate = dataTemplate;
+    }
+
+    public String getSampleIds() {
+        return sampleIds;
+    }
+
+    public void setSampleIds(String sampleIds) {
+        this.sampleIds = sampleIds;
     }
 }
