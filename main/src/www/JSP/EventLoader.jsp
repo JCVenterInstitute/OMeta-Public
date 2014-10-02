@@ -685,10 +685,7 @@ $(document).ready(function() {
   $('select[id$="Select"]').combobox();
 
   //retrieve existing values for preload
-  var _oldProjectId = '${projectId}',
-      _oldSampleName = '${sampleName}',
-      _oldEventName = '${eventName}',
-      _oldJobType = '${jobType}';
+  var oldProjectId = '${projectId}', oldJobType = '${jobType}';
 
   //load type radio button change event
   $('input[name="loadType"]').change(function() {
@@ -707,17 +704,25 @@ $(document).ready(function() {
   });
 
   //preselect load type radio button
-  var rtnJobType = (_oldJobType===''||_oldJobType==='insert'||_oldJobType==='template'?'form':_oldJobType);
+  var rtnJobType = (oldJobType===''||oldJobType==='insert'||oldJobType==='template'?'form':oldJobType);
   $('input[name="loadType"][value='+rtnJobType+']').attr('checked', true);
   $('input[name="loadType"]:checked').change();
 
   //preload project and event type
-  if(_oldProjectId) {
-    changes.project(_oldProjectId);
-    utils.preSelect("_eventSelect", _oldEventName);
-    changes.event(_oldEventName);
-    if(_oldSampleName!=='') {
-      utils.preSelect("_sampleSelect", _oldSampleName);
+  if(oldProjectId) {
+    changes.project(oldProjectId);
+
+    var oldSampleName = '${sampleName}', oldEventName = '${eventName}', sampleIds = '${sampleIds}';
+    if(oldEventName !== '') {
+      utils.preSelect("_eventSelect", oldEventName);
+      changes.event(oldEventName);
+    }
+    if(oldSampleName !== '') {
+      utils.preSelect("_sampleSelect", oldSampleName);
+    }
+    if(sampleIds !== '') {
+      var sampleIdArr = sampleIds.split(',');
+      console.log(sampleIdArr);
     }
   }
 
@@ -768,8 +773,6 @@ $(document).ready(function() {
     </s:else>
   </s:elseif>
   utils.error.check();
-
-  console.log('${ids}');
 });
 </script>
 </body>
