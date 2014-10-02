@@ -68,6 +68,8 @@ public class LoadingEngine {
             if(usage.isCmdLineNamedEvent()) {
                 if(usage.isBatchLoad()) {
                     engine.batchLoad();
+                } else if (usage.isMakeEventTemplate()) {
+                    engine.createEventTemplate();
                 } else {
                     engine.loadEventFile();
                 }
@@ -75,8 +77,6 @@ public class LoadingEngine {
                 engine.digestMultipart();
             } else if(usage.isDirectory()) {
                 engine.digestMultiDirectory();
-            } else if (usage.isMakeEventTemplate()) {
-                engine.createEventTemplate();
             } else {
                 engine.dispatchByFilename();
             }
