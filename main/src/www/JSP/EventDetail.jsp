@@ -130,6 +130,7 @@
           </thead>
           <tbody id="sampleTableBody"/>
         </table>
+        <input onclick="_page.edit.sampleEventClick();" style="" disabled="true" type="button" value="Sample Event" id="editSampleBtn" />
       </div>
       <div style="margin:25px 10px 0 0;">
         <h1 class="csc-firstHeader">Event Details
@@ -221,7 +222,7 @@ var _page = {
           if(_page.get.project(projectId) == true) {
             _page.get.sample(projectId);
             _page.change.sample(projectId, sampleId?sampleId:0)
-            $("#editProjectBtn").attr("disabled", ($("#editable").val()!=1));
+            $("#editProjectBtn, #editSampleBtn").attr("disabled", ($("#editable").val()!=1));
           } else {
             //reset
             $("#_sampleSelect").html(vs.empty);
@@ -230,7 +231,7 @@ var _page = {
                 sDT.fnNewAjax("eventDetailAjax.action?type=sdt&projectId=0");
                 eDT.fnNewAjax("eventDetailAjax.action?type=sdt&projectId=0");
             }
-            $("#editProjectBtn").attr("disabled", "true");
+            $("#editProjectBtn, #editSampleBtn").attr("disabled", "true");
             utils.error.add("You do not have permission to access the project.");
           }
         },
@@ -274,10 +275,20 @@ var _page = {
           eDT.fnNewAjax("eventDetailAjax.action?type=edt&projectId="+projectId+"&sampleId="+sampleId+"&eventId=0"+dates);
         }
       },
-      callbacks: {
-        project: function() {},
-        sample: function() {},
-        event: function() {}
+      edit: {
+        sampleEventClick: function() {
+          var sampleIds = '';
+          $('#sampleTableBody input[id^=sampleCB]:checked').each(function(i,v) {
+            sampleIds += v.id.substr(v.id.indexOf('_') + 1) + ',';
+          });
+          if(sampleIds.length === 0) {
+            utils.error.baloon("Please select sample to load or edit event.");
+          } else {
+            $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'sampleIds'}).val(sampleIds));
+            $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'projectId'}).val($('#_projectSelect').val()));
+            $('#eventDetailPage').attr('action', 'eventLoader.action').submit();
+          }
+        }
       }
     },
     openSampleEditPopup = function(sampleId) {
@@ -381,7 +392,7 @@ $(document).ready(function() {
                 var row = [], attributes;
                 row.push(
                   "<img src='images/dataTables/details_open.png' id='rowDetail_openBtn'/>",
-                  rowData.sampleName,
+                  rowData.sampleName + "<input type='checkbox' style='margin-left:6px;' id='sampleCB_" + rowData.sample.sampleId + "'/>",
                   rowData.parentSampleName,
                   rowData.actor,
                   rowData.createdOn
