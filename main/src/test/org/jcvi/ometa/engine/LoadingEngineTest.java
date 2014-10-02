@@ -54,7 +54,7 @@ public class LoadingEngineTest extends PSTTestAbstract {
     public void init() throws Exception {
         this.getUserCrendential();
         usage = new LoadingEngineUsage();
-        usage.setServerUrl("localhost:1299");
+        usage.setServerUrl("movence-pro.local:1399");
         usage.setUsername(this.userPassProvider.getUsername());
         usage.setPassword(this.userPassProvider.getPassword());
 
