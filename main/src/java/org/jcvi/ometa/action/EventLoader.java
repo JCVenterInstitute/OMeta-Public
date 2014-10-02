@@ -232,6 +232,9 @@ public class EventLoader extends ActionSupport implements Preparable {
                 }
             }
 
+            if(sampleIds != null && sampleIds.length() > 0) {
+                jobType = "grid";
+            }
         } catch (Exception ex) {
 
             if(loadedFiles!=null && loadedFiles.size()>0) { //deletes uploaded files in event of error
