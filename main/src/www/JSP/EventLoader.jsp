@@ -86,14 +86,14 @@
         <div id="eventDropBox">
           <td>Event</td>
           <td style="padding-left:10px" class="ui-combobox">
-            <s:select id="_eventSelect" list="#{'0':''}" name="eventId" required="true" disabled="true"/>
+            <s:select id="_eventSelect" list="#{0:''}" name="eventId" required="true" disabled="true"/>
           </td>
         </div>
       </tr>
       <tr class="sampleSelectTr">
         <td id="sampleNameLabel">Sample</td>
         <td style="padding-left:10px" class="ui-combobox">
-          <s:select id="_sampleSelect" list="#{'0':''}" name="sampleName" required="true" disabled="true"/>
+          <s:select id="_sampleSelect" list="#{'':''}" name="sampleName" required="true" disabled="true"/>
         </td>
       </tr>
     </table>
@@ -197,7 +197,7 @@
 
 <script src="scripts/jquery/jquery.multiple.select.js"></script>
 <script>
-var eventAttributes = [], gridLineCount=0, avDic= {};
+var g_eventAttributes = [], g_gridLineCount=0, g_avDic= {}, g_sampleIds;
 var pBeanHtml='<input type="hidden" value="$pn$" name="$lt$projectName"/>',
     anBeanHtml='<input type="hidden" value="$an$" name="$lt$attributeName"/>',
     avTextHtml='<input type="text" id="$an$" name="$lt$attributeValue" value="$val$"/>',
@@ -340,9 +340,9 @@ var _utils = {
         var $attributeDiv = $("#attributeInputDiv"); //where attributes are placed
         $attributeDiv.empty(); //empty any existing contents
         
-        eventAttributes = []; 
-        gridLineCount=0; 
-        avDic={};
+        g_eventAttributes = []; 
+        g_gridLineCount=0; 
+        g_avDic={};
 
         var requireImgHtml = '<img class="attributeIcon" src="images/icon/req.png"/>';
 
@@ -371,7 +371,7 @@ var _utils = {
         //meta attribute loop to genereate input fields
         $.each(data.aaData, function(ma_i, _ma) { 
           if(_ma && _ma.eventMetaAttributeId && _ma.projectId) {
-            eventAttributes.push(_ma); //stores event attributes for other uses
+            g_eventAttributes.push(_ma); //stores event attributes for other uses
 
             //options
             var isDesc = (_ma.desc && _ma.desc !== '');
@@ -437,7 +437,7 @@ var _utils = {
             }
             inputElement = inputElement.replace("$id$",_ma.lookupValue.name.replace(/ /g,"_")+"_$id$");
 
-            avDic[_ma.lookupValue.name] = { //store html contents with its attribute name for later use in adding row
+            g_avDic[_ma.lookupValue.name] = { //store html contents with its attribute name for later use in adding row
               'ma': _ma,
               'inputElement': inputElement,
               'isText': isText,
@@ -467,26 +467,61 @@ var _utils = {
         _utils.addGridRows(null, en);
 
         return;
+      },
+      eventAttribute: function(data, eventName) {
+        if(data && data.aaData) {
+          g_gridLineCount = 0;
+          $('#gridBody').html('');
+          $('[name^="gridList"]').remove();
+          $.each(data.aaData, function(i,v) {
+            if(v.object && v.attributes) {
+              var gridLine={}, beans=[];
+              $.each(v.attributes, function(ai, at) {
+                beans.push([at.attributeName, at.attributeValue]);
+              });
+              gridLine['pn']= data.projectName;
+              gridLine['sn']= v.object.sampleName;
+              gridLine['beans']=beans;
+              button.add_event(null,eventName,gridLine);
+            }
+          });
+        }
+        
+        _utils.addGridRows(null,eventName);
       }
     },
     changes = {
       project: function(projectId) {
-        $("#_sampleSelect").attr("disabled", false);
         _utils.hidePS();
+        g_sampleIds = null;
+        $("#_sampleSelect").attr("disabled", false);
         $("#_eventSelect").attr("disabled", false);
         _utils.makeAjax('sharedAjax.action', 'type=Event&projectId='+projectId+'&eventTypeId=0', null, callbacks.event);
         _utils.makeAjax('sharedAjax.action', 'type=Sample&projectId='+projectId, null, callbacks.sample);
         $('#_sampleSelect+.ui-autocomplete-input, #_eventSelect+.ui-autocomplete-input').val('');
       },
       sample: function(){ /*nothing to do when sample changes*/ },
-      event: function(et) {
+      event: function(eventName, eventId) {
         _utils.hidePS();
 
         $("#saveButton, #validateButton, #submitButton").attr("disabled", false);
         if(utils.getLoadType()==='form') {
-          _utils.showPS(et);
+          _utils.showPS(eventName);
         }
-        _utils.makeAjax('sharedAjax.action', 'type=ea&projectName='+utils.getProjectName()+'&eventName='+et, et, callbacks.meta);
+        _utils.makeAjax(
+          'sharedAjax.action', 
+          'type=ea&projectName=' + utils.getProjectName() + '&eventName=' + eventName, 
+          eventName, 
+          callbacks.meta
+        );
+        if(g_sampleIds) {
+          _utils.makeAjax(
+            'sharedAjax.action', 
+            'type=sa&subType=s&projectName='+utils.getProjectName() + '&projectId=' + $('#_projectSelect').val() + '&eventId=' + eventId + '&eventName=' + eventName + '&ids=' + g_sampleIds, 
+            eventName, 
+            callbacks.eventAttribute
+          );
+        }
       }
     };
 
@@ -521,7 +556,7 @@ var button = {
         _en = en ? en : utils.getEventName(),
         $eventLine = $('<tr class="borderBottom"/>');
 
-    $eventLine.append('<td class="gridIndex">' + (gridLineCount + 1)+ '</td>'); //grid row index
+    $eventLine.append('<td class="gridIndex">' + (g_gridLineCount + 1)+ '</td>'); //grid row index
 
     if(_pn && _en) {
       if(utils.checkNP(_en)){ //not project related
@@ -529,23 +564,23 @@ var button = {
           $eventLine.append(
             $('<td/>').append($('<input/>').attr({
                 'type': 'text',
-                'name': 'gridList[' + gridLineCount + '].sampleName',
-                'id': '_sampleName' + gridLineCount
+                'name': 'gridList[' + g_gridLineCount + '].sampleName',
+                'id': '_sampleName' + g_gridLineCount
               })
             )
           );
           $eventLine.append(
             $('<td/>').append(
                 $('<select/>').attr({
-                  'name': 'gridList['+gridLineCount+'].parentSampleName',
-                  'id': '_parentSelect' + gridLineCount
+                  'name': 'gridList[' + g_gridLineCount + '].parentSampleName',
+                  'id': '_parentSelect' + g_gridLineCount
                 }).append(sample_options)  
               )
           );
           $eventLine.append(
             $('<td/>').append(
               $('<select/>').attr({
-                'name': 'gridList['+gridLineCount+'].samplePublic'
+                'name': 'gridList[' + g_gridLineCount + '].samplePublic'
               }).append(vs.ynoption)
             )
           );
@@ -553,8 +588,8 @@ var button = {
           $eventLine.append(
             $('<td/>').append(
                 $('<select/>').attr({
-                  'name': 'gridList[' + gridLineCount + '].sampleName',
-                  'id': '_sampleSelect' + gridLineCount
+                  'name': 'gridList[' + g_gridLineCount + '].sampleName',
+                  'id': '_sampleSelect' + g_gridLineCount
                 }).append(sample_options)  
               )
           );
@@ -564,15 +599,15 @@ var button = {
           $eventLine.append(
             $('<td/>').append($('<input/>').attr({
                 'type': 'text',
-                'name': 'gridList[' + gridLineCount + '].projectName',
-                'id': '_projectName' + gridLineCount
+                'name': 'gridList[' + g_gridLineCount + '].projectName',
+                'id': '_projectName' + g_gridLineCount
               })
             )
           );
           $eventLine.append(
             $('<td/>').append(
               $('<select/>').attr({
-                'name': 'gridList[' + gridLineCount + '].projectPublic'
+                'name': 'gridList[' + g_gridLineCount + '].projectPublic'
               }).append(vs.ynoption)
             )
           );
@@ -582,7 +617,7 @@ var button = {
       var beans = ((dict && dict['beans']) ? dict['beans'] : null);
 
       //add event meta attribute fields
-      $.each(avDic, function(av_k, av_v) {
+      $.each(g_avDic, function(av_k, av_v) {
         bean = null;
         if(beans) {
           $.each(beans, function(b_i,b_v) {
@@ -594,13 +629,13 @@ var button = {
 
 
 
-        ltVal = 'gridList[' + gridLineCount + '].beanList[' + (avCnt++) + '].';
+        ltVal = 'gridList[' + g_gridLineCount + '].beanList[' + (avCnt++) + '].';
 
-        var attributeField = avDic[av_v.ma.lookupValue.name]['inputElement'];
+        var attributeField = g_avDic[av_v.ma.lookupValue.name]['inputElement'];
         attributeField = attributeField.replace('$val$', (bean ? bean[1] : ''));  
 
         var $inputNode = $('<td/>').append(
-          attributeField.replace(/\\$lt\\$/g, ltVal).replace(/\\$id\\$/g, gridLineCount)
+          attributeField.replace(/\\$lt\\$/g, ltVal).replace(/\\$id\\$/g, g_gridLineCount)
         );
         if(av_v.isSelect === true && bean) {
           utils.preSelectWithNode($inputNode, bean[1]); 
@@ -616,15 +651,15 @@ var button = {
 
       if(dict) {
         //load existing data if any
-        if(utils.checkSR()) {
-          $('input:text#_sampleName'+gridLineCount).val(dict['sn']);
-          utils.preSelect('_parentSelect'+gridLineCount, dict['psn']);
-          $('select[name="gridList['+gridLineCount+'].samplePublic"]').val(dict['sp']);
-        } else if(utils.checkPR()) {
-          $('#_projectName'+gridLineCount).val(dict['pn']);
-          $('select[name="gridList['+gridLineCount+'].projectPublic"]').val(dict['pp']);
+        if(utils.checkSR(_en)) {
+          $('input:text#_sampleName' + g_gridLineCount).val(dict['sn']);
+          utils.preSelect('_parentSelect' + g_gridLineCount, dict['psn']);
+          $('select[name="gridList[' + g_gridLineCount + '].samplePublic"]').val(dict['sp']);
+        } else if(utils.checkPR(_en)) {
+          $('#_projectName' + g_gridLineCount).val(dict['pn']);
+          $('select[name="gridList[' + g_gridLineCount + '].projectPublic"]').val(dict['pp']);
         } else {
-          utils.preSelect('_sampleSelect'+gridLineCount, dict['sn']);
+          utils.preSelect('_sampleSelect' + g_gridLineCount, dict['sn']);
         }
       }
 
@@ -635,7 +670,7 @@ var button = {
       $('#gridBody .hasDatepicker').parent('td').attr('style', 'min-width:163px !important;');
       $('#gridBody .ui-autocomplete-input').parent('td').attr('style', 'min-width:172px !important;');
 
-      gridLineCount++;
+      g_gridLineCount++;
     }
   },
   clear_form: function() {
@@ -667,7 +702,7 @@ function comboBoxChanged(option, id) {
   } else if(id==='_eventSelect') {
     button.clear_attr();
     if(option.value && option.value!=0 && option.text && option.text!='') {
-      changes.event(option.text);
+      changes.event(option.text, option.value);
     }
   } else if(id==='_sampleSelect') {
     /*if(option.value && option.value!=0 && option.text && option.text!='' && $('#_eventSelect').val() != 0) {
@@ -715,14 +750,13 @@ $(document).ready(function() {
     var oldSampleName = '${sampleName}', oldEventName = '${eventName}', sampleIds = '${sampleIds}';
     if(oldEventName !== '') {
       utils.preSelect("_eventSelect", oldEventName);
-      changes.event(oldEventName);
+      changes.event(oldEventName, null);
     }
     if(oldSampleName !== '') {
       utils.preSelect("_sampleSelect", oldSampleName);
     }
-    if(sampleIds !== '') {
-      var sampleIdArr = sampleIds.split(',');
-      console.log(sampleIdArr);
+    if(sampleIds !== '' && sampleIds.indexOf(',') > 0) { //gets sample IDs from Event Loader
+      g_sampleIds = sampleIds.substr(0, sampleIds.length - 1);
     }
   }
 
@@ -732,7 +766,7 @@ $(document).ready(function() {
 
   <s:if test="%{#oldGridList != null && #oldGridList.size() > 0}">
     //remove any existing dom elements
-    gridLineCount = 0;
+    g_gridLineCount = 0;
     $('#gridBody').html('');
     $('[name^="gridList"]').remove();
     <s:iterator value="#oldGridList" var="gbean" status="gstat">
@@ -748,7 +782,7 @@ $(document).ready(function() {
       gridLine['beans']=beans;
       button.add_event(null,null,gridLine);
     </s:iterator>
-    _utils.addGridRows(null,_oldEventName);
+    _utils.addGridRows(null,oldEventName);
   </s:if>
   <s:elseif test="%{#oldBeanList != null && #oldBeanList.size() >0}">
     //preload form view
