@@ -164,11 +164,11 @@ public class EventLoader extends ActionSupport implements Preparable {
                     int gridRowIndex = 0;
                     for(GridBean gBean : gridList) {
                         if(gBean!=null) {
-                            if(isProjectRegistration && gBean.getProjectName()!=null && gBean.getProjectPublic()!=null) {
+                            if(isProjectRegistration && gBean.getProjectName() != null && gBean.getProjectPublic() != null) {
                                 loadingProject = new Project();
                                 loadingProject.setProjectName(gBean.getProjectName());
                                 loadingProject.setIsPublic(Integer.valueOf(gBean.getProjectPublic()));
-                            } else if(isSampleRegistration && gBean.getSampleName()!=null && gBean.getSamplePublic()!=null) {
+                            } else if(isSampleRegistration && gBean.getSampleName() != null && !gBean.getSampleName().equals("0") && gBean.getSamplePublic() != null) {
                                 Sample existingSample = readPersister.getSample(this.projectId, gBean.getSampleName());
                                 if(existingSample == null) {
                                     loadingSample = new Sample();
