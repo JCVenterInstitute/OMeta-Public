@@ -138,7 +138,7 @@ var vs = {
     vnoption: '<option value="$v$">$n$</option>',
     ynoption: '<option value="1">Yes</option><option value="0">No</option>',
     alloption: '<option value="0">All..</option>',
-    empty: '<option value="0"></option>'
+    empty: '<option value=""></option>'
 };
 
 //additional jquery methods
