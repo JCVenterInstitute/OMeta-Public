@@ -788,7 +788,6 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return evtBeans;
     }
 
-    @WebMethod
     public Event getLatestEventForSample(@JCVI_Project Long projectId, @JCVI_Sample Long sampleId, Long eventTypeId) throws Exception {
         Session session = startTransactedSession();
 
