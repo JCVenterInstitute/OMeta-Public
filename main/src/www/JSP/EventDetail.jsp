@@ -239,7 +239,7 @@ var _page = {
           _page.get.sdt(projectId, sampleId);
           _page.get.edt(projectId, sampleId, 0);
         },
-        event: function(eventId) {
+        eventStatus: function(eventId) {
           gethtmlByType("ces", 0, 0, eventId);
         }
       },
@@ -261,10 +261,10 @@ var _page = {
       },
       get: {
         project: function(projectId) {
-          return gethtmlByType("Project", projectId, 0, 0);
+          return gethtmlByType("project", projectId, 0, 0);
         },
         sample: function(projectId) {
-          return gethtmlByType("Sample", projectId, 0, 0);
+          return gethtmlByType("sample", projectId, 0, 0);
         },
         sdt: function(projectId, sampleId) {
           $('#fromDate, #toDate').val('');
@@ -295,7 +295,7 @@ var _page = {
       _page.popup.sample(sampleId);
     },
     changeEventStatus = function(eventId) {
-      _page.change.event(eventId);
+      _page.change.eventStatus(eventId);
     },
     buttonSwitch = function(node, name) {
       if(node==null) { node = document.getElementById(name); }
@@ -326,11 +326,11 @@ function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
   $.ajax({
     url:"sharedAjax.action",
     cache: false,
-    async: ajaxType==='Project'?false:true,
+    async: ajaxType === 'project'?false:true,
     data: "type="+ajaxType+"&projectId="+projectId+"&sampleId="+sampleId+"&eventId="+eventId,
     success: function(html){
       if(html.aaData) {
-        if(ajaxType == "Project") {
+        if(ajaxType == "project") {
           $(html.aaData).each(function(i1,v1) {
             if(v1) {
               $.each(v1, function(i2,v2) {
@@ -343,14 +343,14 @@ function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
             }
           });
           $("tbody#projectTableBody").html(content);
-        } else if(ajaxType == "Sample") {
+        } else if(ajaxType === "sample") {
           var list = vs.alloption;
           $(html.aaData).each(function(i1,v1) {
             if(v1) { list += vs.vnoption.replace("$v$",v1.id).replace("$n$",v1.name); }
           });
           if(sampleId == null || sampleId == 0) { $("#_sampleSelect").html(list); }
 
-        } else if(ajaxType == "ces") {
+        } else if(ajaxType == "ces") { //change event status
           if(html.aaData && html.aaData[0]==='success') {
             _page.get.edt($('#_projectSelect').val(), $('#_sampleSelect').val(), 0);
             rtnVal = true;

@@ -151,7 +151,7 @@
 
   function comboBoxChanged(option) {
     if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
-      makeAjax("MetaAttributes", option.value, callbacks.meta);
+      makeAjax("ma", option.value, callbacks.meta);
     } else {
       $("#_sampleSelect").html('<option value="0">Select Sample</option>');
       $("#_eventSelect").html('<option value="0">Select Event</option>');

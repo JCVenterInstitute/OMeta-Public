@@ -158,7 +158,7 @@
             $("#sampleLoadButton").attr("disabled", false);
             currentAttributeCount = 0;
             smaOptions='';
-            gethtmlByType("Sample", projectId);
+            gethtmlByType("sample", projectId);
             gethtmlByType("MetaAttributes", projectId);
         }
 
@@ -172,7 +172,7 @@
                 async: false,
                 data: "type="+ajaxType+"&projectId="+projectId+"&subType=S&sampleLevel="+level,
                 success: function(html){
-                    if(ajaxType == "Sample") {
+                    if(ajaxType == "sample") {
                         var list = vs.empty;
                         $.each(html.aaData, function(i1,v1) {
                             if(i1!=null && v1!=null) {

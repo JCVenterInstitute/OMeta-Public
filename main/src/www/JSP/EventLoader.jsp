@@ -496,8 +496,8 @@ var _utils = {
         g_sampleIds = null;
         $("#_sampleSelect").attr("disabled", false);
         $("#_eventSelect").attr("disabled", false);
-        _utils.makeAjax('sharedAjax.action', 'type=Event&projectId='+projectId+'&eventTypeId=0', null, callbacks.event);
-        _utils.makeAjax('sharedAjax.action', 'type=Sample&projectId='+projectId, null, callbacks.sample);
+        _utils.makeAjax('sharedAjax.action', 'type=event&projectId='+projectId+'&eventTypeId=0', null, callbacks.event);
+        _utils.makeAjax('sharedAjax.action', 'type=sample&projectId='+projectId, null, callbacks.sample);
         $('#_sampleSelect+.ui-autocomplete-input, #_eventSelect+.ui-autocomplete-input').val('');
       },
       sample: function(){ /*nothing to do when sample changes*/ },

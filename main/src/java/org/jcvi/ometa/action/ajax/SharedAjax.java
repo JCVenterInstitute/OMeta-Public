@@ -81,7 +81,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
         }
 
         try {
-            if("Project".equals(type)) {
+            if("project".equals(type)) {
                 aaData = new ArrayList<Map>();
 
                 ProjectMap pMap = this.getProjectInformation(this.projectId, true);
@@ -113,7 +113,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                     }
                 }
                 aaData.add(projectMap);
-            } else if ("Sample".equals(type)) {
+            } else if ("sample".equals(type)) { //get samples for a project
                 aaData = new ArrayList<Map>();
 
                 List<Sample> samples;
@@ -137,9 +137,9 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                         aaData.add(sampleMap);
                     }
                 }
-            } else if ("Event".equals(type)) {
+            } else if ("event".equals(type)) { //get event types for a project
                 aaData = readPersister.getEventTypesForProject(this.projectId);
-            } else if ("MetaAttributes".equals(type)) { //get meta attributes for Event Report page
+            } else if ("ma".equals(type)) { //get meta attributes for Event Report page
                 aaData = new ArrayList<Map>();
 
                 ProjectMap pMap = this.getProjectInformation(this.projectId, false);
