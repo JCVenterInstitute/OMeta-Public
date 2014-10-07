@@ -28,8 +28,8 @@ public class AttributeHelper {
         readPersister = new ReadBeanPersister(props);
     }
 
-    public List<Map<String, Object>> getAllAttributeByIDs(Long projectId, Long eventId, String ids, String idType) throws Exception {
-        List<Map<String, Object>> attributeMapList = new ArrayList<Map<String, Object>>();
+    public List<AttributePair> getAllAttributeByIDs(Long projectId, Long eventId, String ids, String idType) throws Exception {
+        List<AttributePair> pairList = new ArrayList<AttributePair>();
 
         Project currProject = readPersister.getProject(projectId);
 
@@ -112,15 +112,29 @@ public class AttributeHelper {
                         }
                     }
 
-                    Map<String, Object> jsonObject = new HashMap<String, Object>(3);
-                    jsonObject.put("type", currSample == null ? "project" : "sample");
-                    jsonObject.put("object", currSample == null ? currProject : currSample);
-                    jsonObject.put("attributes", beanList);
-                    attributeMapList.add(jsonObject);
+                    AttributePair pair = new AttributePair();
+                    pair.setType(currSample == null ? "project" : "sample");
+                    pair.setProject(currProject);
+                    pair.setProjectName(currProject.getProjectName());
+                    pair.setSample(currSample);
+                    pair.setAttributeList(beanList);
+                    pairList.add(pair);
                 }
             }
         }
 
-        return attributeMapList;
+        return pairList;
+    }
+
+    public static Map<String, String> attributeListToMap(List<FileReadAttributeBean> attributeList) {
+        Map<String, String> resultMap = new HashMap<String, String>();
+
+        if(attributeList != null && attributeList.size() > 0) {
+            for(FileReadAttributeBean bean : attributeList) {
+                resultMap.put(bean.getAttributeName(), bean.getAttributeValue());
+            }
+        }
+
+        return resultMap;
     }
 }
