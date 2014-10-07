@@ -539,7 +539,7 @@ var button = {
           + "&projectId=" + $("#_projectSelect").val()
           + "&eventName=" + $("#_eventSelect option:selected").text() 
           + "&eventId=" + $("#_eventSelect").val()
-          + "&sampleIds=" + g_sampleIds
+          + "&sampleIds=" + (g_sampleIds ? g_sampleIds : "")
       });
       //this.submit_form("template");
     }
@@ -759,6 +759,7 @@ $(document).ready(function() {
     if(oldSampleName !== '') {
       utils.preSelect("_sampleSelect", oldSampleName);
     }
+
     if(sampleIds !== '' && sampleIds.indexOf(',') > 0) { //gets sample IDs from Event Loader
       g_sampleIds = sampleIds.substr(0, sampleIds.length - 1);
     }
