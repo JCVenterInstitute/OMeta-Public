@@ -24,10 +24,13 @@ package org.jcvi.ometa.action;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.engine.MultiLoadParameter;
+import org.jcvi.ometa.helper.AttributeHelper;
+import org.jcvi.ometa.helper.AttributePair;
 import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.stateless_session_bean.DetailedException;
 import org.jcvi.ometa.stateless_session_bean.ForbiddenResourceException;
@@ -44,6 +47,7 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.io.File;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.util.*;
 
@@ -128,7 +132,7 @@ public class EventLoader extends ActionSupport implements Preparable {
      * Setup a download filename to fully-indicate type of event.  See also: struts.xml
      */
     public String getDownloadFileName() {
-        return eventName + "_EventAttributes." + (jobType.endsWith("c")?"csv":"xls");
+        return eventName + "_template." + (jobType.endsWith("e") ? "xls" : "csv");
     }
 
     public String execute() {
@@ -223,12 +227,46 @@ public class EventLoader extends ActionSupport implements Preparable {
                     ModelValidator validator = new ModelValidator();
                     validator.validateEventTemplateSanity(emaList, projectName, sampleName, eventName);
                     */
-                    TemplatePreProcessingUtils cvsUtils = new TemplatePreProcessingUtils();
-                    String templateType = jobType.substring(jobType.indexOf("_")+1);
-                    downloadStream = cvsUtils.buildFileContent(templateType, emaList, this.projectName, this.sampleName, this.eventName);
-                    downloadContentType = templateType.equals("c")?"csv":"vnd.ms-excel";
+
+                    TemplatePreProcessingUtils templateUtil = new TemplatePreProcessingUtils();
+                    String templateType = this.jobType.substring(jobType.indexOf("_")+1);
+                    this.downloadStream = templateUtil.buildFileContent(templateType, emaList, this.projectName, this.sampleName, this.eventName);
+                    this.downloadContentType = "application/octet-stream"; //templateType.equals("e") ? "application/vnd.ms-excel" : "text/csv";
+
+                    if(sampleIds != null && !sampleIds.isEmpty()) { //project or sample edit from EventDetail
+                        StringBuffer dataBuffer = new StringBuffer();
+
+                        AttributeHelper attributeHelper = new AttributeHelper(this.readPersister);
+                        List<AttributePair> pairList = attributeHelper.getAllAttributeByIDs(this.projectId, this.eventId, this.sampleIds, "s");
+                        if(pairList != null) {
+                            for(AttributePair pair : pairList) {
+                                dataBuffer.append(pair.getProjectName() + ",");
+                                Sample currSample = pair.getSample();
+                                dataBuffer.append(currSample.getSampleName() + ",");
+                                if(isSampleRegistration) {
+                                    dataBuffer.append(currSample.getParentSampleName() + ",");
+                                    dataBuffer.append(currSample.getIsPublic() + ",");
+                                }
+                                List<FileReadAttributeBean> attributeList = pair.getAttributeList();
+                                Map<String, String> attributeMap = AttributeHelper.attributeListToMap(attributeList);
+
+                                for(EventMetaAttribute ema : emaList) {
+                                    String attributeName = ema.getLookupValue().getName();
+                                    dataBuffer.append(attributeMap.containsKey(attributeName) ? attributeMap.get(attributeName) : "");
+                                    dataBuffer.append(",");
+                                }
+                                dataBuffer.append("\n");
+                            }
+                        }
+
+                        StringWriter writer = new StringWriter();
+                        IOUtils.copy(this.downloadStream, writer);
+                        writer.append("\n" + dataBuffer.toString());
+                        String theString = writer.toString();
+
+                        this.downloadStream = IOUtils.toInputStream(theString);
+                    }
                     rtnVal = Constants.FILE_DOWNLOAD_MSG;
-                } else if(jobType.startsWith("edit")) { //project or sample edit from EventDetail
                 }
             }
 
