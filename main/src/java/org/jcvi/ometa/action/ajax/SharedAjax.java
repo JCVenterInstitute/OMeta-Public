@@ -29,6 +29,7 @@ import org.jcvi.ometa.configuration.AccessLevel;
 import org.jcvi.ometa.configuration.QueryEntityType;
 import org.jcvi.ometa.configuration.ResponseToFailedAuthorization;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
+import org.jcvi.ometa.helper.AttributeHelper;
 import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
@@ -212,95 +213,8 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                 aaData = new ArrayList<String>();
                 aaData.add(resultVal);
             } else if("sa".equals(type)) {
-                aaData = new ArrayList<String>();
-
-                Project currProject = readPersister.getProject(this.projectId);
-
-                if(ids != null && !ids.isEmpty()) {
-                    String[] idArr = ids.split(",");
-                    boolean isProject = "p".equals(subType);
-
-                    for(String currIdString : idArr) {
-                        Long currId = Long.parseLong(currIdString);
-                        ModelBean currCoreObject = isProject ? readPersister.getProject(currId) : readPersister.getSample(currId);
-
-                        Sample currSample = null;
-                        if(!isProject) {
-                            currSample = (Sample)currCoreObject;
-                        }
-
-                        if(currCoreObject != null) {
-                            Event currEvent = readPersister.getLatestEventForSample(this.projectId, isProject ? null : currSample.getSampleId(), this.eventId);
-
-                            List<FileReadAttributeBean> beanList = new ArrayList<FileReadAttributeBean>();
-                            if(currEvent != null) {
-                                //get the latest event attributes
-                                List<EventAttribute> eaList = readPersister.getEventAttributes(currEvent.getEventId(), this.projectId);
-                                Map<Long, EventAttribute> eaMap = new HashMap<Long, EventAttribute>(eaList.size());
-                                for(EventAttribute ea : eaList) {
-                                    eaMap.put(ea.getMetaAttribute().getLookupValue().getLookupValueId(), ea);
-                                }
-
-                                //get sample attributes
-                                List<ProjectAttribute> paList = null;
-                                Map<Long, ProjectAttribute> paMap = null;
-                                List<SampleAttribute> saList = null;
-                                Map<Long, SampleAttribute> saMap = null;
-                                if(isProject) {
-                                    paList = readPersister.getProjectAttributes(this.projectId);
-                                    paMap = new HashMap<Long, ProjectAttribute>(paList.size());
-                                    for(ProjectAttribute pa : paList) {
-                                        paMap.put(pa.getMetaAttribute().getLookupValue().getLookupValueId(), pa);
-                                    }
-                                } else {
-                                    saList = readPersister.getSampleAttributes(currSample.getSampleId());
-                                    saMap = new HashMap<Long, SampleAttribute>(saList.size());
-                                    for(SampleAttribute sa : saList) {
-                                        saMap.put(sa.getMetaAttribute().getLookupValue().getLookupValueId(), sa);
-                                    }
-                                }
-
-                                List<EventMetaAttribute> emaList = readPersister.getEventMetaAttributes(this.projectId, this.eventId);
-                                for(EventMetaAttribute ema : emaList) {
-                                    FileReadAttributeBean frBean = new FileReadAttributeBean();
-                                    frBean.setAttributeName(ema.getLookupValue().getName());
-
-                                    AttributeModelBean attributeModelBean = null;
-                                    Long emaLookupValueId = ema.getLookupValue().getLookupValueId();
-                                    if(eaMap.containsKey(emaLookupValueId)) { //get the latest event attribute value
-                                        attributeModelBean = eaMap.get(emaLookupValueId);
-                                    } else {
-                                        if(isProject && paMap.containsKey(emaLookupValueId)) {
-                                            attributeModelBean = paMap.get(emaLookupValueId);
-                                        } else {
-                                            if(saMap != null && saMap.containsKey(emaLookupValueId)) { //get sample attribute value if event attribute has no record
-                                                attributeModelBean = saMap.get(emaLookupValueId);
-                                            }
-                                        }
-                                    }
-
-                                    Object attributeValue = "";
-                                    if(attributeModelBean != null) {
-                                        attributeValue = ModelValidator.getModelValue(ema.getLookupValue(), attributeModelBean);
-                                        if(attributeValue != null) {
-                                            if(attributeValue.getClass() == Date.class || attributeValue.getClass() == Timestamp.class) {
-                                                attributeValue = CommonTool.convertTimestampToDate(attributeValue);
-                                            }
-                                        }
-                                    }
-                                    frBean.setAttributeValue("" + attributeValue);
-                                    frBean.setSampleName(currSample == null ? null : currSample.getSampleName());
-                                    frBean.setProjectName(currProject.getProjectName());
-                                    beanList.add(frBean);
-                                }
-                            }
-                            Map<String, Object> jsonObject = new HashMap<String, Object>(1);
-                            jsonObject.put("object", currSample == null ? currProject : currSample);
-                            jsonObject.put("attributes", beanList);
-                            aaData.add(jsonObject);
-                        }
-                    }
-                }
+                AttributeHelper attributeHelper = new AttributeHelper(this.readPersister);
+                aaData = attributeHelper.getAllAttributeByIDs(this.projectId, this.eventId, this.ids, subType);
             } else {
                 throw new Exception("undefined AJAX action for (" + type + ")");
             }
