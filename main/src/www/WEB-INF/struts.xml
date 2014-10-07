@@ -171,7 +171,7 @@
             <result name="error">/JSP/EventLoader.jsp</result>
             <result name="input" type="redirectAction">error</result>
             <result name="FILE_DOWNLOAD" type="stream">
-                <param name="contentType">application/${downloadContentType}</param>
+                <param name="contentType">${downloadContentType}</param>
                 <param name="contentDisposition">attachment;filename="${downloadFileName}"</param>
                 <param name="inputName">downloadStream</param>
             </result>
