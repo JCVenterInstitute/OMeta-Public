@@ -30,9 +30,7 @@ public class TemplatePreProcessingUtils {
     private final String optional = "Optional";
     private final String mutatedComment = Constants.PROMPT_IN_FILE_PREFIX.concat("%s %s");
 
-    public InputStream buildFileContent(
-            String type, List<EventMetaAttribute> emas,
-            String projectName, String sampleName, String eventName) throws Exception {
+    public InputStream buildFileContent(String type, List<EventMetaAttribute> emas, String projectName, String sampleName, String eventName) throws Exception {
 
         boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION);
         //boolean isProjectUpdate = eventName.replaceAll("\\s","").equals("ProjectUpdate");
@@ -40,14 +38,14 @@ public class TemplatePreProcessingUtils {
 
         List<HeaderDetail> headers = new ArrayList<HeaderDetail>();
 
-        headers.add(new HeaderDetail("ProjectName", true, "string", "", null));
+        headers.add(new HeaderDetail(Constants.ATTR_PROJECT_NAME, true, "string", "", null));
 
         if (isSampleRegistration) { // parent sample name for sample registration
-            headers.add(new HeaderDetail("ParentSample", false, "string", "", null));
+            headers.add(new HeaderDetail(Constants.ATTR_PARENT_SAMPLE_NAME, false, "string", "", null));
         }
 
         if (isProjectRegistration || isSampleRegistration) { //public flag
-            headers.add(new HeaderDetail("Public", true, "int", "", null));
+            headers.add(new HeaderDetail(Constants.ATTR_PUBLIC_FLAG, true, "int", "", null));
         }
 
         boolean sampleRequired = false;
@@ -61,7 +59,7 @@ public class TemplatePreProcessingUtils {
         }
 
         if(isSampleRegistration || sampleRequired) {
-            headers.add(1, new HeaderDetail("SampleName", true, "string", "", null));
+            headers.add(1, new HeaderDetail(Constants.ATTR_SAMPLE_NAME, true, "string", "", null));
         }
 
         InputStream templateStream = null;
@@ -233,7 +231,7 @@ public class TemplatePreProcessingUtils {
                     for(int i = 0; i < attributeNames.getLastCellNum(); i++) {
                         columns.add(this.extractRealAttributeName(attributeNames.getCell(i).getStringCellValue()));
                     }
-                    hasSampleName = columns.indexOf("SampleName") >= 0;
+                    hasSampleName = columns.indexOf(Constants.ATTR_SAMPLE_NAME) >= 0;
 
                     int startingRow = 1;
                     Row metaRow = sheet.getRow(startingRow);

@@ -85,6 +85,7 @@ public class Constants {
     public static final String ATTR_PARENT_SAMPLE_NAME = "Parent Sample";
     public static final String ATTR_PROJECT_STATUS = "Project Status";
     public static final String ATTR_SAMPLE_STATUS = "Sample Status";
+    public static final String ATTR_PUBLIC_FLAG = "Public";
 
     //variables for creating external links
     public static String NEW_WINDOW_LINK_HTML = "window.open('%s');";
