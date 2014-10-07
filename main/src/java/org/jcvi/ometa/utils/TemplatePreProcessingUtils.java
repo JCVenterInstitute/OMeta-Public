@@ -63,18 +63,16 @@ public class TemplatePreProcessingUtils {
         }
 
         InputStream templateStream = null;
-        if(type.equals("c")) {
-            templateStream = this.createCSV(headers, isProjectRegistration, projectName, sampleName);
-        } else {
+        if(type.equals("e")) {
             templateStream = this.createExcel(headers, isProjectRegistration, projectName, sampleName, eventName);
+        } else {
+            templateStream = this.createCSV(headers, isProjectRegistration, projectName, sampleName);
         }
 
         return templateStream;
     }
 
-    private InputStream createCSV(
-            List<HeaderDetail> attributes, boolean isProjectRegistration,
-            String projectName, String sampleName) throws Exception {
+    private InputStream createCSV(List<HeaderDetail> attributes, boolean isProjectRegistration, String projectName, String sampleName) throws Exception {
         StringBuilder csvContents = new StringBuilder();
         StringBuilder comments = new StringBuilder();
 
