@@ -30,6 +30,7 @@ import org.jcvi.ometa.configuration.QueryEntityType;
 import org.jcvi.ometa.configuration.ResponseToFailedAuthorization;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.helper.AttributeHelper;
+import org.jcvi.ometa.helper.AttributePair;
 import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
@@ -213,8 +214,19 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                 aaData = new ArrayList<String>();
                 aaData.add(resultVal);
             } else if("sa".equals(type)) {
+                aaData = new ArrayList<Map>();
                 AttributeHelper attributeHelper = new AttributeHelper(this.readPersister);
-                aaData = attributeHelper.getAllAttributeByIDs(this.projectId, this.eventId, this.ids, subType);
+                List<AttributePair> pairList = attributeHelper.getAllAttributeByIDs(this.projectId, this.eventId, this.ids, subType);
+                if(pairList != null) {
+                    for(AttributePair pair : pairList) {
+                        Map<String, Object> jsonPair = new HashMap<String, Object>(3);
+                        jsonPair.put("type", pair.getSample() == null ? "project" : "sample");
+                        jsonPair.put(Constants.ATTR_PROJECT_NAME, pair.getProject().getProjectName());
+                        jsonPair.put("object", pair.getSample() == null ? pair.getProject() : pair.getSample());
+                        jsonPair.put("attributes", pair.getAttributeList());
+                        aaData.add(jsonPair);
+                    }
+                }
             } else {
                 throw new Exception("undefined AJAX action for (" + type + ")");
             }
