@@ -11,11 +11,14 @@
 <body>
 <s:form id="LPopupTemplateSelect" name="LPopupTemplateSelect" namespace="/" method="post" theme="simple" action="eventLoader">
     <s:hidden name="projectName"/>
+    <s:hidden name="projectId"/>
     <s:hidden name="eventName"/>
+    <s:hidden name="eventId"/>
+    <s:hidden name="sampleIds"/>
     <div class="popup">
         <div class="popup-header">
             <h2>Select Template Format</h2>
-            <a href="#" onclick="_popup.close" title="Close" class="close-link">Close</a>
+            <a href="#" onclick="_popup.close();" title="Close" class="close-link">Close</a>
             <br clear="both" />
         </div>
         <div style="padding:10px;">

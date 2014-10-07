@@ -535,7 +535,11 @@ var button = {
       $.openPopupLayer({
         name: "LPopupTemplateSelect",
         width: 450,
-        url: "popup.action?t=sel_t&projectName="+$("#_projectSelect option:selected").text()+"&eventName="+$("#_eventSelect option:selected").text()
+        url: "popup.action?t=sel_t&projectName=" + $("#_projectSelect option:selected").text()
+          + "&projectId=" + $("#_projectSelect").val()
+          + "&eventName=" + $("#_eventSelect option:selected").text() 
+          + "&eventId=" + $("#_eventSelect").val()
+          + "&sampleIds=" + g_sampleIds
       });
       //this.submit_form("template");
     }
