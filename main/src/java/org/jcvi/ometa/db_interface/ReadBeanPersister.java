@@ -34,7 +34,6 @@ import org.jcvi.ometa.utils.PresentationActionDelegate;
 
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -46,7 +45,6 @@ import java.util.Set;
  * regarding projects. Particularly useful for web-based clients.
  */
 public class ReadBeanPersister implements WebDataFacadeI {
-    private Set<String> validDataTypes;
     private ProjectSampleEventPresentationBusiness pseb;
 
     public ReadBeanPersister( Properties props ) {
