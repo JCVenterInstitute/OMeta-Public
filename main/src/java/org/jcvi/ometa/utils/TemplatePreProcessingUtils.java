@@ -127,7 +127,6 @@ public class TemplatePreProcessingUtils {
             cell.setCellStyle(redCS);
 
             if(detail.getDataType().equals(ModelValidator.DATE_DATA_TYPE)) {
-                DataFormat df = wb.createDataFormat();
                 CellStyle dateCS = wb.createCellStyle();
                 CreationHelper createHelper = wb.getCreationHelper();
                 dateCS.setDataFormat(createHelper.createDataFormat().getFormat(Constants.DATE_DEFAULT_FORMAT));
