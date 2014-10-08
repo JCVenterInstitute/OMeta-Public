@@ -473,7 +473,8 @@ public class EventPersistenceHelper {
         if (ema.isSampleRequired() || this.eventType.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
             isSampleRequiredForEvent = true;
             if ( sampleId == null ) {
-                throw new DAOException("'" + attribName + "' for '" + eventType + "' requires a sample");
+                throw new DAOException( "Event '" + eventType + "' requires a sample for event attribute " + attribName +
+                                        " but no sample was given.");
             }
         }
     }
@@ -485,7 +486,8 @@ public class EventPersistenceHelper {
      */
     private void checkSampleForEvent() throws DAOException {
         if(!isSampleRequiredForEvent  &&  sampleId != null)
-            throw new DAOException("'" + eventType + " should not have a sample associated with it." );
+            throw new DAOException( "Event of type " + eventType +
+                                    " should not have a sample associated with it, but does." );
     }
 
     /** Will return the required meta attributes for project or sample, depending on boolean switch. */
