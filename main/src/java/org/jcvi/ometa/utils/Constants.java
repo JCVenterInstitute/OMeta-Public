@@ -34,8 +34,57 @@ public class Constants {
 
     public final static String CONFIGURATION_PREFIX = "ometa";
 
-    public final static String DEFAULT_DATE_FORMAT = "yyyy-MM-dd";
+    public static final String PROPERTIES_FILE_NAME = "resource/LoadingEngine";
+    public static final String CONIFG_FILE_STORAGE_PATH = "ometa.fileStorage.path";
+    public static final String CONFIG_TAREXCLUDE_PATH = "ometa.tarexclude.files.path";
+    public static final String PRODUCTION_DATABASE = "production";
+    public static final String DEVELOPMENT_DATABASE = "development";
+    public static final String FILE_DOWNLOAD_MSG = "FILE_DOWNLOAD";
+    public static final String PROMPT_IN_FILE_PREFIX = "#";
 
+    public static final String ACCEPTABLE_CHARACTERS = "A-Za-z0-9=.,;:!?@$%#+()\\[\\]/\\-_'\" ";
+    public final static String DATE_DEFAULT_FORMAT = "yyyy-MM-dd";
+    public final static String DATE_ALTERNATIVE_FORMAT = "dd-MMM-yyyy";
+    public final static String[] DATE_ALL_POSSIBLE_FORMATS = {
+            "yyyy",
+            "MMM-yyyy",
+            "MM/dd/yyyy",
+            "yyyy/MM/dd",
+            Constants.DATE_DEFAULT_FORMAT,
+            Constants.DATE_ALTERNATIVE_FORMAT,
+            "yyyy-MM-dd'T'HH:mm:ss"
+    };
+    public final static String[] DATE_NO_VALUES = {"Unknown", "Not applicable", "Not available", "Available upon request"};
+
+    public static final String DATE_DATA_TYPE = "date";
+    public static final String STRING_DATA_TYPE = "string";
+    public static final String FLOAT_DATA_TYPE = "float";
+    public static final String INT_DATA_TYPE = "int";
+    public static final String URL_DATA_TYPE = "url";
+    public static final String FILE_DATA_TYPE = "file";
+
+    public static final String ATTRIBUTE_LV_TYPE_NAME = "Attribute";
+    public static final String EVENT_STATUS_LV_TYPE_NAME = "Event Status";
+    public static final String EVENT_TYPE_LV_TYPE_NAME = "Event Type";
+    public static final String VIEW_GROUP_LV_TYPE_NAME = "Access Group";
+    public static final String EDIT_GROUP_LV_TYPE_NAME = "Edit Group";
+
+    public static final String DENIED_USER_EDIT_MESSAGE = "You do not have permission to edit the project.";
+    public static final String DENIED_USER_VIEW_MESSAGE = "You do not have permission to access the project.";
+    public static final String LOGIN_REQUIRED_MESSAGE = "User must first login before attempting to use the requested resources.";
+    public static final String INVALID_DATE_MESSAGE = "Your data input is invalid. Please use " + DATE_DEFAULT_FORMAT + " format.";
+    public static final String FORBIDDEN_ACTION_RESPONSE = "forbidden";
+
+    public static final String EVENT_PROJECT_REGISTRATION = "ProjectRegistration";
+    public static final String EVENT_SAMPLE_REGISTRATION = "SampleRegistration";
+
+    public static final String ATTR_PROJECT_NAME = "Project Name";
+    public static final String ATTR_SAMPLE_NAME = "Sample Name";
+    public static final String ATTR_PARENT_SAMPLE_NAME = "Parent Sample";
+    public static final String ATTR_PROJECT_STATUS = "Project Status";
+    public static final String ATTR_SAMPLE_STATUS = "Sample Status";
+
+    //variables for creating external links
     public static String NEW_WINDOW_LINK_HTML = "window.open('%s');";
     public static String A_TAG_HTML = "<a href=%s onclick=%s>";
     public static String A_TAG_CLOSING_HTML = "</a>";
@@ -54,28 +103,4 @@ public class Constants {
     public static String BEI_URL="http://www.beiresources.org/";
     public static String STEC_URL="http://www.shigatox.net/new/";
     public static String NCPF_URL="http://www.hpacultures.org.uk/collections/ncpf.jsp";
-
-    public static final String CONIFG_FILE_STORAGE_PATH = "ometa.fileStorage.path";
-    public static final String CONFIG_TAREXCLUDE_PATH = "ometa.tarexclude.files.path";
-
-    public static final String PROPERTIES_FILE_NAME = "resource/LoadingEngine";
-    public static final String PRODUCTION_DATABASE = "production";
-    public static final String DEVELOPMENT_DATABASE = "development";
-    public static final String FILE_DOWNLOAD_MSG = "FILE_DOWNLOAD";
-    public static final String FILE_FAILURE_MSG = "FILE_NOT_FOUND";
-    public static final String FAILURE_MSG = "FAILURE";
-    public static final String PROMPT_IN_FILE_PREFIX = "#";
-
-    public static final String DENIED_USER_EDIT_MESSAGE = "You do not have permission to edit the project.";
-    public static final String DENIED_USER_VIEW_MESSAGE = "You do not have permission to access the project.";
-    public static final String LOGIN_REQUIRED_MESSAGE = "User must first login before attempting to use the requested resources.";
-    public static final String INVALID_DATE_MESSAGE = "Your data input is invalid. Please use " + DEFAULT_DATE_FORMAT + " format.";
-    public static final String FORBIDDEN_ACTION_RESPONSE = "forbidden";
-
-    public static final String EVENT_PROJECT_REGISTRATION = "ProjectRegistration";
-    public static final String EVENT_SAMPLE_REGISTRATION = "SampleRegistration";
-
-    public static final String ATTR_PROJECT_NAME = "Project Name";
-    public static final String ATTR_SAMPLE_NAME = "Sample Name";
-    public static final String ATTR_PARENT_SAMPLE_NAME = "Parent Sample";
 }

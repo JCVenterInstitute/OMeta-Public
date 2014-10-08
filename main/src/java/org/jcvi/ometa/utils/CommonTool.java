@@ -162,7 +162,7 @@ public class CommonTool {
 
     public static String convertTimestampToDate(Object value) throws Exception {
         String formattedDate = null;
-        String[] formats = {"MM/dd/yyyy", Constants.DEFAULT_DATE_FORMAT};
+        String[] formats = {"MM/dd/yyyy", Constants.DATE_DEFAULT_FORMAT};
         Date parsedDate = null;
         boolean isString = (value.getClass() == String.class);
 

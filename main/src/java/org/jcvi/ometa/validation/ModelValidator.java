@@ -41,9 +41,6 @@ import java.util.Set;
  */
 public class ModelValidator {
 
-    public static final String ACCEPTABLE_CHARACTERS = "A-Za-z0-9=.,;:!?@$%#+()\\[\\]/\\-_'\" ";
-    public static final String ACCEPTABLE_CHARACTERS_REGEXP = "[" + ACCEPTABLE_CHARACTERS + "]*";
-
     public static final String DATE_DATA_TYPE = "date";
     public static final String STRING_DATA_TYPE = "string";
     public static final String FLOAT_DATA_TYPE = "float";
@@ -57,8 +54,8 @@ public class ModelValidator {
     public static final String VIEW_GROUP_LV_TYPE_NAME = "Access Group";
     public static final String EDIT_GROUP_LV_TYPE_NAME = "Edit Group";
 
-    public static final SimpleDateFormat PST_DEFAULT_DATE_FORMAT = new SimpleDateFormat(Constants.DEFAULT_DATE_FORMAT);
-    public static final SimpleDateFormat PST_DEFAULT_TIMESTAMP_FORMAT = new SimpleDateFormat(Constants.DEFAULT_DATE_FORMAT + " H:mm");
+    public static final SimpleDateFormat PST_DEFAULT_DATE_FORMAT = new SimpleDateFormat(Constants.DATE_DEFAULT_FORMAT);
+    public static final SimpleDateFormat PST_DEFAULT_TIMESTAMP_FORMAT = new SimpleDateFormat(Constants.DATE_DEFAULT_FORMAT + " H:mm");
 
     private static final MessageFormat NO_SAMPLE_ERR_MSG_FMT =
             new MessageFormat("Event {0} requires a sample for event attribute(s) {1} but no sample was given.");
@@ -101,27 +98,6 @@ public class ModelValidator {
             lookupValueType = ATTRIBUTE_LV_TYPE_NAME;
         }
         return validLookupValueTypes.contains(lookupValueType);
-    }
-
-    /**
-     * Check: are these file-read inputs reasonable.
-     *
-     * @param projectNames   list of all sample names.  Add this one.
-     * @param combinedErrors all errors encountered.
-     * @param rowNum         for error messages.
-     * @param bean           what to look at.
-     */
-    public void validateSampleMetaAttributeContents(
-            SampleMetaAttribute bean, Set<String> projectNames, StringBuilder combinedErrors, int rowNum) {
-
-        if (!projectNames.contains(bean.getProjectName())) {
-            combinedErrors.append("Row number "+rowNum+" has a project name not in known project name list.\n");
-        }
-
-        // Check: all required to establish this metadata is given.
-        if (bean.getAttributeName() == null || bean.getAttributeName().length() == 0) {
-            combinedErrors.append("Row number " + rowNum + " has no attribute name.");
-        }
     }
 
     /**
@@ -204,8 +180,7 @@ public class ModelValidator {
         // Check: required things are in?
         String projectName = bean.getProjectName();
         if (projectName == null || projectName.trim().length() == 0) {
-            combinedErrors.append(
-                    "Project name required but not given, at row ").append(rowNum).append("\n");
+            combinedErrors.append(rowNum).append(":").append("project name is required but not given.\n");
             passed = false;
         } else {
             projectNames.add(projectName);
@@ -232,27 +207,6 @@ public class ModelValidator {
                 passed = false;
 
             }
-        }
-
-        return passed;
-    }
-
-    /**
-     * Look at meta-attribs for project: was the information read okay.
-     *
-     * @param bean           what was read
-     * @param combinedErrors populate this with what we find.
-     * @param rowNum         for error messages.
-     */
-    public boolean validateProjectMetaAttributeContents(
-            ProjectMetaAttribute bean, StringBuilder combinedErrors, int rowNum) {
-
-        boolean passed = true;
-
-        // Check: all required to establish this metadata is given.
-        if (bean.getAttributeName() == null || bean.getAttributeName().trim().length() == 0) {
-            combinedErrors.append("Row number " + rowNum + " has no attribute name.");
-            passed = false;
         }
 
         return passed;
@@ -321,10 +275,11 @@ public class ModelValidator {
     private void validateAndSetString(StringBuilder errors, String sourceName, AttributeModelBean attribute, String value) {
         try {
             String testableValue = value.trim();
-            if (testableValue.matches(ACCEPTABLE_CHARACTERS_REGEXP)) {
+            String acceptableRegexp = "[" + Constants.ACCEPTABLE_CHARACTERS + "]*";
+            if (testableValue.matches(acceptableRegexp)) {
                 attribute.setAttributeStringValue(value.trim());
             } else {
-                errors.append("invalid character(s) in '" + testableValue + "', use " + ACCEPTABLE_CHARACTERS + "\n");
+                errors.append("invalid character(s) in '" + testableValue + "', use " + Constants.ACCEPTABLE_CHARACTERS + "\n");
             }
         } catch (NullPointerException npe) {
             errors.append(sourceName + ":cannot be empty");
