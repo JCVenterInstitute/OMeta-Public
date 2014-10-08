@@ -197,15 +197,12 @@
 
 <script src="scripts/jquery/jquery.multiple.select.js"></script>
 <script>
-var g_eventAttributes = [], g_gridLineCount=0, g_avDic= {}, g_sampleIds;
-var pBeanHtml='<input type="hidden" value="$pn$" name="$lt$projectName"/>',
-    anBeanHtml='<input type="hidden" value="$an$" name="$lt$attributeName"/>',
-    avTextHtml='<input type="text" id="$an$" name="$lt$attributeValue" value="$val$"/>',
-    avFileHtml='<input type="file" id="$an$" name="$lt$upload"/>',
-    avSelectHtml='<select $multi$ id="$an$" name="$lt$attributeValue" style="min-width:35px;width:200px;">$opts$</select>',
-    avSampleSelectHtml='<td><select id="$si$" name="$sn$">$opts$</select></td>',
-    multiSelectPrefix='multi(',
-    avHtml, sample_options;
+var g_eventAttributes = [];
+var g_gridLineCount=0; 
+var g_avDic= {};
+var g_sampleIds;
+var avHtml;
+var sample_options;
 
 var _utils = {
       makeAjax: function(u,d,p,cb) {
@@ -337,6 +334,8 @@ var _utils = {
       meta: function(data, en) {
         var content = '';
         var count= 0;
+        var multiSelectPrefix='multi(';
+          
         var $attributeDiv = $("#attributeInputDiv"); //where attributes are placed
         $attributeDiv.empty(); //empty any existing contents
         
@@ -429,7 +428,7 @@ var _utils = {
               inputElement += '<select id="$id$" name="$lt$attributeValue" style="min-width:35px;width:200px;" ' + (isMulti ? 'multiple="multiple"':'') + '>' + options + '</select>';
             } else {
               if(_ma.lookupValue.dataType==='file') { //file
-                inputElement += '<input type="file" id="$id$" name="$lt$upload"/>';
+                inputElement += '<input type="file" id="' + _ma.lookupValue.dataType + '_$id$" name="$lt$upload"/>';
               } else { //text input
                 isText = true;
                 inputElement += '<input type="text" id="' + _ma.lookupValue.dataType + '_$id$" name="$lt$attributeValue" value="$val$"/>';
@@ -752,16 +751,15 @@ $(document).ready(function() {
     changes.project(oldProjectId);
 
     var oldSampleName = '${sampleName}', oldEventName = '${eventName}', sampleIds = '${sampleIds}';
+    if(sampleIds !== '' && sampleIds.indexOf(',') > 0) { //gets sample IDs from Event Loader
+      g_sampleIds = sampleIds.substr(0, sampleIds.length - 1);
+    }
     if(oldEventName !== '') {
       utils.preSelect("_eventSelect", oldEventName);
-      changes.event(oldEventName, null);
+      changes.event(oldEventName, $('#_eventSelect').val());
     }
     if(oldSampleName !== '') {
       utils.preSelect("_sampleSelect", oldSampleName);
-    }
-
-    if(sampleIds !== '' && sampleIds.indexOf(',') > 0) { //gets sample IDs from Event Loader
-      g_sampleIds = sampleIds.substr(0, sampleIds.length - 1);
     }
   }
 
@@ -795,7 +793,8 @@ $(document).ready(function() {
     //remove any existing dom elements
     //$('[name^="beanList"]').remove();
     <s:iterator value="#oldBeanList" var="bean" status="bstat">
-      $("[name='beanList[${bstat.count-1}].attributeValue']").val("${bean.attributeValue}");
+      var currAttributeName = '${bean.attributeName}'.replace(/ /g,"_");
+      $("[id*='_" + currAttributeName + "_']").val("${bean.attributeValue}");
     </s:iterator>
     <s:set name="oldLoadingSample" value="loadingSample" />
     <s:if test="%{#oldLoadingSample != null && #oldLoadingSample.getSampleName() != null}">
