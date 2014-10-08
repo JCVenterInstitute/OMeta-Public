@@ -55,7 +55,7 @@
     <property name="struts.lib.dir" value="${thirdparty.lib.dir}/Struts-2.2.1.1/"/>
     <property name="servlet.lib.dir" value="${thirdparty.lib.dir}/Servlet-2.4/"/>
     <property name="ehcache.lib.dir" value="${thirdparty.lib.dir}/ehcache-2.3.1/"/>
-    <property name="log4j.lib.dir" value="${thirdparty.lib.dir}/Log4J-1.2.8"/>
+    <property name="log4j.lib.dir" value="${thirdparty.lib.dir}/log4j"/>
 
     <property name="war-tmp-dir" value="${dist.dir}/tmp-war"/>
     <property name="pre-exploded-war" value="${dist.dir}/${tracking.web.context}-pre-exploded.war"/>
@@ -178,7 +178,7 @@
             <zipgroupfileset dir="${JBoss-Client.lib.dir}" includes="mail.jar" />
             <zipgroupfileset dir="${JBoss-Client.lib.dir}" includes="activation.jar"/>
             <zipgroupfileset dir="${JBoss-Client.lib.dir}" includes="log4j.jar"/>
-            <zipgroupfileset dir="${log4j.lib.dir}" includes="log4j.jar"/>
+            <zipgroupfileset dir="${log4j.lib.dir}" includes="**/*.jar"/>
         </jar>
     </target>
 
