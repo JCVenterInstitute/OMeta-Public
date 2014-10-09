@@ -180,7 +180,17 @@ public class BeanWriter {
         files = collector.getLookupValueFiles();
         for (File file: files) {
             List<LookupValue> lvBeans = this.getGenericModelBeans(file, LookupValue.class);
-            parameterObject.addLookupValues(lvBeans);
+
+            //load only new lookup values
+            List<LookupValue> newLv = new ArrayList<LookupValue>();
+            for(LookupValue lv : lvBeans) {
+                LookupValue existingLV = this.readEjb.getLookupValue(lv.getName(), lv.getType());
+                if(existingLV == null) {
+                    newLv.add(lv);
+                }
+            }
+
+            parameterObject.addLookupValues(newLv);
         }
 
         files = collector.getProjectFiles();
