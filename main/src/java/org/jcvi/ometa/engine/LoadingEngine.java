@@ -121,8 +121,7 @@ public class LoadingEngine {
 
         try {
             PresentationActionDelegate delegate = new PresentationActionDelegate();
-            ProjectSampleEventPresentationBusiness ejb = delegate.getEjb(
-                    PresentationActionDelegate.EJB_NAME, server, userName, passWord, logger);
+            ProjectSampleEventPresentationBusiness ejb = delegate.getEjb(PresentationActionDelegate.EJB_NAME, server, userName, passWord, logger);
 
             Project project = ejb.getProject(projectName);
             List<EventMetaAttribute> emaList = ejb.getEventMetaAttributes(project.getProjectName(), eventName);
@@ -132,25 +131,15 @@ public class LoadingEngine {
                 // No sample name provided.
                 // Need a sample?
                 if (ejb.isSampleRequired(projectName, eventName)) {
-                    throw new IllegalArgumentException(
-                            "Sample is required for this template. Therefore, please provide a sample name."
-                    );
+                    throw new IllegalArgumentException("Sample is required for the event.");
                 }
             }
             else {
                 // User provided a sample name.
                 // Does the sample go with the project?
-                List<Sample> samples = ejb.getSamplesForProject(project.getProjectId());
-                boolean found = false;
-                for (Sample sample: samples) {
-                    if (sample.getSampleName().equals(sampleName)) {
-                        found = true;
-                    }
-                }
-                if (! found) {
-                    throw new IllegalArgumentException(
-                            "Sample name " + sampleName + " given does not belong to project " + projectName
-                    );
+                Sample sample = ejb.getSample(project.getProjectId(), sampleName);
+                if(sample == null) {
+                    throw new IllegalArgumentException("Sample '" + sampleName + "' not found with project '" + projectName + "'");
                 }
             }
 
