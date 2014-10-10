@@ -37,12 +37,7 @@ import java.util.Date;
 @Entity
 @Table(name="event")
 //@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Event
-        implements ModelBean, ProjectReferencingModelBean, SampleReferencingModelBean, ProjectNamerOnFileRead {
-    public static final String ATTRIBUTE_NAME_HEADER  = "AttributeName";
-    public static final String ATTRIBUTE_VALUE_HEADER = "AttributeValue";
-    public static final String SAMPLE_NAME_HEADER = "SampleName";
-    public static final String PROJECT_NAME_HEADER = "ProjectName";
+public class Event implements ModelBean, ProjectReferencingModelBean, SampleReferencingModelBean, ProjectNamerOnFileRead {
 
     private Long eventId;
     private Long projectId;
@@ -133,7 +128,7 @@ public class Event
         return eventName;
     }
 
-    @JCVI_BeanPopulator_Column(ATTRIBUTE_NAME_HEADER)
+    @JCVI_BeanPopulator_Column("AttributeName")
     public void setEventName(String eventName) {
         this.eventName = eventName;
     }
@@ -143,7 +138,7 @@ public class Event
         return eventValue;
     }
 
-    @JCVI_BeanPopulator_Column(ATTRIBUTE_VALUE_HEADER)
+    @JCVI_BeanPopulator_Column("AttributeValue")
     public void setEventValue(String eventValue) {
         this.eventValue = eventValue;
     }
@@ -153,7 +148,7 @@ public class Event
         return sampleName;
     }
 
-    @JCVI_BeanPopulator_Column(SAMPLE_NAME_HEADER)
+    @JCVI_BeanPopulator_Column("SampleName")
     public void setSampleName(String sampleName) {
         this.sampleName = sampleName;
     }
@@ -163,7 +158,7 @@ public class Event
         return projectName;
     }
 
-    @JCVI_BeanPopulator_Column(PROJECT_NAME_HEADER)
+    @JCVI_BeanPopulator_Column("ProjectName")
     public void setProjectName( String projectName ) {
         this.projectName = projectName;
     }
