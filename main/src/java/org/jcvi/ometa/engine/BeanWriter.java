@@ -130,12 +130,16 @@ public class BeanWriter {
                     loadingProject = readEjb.getProject(projectName);
 
                     Sample existingSample = readEjb.getSample(loadingProject.getProjectId(), gBean.getSampleName());
-                    if(existingSample == null && isSampleRegistration) {
-                        loadingSample = new Sample();
-                        loadingSample.setSampleName(gBean.getSampleName());
-                        loadingSample.setParentSampleName(gBean.getParentSampleName());
-                        loadingSample.setIsPublic(Integer.valueOf(gBean.getSamplePublic()));
-                        loadingSample.setSampleLevel(1);
+                    if(existingSample == null) {
+                        if(isSampleRegistration) {
+                            loadingSample = new Sample();
+                            loadingSample.setSampleName(gBean.getSampleName());
+                            loadingSample.setParentSampleName(gBean.getParentSampleName());
+                            loadingSample.setIsPublic(Integer.valueOf(gBean.getSamplePublic()));
+                            loadingSample.setSampleLevel(1);
+                        } else {
+                            throw new Exception("sample does not exist or smaple name is empty.");
+                        }
                     } else {
                         loadingSample = existingSample;
                     }
