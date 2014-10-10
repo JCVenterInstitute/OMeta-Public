@@ -24,7 +24,7 @@ var utils = {
         return $("#_projectSelect option:selected").text();
     },
     getEventName: function(en) {
-        return (!en)?$("#_eventSelect option:selected").text():en;
+        return en || $("#_eventSelect option:selected").text();
     },
     getSampleName: function() {
         return $("#_sampleSelect option:selected").text();
