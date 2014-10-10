@@ -106,7 +106,7 @@
           <tbody id="projectTableBody">
           </tbody>
         </table>
-        <input onclick="_page.popup.project();" style="margin-top:10px;" disabled="true" type="button" value="Edit Project" id="editProjectBtn" />
+        <input onclick="_page.edit.project();" style="margin-top:10px;" disabled="true" type="button" value="Edit Project" id="editProjectBtn" />
       </div>
       <div style="margin:25px 10px 0 0;">
 
@@ -130,7 +130,7 @@
           </thead>
           <tbody id="sampleTableBody"/>
         </table>
-        <input onclick="_page.edit.sampleEventClick();" style="" disabled="true" type="button" value="Sample Event" id="editSampleBtn" />
+        <input onclick="_page.edit.sampleEvent();" style="" disabled="true" type="button" value="Sample Event" id="editSampleBtn" />
       </div>
       <div style="margin:25px 10px 0 0;">
         <h1 class="csc-firstHeader">Event Details
@@ -276,7 +276,11 @@ var _page = {
         }
       },
       edit: {
-        sampleEventClick: function() {
+        project: function() {
+          $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'eventName', value: 'ProjectUpdate'}));
+          this.submit('project');
+        },
+        sampleEvent: function() {
           var sampleIds = '';
           $('#sampleTableBody input[id^=sampleCB]:checked').each(function(i,v) {
             sampleIds += v.id.substr(v.id.indexOf('_') + 1) + ',';
@@ -285,9 +289,13 @@ var _page = {
             utils.error.baloon("Please select sample to load or edit event.");
           } else {
             $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'sampleIds'}).val(sampleIds));
-            $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'projectId'}).val($('#_projectSelect').val()));
-            $('#eventDetailPage').attr('action', 'eventLoader.action').submit();
+            this.submit('sample');
           }
+        },
+        submit: function(type) {
+            $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'label', value: type}));
+            $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'projectId'}).val($('#_projectSelect').val()));
+            $('#eventDetailPage').attr('action', 'eventLoader.action').submit();  
         }
       }
     },
