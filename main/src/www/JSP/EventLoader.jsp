@@ -201,6 +201,7 @@ var g_eventAttributes = [];
 var g_gridLineCount=0; 
 var g_avDic= {};
 var g_sampleIds;
+var g_transferType;
 var avHtml;
 var sample_options;
 
@@ -221,14 +222,16 @@ var _utils = {
           button.add_event(pn,en);
         }
       },
-      showPS:function(et) {
+      showPS:function(eventName) {
         $('.sampleSelectTr').hide();
-        if(utils.checkSR(et)) { // triggers sample loader
+        if(utils.checkSR(eventName)) { // triggers sample loader
           $('#sampleDetailInputDiv').show();
-        } else if(utils.checkPR(et)) {
+        } else if(utils.checkPR(eventName)) {
           $('#projectDetailInputDiv').show();
         } else {
-          $('.sampleSelectTr').show();
+          if(utils.checkNP(eventName)) { //do not display sample select box for project events
+            $('.sampleSelectTr').show();
+          }
         }
       },
       hidePS: function() {
@@ -241,7 +244,7 @@ var _utils = {
           var tid = ontologyInfo[0].replace(/^\s+|\s+$/g, '');
           var ot = ontologyInfo[1].replace(/^\s+|\s+$/g, '');
           $inputNode.find('input').autocomplete({
-            source: function( request, response ) {
+            source: function(request, response) {
               $.ajax({
                 url: "ontologyAjax.action?t=child",
                 data: {
@@ -630,8 +633,6 @@ var button = {
           });
         }
 
-
-
         ltVal = 'gridList[' + g_gridLineCount + '].beanList[' + (avCnt++) + '].';
 
         var attributeField = g_avDic[av_v.ma.lookupValue.name]['inputElement'];
@@ -750,9 +751,16 @@ $(document).ready(function() {
   if(oldProjectId) {
     changes.project(oldProjectId);
 
-    var oldSampleName = '${sampleName}', oldEventName = '${eventName}', sampleIds = '${sampleIds}';
+    var oldSampleName = '${sampleName}';
+    var oldEventName = '${eventName}';
+    var sampleIds = '${sampleIds}';
+    var transferType = '${label}';
+
     if(sampleIds !== '' && sampleIds.indexOf(',') > 0) { //gets sample IDs from Event Loader
       g_sampleIds = sampleIds.substr(0, sampleIds.length - 1);
+    }
+    if(transferType !== '') {
+      g_transferType = transferType;
     }
     if(oldEventName !== '') {
       utils.preSelect("_eventSelect", oldEventName);
