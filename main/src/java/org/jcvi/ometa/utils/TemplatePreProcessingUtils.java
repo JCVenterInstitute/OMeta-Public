@@ -8,7 +8,6 @@ import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellRangeAddressList;
 import org.apache.poi.ss.usermodel.*;
-import org.jcvi.ometa.model.Event;
 import org.jcvi.ometa.model.EventMetaAttribute;
 import org.jcvi.ometa.model.FileReadAttributeBean;
 import org.jcvi.ometa.model.GridBean;
@@ -283,7 +282,7 @@ public class TemplatePreProcessingUtils {
             while ((line = reader.readNext()) != null) {
                 if(lineCount == 0) { //headers
                     Collections.addAll(columns, line);
-                    hasSampleName = columns.indexOf(Event.SAMPLE_NAME_HEADER) >= 0;
+                    hasSampleName = columns.indexOf(Constants.ATTR_SAMPLE_NAME) >= 0;
                 } else {
                     int colIndex = 0;
 
