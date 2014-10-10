@@ -138,7 +138,7 @@ public class BeanWriter {
                             loadingSample.setIsPublic(Integer.valueOf(gBean.getSamplePublic()));
                             loadingSample.setSampleLevel(1);
                         } else {
-                            throw new Exception("sample does not exist or smaple name is empty.");
+                            throw new Exception("sample does not exist or sample name is empty.");
                         }
                     } else {
                         loadingSample = existingSample;
