@@ -56,7 +56,7 @@ public class GuidGetter {
                 }
 
                 String hostName = java.net.InetAddress.getLocalHost().getHostName();
-                retVal = guidBlock.getGuidBlock(DEFAULT_GUID_NAMESPACE, String.format(DEFAULT_GUID_HTTP_PREFIX, hostName, "8380"), 1);
+                retVal = guidBlock.getGuidBlock(DEFAULT_GUID_NAMESPACE, String.format(DEFAULT_GUID_HTTP_PREFIX, "localhost", "8380"), 1);
             } catch ( Exception ex ) {
                 latestException = ex;
                 Thread.sleep( BETWEEN_RETRIES );
