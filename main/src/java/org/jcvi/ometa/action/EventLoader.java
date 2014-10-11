@@ -89,7 +89,7 @@ public class EventLoader extends ActionSupport implements Preparable {
     private String fileStoragePath;
     private ArrayList<String> loadedFiles;
 
-    private String sampleIds;
+    private String ids;
 
     private static final String DEFAULT_USER_MESSAGE = "Not yet entered";
     private final String MULTIPLE_SUBJECT_IN_FILE_MESSAGE = "Multiple projects are found in the file";
@@ -234,11 +234,11 @@ public class EventLoader extends ActionSupport implements Preparable {
                     this.downloadStream = templateUtil.buildFileContent(templateType, emaList, this.projectName, this.sampleName, this.eventName);
                     this.downloadContentType = "application/octet-stream"; //templateType.equals("e") ? "application/vnd.ms-excel" : "text/csv";
 
-                    if(sampleIds != null && !sampleIds.isEmpty()) { //project or sample edit from EventDetail
+                    if(ids != null && !ids.isEmpty()) { //project or sample edit from EventDetail
                         StringBuffer dataBuffer = new StringBuffer();
 
                         AttributeHelper attributeHelper = new AttributeHelper(this.readPersister);
-                        List<AttributePair> pairList = attributeHelper.getAllAttributeByIDs(this.projectId, this.eventId, this.sampleIds, "s");
+                        List<AttributePair> pairList = attributeHelper.getAllAttributeByIDs(this.projectId, this.eventId, this.ids, "s");
                         if(pairList != null) {
                             for(AttributePair pair : pairList) {
                                 dataBuffer.append(pair.getProjectName() + ",");
@@ -269,10 +269,24 @@ public class EventLoader extends ActionSupport implements Preparable {
                         this.downloadStream = IOUtils.toInputStream(newTemplateBuffer.toString());
                     }
                     rtnVal = Constants.FILE_DOWNLOAD_MSG;
+                } else if(jobType.equals("projectedit")) {
+                    AttributeHelper attributeHelper = new AttributeHelper(this.readPersister);
+                    if(this.eventId == null && this.eventName != null) {
+                        LookupValue eventLV = this.readPersister.getLookupValue(this.eventName, Constants.EVENT_TYPE_LV_TYPE_NAME);
+                        if(eventLV != null) {
+                            this.eventId = eventLV.getLookupValueId();
+                        }
+                    }
+                    List<AttributePair> projectPairList = attributeHelper.getAllAttributeByIDs(this.projectId, this.eventId, "" + this.projectId, "p");
+                    if(projectPairList.size() > 0) {
+                        AttributePair projectPair = projectPairList.get(0);
+                        this.beanList = projectPair.getAttributeList();
+                    }
+                    jobType = "form";
                 }
             }
 
-            if(sampleIds != null && sampleIds.length() > 0) {
+            if(ids != null && ids.length() > 0) {
                 jobType = "grid";
             }
         } catch (Exception ex) {
@@ -770,11 +784,11 @@ public class EventLoader extends ActionSupport implements Preparable {
         this.dataTemplate = dataTemplate;
     }
 
-    public String getSampleIds() {
-        return sampleIds;
+    public String getIds() {
+        return ids;
     }
 
-    public void setSampleIds(String sampleIds) {
-        this.sampleIds = sampleIds;
+    public void setIds(String ids) {
+        this.ids = ids;
     }
 }

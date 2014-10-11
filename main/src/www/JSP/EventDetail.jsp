@@ -87,7 +87,7 @@
             <td align="right">Project</td>
             <td class="ui-combobox">
               <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
-                        list="projectList" name="selectedProjectId" headerKey="0" headerValue=""
+                        list="projectList" name="projectId" headerKey="0" headerValue=""
                         listValue="projectName" listKey="projectId" required="true"/>
             </td>
           </tr>
@@ -277,7 +277,10 @@ var _page = {
       },
       edit: {
         project: function() {
+          console.log($('#_projectSelect:selected').text());
+          $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'projectName', value: $('#_projectSelect:selected').text()}));
           $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'eventName', value: 'ProjectUpdate'}));
+          $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'jobType', value: 'projectedit'}));
           this.submit('project');
         },
         sampleEvent: function() {
@@ -288,13 +291,12 @@ var _page = {
           if(sampleIds.length === 0) {
             utils.error.baloon("Please select sample to load or edit event.");
           } else {
-            $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'sampleIds'}).val(sampleIds));
+            $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'ids'}).val(sampleIds));
             this.submit('sample');
           }
         },
         submit: function(type) {
             $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'label', value: type}));
-            $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'projectId'}).val($('#_projectSelect').val()));
             $('#eventDetailPage').attr('action', 'eventLoader.action').submit();  
         }
       }

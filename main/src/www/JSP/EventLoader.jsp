@@ -516,10 +516,10 @@ var _utils = {
           eventName, 
           callbacks.meta
         );
-        if(g_sampleIds) {
+        if(utils.checkNP(eventName) && g_sampleIds) {
           _utils.makeAjax(
             'sharedAjax.action', 
-            'type=sa&subType=s&projectName='+utils.getProjectName() + '&projectId=' + $('#_projectSelect').val() + '&eventId=' + eventId + '&eventName=' + eventName + '&ids=' + g_sampleIds, 
+            'type=sa&projectName='+utils.getProjectName() + '&projectId=' + $('#_projectSelect').val() + '&eventId=' + eventId + '&eventName=' + eventName + '&ids=' + g_sampleIds, 
             eventName, 
             callbacks.eventAttribute
           );
@@ -753,11 +753,11 @@ $(document).ready(function() {
 
     var oldSampleName = '${sampleName}';
     var oldEventName = '${eventName}';
-    var sampleIds = '${sampleIds}';
+    var ids = '${ids}';
     var transferType = '${label}';
 
-    if(sampleIds !== '' && sampleIds.indexOf(',') > 0) { //gets sample IDs from Event Loader
-      g_sampleIds = sampleIds.substr(0, sampleIds.length - 1);
+    if(ids !== '' && ids.indexOf(',') > 0) { //gets sample IDs from Event Loader
+      g_sampleIds = ids.substr(0, ids.length - 1);
     }
     if(transferType !== '') {
       g_transferType = transferType;
