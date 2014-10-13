@@ -339,14 +339,14 @@ public class LoadingEngine {
         File eventFile = new File(eventFileName);
 
         Long timeStamp = new Date().getTime();
-        File logFile = new File(outputPath + File.separator + "ometa.log");
+        File logFile = new File(outputPath + File.separator + "Log-"+LoadingEngine.getNameWoExt(eventFile.getName())+".log");
         FileWriter logWriter = new FileWriter(logFile, false);
 
         int successCount = 0;
-        File processedFile = new File(outputPath + File.separator + "ometa_processed.csv");
+        File processedFile = new File(outputPath + File.separator + "Processed-"+LoadingEngine.getNameWoExt(eventFile.getName())+".csv");
         FileWriter processedWriter = new FileWriter(processedFile, false);
         int failedCount = 0;
-        File failedFile = new File(outputPath + File.separator + "ometa_failed.csv");
+        File failedFile = new File(outputPath + File.separator + "Failed-"+LoadingEngine.getNameWoExt(eventFile.getName())+".csv");
         FileWriter failedWriter = new FileWriter(failedFile, false);
 
         // Must break this file up, and deposit it into a temporary output directory.
@@ -417,5 +417,10 @@ public class LoadingEngine {
             System.out.printf("total: %d, processed: %d, failed: %d\n", processedLineCount, successCount, failedCount);
             System.out.println("log file: " + logFile.getAbsolutePath());
         }
+    }
+    public static String getNameWoExt(String name) {
+        int index = name.lastIndexOf(".");
+        if (index < 1) return name;
+        return name.substring(0,index);
     }
 }
