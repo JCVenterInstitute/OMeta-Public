@@ -165,8 +165,8 @@ public class BeanWriter {
      * @throws Exception for called methods.
      */
     public void writeMultiType(FileCollector collector) throws Exception {
-        MultiLoadParameter parameterObject = createMultiLoadParameter(collector);
-        List<String> projectsToSecure = getProjectsToSecure(parameterObject);
+        MultiLoadParameter parameterObject = this.createMultiLoadParameterWithCollector(collector);
+        List<String> projectsToSecure = this.getProjectsToSecure(parameterObject);
         writeEjb.loadAll(projectsToSecure, parameterObject);
     }
 
@@ -177,7 +177,7 @@ public class BeanWriter {
      * @return parameter that has the files' contents bundled and separated.
      * @throws Exception thrown by called methods.
      */
-    private MultiLoadParameter createMultiLoadParameter(FileCollector collector) throws Exception {
+    private MultiLoadParameter createMultiLoadParameterWithCollector(FileCollector collector) throws Exception {
         List<File> files = null;
 
         MultiLoadParameter parameterObject = new MultiLoadParameter();
