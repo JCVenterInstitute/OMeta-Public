@@ -259,7 +259,7 @@
 
     <target name="ear-to-jboss" depends="stopjboss,clean,dist"  description="export to jboss">
         <unzip src="${dist.dir}/${tracking.web.context}.ear" dest="${jboss.deploy.local.dir}/${tracking.web.context}.ear/" />
-        <exec executable="/bin/bash"><arg value="${jboss.local.home}/jboss_ometa"/><arg value="start"/></exec>
+        <antcall target="startjboss" />
     </target>
 
     <target name="clean-classes" description="clean up" >
@@ -272,5 +272,8 @@
 
     <target name="stopjboss" description="stop jboss process">
         <exec executable="/bin/bash"><arg value="${jboss.local.home}/jboss_ometa"/><arg value="stop"/></exec>
+    </target>
+    <target name="startjboss" description="start jboss process">
+        <exec executable="/bin/bash"><arg value="${jboss.local.home}/jboss_ometa"/><arg value="start"/></exec>
     </target>
 </project>
