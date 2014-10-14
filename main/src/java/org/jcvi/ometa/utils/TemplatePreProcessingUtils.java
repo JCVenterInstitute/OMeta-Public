@@ -65,15 +65,17 @@ public class TemplatePreProcessingUtils {
         if(type.equals("e")) {
             templateStream = this.createExcel(headers, isProjectRegistration, projectName, sampleName, eventName);
         } else {
-            templateStream = this.createCSV(headers, isProjectRegistration, projectName, sampleName);
+            templateStream = this.createCSV(headers, isProjectRegistration, projectName, sampleName, eventName);
         }
 
         return templateStream;
     }
 
-    private InputStream createCSV(List<HeaderDetail> attributes, boolean isProjectRegistration, String projectName, String sampleName) throws Exception {
+    private InputStream createCSV(List<HeaderDetail> attributes, boolean isProjectRegistration, String projectName, String sampleName, String eventName) throws Exception {
         StringBuilder csvContents = new StringBuilder();
         StringBuilder comments = new StringBuilder();
+
+        csvContents.append(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER).append(":").append(eventName).append("\n"); //write the event name with the identifier
 
         int i = 0;
         for(HeaderDetail detail : attributes) {

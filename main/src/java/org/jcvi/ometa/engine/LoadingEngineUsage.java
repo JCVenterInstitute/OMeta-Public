@@ -108,9 +108,9 @@ public class LoadingEngineUsage {
         errors = new StringBuilder();
 
         try {
-            if(isMakeEventTemplate() || (isBatchLoad() && outputLocationParam.getValue() != null)) { //validate on an output location
+            if(isMakeEventTemplate() || isBatchLoad()) { //validate on an output location
                 validateOutputLocation(outputLocationParam.getValue(), rtnVal);
-                if(isEmpty(projectNameParam) || isEmpty(eventNameParam)) {
+                if(isMakeEventTemplate() && (isEmpty(projectNameParam) || isEmpty(eventNameParam))) {
                     errors.append("need values for project and event.\n");
                     rtnVal = false;
                 }

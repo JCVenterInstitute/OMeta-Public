@@ -65,19 +65,16 @@ public class LoadingEngine {
             LoadingEngineUsage usage = new LoadingEngineUsage(args);
 
             LoadingEngine engine = new LoadingEngine(usage);
-            if(usage.isCmdLineNamedEvent()) {
-                if(usage.isBatchLoad()) {
-                    engine.batchLoad();
-                } else if (usage.isMakeEventTemplate()) {
-                    engine.createEventTemplate();
-                } else {
-                    engine.loadEventFile();
-                }
+            if(usage.isMakeEventTemplate() && usage.isCmdLineNamedEvent()) {
+                engine.createEventTemplate();
+            } else if(usage.isBatchLoad()) {
+                engine.batchLoad();
             } else if(usage.isMultiFile()) {
                 engine.digestMultipart();
             } else if(usage.isDirectory()) {
                 engine.digestMultiDirectory();
             } else {
+                //engine.loadEventFile();
                 engine.dispatchByFilename();
             }
             System.out.println("Loading process done!");
@@ -326,8 +323,6 @@ public class LoadingEngine {
         String serverUrl = usage.getServerUrl();
 
         String eventFileName = usage.getInputFilename();
-        String eventName = usage.getEventName();
-        String projectName = usage.getProjectName();
         String outputPath = usage.getOutputLocation();
 
         int batchSizeInt = 1;
@@ -361,17 +356,27 @@ public class LoadingEngine {
             LineIterator lineIterator = FileUtils.lineIterator(eventFile);
             int lineCount = 0;
 
+            String eventName = null;
             String headerLine = null;
             while(lineIterator.hasNext()) {
                 ++lineCount;
                 String currLine = lineIterator.nextLine();
 
                 if(lineCount == 1) {
+                    if(!currLine.startsWith(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER)) {
+                        throw new Exception("event name must present in the input file.");
+                    }
+                    String[] eventTypeTokens = currLine.split(":");
+                    if(eventTypeTokens.length != 2 || eventTypeTokens[1].isEmpty()) {
+                        throw new Exception(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + " must be '" + Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + ":<eventName>'");
+                    }
+                    eventName = eventTypeTokens[1];
+                } else if(lineCount == 2) {
                     headerLine = currLine;
                     processedWriter.write(currLine + "\n");
                     failedWriter.write(currLine + "\n");
                     continue;
-                } else if(lineCount == 2 && (currLine.startsWith("#") || currLine.startsWith("\"#"))) { //skip comment line
+                } else if(lineCount == 3 && (currLine.startsWith("#") || currLine.startsWith("\"#"))) { //skip comment line
                     continue;
                 } else {
                     File singleEventFile = new File(scratchLoc.getAbsoluteFile() + File.separator + "temp.csv");
@@ -381,7 +386,7 @@ public class LoadingEngine {
                     FileUtils.writeLines(singleEventFile, lines);
 
                     try {
-                        String eventTarget = writer.writeEvent(singleEventFile, eventName, projectName, true);
+                        String eventTarget = writer.writeEvent(singleEventFile, eventName, null, true);
                         logWriter.write(String.format("[%d] loaded event for %s\n", lineCount, eventTarget));
                         processedWriter.write(currLine + "\n");
                         successCount++;
