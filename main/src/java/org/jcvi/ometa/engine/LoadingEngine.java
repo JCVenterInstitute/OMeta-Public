@@ -376,27 +376,29 @@ public class LoadingEngine {
                     processedWriter.write(currLine + "\n");
                     failedWriter.write(currLine + "\n");
                     continue;
-                } else if(lineCount == 3 && (currLine.startsWith("#") || currLine.startsWith("\"#"))) { //skip comment line
-                    continue;
                 } else {
-                    File singleEventFile = new File(scratchLoc.getAbsoluteFile() + File.separator + "temp.csv");
-                    List<String> lines = new ArrayList<String>(2);
-                    lines.add(headerLine);
-                    lines.add(currLine);
-                    FileUtils.writeLines(singleEventFile, lines);
+                    if(currLine.startsWith("#") || currLine.startsWith("\"#")) { //skip comment line
+                        continue;
+                    } else {
+                        File singleEventFile = new File(scratchLoc.getAbsoluteFile() + File.separator + "temp.csv");
+                        List<String> lines = new ArrayList<String>(2);
+                        lines.add(headerLine);
+                        lines.add(currLine);
+                        FileUtils.writeLines(singleEventFile, lines);
 
-                    try {
-                        String eventTarget = writer.writeEvent(singleEventFile, eventName, null, true);
-                        logWriter.write(String.format("[%d] loaded event for %s\n", lineCount, eventTarget));
-                        processedWriter.write(currLine + "\n");
-                        successCount++;
-                    } catch (Exception ex) {
-                        failedWriter.write(currLine + "\n");
-                        logWriter.write(String.format("[%d] failed :\n", lineCount));
-                        logWriter.write(ex.getMessage() + "\n");
-                        failedCount++;
+                        try {
+                            String eventTarget = writer.writeEvent(singleEventFile, eventName, null, true);
+                            logWriter.write(String.format("[%d] loaded event for %s\n", lineCount, eventTarget));
+                            processedWriter.write(currLine + "\n");
+                            successCount++;
+                        } catch (Exception ex) {
+                            failedWriter.write(currLine + "\n");
+                            logWriter.write(String.format("[%d] failed :\n", lineCount));
+                            logWriter.write(ex.getMessage() + "\n");
+                            failedCount++;
+                        }
+                        processedLineCount++;
                     }
-                    processedLineCount++;
                 }
             }
         } catch(IOException ioe) {
