@@ -91,6 +91,8 @@ public class Constants {
     public static final String DPCC_STATUS_VALIDATED = "Validated";
     public static final String DPCC_STATUS_SUBMITTED = "Data submitted to DPCC";
 
+    public static final String TEMPLATE_EVENT_TYPE_IDENTIFIER = "EventType";
+
     //variables for creating external links
     public static String NEW_WINDOW_LINK_HTML = "window.open('%s');";
     public static String A_TAG_HTML = "<a href=%s onclick=%s>";
