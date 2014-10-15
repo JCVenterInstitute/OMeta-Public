@@ -37,9 +37,12 @@ public class Constants {
     public static final String PROPERTIES_FILE_NAME = "resource/LoadingEngine";
     public static final String CONIFG_FILE_STORAGE_PATH = "ometa.fileStorage.path";
     public static final String CONFIG_TAREXCLUDE_PATH = "ometa.tarexclude.files.path";
+    public static final String CONFIG_GUID_HOST = "ometa.guid.host";
+    public static final String CONFIG_GUID_PORT = "ometa.guid.port";
     public static final String PRODUCTION_DATABASE = "production";
     public static final String DEVELOPMENT_DATABASE = "development";
     public static final String FILE_DOWNLOAD_MSG = "FILE_DOWNLOAD";
+
     public static final String PROMPT_IN_FILE_PREFIX = "#";
 
     public static final String ACCEPTABLE_CHARACTERS = "A-Za-z0-9=.,;:!?@$%#+()\\[\\]/\\-_'\" ";
