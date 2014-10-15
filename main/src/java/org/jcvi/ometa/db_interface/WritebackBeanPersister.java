@@ -453,7 +453,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                     String eventName = attribute.getEventName();
                     LookupValue eventNameLV = lvDAO.getLookupValue(eventName, ModelValidator.EVENT_TYPE_LV_TYPE_NAME, session);
                     if (eventNameLV == null) {
-                        throw new Exception("No lookup value for " + eventName + ".");
+                        throw new Exception("'" + eventName + "' not found as an event type.");
                     }
                     attribute.setEventTypeLookupId(eventNameLV.getLookupValueId());
                 }
@@ -461,7 +461,6 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                 if (attribute.getProjectId() == null) {
                     String projectName = attribute.getProjectName();
                     Long projectId = getAndCacheProjectId(session, projNameVsId, projectName);
-
                     attribute.setProjectId(projectId);
                 }
 
@@ -700,8 +699,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
         return actor.getLoginId();
     }
 
-    private Long getAndCacheProjectId(Session session, Map<String, Long> projNameVsId, String projectName)
-            throws Exception {
+    private Long getAndCacheProjectId(Session session, Map<String, Long> projNameVsId, String projectName) throws Exception {
         Long projectId;
         projectId = projNameVsId.get(projectName);
         if (projectId == null) {
@@ -719,12 +717,20 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
     private Long getProjectId(String projectName, Session session) throws Exception {
         ProjectDAO projectDAO = daoFactory.getProjectDAO();
         Project project = projectDAO.getProject(projectName, session);
+
+        if(project == null) {
+            throw new Exception("project '" + projectName + "' does not exist.");
+        }
         return project.getProjectId();
     }
 
     private Sample getSample(Long projectId, String sampleName, Session session) throws Exception {
         SampleDAO sampleDAO = daoFactory.getSampleDAO();
         Sample sample = sampleDAO.getSample(projectId, sampleName, session);
+
+        if(sample == null) {
+            throw new Exception("sample '" + sampleName + "' does not exist under the project.");
+        }
         return sample;
     }
 
