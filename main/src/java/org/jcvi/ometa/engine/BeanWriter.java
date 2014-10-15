@@ -451,7 +451,7 @@ public class BeanWriter {
 
         List<FileReadAttributeBean> loadingList = null;
         if (frab != null && frab.size() > 0) {
-            loadingList = processFileReadBeans(eventName, isProjectRegistration ? project.getProjectName() : projectName, sample.getSampleName(), frab);
+            loadingList = this.feedAndFilterFileReadBeans(eventName, isProjectRegistration ? project.getProjectName() : projectName, sample.getSampleName(), frab);
         }
 
         if (isProjectRegistration) {
@@ -555,7 +555,7 @@ public class BeanWriter {
         return sample;
     }
 
-    private List<FileReadAttributeBean> processFileReadBeans(String eventName, String projectName, String sampleName, List<FileReadAttributeBean> loadingList) throws Exception {
+    private List<FileReadAttributeBean> feedAndFilterFileReadBeans(String eventName, String projectName, String sampleName, List<FileReadAttributeBean> loadingList) throws Exception {
 
         List<FileReadAttributeBean> processedList = new ArrayList<FileReadAttributeBean>();
         for(FileReadAttributeBean fBean:loadingList) {
