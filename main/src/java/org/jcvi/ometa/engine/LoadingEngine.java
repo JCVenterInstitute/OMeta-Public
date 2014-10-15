@@ -83,7 +83,11 @@ public class LoadingEngine {
             logger.error(LogTraceFormatter.formatStackTrace(daoex));
             logger.fatal(daoex);
         } catch (Throwable ex) {
-            System.out.println("Error: " + (ex.getCause() == null ? ex.getMessage() : ex.getCause().getMessage()));
+            Throwable cause = ex.getCause();
+            while(cause.getCause() != null) { //drill down to the actual exception
+                cause = cause.getCause();
+            }
+            System.out.println("Error: " + (cause == null ? ex.getMessage() : cause.getMessage()));
             logger.error(LogTraceFormatter.formatStackTrace(ex));
             logger.fatal(ex);
         }
