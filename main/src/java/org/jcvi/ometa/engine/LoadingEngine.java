@@ -375,6 +375,8 @@ public class LoadingEngine {
                         throw new Exception(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + " must be '" + Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + ":<eventName>'");
                     }
                     eventName = eventTypeTokens[1];
+                    processedWriter.write(currLine + "\n");
+                    failedWriter.write(currLine + "\n");
                 } else if(lineCount == 2) {
                     headerLine = currLine;
                     processedWriter.write(currLine + "\n");
