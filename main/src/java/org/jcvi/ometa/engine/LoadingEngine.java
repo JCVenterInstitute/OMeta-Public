@@ -62,22 +62,31 @@ public class LoadingEngine {
      */
     public static void main(String[] args) {
         try {
+            int success = 1;
             LoadingEngineUsage usage = new LoadingEngineUsage(args);
 
             LoadingEngine engine = new LoadingEngine(usage);
             if(usage.isMakeEventTemplate() && usage.isCmdLineNamedEvent()) {
                 engine.createEventTemplate();
             } else if(usage.isBatchLoad()) {
-                engine.batchLoad();
+                success = engine.batchLoad();
             } else if(usage.isMultiFile()) {
-                engine.digestMultipart();
+                success = engine.digestMultipart();
             } else if(usage.isDirectory()) {
                 engine.digestMultiDirectory();
             } else {
                 //engine.loadEventFile();
                 engine.dispatchByFilename();
             }
-            System.out.println("Loading process done!");
+
+            String finalMessage = null;
+            if(success == 1) {
+                finalMessage = "Loading process done!";
+            } else {
+                finalMessage = "Error occurred. check the log.";
+            }
+            System.out.println(finalMessage);
+
         } catch (DAOException daoex) {
             System.out.println("Database Access Error: " + daoex.getMessage());
             logger.error(LogTraceFormatter.formatStackTrace(daoex));
@@ -190,7 +199,9 @@ public class LoadingEngine {
     /**
      * Given a file with multiple parts, applying to Projects, Samples, and events, handle all.
      */
-    public void digestMultipart() throws Exception {
+    public int digestMultipart() throws Exception {
+        int success = 1;
+
         String userName = usage.getUsername();
         String passWord = usage.getPassword();
         String serverUrl = usage.getServerUrl();
@@ -213,6 +224,7 @@ public class LoadingEngine {
             writer.writeMultiType(collector);
 
         } catch (Exception ex) {
+            success = 0;
             throw ex;
         } finally {
             if (scratchLoc != null  &&  scratchLoc.exists()) {
@@ -229,6 +241,8 @@ public class LoadingEngine {
                 splitter.removeDirectory(cleanupDir);
             }
         }
+
+        return success;
     }
 
     /**
@@ -321,7 +335,9 @@ public class LoadingEngine {
         }
     }
 
-    public void batchLoad() throws Exception {
+    public int batchLoad() throws Exception {
+        int success = 1;
+
         String userName = usage.getUsername();
         String passWord = usage.getPassword();
         String serverUrl = usage.getServerUrl();
@@ -360,6 +376,7 @@ public class LoadingEngine {
             LineIterator lineIterator = FileUtils.lineIterator(eventFile);
             int lineCount = 0;
 
+            String eventNameLine = null;
             String eventName = null;
             String headerLine = null;
             while(lineIterator.hasNext()) {
@@ -367,33 +384,35 @@ public class LoadingEngine {
                 String currLine = lineIterator.nextLine();
 
                 if(lineCount == 1) {
-                    if(!currLine.startsWith(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER)) {
+                    if(!currLine.startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && currLine.contains(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER)) {
                         throw new Exception("event name must present in the input file.");
                     }
-                    String[] eventTypeTokens = currLine.split(":");
+                    eventNameLine = currLine;
+                    String[] eventTypeTokens = eventNameLine.split(":");
                     if(eventTypeTokens.length != 2 || eventTypeTokens[1].isEmpty()) {
                         throw new Exception(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + " must be '" + Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + ":<eventName>'");
                     }
                     eventName = eventTypeTokens[1];
-                    processedWriter.write(currLine + "\n");
-                    failedWriter.write(currLine + "\n");
+                    processedWriter.write(eventNameLine + "\n");
+                    failedWriter.write(eventNameLine + "\n");
                 } else if(lineCount == 2) {
                     headerLine = currLine;
                     processedWriter.write(currLine + "\n");
                     failedWriter.write(currLine + "\n");
                     continue;
                 } else {
-                    if(currLine.startsWith("#") || currLine.startsWith("\"#")) { //skip comment line
+                    if(currLine.startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) || currLine.startsWith("\"" + Constants.TEMPLATE_COMMENT_INDICATOR)) { //skip comment line
                         continue;
                     } else {
                         File singleEventFile = new File(scratchLoc.getAbsoluteFile() + File.separator + "temp.csv");
                         List<String> lines = new ArrayList<String>(2);
+                        lines.add(eventNameLine);
                         lines.add(headerLine);
                         lines.add(currLine);
                         FileUtils.writeLines(singleEventFile, lines);
 
                         try {
-                            String eventTarget = writer.writeEvent(singleEventFile, eventName, null, true);
+                            String eventTarget = writer.writeEvent(singleEventFile, eventName, null, false);
                             logWriter.write(String.format("[%d] loaded event for %s\n", lineCount, eventTarget));
                             processedWriter.write(currLine + "\n");
                             successCount++;
@@ -409,9 +428,11 @@ public class LoadingEngine {
             }
         } catch(IOException ioe) {
             System.err.println("IOException: " + ioe.getMessage());
+            success = 0;
         } catch (Exception ex) {
             String exceptionString = ex.getCause() == null ? ex.getMessage() : ex.getCause().getMessage();
             logWriter.write(exceptionString);
+            success = 0;
             throw ex;
         } finally {
             if(scratchLoc != null  &&  scratchLoc.exists()) {
@@ -430,6 +451,8 @@ public class LoadingEngine {
             System.out.printf("total: %d, processed: %d, failed: %d\n", processedLineCount, successCount, failedCount);
             System.out.println("log file: " + logFile.getAbsolutePath());
         }
+
+        return success;
     }
     public static String getNameWoExt(String name) {
         int index = name.lastIndexOf(".");
