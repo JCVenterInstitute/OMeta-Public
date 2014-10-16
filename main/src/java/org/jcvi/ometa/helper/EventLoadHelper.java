@@ -1,9 +1,10 @@
 package org.jcvi.ometa.helper;
 
+import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.engine.MultiLoadParameter;
 import org.jcvi.ometa.model.*;
-import org.jcvi.ometa.stateless_session_bean.DetailedException;
+import org.jcvi.ometa.exception.DetailedException;
 import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.validation.DPCCValidator;
@@ -29,6 +30,10 @@ public class EventLoadHelper {
 
     public EventLoadHelper(ReadBeanPersister readPersister) {
         this.readPersister = readPersister;
+    }
+
+    public EventLoadHelper(ProjectSampleEventPresentationBusiness pseb) {
+        this.readPersister = new ReadBeanPersister(pseb);
     }
 
     public MultiLoadParameter createMultiLoadParameter(
