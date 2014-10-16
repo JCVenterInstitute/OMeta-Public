@@ -27,7 +27,7 @@ public class TemplatePreProcessingUtils {
     private final String comma = ",";
     private final String required = "*Required";
     private final String optional = "Optional";
-    private final String mutatedComment = Constants.PROMPT_IN_FILE_PREFIX.concat("%s %s");
+    private final String mutatedComment = Constants.TEMPLATE_COMMENT_INDICATOR.concat("%s %s");
 
     public InputStream buildFileContent(String type, List<EventMetaAttribute> emas, String projectName, String sampleName, String eventName) throws Exception {
 
@@ -234,7 +234,7 @@ public class TemplatePreProcessingUtils {
                     int startingRow = 1;
                     Row metaRow = sheet.getRow(startingRow);
                     String firstMetaColumn = metaRow.getCell(0).getStringCellValue();
-                    if(!firstMetaColumn.isEmpty() && firstMetaColumn.startsWith("#") && firstMetaColumn.indexOf("string") > 0) {
+                    if(!firstMetaColumn.isEmpty() && firstMetaColumn.startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && firstMetaColumn.indexOf("string") > 0) {
                         startingRow = 2; //skip the second line that holds metadata of each column
                     }
 
@@ -283,6 +283,13 @@ public class TemplatePreProcessingUtils {
 
             while ((line = reader.readNext()) != null) {
                 if(lineCount == 0) { //headers
+                    if(line[0].startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && line[0].contains(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER)) { //skip event type line
+                        lineCount++;
+                        continue;
+                    } else {
+                        throw new Exception("missing event name in the first row.");
+                    }
+                } else if(lineCount == 1) {
                     Collections.addAll(columns, line);
                     hasSampleName = columns.indexOf(Constants.ATTR_SAMPLE_NAME) >= 0;
                 } else {
@@ -291,7 +298,7 @@ public class TemplatePreProcessingUtils {
                     if(lineCount == 1) {
                         //skip the second line that holds metadata of each column
                         String firstMetaColumn = line[colIndex];
-                        if(!firstMetaColumn.isEmpty() && firstMetaColumn.startsWith("#") && firstMetaColumn.indexOf("string") > 0) {
+                        if(!firstMetaColumn.isEmpty() && firstMetaColumn.startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && firstMetaColumn.indexOf("string") > 0) {
                             lineCount++;
                             continue;
                         }
