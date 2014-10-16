@@ -26,8 +26,8 @@ import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.Project;
-import org.jcvi.ometa.stateless_session_bean.ForbiddenResourceException;
-import org.jcvi.ometa.stateless_session_bean.LoginRequiredException;
+import org.jcvi.ometa.exception.ForbiddenResourceException;
+import org.jcvi.ometa.exception.LoginRequiredException;
 import org.jcvi.ometa.utils.Constants;
 import org.jtc.common.util.property.PropertyHelper;
 

@@ -56,6 +56,10 @@ public class ReadBeanPersister implements WebDataFacadeI {
         pseb = new ProjectSampleEventPresentationStateless( sessionAndTransactionManager );
     }
 
+    public ReadBeanPersister(ProjectSampleEventPresentationBusiness pseb) {
+        this.pseb = pseb;
+    }
+
     public Actor getActor(Long loginId) throws Exception {
         return pseb.getActor( loginId );
     }

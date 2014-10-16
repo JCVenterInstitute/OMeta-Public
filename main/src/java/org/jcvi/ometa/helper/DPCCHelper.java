@@ -2,7 +2,7 @@ package org.jcvi.ometa.helper;
 
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.*;
-import org.jcvi.ometa.stateless_session_bean.DetailedException;
+import org.jcvi.ometa.exception.DetailedException;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.validation.DPCCValidator;
 import org.jtc.common.util.property.PropertyHelper;

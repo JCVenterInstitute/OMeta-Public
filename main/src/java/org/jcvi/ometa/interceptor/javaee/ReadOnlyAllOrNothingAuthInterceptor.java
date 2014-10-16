@@ -25,8 +25,8 @@ import org.apache.log4j.Logger;
 import org.jcvi.ometa.configuration.*;
 import org.jcvi.ometa.hibernate.dao.SecurityDAO;
 import org.jcvi.ometa.interceptor.InterceptorHelper;
-import org.jcvi.ometa.stateless_session_bean.LoginRequiredException;
-import org.jcvi.ometa.stateless_session_bean.ForbiddenResourceException;
+import org.jcvi.ometa.exception.LoginRequiredException;
+import org.jcvi.ometa.exception.ForbiddenResourceException;
 import org.jcvi.ometa.utils.Constants;
 import org.jtc.common.util.property.PropertyHelper;
 

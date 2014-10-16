@@ -28,6 +28,8 @@ import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.configuration.JCVI_Project;
 import org.jcvi.ometa.db_interface.WritebackBeanPersister;
 import org.jcvi.ometa.engine.MultiLoadParameter;
+import org.jcvi.ometa.exception.DetailedException;
+import org.jcvi.ometa.exception.ForbiddenResourceException;
 import org.jcvi.ometa.hibernate.dao.ContainerizedSessionAndTransactionManager;
 import org.jcvi.ometa.interceptor.javaee.WriteableAllOrNothingAuthInterceptor;
 import org.jcvi.ometa.intf.BeanPersistenceFacadeI;

@@ -29,7 +29,7 @@ import org.jcvi.ometa.model.FileReadAttributeBean;
 import org.jcvi.ometa.model.Project;
 import org.jcvi.ometa.model.Sample;
 import org.jcvi.ometa.model.SampleMetaAttribute;
-import org.jcvi.ometa.stateless_session_bean.ForbiddenResourceException;
+import org.jcvi.ometa.exception.ForbiddenResourceException;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.UploadActionDelegate;
 import org.jtc.common.util.property.PropertyHelper;

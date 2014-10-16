@@ -25,6 +25,7 @@ import org.hibernate.Session;
 import org.jcvi.ometa.configuration.AccessLevel;
 import org.jcvi.ometa.configuration.QueryEntityType;
 import org.jcvi.ometa.configuration.ResponseToFailedAuthorization;
+import org.jcvi.ometa.exception.InvalidInputException;
 import org.jcvi.ometa.hibernate.dao.*;
 import org.jcvi.ometa.intf.BeanPersistenceFacadeI;
 import org.jcvi.ometa.model.*;

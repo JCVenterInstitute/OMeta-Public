@@ -29,7 +29,7 @@ import org.jcvi.ometa.configuration.AccessLevel;
 import org.jcvi.ometa.configuration.QueryEntityType;
 import org.jcvi.ometa.configuration.ResponseToFailedAuthorization;
 import org.jcvi.ometa.model.Project;
-import org.jcvi.ometa.stateless_session_bean.ForbiddenResourceException;
+import org.jcvi.ometa.exception.ForbiddenResourceException;
 
 import java.util.*;
 

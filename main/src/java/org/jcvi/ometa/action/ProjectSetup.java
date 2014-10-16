@@ -28,7 +28,7 @@ import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.engine.MultiLoadParameter;
 import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.model.web.MetadataSetupReadBean;
-import org.jcvi.ometa.stateless_session_bean.ForbiddenResourceException;
+import org.jcvi.ometa.exception.ForbiddenResourceException;
 import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.UploadActionDelegate;
