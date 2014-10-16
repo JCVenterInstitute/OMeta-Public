@@ -43,8 +43,6 @@ public class Constants {
     public static final String DEVELOPMENT_DATABASE = "development";
     public static final String FILE_DOWNLOAD_MSG = "FILE_DOWNLOAD";
 
-    public static final String PROMPT_IN_FILE_PREFIX = "#";
-
     public static final String ACCEPTABLE_CHARACTERS = "A-Za-z0-9=.,;:!?@$%#+()\\[\\]/\\-_'\" ";
     public final static String DATE_DEFAULT_FORMAT = "yyyy-MM-dd";
     public final static String DATE_ALTERNATIVE_FORMAT = "dd-MMM-yyyy";
@@ -94,6 +92,7 @@ public class Constants {
     public static final String DPCC_STATUS_VALIDATED = "Validated";
     public static final String DPCC_STATUS_SUBMITTED = "Data submitted to DPCC";
 
+    public static final String TEMPLATE_COMMENT_INDICATOR = "#";
     public static final String TEMPLATE_EVENT_TYPE_IDENTIFIER = "EventType";
 
     //variables for creating external links
