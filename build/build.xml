@@ -255,9 +255,9 @@
         </ear>
     </target>
 
-    <target name="dist" depends="make-loader-app,make-etl-app,war,ear" description="generate the distribution" />
+    <target name="dist" depends="clean,make-loader-app,make-etl-app,war,ear" description="generate the distribution" />
 
-    <target name="ear-to-jboss" depends="stopjboss,clean,dist"  description="export to jboss">
+    <target name="ear-to-jboss" depends="stopjboss,dist"  description="export to jboss">
         <unzip src="${dist.dir}/${tracking.web.context}.ear" dest="${jboss.deploy.local.dir}/${tracking.web.context}.ear/" />
         <antcall target="startjboss" />
     </target>
