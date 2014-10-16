@@ -75,7 +75,7 @@ public class TemplatePreProcessingUtils {
         StringBuilder csvContents = new StringBuilder();
         StringBuilder comments = new StringBuilder();
 
-        csvContents.append(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER).append(":").append(eventName).append("\n"); //write the event name with the identifier
+        csvContents.append(Constants.TEMPLATE_COMMENT_INDICATOR).append(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER).append(":").append(eventName).append("\n"); //write the event name with the identifier
 
         int i = 0;
         for(HeaderDetail detail : attributes) {
