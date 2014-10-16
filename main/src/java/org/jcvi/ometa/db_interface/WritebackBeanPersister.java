@@ -449,7 +449,12 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
 
             Map<String, Long> projNameVsId = new HashMap<String, Long>();
             for (EventMetaAttribute attribute : emaBeans) {
-                if (attribute.getEventTypeLookupId() == null || attribute.getEventTypeLookupId() == 0) {
+                LookupValue attributeNameLookup = lvDAO.getLookupValue(attribute.getAttributeName(), session);
+                if(attributeNameLookup == null) {
+                    throw new Exception("attribute name '" + attribute.getAttributeName() + "' does not exist.");
+                }
+
+                if (attribute.getEventTypeLookupId() == null || attribute.getEventTypeLookupId() == 0) { //free event type id
                     String eventName = attribute.getEventName();
                     LookupValue eventNameLV = lvDAO.getLookupValue(eventName, ModelValidator.EVENT_TYPE_LV_TYPE_NAME, session);
                     if (eventNameLV == null) {
@@ -458,42 +463,44 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                     attribute.setEventTypeLookupId(eventNameLV.getLookupValueId());
                 }
 
-                if (attribute.getProjectId() == null) {
+                if (attribute.getProjectId() == null) { //feed project id
                     String projectName = attribute.getProjectName();
                     Long projectId = getAndCacheProjectId(session, projNameVsId, projectName);
                     attribute.setProjectId(projectId);
                 }
 
+                EventMetaAttribute duplicate = emaDAO.getEventMetaAttribute(attributeNameLookup.getLookupValueId(), attribute.getProjectId(), attribute.getEventTypeLookupId(), session);
+                if(duplicate != null) {
+                    throw new Exception("attribute '" + attribute.getAttributeName() + "' already exists for '" + attribute.getEventName() + "' event.");
+                }
+
                 if (attribute.isSampleRequired() == null) {
-                    throw new Exception(
-                            "SampleRequired not set for event meta attribute " + attribute.getAttributeName() +
-                                    " all event meta attributes must have this column set."
-                    );
+                    throw new Exception("SampleRequired field needs value for '" + attribute.getAttributeName() + "'");
                 }
                 validateEventMetaAttributeInput(attribute);
-                if (attribute.isSampleRequired() == null) {
-                    throw new Exception("");
-                }
-                if(attribute.getCreatedBy()==null)
-                    attribute.setCreatedBy(actorId);
-                else
-                    attribute.setModifiedBy(actorId);
-                if(attribute.getEventMetaAttributeId()==null)
-                    attribute.setEventMetaAttributeId(guidGetter.getGuid());
 
-                if(attribute.getCreationDate()==null)
+                if(attribute.getCreatedBy() == null) {
+                    attribute.setCreatedBy(actorId);
+                } else {
+                    attribute.setModifiedBy(actorId);
+                }
+
+                if(attribute.getEventMetaAttributeId() == null) {
+                    attribute.setEventMetaAttributeId(guidGetter.getGuid());
+                }
+
+                if(attribute.getCreationDate() == null)
                     emaDAO.write(attribute, sessionAndTransactionManager.getTransactionStartDate(), session);
                 else { //update corresponding PMA or SMA
                     emaDAO.update(attribute, sessionAndTransactionManager.getTransactionStartDate(), session);
-                    LookupValue attributeLV = lvDAO.getLookupValue(attribute.getAttributeName(), session);
-                    if((pma = getProjectMetaAttribute(attribute.getProjectId(), attributeLV.getLookupValueId()))!=null) {
+                    if((pma = getProjectMetaAttribute(attribute.getProjectId(), attributeNameLookup.getLookupValueId())) != null) {
                         pma.setActiveDB(attribute.getActiveDB());
                         pma.setRequiredDB(attribute.getRequiredDB());
                         pma.setOptions(attribute.getOptions());
                         pma.setDesc(attribute.getDesc());
                         pmaDAO.update(pma, sessionAndTransactionManager.getTransactionStartDate(), session);
                     }
-                    if((sma = getSampleMeatAttribute(attribute.getProjectId(), attributeLV.getLookupValueId()))!=null) {
+                    if((sma = getSampleMeatAttribute(attribute.getProjectId(), attributeNameLookup.getLookupValueId())) != null) {
                         sma.setActiveDB(attribute.getActiveDB());
                         sma.setRequiredDB(attribute.getRequiredDB());
                         sma.setDesc(attribute.getDesc());
@@ -826,18 +833,17 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
         // Check: valid data type?
         modelValidator.isValidDataType(dataType);*/
         if (isEmpty(attribute.getAttributeName()) || isEmpty(attribute.getProjectName())) {
-            throw new InvalidInputException("Invalid project meta attribute: must have attribute name and project name.");
+            throw new InvalidInputException("project name and attribute name are required.");
         }
     }
 
     private void validateEventMetaAttributeInput(EventMetaAttribute attribute) throws InvalidInputException {
         if (isEmpty(attribute.getAttributeName())) {
-            throw new InvalidInputException("Invalid event meta attribute: must have attribute name.");
+            throw new InvalidInputException("attribute name is empty or null.");
         }
 
         if (isEmpty(attribute.getProjectName()) || isEmpty(attribute.getEventName())) {
-            throw new InvalidInputException(
-                    "Invalid event meta attribute: must have project name, and event name.");
+            throw new InvalidInputException("project name and event name are required.");
         }
 
         /*
