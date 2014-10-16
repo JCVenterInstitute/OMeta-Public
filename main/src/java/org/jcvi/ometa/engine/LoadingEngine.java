@@ -84,7 +84,7 @@ public class LoadingEngine {
             logger.fatal(daoex);
         } catch (Throwable ex) {
             Throwable cause = ex.getCause();
-            while(cause.getCause() != null) { //drill down to the actual exception
+            while(cause != null && cause.getCause() != null) { //drill down to the actual exception
                 cause = cause.getCause();
             }
             System.out.println("Error: " + (cause == null ? ex.getMessage() : cause.getMessage()));
