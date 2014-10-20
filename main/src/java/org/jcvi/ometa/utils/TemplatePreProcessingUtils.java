@@ -295,13 +295,17 @@ public class TemplatePreProcessingUtils {
                 } else {
                     int colIndex = 0;
 
-                    if(lineCount == 1) {
+                    if(lineCount == 2) {
                         //skip the second line that holds metadata of each column
                         String firstMetaColumn = line[colIndex];
                         if(!firstMetaColumn.isEmpty() && firstMetaColumn.startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && firstMetaColumn.indexOf("string") > 0) {
                             lineCount++;
                             continue;
                         }
+                    }
+
+                    if(line.length != columns.size()) {
+                        throw new Exception("number of columns of a data row (" + lineCount + ") does not match the number of header columns. check for missing or extra commas.");
                     }
 
                     currProjectName = line[colIndex++];
