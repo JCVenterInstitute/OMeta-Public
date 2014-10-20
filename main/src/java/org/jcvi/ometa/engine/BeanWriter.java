@@ -114,6 +114,7 @@ public class BeanWriter {
         List<GridBean> gridList = this.getEventBeans(eventFile, eventName, processInput);
 
         MultiLoadParameter loadParameter = new MultiLoadParameter();
+        loadParameter.setEventName(eventName);
 
         int rowIndex = 0;
         for(GridBean gBean : gridList) {
