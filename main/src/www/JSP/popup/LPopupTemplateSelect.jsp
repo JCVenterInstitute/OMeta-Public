@@ -14,7 +14,7 @@
     <s:hidden name="projectId"/>
     <s:hidden name="eventName"/>
     <s:hidden name="eventId"/>
-    <s:hidden name="sampleIds"/>
+    <s:hidden name="ids"/>
     <div class="popup">
         <div class="popup-header">
             <h2>Select Template Format</h2>

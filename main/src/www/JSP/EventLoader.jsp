@@ -541,7 +541,7 @@ var button = {
           + "&projectId=" + $("#_projectSelect").val()
           + "&eventName=" + $("#_eventSelect option:selected").text() 
           + "&eventId=" + $("#_eventSelect").val()
-          + "&sampleIds=" + (g_sampleIds ? g_sampleIds : "")
+          + "&ids=" + (g_sampleIds ? g_sampleIds : "")
       });
       //this.submit_form("template");
     }

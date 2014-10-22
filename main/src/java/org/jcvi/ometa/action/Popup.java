@@ -23,7 +23,7 @@ public class Popup extends ActionSupport {
     private Long eventId;
     private Long sampleId;
 
-    private String sampleIds;
+    private String ids;
 
     public String run() {
         String rtnVal = SUCCESS;
@@ -90,11 +90,11 @@ public class Popup extends ActionSupport {
         this.sampleId = sampleId;
     }
 
-    public String getSampleIds() {
-        return sampleIds;
+    public String getIds() {
+        return ids;
     }
 
-    public void setSampleIds(String sampleIds) {
-        this.sampleIds = sampleIds;
+    public void setIds(String ids) {
+        this.ids = ids;
     }
 }
