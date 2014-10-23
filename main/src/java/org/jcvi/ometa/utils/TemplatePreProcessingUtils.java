@@ -296,6 +296,14 @@ public class TemplatePreProcessingUtils {
                 } else {
                     int colIndex = 0;
 
+                    if (line.length < 1 ) {
+                            continue;
+                    }
+
+                    if(line[0].startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) || line[0].startsWith("\"" + Constants.TEMPLATE_COMMENT_INDICATOR)) { //skip comment line
+                        continue;
+                    }
+
                     if(lineCount == 3) {
                         //skip the second line that holds metadata of each column
                         String firstMetaColumn = line[colIndex];
