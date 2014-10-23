@@ -107,56 +107,16 @@ public class BeanWriter {
 
     public String writeEvent(File eventFile, String eventName, String projectName, boolean processInput) throws Exception {
         String lastSampleName = null;
-
-        boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION);
-        boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);
-
         List<GridBean> gridList = this.getEventBeans(eventFile, eventName, processInput);
 
         MultiLoadParameter loadParameter = new MultiLoadParameter();
-        loadParameter.setEventName(eventName);
-
-        int rowIndex = 0;
-        for(GridBean gBean : gridList) {
-            if(gBean!=null) {
-                Project loadingProject = null;
-                Sample loadingSample = null;
-
-                if(isProjectRegistration && gBean.getProjectName() != null && gBean.getProjectPublic() != null) {
-                    loadingProject = new Project();
-                    loadingProject.setProjectName(gBean.getProjectName());
-                    loadingProject.setIsPublic(Integer.valueOf(gBean.getProjectPublic()));
-                    loadingProject.setProjectLevel(1);
-                } else {
-                    projectName = gBean.getProjectName();
-                    loadingProject = readEjb.getProject(projectName);
-
-                    Sample existingSample = readEjb.getSample(loadingProject.getProjectId(), gBean.getSampleName());
-                    if(existingSample == null) {
-                        if(isSampleRegistration) {
-                            loadingSample = new Sample();
-                            loadingSample.setSampleName(gBean.getSampleName());
-                            loadingSample.setParentSampleName(gBean.getParentSampleName());
-                            loadingSample.setIsPublic(Integer.valueOf(gBean.getSamplePublic()));
-                            loadingSample.setSampleLevel(1);
-                        } else {
-                            throw new Exception("sample does not exist or sample name is empty.");
-                        }
-                    } else {
-                        loadingSample = existingSample;
-                    }
-                }
-
-                List<FileReadAttributeBean> fBeanList = gBean.getBeanList();
-                if(fBeanList!=null && fBeanList.size()>0) {
-                    EventLoadHelper loadHelper = new EventLoadHelper(readEjb);
-                    loadHelper.createMultiLoadParameter(loadParameter, eventName, projectName, loadingProject,  loadingSample, fBeanList, ++rowIndex);
-                    lastSampleName = gBean.getSampleName();
-                }
-            }
-        }
-
+        EventLoadHelper loadHelper = new EventLoadHelper(this.readEjb);
+        loadHelper.gridListToMultiLoadParameter(loadParameter, gridList, projectName, eventName, null, null);
         writeEjb.loadAll(null, loadParameter);
+
+        if(gridList != null && gridList.get(0) != null) {
+            lastSampleName =  gridList.get(0).getSampleName();
+        }
 
         return lastSampleName;
     }

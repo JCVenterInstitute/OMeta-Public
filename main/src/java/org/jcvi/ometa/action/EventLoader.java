@@ -23,22 +23,21 @@ package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.engine.MultiLoadParameter;
-import org.jcvi.ometa.helper.AttributeHelper;
-import org.jcvi.ometa.helper.AttributePair;
-import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.exception.DetailedException;
 import org.jcvi.ometa.exception.ForbiddenResourceException;
+import org.jcvi.ometa.helper.AttributeHelper;
+import org.jcvi.ometa.helper.AttributePair;
+import org.jcvi.ometa.helper.EventLoadHelper;
+import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.TemplatePreProcessingUtils;
 import org.jcvi.ometa.utils.UploadActionDelegate;
-import org.jcvi.ometa.validation.DPCCValidator;
 import org.jtc.common.util.property.PropertyHelper;
 
 import javax.naming.InitialContext;
@@ -154,7 +153,18 @@ public class EventLoader extends ActionSupport implements Preparable {
 
                     gridList = null; // force grid list to be empty
                     MultiLoadParameter loadParameter = new MultiLoadParameter();
-                    psewt.loadAll(null, this.createMultiLoadParameter(loadParameter, loadingProject, loadingSample, beanList, 1));
+                    EventLoadHelper loadHelper = new EventLoadHelper(this.readPersister);
+
+                    //manually feed sample name if it is not provided
+                    if(this.loadingSample == null) {
+                        this.loadingSample = new Sample();
+                    }
+                    if(this.loadingSample.getSampleName() == null || this.loadingSample.getSampleName().isEmpty()) {
+                        this.loadingSample.setSampleName(this.sampleName);
+                    }
+
+                    loadHelper.createMultiLoadParameter(loadParameter, this.projectName, this.eventName, loadingProject, loadingSample, beanList, this.status, 1);
+                    psewt.loadAll(null, loadParameter);
 
                     this.pageDataReset(isProjectRegistration, isSampleRegistration, this.status);
 
@@ -163,40 +173,10 @@ public class EventLoader extends ActionSupport implements Preparable {
                     tx = (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
                     tx.begin();
 
+                    //delegate populating multiload parameter to the helper
                     MultiLoadParameter loadParameter = new MultiLoadParameter();
-
-                    int gridRowIndex = 0;
-                    for(GridBean gBean : gridList) {
-                        if(gBean!=null) {
-                            if(isProjectRegistration && gBean.getProjectName() != null && gBean.getProjectPublic() != null) {
-                                loadingProject = new Project();
-                                loadingProject.setProjectName(gBean.getProjectName());
-                                loadingProject.setIsPublic(Integer.valueOf(gBean.getProjectPublic()));
-                            } else if(isSampleRegistration && gBean.getSampleName() != null && !gBean.getSampleName().equals("0") && gBean.getSamplePublic() != null) {
-                                Sample existingSample = readPersister.getSample(this.projectId, gBean.getSampleName());
-                                if(existingSample == null) {
-                                    loadingSample = new Sample();
-                                    loadingSample.setSampleName(gBean.getSampleName());
-                                    loadingSample.setParentSampleName(gBean.getParentSampleName());
-                                    loadingSample.setIsPublic(Integer.valueOf(gBean.getSamplePublic()));
-                                } else {
-                                    loadingSample = existingSample;
-                                }
-                            } else {
-                                if(gBean.getSampleName() != null) {
-                                    this.sampleName = gBean.getSampleName();
-                                }
-                            }
-
-                            // process empty attribute lists events for project/sample registrations
-                            if((gBean.getBeanList() != null && gBean.getBeanList().size() > 0)
-                                    || this.eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)
-                                    || this.eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
-                                this.createMultiLoadParameter(loadParameter, loadingProject,  loadingSample, gBean.getBeanList(), ++gridRowIndex);
-                            }
-                        }
-                    }
-
+                    EventLoadHelper loadHelper = new EventLoadHelper(this.readPersister);
+                    loadHelper.gridListToMultiLoadParameter(loadParameter, gridList, this.projectName, this.eventName, loadingProject, loadingSample);
                     psewt.loadAll(null, loadParameter);
 
                     this.pageDataReset(isProjectRegistration, isSampleRegistration, this.status);
@@ -343,267 +323,6 @@ public class EventLoader extends ActionSupport implements Preparable {
         }
 
         return rtnVal;
-    }
-
-    private MultiLoadParameter createMultiLoadParameter(MultiLoadParameter loadParameter, Project project, Sample sample, List<FileReadAttributeBean> frab, int index)
-            throws Exception {
-        boolean isSampleRegistration = false;
-        boolean isProjectRegistration = false;
-
-        if (this.eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) && project.getProjectName() != null && !project.getProjectName().isEmpty()) {
-            isProjectRegistration = true;
-        } else if (this.eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) && sample.getSampleName() != null && !sample.getSampleName().isEmpty()) {
-            isSampleRegistration = true;
-        }
-
-        this.sampleName = isSampleRegistration ? sample.getSampleName() : this.sampleName;
-
-        List<FileReadAttributeBean> loadingList = null;
-        if (frab != null && frab.size() > 0) {
-            loadingList = processFileReadBeans(
-                    isProjectRegistration ? project.getProjectName() : this.projectName,
-                    isSampleRegistration ? sample.getSampleName() : this.sampleName,
-                    frab
-            );
-        }
-
-        if (isProjectRegistration) {
-            /*
-            *   loads all meta attributes from the parent
-            *   by hkim 6/11/13
-            */
-            List<EventMetaAttribute> emas = this.readPersister.getEventMetaAttributes(this.projectName, null); //, Constants.EVENT_PROJECT_REGISTRATION);
-            List<EventMetaAttribute> newEmas = null;
-            if (emas != null && emas.size() > 0) {
-                newEmas = new ArrayList<EventMetaAttribute>(emas.size());
-                for (EventMetaAttribute ema : emas) {
-                    EventMetaAttribute newEma = CommonTool.createEMA(
-                            null, project.getProjectName(), ema.getEventName(), ema.getAttributeName(),
-                            ema.isRequired(), ema.isActive(), ema.getDataType(), ema.getDesc(),
-                            ema.getOntology(), ema.getLabel(), ema.getOptions(), ema.isSampleRequired());
-                    newEma.setEventTypeLookupId(ema.getEventTypeLookupId());
-                    newEma.setNameLookupId(ema.getNameLookupId());
-                    newEmas.add(newEma);
-                }
-            }
-
-            List<SampleMetaAttribute> smas = this.readPersister.getSampleMetaAttributes(projectId);
-            List<SampleMetaAttribute> newSmas = null;
-            if(smas != null && smas.size() > 0) {
-                newSmas = new ArrayList<SampleMetaAttribute>(smas.size());
-                for(SampleMetaAttribute sma : smas) {
-                    SampleMetaAttribute newSma = new SampleMetaAttribute();
-                    newSma.setProjectName(project.getProjectName());
-                    newSma.setAttributeName(sma.getAttributeName());
-                    newSma.setNameLookupId(sma.getNameLookupId());
-                    newSma.setDataType(sma.getDataType());
-                    newSma.setDesc(sma.getDesc());
-                    newSma.setLabel(sma.getLabel());
-                    newSma.setOntology(sma.getOntology());
-                    newSma.setOptions(sma.getOptions());
-                    newSma.setRequired(sma.isRequired());
-                    newSma.setActive(sma.isActive());
-                    newSmas.add(newSma);
-                }
-            }
-
-            List<ProjectMetaAttribute> pmas = this.readPersister.getProjectMetaAttributes(this.projectName);
-            List<ProjectMetaAttribute> newPmas = null;
-            if (pmas != null && pmas.size() > 0) {
-                newPmas = new ArrayList<ProjectMetaAttribute>(pmas.size());
-                for (ProjectMetaAttribute pma : pmas) {
-                    ProjectMetaAttribute newPma = new ProjectMetaAttribute();
-                    newPma.setProjectName(project.getProjectName());
-                    newPma.setAttributeName(pma.getAttributeName());
-                    newPma.setDataType(pma.getDataType());
-                    newPma.setDesc(pma.getDesc());
-                    newPma.setLabel(pma.getLabel());
-                    newPma.setNameLookupId(pma.getNameLookupId());
-                    newPma.setOntology(pma.getOntology());
-                    newPma.setOptions(pma.getOptions());
-                    newPma.setRequired(pma.isRequired());
-                    newPma.setActive(pma.isActive());
-                    newPmas.add(newPma);
-                }
-            }
-            loadParameter.addProjectPair(feedProjectData(project), loadingList, newPmas, newSmas, newEmas, index);
-        } else {
-            boolean notEmptyList = loadingList != null && loadingList.size() > 0;
-
-            if(!this.eventName.contains("Project")) { //do not update sample status for project level events
-                if((this.status.equals("submit") || this.status.equals("validate")) && notEmptyList) { //DPCC data validation
-                    this.validateDataForDPCC(loadingList, index);
-                }
-
-                if(isSampleRegistration) {
-                    this.updateSampleStatus(loadingList, this.status, index);
-                    loadParameter.addSamplePair(feedSampleData(sample), loadingList, index);
-                } else {
-                    if(notEmptyList)  {
-                        if(this.eventName.contains(Constants.EVENT_SAMPLE_UPDATE)) {
-                            this.updateSampleStatus(loadingList, this.status, index);
-                        }
-                        loadParameter.addEvents(this.eventName, loadingList);
-                    }
-                }
-            }
-        }
-        loadParameter.setEventName(this.eventName);
-        return loadParameter;
-    }
-
-    private Project feedProjectData(Project project) throws Exception {
-        project.setParentProjectName(this.projectName);
-
-        Project parentProject = readPersister.getProject(this.projectName);
-        project.setParentProjectId(parentProject.getProjectId());
-        project.setProjectLevel(parentProject.getProjectLevel()+1);
-        project.setEditGroup(parentProject.getEditGroup());
-        project.setViewGroup(parentProject.getViewGroup());
-        return project;
-    }
-
-    private Sample feedSampleData(Sample sample) throws Exception {
-        sample.setProjectId(this.projectId);
-        sample.setProjectName(this.projectName);
-
-        //set project level by adding 1 to selected parent project's level
-        if(sample.getParentSampleName()==null || sample.getParentSampleName().equals("0")) {
-            sample.setParentSampleName(null);
-            sample.setParentSampleId(null);
-            sample.setSampleLevel(1);
-        } else {
-            String parentSampleName = sample.getParentSampleName();
-            if (parentSampleName != null && !parentSampleName.isEmpty() && !parentSampleName.equals("0")) {
-                Sample selectedParentSample = readPersister.getSample(this.projectId, parentSampleName);
-                if(selectedParentSample != null && selectedParentSample.getSampleId() != null) {
-                    sample.setSampleLevel(selectedParentSample.getSampleLevel() + 1);
-                    sample.setParentSampleId(selectedParentSample.getSampleId());
-                }
-            }
-        }
-        return sample;
-    }
-
-    private List<FileReadAttributeBean> processFileReadBeans(String _projectName, String _sampleName, List<FileReadAttributeBean> loadingList) throws Exception {
-        List<FileReadAttributeBean> processedList = new ArrayList<FileReadAttributeBean>();
-        for(FileReadAttributeBean fBean : loadingList) {
-            if (fBean.getAttributeName().equals("0") || fBean.getAttributeValue() == null
-                    || fBean.getAttributeValue().isEmpty() || fBean.getAttributeValue().toLowerCase().equals("null")) { //&& !fBean.getAttributeValue().equals("0")
-                continue;
-            }
-
-            if(fBean.getProjectName() == null || eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)) {
-                fBean.setProjectName(_projectName);
-            }
-            if(fBean.getSampleName() == null) {
-                fBean.setSampleName(_sampleName);
-            }
-
-            //handle file uploads
-            if(fBean.getUpload()!=null && fBean.getUploadFileName()!=null && !fBean.getUploadFileName().isEmpty()) {
-                fileStoragePath = fileStoragePath + (fileStoragePath.endsWith(File.separator)?"":File.separator);
-                String originalFileName = fBean.getUploadFileName();
-
-                String fileDirectoryPathProject = _projectName.replaceAll(" ", "_"); //project folder
-                String fileDirectoryPathSample = fileDirectoryPathProject + File.separator +
-                        (_sampleName!=null&&!_sampleName.isEmpty()?_sampleName.replaceAll(" ", "_"):"project"); //sample folder
-                String fileDirectoryPath = fileDirectoryPathSample + File.separator + CommonTool.convertTimestampToDate(new Date()); //date folder
-
-                String fileName = originalFileName.substring(0,originalFileName.indexOf(".")) +
-                        "_"+System.currentTimeMillis() +
-                        originalFileName.substring(originalFileName.indexOf(".")); //append "_" + current time in milliseconds to file name
-
-                File fileDirectory = new File(fileStoragePath + fileDirectoryPath);
-                if(!fileDirectory.exists() || !fileDirectory.isDirectory()) {
-                    fileDirectory.mkdirs();
-                }
-
-                File theFile = new File(fileDirectory.getPath() + File.separator + fileName);
-                FileUtils.copyFile(fBean.getUpload(), theFile);
-
-                if(theFile.exists() && theFile.isFile() && theFile.canRead()) {
-                    fBean.getUpload().delete();
-
-                    fBean.setAttributeValue(fileDirectoryPath + File.separator + fileName);
-                    if(loadedFiles==null) {
-                        loadedFiles = new ArrayList<String>();
-                    }
-                    loadedFiles.add(fBean.getAttributeValue());
-                }
-            }
-
-            processedList.add(fBean);
-        }
-        return processedList;
-    }
-
-    private void updateSampleStatus(List<FileReadAttributeBean> loadingList, String status, int index) throws Exception {
-        boolean foundSampleStatus = false;
-        String strStatus = status.equals("submit") ? Constants.DPCC_STATUS_SUBMITTED : status.equals("validate") ? Constants.DPCC_STATUS_VALIDATED : Constants.DPCC_STATUS_EDITING;
-
-        try {
-            if(this.sampleName == null || this.sampleName.isEmpty()) {
-                throw new Exception("Sample is required.");
-            }
-
-            Sample sample = this.readPersister.getSample(this.projectId, this.sampleName);
-            if(sample != null) { //it could be sample registration event
-                List<SampleAttribute> saList = this.readPersister.getSampleAttributes(sample.getSampleId());
-                for(SampleAttribute sa : saList) {
-                    if(sa.getMetaAttribute().getLookupValue().getName().equals(Constants.ATTR_SAMPLE_STATUS)) {
-                        if(sa.getAttributeStringValue() != null && sa.getAttributeStringValue().equals("Data submitted to DPCC")) {
-                            throw new Exception("You cannot load any events for samples that has been submitted to DPCC.");
-                        }
-                    }
-                }
-            }
-
-            for(FileReadAttributeBean fBean : loadingList) {
-                if(fBean.getAttributeName().equals(Constants.ATTR_SAMPLE_STATUS)) {
-                    fBean.setAttributeValue(strStatus);
-                    foundSampleStatus = true;
-                }
-            }
-            if(!foundSampleStatus) { //if sample status attribute is not in the list
-                List<SampleMetaAttribute> smaList = this.readPersister.getSampleMetaAttributes(this.projectId);
-                for(SampleMetaAttribute sma : smaList) { //check if sample status is in sample meta attributes
-                    if(sma.getLookupValue().getName().equals(Constants.ATTR_SAMPLE_STATUS)) {
-                        foundSampleStatus = true;
-                    }
-                }
-
-                if(foundSampleStatus) { //manually add sample status with the status value
-                    FileReadAttributeBean statusBean = new FileReadAttributeBean();
-                    statusBean.setAttributeName(Constants.ATTR_SAMPLE_STATUS);
-                    statusBean.setAttributeValue(strStatus);
-                    statusBean.setProjectName(this.projectName);
-                    statusBean.setSampleName(this.sampleName);
-                    loadingList.add(statusBean);
-                } else {
-                    throw new Exception("'" + Constants.ATTR_SAMPLE_STATUS + "' attribute not found.");
-                }
-            }
-        } catch(Exception ex) {
-            ex.printStackTrace();
-            DetailedException dex = new DetailedException(index, ex.getMessage());
-            throw dex;
-        }
-    }
-
-    private void validateDataForDPCC(List<FileReadAttributeBean> loadingList, int index) throws Exception {
-        String attributeName = null;
-        try {
-            for(FileReadAttributeBean fBean : loadingList) {
-                if(fBean.getAttributeName().toLowerCase().contains("date")) {
-                    attributeName = fBean.getAttributeName();
-                    DPCCValidator.validateDate(fBean.getAttributeValue());
-                }
-            }
-        } catch(Exception ex) {
-            DetailedException dex = new DetailedException(index, "date parse error: '" + attributeName + "'");
-            throw dex;
-        }
     }
 
     private void pageDataReset(boolean isProjectRegistration, boolean isSampleRegistration, String status) {
