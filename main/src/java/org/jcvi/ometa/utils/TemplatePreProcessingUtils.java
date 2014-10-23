@@ -282,30 +282,30 @@ public class TemplatePreProcessingUtils {
             int lineCount = 0;
 
             while ((line = reader.readNext()) != null) {
-                if(lineCount == 0) { //headers
+                ++lineCount;
+
+                if(lineCount == 1) { //headers
                     if(line[0].startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && line[0].contains(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER)) { //skip event type line
-                        lineCount++;
                         continue;
                     } else {
                         throw new Exception("missing event name in the first row.");
                     }
-                } else if(lineCount == 1) {
+                } else if(lineCount == 2) {
                     Collections.addAll(columns, line);
                     hasSampleName = columns.indexOf(Constants.ATTR_SAMPLE_NAME) >= 0;
                 } else {
                     int colIndex = 0;
 
-                    if(lineCount == 2) {
+                    if(lineCount == 3) {
                         //skip the second line that holds metadata of each column
                         String firstMetaColumn = line[colIndex];
                         if(!firstMetaColumn.isEmpty() && firstMetaColumn.startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && firstMetaColumn.indexOf("string") > 0) {
-                            lineCount++;
                             continue;
                         }
                     }
 
                     if(line.length != columns.size()) {
-                        throw new Exception("number of columns of a data row (" + lineCount + ") does not match the number of header columns. check for missing or extra commas.");
+                        throw new Exception("number of columns of a data row does not match the number of header columns. check for missing or extra commas.");
                     }
 
                     currProjectName = line[colIndex++];
@@ -345,7 +345,6 @@ public class TemplatePreProcessingUtils {
                         gridBeans.add(gBean);
                     }
                 }
-                lineCount++;
             }
         }
 
