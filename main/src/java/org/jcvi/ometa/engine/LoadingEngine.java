@@ -413,7 +413,7 @@ public class LoadingEngine {
 
                         try {
                             String eventTarget = writer.writeEvent(singleEventFile, eventName, null, false);
-                            logWriter.write(String.format("[%d] loaded event for %s\n", lineCount, eventTarget));
+                            logWriter.write(String.format("[%d] loaded event%s.\n", lineCount, (eventTarget == null ? "" : " for '" + eventTarget + "'")));
                             processedWriter.write(currLine + "\n");
                             successCount++;
                         } catch (Exception ex) {
