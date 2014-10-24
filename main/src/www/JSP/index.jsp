@@ -19,10 +19,6 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
-<!DOCTYPE html>
-<html>
-<head></head>
-<body>
-	<jsp:include page="TopMenu.jsp" />
-</body>
-</html>
+<script>
+  location.href="secureIndex.action";
+</script>
