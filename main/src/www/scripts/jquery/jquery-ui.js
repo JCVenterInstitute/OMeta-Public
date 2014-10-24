@@ -457,7 +457,7 @@ a._keyEvent=!1;return K},_generateMonthYearHeader:function(a,b,c,d,e,f,g,h){var 
                     text: false
                 })
                 .removeClass( "ui-corner-all" )
-                .addClass( "ui-corner-right ui-button-icon" )
+                .addClass( "ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" )
                 .click(function() {
                     // close if already visible
                     if ( input.autocomplete( "widget" ).is( ":visible" ) ) {
