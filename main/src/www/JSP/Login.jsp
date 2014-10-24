@@ -19,63 +19,73 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
-<!DOCTYPE HTML>
-<%@ page contentType="text/html; charset=UTF-8" %>
-<%@ taglib uri="/struts-tags" prefix="s" %>
-<%@ page isELIgnored="false" %>
+<!doctype html>
+	<head>
+    <jsp:include page="../html/header.html" />
+  </head>
 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-</head>
-<body>
-	<form method="POST" action="j_security_check" id="loginPage" name="loginPage">
-		<jsp:include page="TopMenu.jsp" />
-		<div id="HeaderPane" style="margin:15px 0 0 30px;">
-			<div class="panelHeader">O-META: Ontologies based Matadata Tracking Application</div>
-		</div>
-		<div id="middle_content_template" style="overflow:visible;width:auto;height:auto;margin:35px 25px 25px 25px;">
-			<div id="loginContents">
-				<table>
-					<tr class="gappedTr">
-						<td style="text-align:right;"><strong>User Name</strong></td>
-						<td style="padding-left:25px;"><input type="text" name="j_username" id="usertext"/>
-					</tr>
-					<tr class="gappedTr">
-						<td style="text-align:right;"><strong>Password</strong></td>
-						<td style="padding-left:25px;"><input type="password" name="j_password" id="password"/></td>
-					</tr>
-				</table>
-				<div id="button">
-					<input type="button" name="Login" id="loginButton" value="Login" onclick="javascript:document.loginPage.submit();" style="float:left;margin:20px 0 0 190px;"/>
+  <body class="smart-style-2">
+    <div id="container">
+
+  		<jsp:include page="top.jsp" />
+
+			<div id="main" class="container">
+				<div id="inner-content" class="">
+						<div id="content" class="" role="main">
+							<div class="page-header">
+								<h1>CEIRS Member Login</h1>
+							</div>
+							<div class="row">
+								<div class="col-12-xs col-sm-4 col-md-4">
+									<div class="panel panel-primary">
+										 <div class="panel-heading">
+										 	<h3 class="panel-title">Sign In</h3>
+										 </div>
+										 <div class="panel-body">
+										 	<form method="POST" action="j_security_check" id="loginPage" name="loginPage" role="form">
+										 		<div class="form-group">
+										 			<label for="usernameInput">Username</label>
+										 			<input type="text" class="form-control" name="j_username" id="id" placeholder="Enter username">
+										 		</div>
+										 		<div class="form-group">
+										 			<label for="passwordInput">Password</label>
+										 			<input type="password" class="form-control" name="j_password" id="password" placeholder="Password">
+										 		</div>
+										 		<button type="submit" class="btn btn-sm btn-default">Sign in</button>
+										 	</form>
+										 </div>
+									</div>
+								</div>
+								<div class="col-sm-8 col-md-8 hidden-xs">
+									<p>Welcome to the future home of the CEIRS Data Processing and Coordinating site. This area of the site is under development with an expected release date of November 18, 2014.</p>
+									<p>Here, members of the CEIRS network will be able to:</p>
+									<ol>
+										<li>Submit data to the DPCC for processing and re-distribution to public databases</li>
+										<li>Retrieve data submission metrics for their Center</li>
+										<li>Request technical support</li>
+										<li>Access training and education materials to help investigators take full advantage of the services offered by the DPCC</li>
+									</ol>
+								</div>
+							</div>
+						</div>
 				</div>
 			</div>
-			<div id="contactDiv" style="clear:both;overflow:visible;float:left;margin:10px 20px">
-				<div style="margin:5px 0 0 0;">
-					<strong>or please <input type="button" name="Register" value="Register" onclick="javascript:addActor();"/> to use the system.</strong>
-				</div>
-				<div id="info" style="margin-top:15px;float:left;">
-					<p>The latest versions of <strong>Firefox(v.14+), IE(v.9+) or Chrome(v.22+)</strong> are recommended in using O-META.<br/>
-					If you experience difficulties with a particular browser, please contact <a href="./help.action">Help</a>.</p>
-				</div>
-			</div>
-		</div>
-	</form>
 
-	<script>
-		function addActor() {
-			document.loginPage.action='addActor.action';
-			document.loginPage.submit();
-		}
+			<jsp:include page="../html/footer.html" />
+    
+    </div>
 
-		$(function() {
-			$("#password").keyup(function(event){
-			    if(event.keyCode == 13){
-			        $("#loginButton").click();
-			    }
+		<script>
+			$(function() {
+				$("#password").keyup(function(event){
+				    if(event.keyCode == 13){
+				        $("#loginButton").click();
+				    }
+				});
 			});
-		});
+			
+		</script>
 		
-	</script>
-</body>
+  </body>
 </html>
 
