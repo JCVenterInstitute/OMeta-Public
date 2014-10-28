@@ -47,9 +47,9 @@
           <li id="menu-item-10" class="dropdown">
             <a href="#" data-toggle="dropdown">Admin<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
-              <li><a href="#">Create Project</a></li>
-              <li><a href="#">Metadata Setup</a></li>
-              <li><a href="#">User/Role</a></li>
+              <li><a href="projectSetup.action">Create Project</a></li>
+              <li><a href="metadataSetup.action?type=e">Metadata Setup</a></li>
+              <li><a href="actorRole.action">User/Role</a></li>
             </ul>
           </li>
           <li id="menu-item-187"><a href="#">Support</a></li>
