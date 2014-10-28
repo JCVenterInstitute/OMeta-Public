@@ -44,7 +44,7 @@
               <li><a href="eventReport.action">Report</a></li>
             </ul>
           </li>
-          <li id="menu-item-10" class="dropdown">
+          <li id="admin_li" class="dropdown">
             <a href="#" data-toggle="dropdown">Admin<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="projectSetup.action">Create Project</a></li>
