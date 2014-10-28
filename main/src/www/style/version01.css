@@ -186,7 +186,12 @@ border-right: 1px solid #a0a09b;
     vertical-align: middle;
 }
 
-.tableHeaderStyle {
+.tableHeaderNoSort {
+   background-color: #B6B6B6;
+   border: 1px solid #FFF; 
+}
+
+/*.tableHeaderStyle {
     font-family: Verdana,Arial,Helvetica,sans-serif;
     font-weight: normal;
     font-size: 1em;
@@ -231,7 +236,7 @@ border-right: 1px solid #a0a09b;
     cursor: pointer;
     border: 1px solid #FFF;
     background-color: #B6B6B6;
-}
+}*/
 
 
 .hasDatepicker {
@@ -342,4 +347,8 @@ tr.borderBottom > td { border-bottom: 1px gray dotted; }
     border: 1px solid rgba(0, 0, 0, 0);
     border-radius: 4px;
     padding: 15px;
+}
+
+.row_spacer {
+    margin-top: 7px; /* define margin as you see fit */
 }
