@@ -186,8 +186,8 @@ border-right: 1px solid #a0a09b;
     vertical-align: middle;
 }
 
-.tableHeaderNoSort {
-   background-color: #B6B6B6;
+.tableHeaderStyle, .tableHeaderNoSort, .tableHeaderNoBG {
+   background-color: #B6B6B6 !important;
    border: 1px solid #FFF; 
 }
 
