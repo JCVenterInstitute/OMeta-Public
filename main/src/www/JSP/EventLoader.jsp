@@ -94,7 +94,7 @@
                       <s:select id="_eventSelect" list="#{0:''}" name="eventId" required="true" disabled="true"/>
                     </div>
                   </div>
-                  <div class="row">
+                  <div class="row" id="sampleSelectRow">
                     <div class="col-md-1">Sample</div>
                     <div class="col-md-11 combobox">
                       <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':''}"
@@ -236,14 +236,14 @@
               }
             },
             showPS:function(eventName) {
-              $('.sampleSelectTr').hide();
+              $('#sampleSelectRow').hide();
               if(utils.checkSR(eventName)) { // triggers sample loader
                 $('#sampleDetailInputDiv').show();
               } else if(utils.checkPR(eventName)) {
                 $('#projectDetailInputDiv').show();
               } else {
                 if(utils.checkNP(eventName)) { //do not display sample select box for project events
-                  $('.sampleSelectTr').show();
+                  $('#sampleSelectRow').show();
                 }
               }
             },
@@ -737,7 +737,7 @@
 
         //load type radio button change event
         $('input[name="loadType"]').change(function() {
-          $('div[id$="InputDiv"], #gridAddLineButton, .sampleSelectTr').hide();
+          $('div[id$="InputDiv"], #gridAddLineButton, #sampleSelectRow').hide();
           utils.preSelect('_sampleSelect', '');
           var _selectedType = $(this).val();
           if(_selectedType==='grid') {
@@ -746,7 +746,7 @@
           } else if(_selectedType==='file') {
             $('#fileInputDiv').show();
           } else {
-            $('#attributeInputDiv, .sampleSelectTr').show();
+            $('#attributeInputDiv, #sampleSelectRow').show();
             _utils.showPS();
           }
         });
