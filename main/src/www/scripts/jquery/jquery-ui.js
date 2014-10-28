@@ -458,6 +458,7 @@ a._keyEvent=!1;return K},_generateMonthYearHeader:function(a,b,c,d,e,f,g,h){var 
                 })
                 .removeClass( "ui-corner-all" )
                 .addClass( "ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" )
+                .append('<span class="ui-button-icon-primary ui-icon ui-icon-triangle-1-s"></span><span class="ui-button-text"></span>')
                 .click(function() {
                     // close if already visible
                     if ( input.autocomplete( "widget" ).is( ":visible" ) ) {
