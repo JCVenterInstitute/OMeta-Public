@@ -19,18 +19,18 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
-  <!doctype html>
+<!doctype html>
 
   <%@ page contentType="text/html; charset=UTF-8" %>
   <%@ taglib uri="/struts-tags" prefix="s" %>
   <%@ page isELIgnored="false" %>
 
   <head>
+    <jsp:include page="../html/header.html" />
     <link rel="stylesheet" href="style/dataTables.css" type='text/css' media='all' />
     <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
     
     <link rel="stylesheet" href="style/version01.css" />
-    <jsp:include page="../html/header.html" />
     <style>
       #popup {
         height: 100%;
@@ -63,6 +63,14 @@
       td._details table td { border:1px solid white; }
 
       .datatable_top, .datatable_table, .datatable_bottom { float:left; clear:both; width:100%;}
+      .dataTables_length { 
+        height: 29px;
+        vertical-align: middle;
+        width: 155px !important;
+      }
+      .dataTables_filter { width: 260px !important;}
+      .dataTables_info { padding-top: 0 !important;}
+      .dataTables_paginate { float: left !important; }
     </style>
   </head>
 
@@ -92,23 +100,21 @@
               <!--<div id="columnsTable"></div>  for column listing-->
               <div id="statusTableDiv">
                 <div id="tableTop">
-                  <table>
-                    <tr>
-                      <td align="right">Project</td>
-                      <td class="ui-combobox">
-                        <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
+                  <div class="row">
+                    <div class="col-md-1">Project</div>
+                    <div class="col-md-11 combobox">
+                      <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
                                   list="projectList" name="projectId" headerKey="0" headerValue=""
-                                  listValue="projectName" listKey="projectId" required="true"/>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td align="right">Sample</td>
-                      <td class="ui-combobox">
-                        <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':''}"
-                                  name="selectedSampleId" required="true"/>
-                      </td>
-                    </tr>
-                  </table>
+                                  listValue="projectName" listKey="projectId" required="true"/>  
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-1">Sample</div>
+                    <div class="col-md-11 combobox">
+                      <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':''}"
+                                  name="selectedSampleId" required="true"/> 
+                    </div>
+                  </div>
                 </div>
 
                 <!-- project -->
@@ -556,9 +562,9 @@
         }
 
         //add search button to filter box
-        $('.dataTables_filter[id$="_filter"]').each(function(i1) {
-          $(this).append('<img id="dosearch_'+this.id+'" style="float:right;" class="ui-icon ui-icon-search" title="Search" />&nbsp;');
-        });
+        // $('.dataTables_filter[id$="_filter"]').each(function(i1) {
+        //   $(this).append('<img id="dosearch_'+this.id+'" style="float:right;" class="ui-icon ui-icon-search" title="Search" />&nbsp;');
+        // });
         $('#sampleTableDiv, #eventTableDiv, #eventDateDiv').toggle(300);
 
         utils.error.check();

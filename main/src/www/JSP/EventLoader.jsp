@@ -72,40 +72,35 @@
 
               <div id="statusTableDiv">
                 <div id="tableTop">
-                  <table id="ddTable">
-                    <tr>
-                      <td><strong>Load Type</strong></td>
-                      <td style="padding-left:10px">
-                        <input type="radio" name="loadType" class="loadRadio" value="form"><strong>Form</strong></input>
-                        <input type="radio" name="loadType" class="loadRadio" value="grid"><strong>Grid</strong></input>
-                        <input type="radio" name="loadType" class="loadRadio" value="file"><strong>File</strong></input>
-                      </td>
-                    </tr>
-                    <tr height="10px"/>
-                    <tr>
-                      <div id="projectDropBox">
-                        <td>Project</td>
-                        <td style="padding-left:10px" class="ui-combobox">
-                          <s:select id="_projectSelect" list="projectList" name="projectId" headerKey="0" headerValue=""
-                                    listValue="projectName" listKey="projectId" required="true"/>
-                        </td>
-                      </div>
-                    </tr>
-                    <tr>
-                      <div id="eventDropBox">
-                        <td>Event</td>
-                        <td style="padding-left:10px" class="ui-combobox">
-                          <s:select id="_eventSelect" list="#{0:''}" name="eventId" required="true" disabled="true"/>
-                        </td>
-                      </div>
-                    </tr>
-                    <tr class="sampleSelectTr">
-                      <td id="sampleNameLabel">Sample</td>
-                      <td style="padding-left:10px" class="ui-combobox">
-                        <s:select id="_sampleSelect" list="#{'':''}" name="sampleName" required="true" disabled="true"/>
-                      </td>
-                    </tr>
-                  </table>
+                  <div class="row">
+                    <div class="col-md-1"><strong>Load Type</strong></div>
+                    <div class="col-md-11">
+                      <input type="radio" name="loadType" class="loadRadio" value="form"><strong>Form</strong></input>
+                      <input type="radio" name="loadType" class="loadRadio" value="grid"><strong>Grid</strong></input>
+                      <input type="radio" name="loadType" class="loadRadio" value="file"><strong>File</strong></input> 
+                    </div>
+                  </div>
+                  <div class="row" style="margin-top:5px;">
+                    <div class="col-md-1">Project</div>
+                    <div class="col-md-11 combobox">
+                      <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
+                                  list="projectList" name="projectId" headerKey="0" headerValue=""
+                                  listValue="projectName" listKey="projectId" required="true"/>  
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-1">Event</div>
+                    <div class="col-md-11 combobox">
+                      <s:select id="_eventSelect" list="#{0:''}" name="eventId" required="true" disabled="true"/>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-1">Sample</div>
+                    <div class="col-md-11 combobox">
+                      <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':''}"
+                                  name="selectedSampleId" required="true"/> 
+                    </div>
+                  </div>
                 </div>
                 <div id="projectDetailInputDiv">
                   <div style="margin:25px 10px 0 0;">
@@ -161,7 +156,7 @@
                   [<img style="vertical-align:bottom;" src="images/icon/req.png"/><img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Required, <img style="vertical-align:bottom;" src="images/icon/ontology.png"/>-Ontology]
                 </div>
               </div>
-              <div id="attributeInputDiv" style="margin:10px 0;">
+              <div id="attributeInputDiv" style="margin:10px 0;clear:both;">
                 <s:if test="beanList != null && beanList.size() > 0">
                   <table>
                     <s:iterator value="beanList" var="attrName" status="stat">
