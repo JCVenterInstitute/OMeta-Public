@@ -470,10 +470,10 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                     attribute.setProjectId(projectId);
                 }
 
-                EventMetaAttribute duplicate = emaDAO.getEventMetaAttribute(attributeNameLookup.getLookupValueId(), attribute.getProjectId(), attribute.getEventTypeLookupId(), session);
+                /*EventMetaAttribute duplicate = emaDAO.getEventMetaAttribute(attributeNameLookup.getLookupValueId(), attribute.getProjectId(), attribute.getEventTypeLookupId(), session);
                 if(duplicate != null) {
                     throw new Exception("attribute '" + attribute.getAttributeName() + "' already exists for '" + attribute.getEventName() + "' event.");
-                }
+                }*/
 
                 if (attribute.isSampleRequired() == null) {
                     throw new Exception("SampleRequired field needs value for '" + attribute.getAttributeName() + "'");
