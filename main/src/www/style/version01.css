@@ -189,6 +189,9 @@ border-right: 1px solid #a0a09b;
 .tableHeaderStyle, .tableHeaderNoSort, .tableHeaderNoBG {
    background-color: #B6B6B6 !important;
    border: 1px solid #FFF; 
+   vertical-align: top;
+   max-width: 182px;
+   word-wrap:break-word; 
 }
 
 /*.tableHeaderStyle {

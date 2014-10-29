@@ -34,7 +34,7 @@
     <style>
       .loadRadio { margin-left: 10px; margin-right: 3px; }
       #gridBody .ui-autocomplete-input { width: 150px; }
-      .gridIndex { max-width: 5px !important; text-align: center;}
+      .gridIndex { max-width: 15px !important; text-align: center;}
       .ms-choice {line-height: 20px; }
       .ms-choice, .ms-choice > div { height: 20px; }
     </style>
@@ -171,7 +171,7 @@
                   </table>
                 </s:if>
               </div>
-              <div id="gridInputDiv" style="margin:25px 10px 0 0 ;">
+              <div id="gridInputDiv" style="margin:25px 10px 0 0 ;overflow-x: scroll;">
                 <table name="eventTable" id="eventTable" class="contenttable">
                   <thead id="gridHeader"></thead>
                   <tbody id="gridBody"></tbody>
