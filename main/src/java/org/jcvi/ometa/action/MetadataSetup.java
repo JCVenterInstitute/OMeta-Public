@@ -186,8 +186,8 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                             //updates existing EMA
                             ema = existingEmaMap.get(bean.getEt()).get(bean.getName());
                             //skips unchanged EMA
-                            if(this.isUnchanged(bean, ema) && bean.getSampleRequiredDB()==ema.getSampleRequiredDB()
-                                    && (ema.getOrder()!=null && ema.getOrder().equals(Integer.parseInt(bean.getOrder())))) {
+                            if(this.isUnchanged(bean, ema) && bean.getSampleRequiredDB().equals(ema.getSampleRequiredDB())
+                                    && (ema.getOrder() != null && ema.getOrder().equals(Integer.parseInt(bean.getOrder())))) {
                                 isNewOrModified = false;
                             }
                         } else { //creates new EMA
@@ -572,8 +572,8 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
     }
 
     private boolean isUnchanged(MetadataSetupReadBean b1, MetaAttributeModelBean b2) {
-        return b1.getActiveDB()==b2.getActiveDB()
-                && b1.getRequiredDB()==b2.getRequiredDB()
+        return b1.getActiveDB().equals(b2.getActiveDB())
+                && b1.getRequiredDB().equals(b2.getRequiredDB())
                 && (b1.getDesc()!=null && b1.getDesc().equals(b2.getDesc()))
                 && (b1.getOptions()!=null && b1.getOptions().equals(b2.getOptions()))
                 && (b1.getLabel()!=null && b1.getLabel().equals(b2.getLabel()))
