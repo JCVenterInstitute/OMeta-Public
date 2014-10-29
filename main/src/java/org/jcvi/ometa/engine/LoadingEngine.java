@@ -75,8 +75,8 @@ public class LoadingEngine {
             } else if(usage.isDirectory()) {
                 engine.digestMultiDirectory();
             } else {
-                //engine.loadEventFile();
-                engine.dispatchByFilename();
+                engine.loadEventFile();
+                //engine.dispatchByFilename();
             }
 
             String finalMessage = null;
