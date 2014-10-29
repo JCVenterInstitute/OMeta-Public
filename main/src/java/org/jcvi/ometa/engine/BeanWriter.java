@@ -107,7 +107,7 @@ public class BeanWriter {
 
     public String writeEvent(File eventFile, String eventName, String projectName, boolean processInput) throws Exception {
         String lastSampleName = null;
-        List<GridBean> gridList = this.getEventBeans(eventFile, eventName, processInput);
+        List<GridBean> gridList = this.getEventBeansFromFile(eventFile, eventName, processInput);
 
         MultiLoadParameter loadParameter = new MultiLoadParameter();
         EventLoadHelper loadHelper = new EventLoadHelper(this.readEjb);
@@ -329,7 +329,7 @@ public class BeanWriter {
 
     }
 
-    public List<GridBean> getEventBeans(File inputFile, String eventName, boolean processInput) throws Exception {
+    public List<GridBean> getEventBeansFromFile(File inputFile, String eventName, boolean processInput) throws Exception {
 
         // Assume the file contains right kind of data for this tye of bean.
         TemplatePreProcessingUtils templateUtils = new TemplatePreProcessingUtils();
