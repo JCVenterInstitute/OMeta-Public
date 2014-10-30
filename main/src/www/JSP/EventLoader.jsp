@@ -97,8 +97,7 @@
                   <div class="row" id="sampleSelectRow">
                     <div class="col-md-1">Sample</div>
                     <div class="col-md-11 combobox">
-                      <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':''}"
-                                  name="selectedSampleId" required="true"/> 
+                      <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'':''}" name="sampleName" required="true"/> 
                     </div>
                   </div>
                 </div>

@@ -111,7 +111,7 @@ public class BeanWriter {
 
         MultiLoadParameter loadParameter = new MultiLoadParameter();
         EventLoadHelper loadHelper = new EventLoadHelper(this.readEjb);
-        loadHelper.gridListToMultiLoadParameter(loadParameter, gridList, projectName, eventName, null, null);
+        loadHelper.gridListToMultiLoadParameter(loadParameter, gridList, projectName, eventName, null, null, null);
         writeEjb.loadAll(null, loadParameter);
 
         if(gridList != null && gridList.get(0) != null) {

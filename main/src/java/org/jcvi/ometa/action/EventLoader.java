@@ -138,7 +138,7 @@ public class EventLoader extends ActionSupport implements Preparable {
         UserTransaction tx = null;
 
         try {
-            this.sampleName = (this.sampleName!=null && this.sampleName.equals("0") ? null : this.sampleName);
+            this.sampleName = (this.sampleName == null || this.sampleName.isEmpty() || this.sampleName.equals("0") ? null : this.sampleName);
 
             if (jobType != null) {
                 boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION);
@@ -159,11 +159,11 @@ public class EventLoader extends ActionSupport implements Preparable {
                     if(this.loadingSample == null) {
                         this.loadingSample = new Sample();
                     }
-                    if(this.loadingSample.getSampleName() == null || this.loadingSample.getSampleName().isEmpty()) {
+                    if(!isSampleRegistration) {
                         this.loadingSample.setSampleName(this.sampleName);
                     }
 
-                    loadHelper.createMultiLoadParameter(loadParameter, this.projectName, this.eventName, loadingProject, loadingSample, beanList, this.status, 1);
+                    loadHelper.createMultiLoadParameter(loadParameter, this.projectName, this.eventName, this.loadingProject, this.loadingSample, beanList, this.status, 1);
                     psewt.loadAll(null, loadParameter);
 
                     this.pageDataReset(isProjectRegistration, isSampleRegistration, this.status);
@@ -176,7 +176,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                     //delegate populating multiload parameter to the helper
                     MultiLoadParameter loadParameter = new MultiLoadParameter();
                     EventLoadHelper loadHelper = new EventLoadHelper(this.readPersister);
-                    loadHelper.gridListToMultiLoadParameter(loadParameter, gridList, this.projectName, this.eventName, loadingProject, loadingSample);
+                    loadHelper.gridListToMultiLoadParameter(loadParameter, gridList, this.projectName, this.eventName, loadingProject, loadingSample, this.status);
                     psewt.loadAll(null, loadParameter);
 
                     this.pageDataReset(isProjectRegistration, isSampleRegistration, this.status);
