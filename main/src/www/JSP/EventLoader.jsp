@@ -439,7 +439,7 @@
                         options += '<option value="' + o_v + '">' + o_v + '</option>';
                       });
                     }
-                    inputElement += '<select id="$id$" name="$lt$attributeValue" style="min-width:35px;width:200px;" ' + (isMulti ? 'multiple="multiple"':'') + '>' + options + '</select>';
+                    inputElement += '<select id="select_$id$" name="$lt$attributeValue" style="min-width:35px;width:200px;" ' + (isMulti ? 'multiple="multiple"':'') + '>' + options + '</select>';
                   } else {
                     if(_ma.lookupValue.dataType==='file') { //file
                       inputElement += '<input type="file" id="' + _ma.lookupValue.dataType + '_$id$" name="$lt$upload"/>';
@@ -459,7 +459,7 @@
                     'isMulti': isMulti
                   };
 
-                  var $inputNode = $('<td/>').append(inputElement.replace(/\\$val\\$/g, '').replace("$id$", count).replace(/\\$lt\\$/g,"beanList["+count+"]."));
+                  var $inputNode = $('<td/>').append(inputElement.replace(/\\$val\\$/g, '').replace("$id$", 'f_' + count).replace(/\\$lt\\$/g,"beanList["+count+"]."));
 
                   if(isText && hasOntology) {
                     _utils.ontologify(_ma.desc, $inputNode);
@@ -648,7 +648,7 @@
               attributeField = attributeField.replace('$val$', (bean ? bean[1] : ''));
 
               var $inputNode = $('<td/>').append(
-                attributeField.replace(/\\$lt\\$/g, ltVal).replace(/\\$id\\$/g, g_gridLineCount)
+                attributeField.replace(/\\$lt\\$/g, ltVal).replace(/\\$id\\$/g, 'g_' + g_gridLineCount)
               );
               if(av_v.isSelect === true && bean) {
                 utils.preSelectWithNode($inputNode, bean[1]);
@@ -810,7 +810,7 @@
           //$('[name^="beanList"]').remove();
           <s:iterator value="#oldBeanList" var="bean" status="bstat">
             var currAttributeName = '${bean.attributeName}'.replace(/ /g,"_");
-            $("[id*='_" + currAttributeName + "_']").val("${bean.attributeValue}");
+            $("[id*='_" + currAttributeName + "_f']").val("${bean.attributeValue}");
           </s:iterator>
           <s:set name="oldLoadingSample" value="loadingSample" />
           <s:if test="%{#oldLoadingSample != null && #oldLoadingSample.getSampleName() != null}">

@@ -161,6 +161,8 @@ public class EventLoader extends ActionSupport implements Preparable {
                     }
                     if(!isSampleRegistration) {
                         this.loadingSample.setSampleName(this.sampleName);
+                    } else {
+                        this.sampleName = this.loadingSample.getSampleName();
                     }
 
                     loadHelper.createMultiLoadParameter(loadParameter, this.projectName, this.eventName, this.loadingProject, this.loadingSample, beanList, this.status, 1);
