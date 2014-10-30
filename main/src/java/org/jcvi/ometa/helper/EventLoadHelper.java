@@ -329,11 +329,21 @@ public class EventLoadHelper {
             String attributeName = fBean.getAttributeName();
             LookupValue lv = this.readPersister.getLookupValue(attributeName, Constants.ATTRIBUTE_LV_TYPE_NAME);
             if(lv.getDataType().equals(Constants.FILE_DATA_TYPE)) {
-                String filePath = (rootPath == null ? "" : rootPath) + File.separator + fBean.getAttributeValue();
-                File fileToUpload = new File(filePath);
+
+                File fileToUpload = null;
+
+                if(fBean.getUpload() == null || fBean.getUploadFileName() == null) {
+                    String filePath = (rootPath == null ? "" : rootPath) + File.separator + fBean.getAttributeValue();
+                    fileToUpload = new File(filePath);
+
+                    fBean.setUpload(fileToUpload);
+                    fBean.setUploadFileName(fileToUpload.getName());
+                }
+
+                fileToUpload = fBean.getUpload();
 
                 if(!fileToUpload.exists() || !fileToUpload.canRead() || !fileToUpload.isFile()) {
-                    throw new Exception("file '" + filePath + "' does not exist!");
+                    throw new Exception("file '" + fBean.getUploadFileName() + "' does not exist!");
                 }
 
                 String storagePathProject = projectName.replaceAll(" ", "_"); //project folder
@@ -341,6 +351,7 @@ public class EventLoadHelper {
                 Date date = Calendar.getInstance().getTime();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
                 String storagePathDate = sdf.format(date);
+
                 String storagePath = storagePathProject + File.separator + storagePathSample + File.separator + storagePathDate;
 
                 File storingDirectory = new File(this.fileStoragePath + File.separator + storagePath);
@@ -355,37 +366,10 @@ public class EventLoadHelper {
                 FileUtils.copyFile(fileToUpload, destFile);
 
                 fBean.setAttributeValue(storagePath + File.separator + destFileName);
-            }
-
-            //handle file uploads
-            if(fBean.getUpload()!=null && fBean.getUploadFileName()!=null && !fBean.getUploadFileName().isEmpty()) {
-                fileStoragePath = fileStoragePath + (fileStoragePath.endsWith(File.separator)?"":File.separator);
-                String originalFileName = fBean.getUploadFileName();
-
-                String fileDirectoryPathProject = projectName.replaceAll(" ", "_"); //project folder
-                String fileDirectoryPathSample = fileDirectoryPathProject + File.separator +
-                        (sampleName != null && !sampleName.isEmpty() ? sampleName.replaceAll(" ", "_") : "project"); //sample folder
-                String fileDirectoryPath = fileDirectoryPathSample + File.separator + CommonTool.convertTimestampToDate(new Date()); //date folder
-
-                String fileName = originalFileName.substring(0,originalFileName.indexOf(".")) +
-                        "_"+System.currentTimeMillis() +
-                        originalFileName.substring(originalFileName.indexOf(".")); //append "_" + current time in milliseconds to file name
-
-                File fileDirectory = new File(fileStoragePath + fileDirectoryPath);
-                if(!fileDirectory.exists() || !fileDirectory.isDirectory()) {
-                    fileDirectory.mkdirs();
-                }
-
-                File theFile = new File(fileDirectory.getPath() + File.separator + fileName);
-                FileUtils.copyFile(fBean.getUpload(), theFile);
-
-                if(theFile.exists() && theFile.isFile() && theFile.canRead()) {
-                    fBean.getUpload().delete();
-                    fBean.setAttributeValue(fileDirectoryPath + File.separator + fileName);
-                }
+                fBean.getUpload().delete();
             }
         } catch(Exception ex) {
-
+            throw new Exception(ex.getMessage());
         }
     }
 }
