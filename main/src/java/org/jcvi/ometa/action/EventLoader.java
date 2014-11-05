@@ -72,6 +72,7 @@ public class EventLoader extends ActionSupport implements Preparable {
     private String status;
     private String jobType;
     private String label;
+    private String filter;
 
     private Project loadingProject;
     private Sample loadingSample;
@@ -89,6 +90,7 @@ public class EventLoader extends ActionSupport implements Preparable {
     private ArrayList<String> loadedFiles;
 
     private String ids;
+    private Long defaultProjectId;
 
     private static final String DEFAULT_USER_MESSAGE = "Not yet entered";
     private final String MULTIPLE_SUBJECT_IN_FILE_MESSAGE = "Multiple projects are found in the file";
@@ -107,6 +109,7 @@ public class EventLoader extends ActionSupport implements Preparable {
         readPersister = new ReadBeanPersister(props);
 
         fileStoragePath = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH); //file storage area
+        defaultProjectId = Long.parseLong(props.getProperty(Constants.CONFIG_DEFAULT_PROJECT_ID));
 
         UploadActionDelegate udelegate = new UploadActionDelegate();
         psewt = udelegate.initializeBusinessObject(logger, psewt);
@@ -270,6 +273,11 @@ public class EventLoader extends ActionSupport implements Preparable {
 
             if(ids != null && ids.length() > 0) {
                 jobType = "grid";
+            }
+
+            if(this.filter != null && this.filter.equals("pr")) {
+                this.projectId = this.defaultProjectId;
+                this.eventName = Constants.EVENT_PROJECT_REGISTRATION;
             }
         } catch (Exception ex) {
 
@@ -511,5 +519,13 @@ public class EventLoader extends ActionSupport implements Preparable {
 
     public void setIds(String ids) {
         this.ids = ids;
+    }
+
+    public String getFilter() {
+        return filter;
+    }
+
+    public void setFilter(String filter) {
+        this.filter = filter;
     }
 }
