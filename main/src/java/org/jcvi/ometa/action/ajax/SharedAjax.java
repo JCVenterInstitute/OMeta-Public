@@ -63,6 +63,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
     private String sampleLevel;
     private String projectName;
     private String eventName;
+    private String filter;
     private String err;
 
     private String userName;
@@ -140,7 +141,37 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                     }
                 }
             } else if ("event".equals(type)) { //get event types for a project
-                aaData = readPersister.getEventTypesForProject(this.projectId);
+                List<LookupValue> eventNameList = readPersister.getEventTypesForProject(this.projectId);
+
+                if(filter != null && !filter.isEmpty()) {
+                    boolean isSampleRegistration = filter.equals("sr");
+                    boolean isProjectRegistration = filter.equals("pr");
+
+                    List<LookupValue> filteredList = new ArrayList<LookupValue>();
+                    for(LookupValue lv : eventNameList) {
+                        String eventName = lv.getName();
+                        if(isProjectRegistration) {
+                            if(eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)) {
+                                filteredList.add(lv);
+                            }
+                        } else if(isSampleRegistration){
+                            if(eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
+                                filteredList.add(lv);
+                            }
+                        } else {
+                            if(!eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)
+                                    && !eventName.contains(Constants.EVENT_PROJECT_UPDATE)
+                                    && !eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
+                                filteredList.add(lv);
+                            }
+                        }
+                    }
+
+                    aaData = filteredList;
+                } else {
+                    aaData = eventNameList;
+                }
+
             } else if ("ma".equals(type)) { //get meta attributes for Event Report page
                 aaData = new ArrayList<Map>();
 
@@ -382,5 +413,13 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
 
     public void setErr(String err) {
         this.err = err;
+    }
+
+    public String getFilter() {
+        return filter;
+    }
+
+    public void setFilter(String filter) {
+        this.filter = filter;
     }
 }
