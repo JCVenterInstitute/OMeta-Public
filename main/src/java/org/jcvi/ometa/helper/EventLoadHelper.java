@@ -241,7 +241,7 @@ public class EventLoadHelper {
             if(fBean.getProjectName() == null || eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)) {
                 fBean.setProjectName(projectName);
             }
-            if(fBean.getSampleName() == null) {
+            if(fBean.getSampleName() == null && !eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) && !eventName.contains(Constants.EVENT_PROJECT_UPDATE)) {
                 if(sampleName == null || sampleName.isEmpty()) {
                     throw new Exception("sample does not exist or sample name is empty.");
                 }
