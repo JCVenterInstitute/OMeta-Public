@@ -37,21 +37,18 @@
             </ul>
           </li>
           <li id="menu-item-11" class="dropdown">
-                <a href="#" data-toggle="dropdown">Data Submission<span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="eventLoader.action">Submit/Edit Data</a></li>
-                    <li><a href="eventDetail.action">View Data</a></li>
-                    <li><a href="eventLoader.action">Create Project</a></li>
-                    <li><a href="eventLoader.action">Submit Data</a></li>
-                    <li><a href="eventDetail.action">Search and Edit Data</a></li>
-                    <li><a href="eventReport.action">Report</a></li>
-                </ul>
+            <a href="#" data-toggle="dropdown">Data Submission<span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="eventLoader.action?filter=pr">Project Registration</a></li>
+              <li><a href="eventLoader.action?filter=sr">Submit Data</a></li>
+              <li><a href="eventDetail.action">Search and Edit Data</a></li>
+              <li><a href="eventReport.action">Report</a></li>
+            </ul>
           </li>
-
-            <li id="admin_li" class="dropdown">
+          <li id="admin_li" class="dropdown">
             <a href="#" data-toggle="dropdown">Admin<span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
-              <li><a href="projectSetup.action">Create Project</a></li>
+              <li><a href="projectSetup.action">New Project</a></li>
               <li><a href="metadataSetup.action?type=e">Metadata Setup</a></li>
               <li><a href="actorRole.action">User/Role</a></li>
             </ul>
