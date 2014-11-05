@@ -39,6 +39,7 @@ public class Constants {
     public static final String CONFIG_TAREXCLUDE_PATH = "ometa.tarexclude.files.path";
     public static final String CONFIG_GUID_HOST = "ometa.guid.host";
     public static final String CONFIG_GUID_PORT = "ometa.guid.port";
+    public static final String CONFIG_DEFAULT_PROJECT_ID = "default.project.id";
     public static final String PRODUCTION_DATABASE = "production";
     public static final String DEVELOPMENT_DATABASE = "development";
     public static final String FILE_DOWNLOAD_MSG = "FILE_DOWNLOAD";
@@ -87,6 +88,10 @@ public class Constants {
     public static final String ATTR_PROJECT_STATUS = "Project Status";
     public static final String ATTR_SAMPLE_STATUS = "Sample Status";
     public static final String ATTR_PUBLIC_FLAG = "Public";
+    public static final String ATTR_SUBMISSION_ID = "Submission ID";
+    public static final String[] READ_ONLY_ATTRIBUTE = {
+            Constants.ATTR_SUBMISSION_ID
+    };
 
     public static final String DPCC_STATUS_EDITING = "Editing";
     public static final String DPCC_STATUS_VALIDATED = "Validated";
