@@ -52,11 +52,12 @@
             <s:hidden name="jobType" id="jobType"/>
             <s:hidden name="status" id="status"/>
             <s:hidden name="label" id="label"/>
+            <s:hidden name="filter" id="filter"/>
             <s:hidden name="eventName" id="eventName" />
             <s:hidden name="projectName" id="projectName" />
             
             <div id="HeaderPane" style="margin:15px 0 0 30px;">
-              <div class="panelHeader">Load/Edit Data</div>
+              <div class="panelHeader" id="pageTitle">Submit Data</div>
               <div id="errorMessagesPanel" style="margin-top:15px;"></div>
               <s:if test="hasActionErrors()">
                 <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
@@ -73,14 +74,14 @@
               <div id="statusTableDiv">
                 <div id="tableTop">
                   <div class="row">
-                    <div class="col-md-1"><strong>Load Type</strong></div>
+                    <div class="col-md-1"><strong>View Type</strong></div>
                     <div class="col-md-11">
                       <input type="radio" name="loadType" class="loadRadio" value="form"><strong>Form</strong></input>
                       <input type="radio" name="loadType" class="loadRadio" value="grid"><strong>Grid</strong></input>
                       <input type="radio" name="loadType" class="loadRadio" value="file"><strong>File</strong></input> 
                     </div>
                   </div>
-                  <div class="row" style="margin-top:5px;">
+                  <div class="row row_spacer" id="projectSelectRow">
                     <div class="col-md-1">Project</div>
                     <div class="col-md-11 combobox">
                       <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
@@ -88,13 +89,13 @@
                                   listValue="projectName" listKey="projectId" required="true"/>  
                     </div>
                   </div>
-                  <div class="row">
+                  <div class="row row_spacer">
                     <div class="col-md-1">Event</div>
                     <div class="col-md-11 combobox">
                       <s:select id="_eventSelect" list="#{0:''}" name="eventId" required="true" disabled="true"/>
                     </div>
                   </div>
-                  <div class="row" id="sampleSelectRow">
+                  <div class="row row_spacer" id="sampleSelectRow">
                     <div class="col-md-1">Sample</div>
                     <div class="col-md-11 combobox">
                       <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'':''}" name="sampleName" required="true"/> 
@@ -509,7 +510,7 @@
               g_sampleIds = null;
               $("#_sampleSelect").attr("disabled", false);
               $("#_eventSelect").attr("disabled", false);
-              _utils.makeAjax('sharedAjax.action', 'type=event&projectId='+projectId+'&eventTypeId=0', null, callbacks.event);
+              _utils.makeAjax('sharedAjax.action', 'type=event&projectId='+projectId+'&filter=' + $('#filter').val(), null, callbacks.event);
               _utils.makeAjax('sharedAjax.action', 'type=sample&projectId='+projectId, null, callbacks.sample);
               $('#_sampleSelect+.ui-autocomplete-input, #_eventSelect+.ui-autocomplete-input').val('');
             },
@@ -826,7 +827,16 @@
             </s:if>
           </s:else>
         </s:elseif>
+
         utils.error.check();
+
+        //handle Create Project
+        var isCreateProject = ('${filter}' === 'pr');
+        if(isCreateProject) {
+          $('#projectSelectRow').hide();
+          $('#_eventSelect').prop('disabled', true);
+          $('#pageTitle').html('Project Registration');
+        }
       });
     </script>
   </body>
