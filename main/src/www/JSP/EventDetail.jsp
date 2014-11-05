@@ -85,7 +85,7 @@
           <s:form id="eventDetailPage" name="eventDetailPage" namespace="/" action="eventDetail" method="post" theme="simple">
             <s:hidden id="editable" name="editable" value="0" />
             <div id="HeaderPane" style="margin:15px 0 0 30px;">
-              <div class="panelHeader">View Data</div>
+              <div class="panelHeader">Search and Edit Data</div>
               <div id="errorMessagesPanel" style="margin-top:15px;"></div>
               <s:if test="hasActionErrors()">
                 <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
@@ -326,7 +326,7 @@
               },
               submit: function(type) {
                   $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'label', value: type}));
-                  $('#eventDetailPage').attr('action', 'eventLoader.action').submit();  
+                  $('#eventDetailPage').attr('action', 'eventLoader.action?filter=su').submit();  
               }
             }
           },
