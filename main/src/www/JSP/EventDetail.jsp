@@ -108,7 +108,7 @@
                                   listValue="projectName" listKey="projectId" required="true"/>  
                     </div>
                   </div>
-                  <div class="row">
+                  <div class="row row_spacer">
                     <div class="col-md-1">Sample</div>
                     <div class="col-md-11 combobox">
                       <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':''}"
@@ -125,14 +125,14 @@
                     <tbody id="projectTableBody">
                     </tbody>
                   </table>
-                  <input onclick="_page.edit.project();" style="margin-top:10px;" disabled="true" type="button" value="Edit Project" id="editProjectBtn" />
+                  <!-- <input onclick="_page.edit.project();" style="margin-top:10px;" disabled="true" type="button" value="Edit Project" id="editProjectBtn" /> -->
                 </div>
 
                 <!-- sample -->
                 <div style="margin:25px 10px 0 0;">
 
                   <h1 class="csc-firstHeader">Sample Details
-                    <a href="javascript:$('#sampleTableDiv').toggle(400);buttonSwitch(null, 'sampleToggleImage');">
+                    <a href="javascript:_page.button.toggleSample();">
                       <img id="sampleToggleImage"/>
                     </a>
                   </h1>
@@ -151,11 +151,11 @@
                     </thead>
                     <tbody id="sampleTableBody"/>
                   </table>
-                  <input onclick="_page.edit.sampleEvent();" style="" disabled="true" type="button" value="Sample Event" id="editSampleBtn" />
+                  <input onclick="_page.edit.sampleEvent();" style="" disabled="true" type="button" value="Edit Sample" id="editSampleBtn" />
                 </div>
 
                 <!-- event -->
-                <div style="margin:25px 10px 0 0;">
+                <!-- <div style="margin:25px 10px 0 0;">
                   <h1 class="csc-firstHeader">Event Details
                     <a href="javascript:$('#eventDateDiv').toggle(400);$('#eventTableDiv').toggle(400);buttonSwitch(null,'eventToggleImage');">
                       <img id="eventToggleImage"/>
@@ -181,7 +181,7 @@
                     </thead>
                     <tbody id="eventTableBody" />
                   </table>
-                </div>
+                </div> -->
 
               </div>
             </div>
@@ -256,9 +256,9 @@
                   //reset
                   $("#_sampleSelect").html(vs.empty);
                   $("tbody#projectTableBody").empty();
-                  if(sDT && eDT) {
+                  if(sDT) { //} && eDT) {
                       sDT.fnNewAjax("eventDetailAjax.action?type=sdt&projectId=0");
-                      eDT.fnNewAjax("eventDetailAjax.action?type=sdt&projectId=0");
+                      // eDT.fnNewAjax("eventDetailAjax.action?type=sdt&projectId=0");
                   }
                   $("#editProjectBtn, #editSampleBtn").attr("disabled", "true");
                   utils.error.add("You do not have permission to access the project.");
@@ -266,7 +266,7 @@
               },
               sample: function(projectId, sampleId) {
                 _page.get.sdt(projectId, sampleId);
-                _page.get.edt(projectId, sampleId, 0);
+                // _page.get.edt(projectId, sampleId, 0);
               },
               eventStatus: function(eventId) {
                 gethtmlByType("ces", 0, 0, eventId);
@@ -301,7 +301,7 @@
               },
               edt: function(projectId, sampleId, eventId) {
                 var dates = "&fd="+$('input[name="fromDate"]').val()+"&td="+$('input[name="toDate"]').val();
-                eDT.fnNewAjax("eventDetailAjax.action?type=edt&projectId="+projectId+"&sampleId="+sampleId+"&eventId=0"+dates);
+                // eDT.fnNewAjax("eventDetailAjax.action?type=edt&projectId="+projectId+"&sampleId="+sampleId+"&eventId=0"+dates);
               }
             },
             edit: {
@@ -328,6 +328,17 @@
                   $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'label', value: type}));
                   $('#eventDetailPage').attr('action', 'eventLoader.action?filter=su').submit();  
               }
+            },
+            button: {
+              toggleSample: function() {
+                $('#sampleTableDiv').toggle(400); 
+                buttonSwitch(null, 'sampleToggleImage');
+              },
+              showSample: function() {
+                if(!$('#sampleTableDiv').is(":visible")) {
+                  this.toggleSample();
+                }
+              }
             }
           },
           openSampleEditPopup = function(sampleId) {
@@ -345,7 +356,7 @@
       function comboBoxChanged(option, id) {
         if(id==='_projectSelect') {
           document.getElementById('sampleTable').getElementsByTagName('img')[0].src = openBtn;
-          document.getElementById('eventTable').getElementsByTagName('img')[0].src = openBtn;
+          // document.getElementById('eventTable').getElementsByTagName('img')[0].src = openBtn;
           if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
             _page.change.project(option.value, 0);
             $('.ui-autocomplete-input').val('');
@@ -355,6 +366,8 @@
         } else if(id==='_sampleSelect') {
           if(option.value!=null && option.text!=null && option.text!='') {
             _page.change.sample($('#_projectSelect').val(), option.value);
+            
+            _page.button.showSample();
           }
         }
       }
@@ -470,66 +483,66 @@
         }).fnFilterOnReturn();
 
         <!-- EVENT TABLE -->
-        eDT =  $("#eventTable").dataTable({
-          "sDom": '<"datatable_top"lf><"datatable_table"rt><"datatable_bottom"ip>',
-          "bProcessing": true,
-          "bServerSide": true,
-          "sPaginationType": "full_numbers",
-          "sAjaxSource": "",  
-          "fnServerData": function ( sSource, aoData, fnCallback ) {
-            if(sSource!=='') {
-              $.ajax({
-                dataType: 'json',
-                type: "POST",
-                url: sSource,
-                data: aoData,
-                success: function(json) {
-                  if(json && json.aaData) {
-                    var rows = [];
-                    $.each(json.aaData, function(ri,rowData) {
-                      var row = [], attributes;
-                      row.push(
-                        "<img src='images/dataTables/details_open.png' id='rowDetail_openBtn'/>",
-                        rowData.eventName,
-                        rowData.sampleName,
-                        rowData.createdOn,
-                        rowData.actor
-                      );
-                      if(rowData.eventStatus) {
-                        row.push(rowData.eventStatus + "<a href='javascript:changeEventStatus(" + rowData.eventId + ");'><img src='images/blue/" + (rowData.eventStatus === 'Active' ? 'cross' : 'tick') + ".png'/></a>");
-                      }
-                      if(rowData.attributes) {
-                        var headers = '', values = '';
-                        $.each(rowData.attributes, function(ai, av) {
-                          headers += '<td>' + ai + '</td>';
-                          values += '<td>' + av + '</td>';
-                        })
-                        attributes = '<tr class="even">' + headers + '</tr><tr class="odd">' + values + '</tr>';
-                      } else {
-                        attributes = '<tr class="odd"><td colspan="7">No Data</td></tr>';
-                      }
-                      row.push(attributes);
+        // eDT =  $("#eventTable").dataTable({
+        //   "sDom": '<"datatable_top"lf><"datatable_table"rt><"datatable_bottom"ip>',
+        //   "bProcessing": true,
+        //   "bServerSide": true,
+        //   "sPaginationType": "full_numbers",
+        //   "sAjaxSource": "",  
+        //   "fnServerData": function ( sSource, aoData, fnCallback ) {
+        //     if(sSource!=='') {
+        //       $.ajax({
+        //         dataType: 'json',
+        //         type: "POST",
+        //         url: sSource,
+        //         data: aoData,
+        //         success: function(json) {
+        //           if(json && json.aaData) {
+        //             var rows = [];
+        //             $.each(json.aaData, function(ri,rowData) {
+        //               var row = [], attributes;
+        //               row.push(
+        //                 "<img src='images/dataTables/details_open.png' id='rowDetail_openBtn'/>",
+        //                 rowData.eventName,
+        //                 rowData.sampleName,
+        //                 rowData.createdOn,
+        //                 rowData.actor
+        //               );
+        //               if(rowData.eventStatus) {
+        //                 row.push(rowData.eventStatus + "<a href='javascript:changeEventStatus(" + rowData.eventId + ");'><img src='images/blue/" + (rowData.eventStatus === 'Active' ? 'cross' : 'tick') + ".png'/></a>");
+        //               }
+        //               if(rowData.attributes) {
+        //                 var headers = '', values = '';
+        //                 $.each(rowData.attributes, function(ai, av) {
+        //                   headers += '<td>' + ai + '</td>';
+        //                   values += '<td>' + av + '</td>';
+        //                 })
+        //                 attributes = '<tr class="even">' + headers + '</tr><tr class="odd">' + values + '</tr>';
+        //               } else {
+        //                 attributes = '<tr class="odd"><td colspan="7">No Data</td></tr>';
+        //               }
+        //               row.push(attributes);
 
-                      rows.push(row);
-                    })
-                  }
-                  json.aaData = rows;
-                  fnCallback(json);
-                }
-              });
-            }
-          },
-          "bAutoWidth" : false,
-          "aoColumnDefs": [
-            {"sWidth": "23px", "bSortable": false, "aTargets": [ 0 ]},
-            {"sWidth": "20%", "aTargets":[1]},
-            {"sWidth": "30%", "aTargets":[2]},
-            {"sWidth": "20%", "aTargets":[3]},
-            {"sWidth": "20%", "aTargets":[4]},
-            {"sWidth": "10%", "aTargets":[5]},
-            {"bSearchable": true, "bVisible": false, "aTargets": [ 6 ]}
-          ]
-        }).fnFilterOnReturn();
+        //               rows.push(row);
+        //             })
+        //           }
+        //           json.aaData = rows;
+        //           fnCallback(json);
+        //         }
+        //       });
+        //     }
+        //   },
+        //   "bAutoWidth" : false,
+        //   "aoColumnDefs": [
+        //     {"sWidth": "23px", "bSortable": false, "aTargets": [ 0 ]},
+        //     {"sWidth": "20%", "aTargets":[1]},
+        //     {"sWidth": "30%", "aTargets":[2]},
+        //     {"sWidth": "20%", "aTargets":[3]},
+        //     {"sWidth": "20%", "aTargets":[4]},
+        //     {"sWidth": "10%", "aTargets":[5]},
+        //     {"bSearchable": true, "bVisible": false, "aTargets": [ 6 ]}
+        //   ]
+        // }).fnFilterOnReturn();
 
         //add click listener on row expander
         $('tbody td #rowDetail_openBtn').live('click', function () {
