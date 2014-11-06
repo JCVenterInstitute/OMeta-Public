@@ -21,10 +21,12 @@
 
 var utils = {
     getProjectName: function() {
-        return $("#_projectSelect option:selected").text();
+        var pnode = $("#_projectSelect option:selected");
+        return pnode.val() === '0' ? null : pnode.text();
     },
     getEventName: function(en) {
-        return en || $("#_eventSelect option:selected").text();
+        var enode = $("#_eventSelect option:selected");
+        return en || (enode.val() === '0' ? null : enode.text());
     },
     getSampleName: function() {
         return $("#_sampleSelect option:selected").text();
@@ -33,16 +35,19 @@ var utils = {
         return $('input[name="loadType"]:checked').val();
     },
     checkSR: function(en) {
-        en=this.getEventName(en);
-        return en.toLowerCase().indexOf('sample')>=0 && en.toLowerCase().indexOf('registration')>0;
+        en = this.getEventName(en);
+        en = en ? en.toLowerCase() : "";
+        return en.indexOf('sample') >= 0 && en.indexOf('registration') > 0;
     },
     checkPR: function(en) {
-        en=this.getEventName(en);
-        return en.toLowerCase().indexOf('project')>=0 && en.toLowerCase().indexOf('registration')>0;
+        en = this.getEventName(en);
+        en = en ? en.toLowerCase() : "";
+        return en.indexOf('project') >= 0 && en.indexOf('registration') > 0;
     },
     checkNP: function(en) {
-        en=this.getEventName(en);
-        return en.toLowerCase().indexOf('project')<0;
+        en = this.getEventName(en);
+        en = en ? en.toLowerCase() : "";
+        return en.indexOf('project') < 0;
     },
     combonize: function(div, id) {
         var selector='select';
@@ -137,6 +142,7 @@ var vs = {
     vvoption: '<option value="$v$">$v$</option>',
     vnoption: '<option value="$v$">$n$</option>',
     ynoption: '<option value="1">Yes</option><option value="0">No</option>',
+    nyoption: '<option value="0">No</option><option value="1">Yes</option>',
     alloption: '<option value="0">All..</option>',
     empty: '<option value=""></option>'
 };
