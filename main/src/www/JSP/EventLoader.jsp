@@ -74,25 +74,25 @@
               <div id="statusTableDiv">
                 <div id="tableTop">
                   <div class="row">
-                    <div class="col-md-1"><strong>View Type</strong></div>
+                    <div class="col-md-1"><strong>Submit Data For:</strong></div>
                     <div class="col-md-11">
-                      <input type="radio" name="loadType" class="loadRadio" value="form"><strong>Form</strong></input>
-                      <input type="radio" name="loadType" class="loadRadio" value="grid"><strong>Grid</strong></input>
-                      <input type="radio" name="loadType" class="loadRadio" value="file"><strong>File</strong></input> 
+                      <input type="radio" name="loadType" class="loadRadio" value="form"><strong>Single Sample</strong></input>&nbsp;&nbsp;
+                      <input type="radio" name="loadType" class="loadRadio" value="grid"><strong>Multiple Sample (Web)</strong></input>&nbsp;&nbsp;
+                      <input type="radio" name="loadType" class="loadRadio" value="file"><strong>Multiple Sample (Excel)</strong></input> 
                     </div>
                   </div>
                   <div class="row row_spacer" id="projectSelectRow">
-                    <div class="col-md-1">Project</div>
+                    <div class="col-md-1">Center Project</div>
                     <div class="col-md-11 combobox">
                       <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
-                                  list="projectList" name="projectId" headerKey="0" headerValue=""
+                                  list="projectList" name="projectId" headerKey="0" headerValue="select center project"
                                   listValue="projectName" listKey="projectId" required="true"/>  
                     </div>
                   </div>
                   <div class="row row_spacer">
-                    <div class="col-md-1">Event</div>
+                    <div class="col-md-1" id="eventTitle">Data Template</div>
                     <div class="col-md-11 combobox">
-                      <s:select id="_eventSelect" list="#{0:''}" name="eventId" required="true" disabled="true"/>
+                      <s:select id="_eventSelect" list="#{0:'select template'}" name="eventId" required="true" disabled="true"/>
                     </div>
                   </div>
                   <div class="row row_spacer" id="sampleSelectRow">
@@ -107,18 +107,18 @@
                     <h1 class="csc-firstHeader">Project Information</h1>
                   </div>
                   <div id="projectDetailSubDiv">
-                    <table>
-                      <tr>
-                        <td align="right" id="loadProjectNameLabel">Project Name</td>
-                        <td class="requiredField"><input type="text" id="_projectName" name="loadingProject.projectName" size="33px"/></td>
-                      </tr>
-                      <tr class="gappedTr">
-                        <td align="right">Public</td>
-                        <td class="requiredField">
-                          <s:select id="_isProjectPublic" list="#{0:'No', 1:'Yes'}" name="loadingProject.isPublic" required="true" />
-                        </td>
-                      </tr>
-                    </table>
+                    <div class="row row_spacer">
+                      <div class="col-md-1">Project Name</div>
+                      <div class="col-md-11">
+                        <input type="text" id="_projectName" name="loadingProject.projectName" size="33px"/>
+                      </div>
+                    </div>
+                    <div class="row row_spacer">
+                      <div class="col-md-1">Public</div>
+                      <div class="col-md-11">
+                        <s:select id="_isProjectPublic" list="#{0:'No', 1:'Yes'}" name="loadingProject.isPublic" required="true" />
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div id="sampleDetailInputDiv">
@@ -126,34 +126,36 @@
                     <h1 class="csc-firstHeader">Sample Information</h1>
                   </div>
                   <div id="sampleDetailSubDiv">
-                    <table>
-                      <tr>
-                        <td align="right" id="loadSampleNameLabel">Sample Name</td>
-                        <td class="requiredField"><input type="text" id="_sampleName" name="loadingSample.sampleName" size="33px"/></td>
-                      </tr>
-                      <tr id="parentSelectTr" class="gappedTr">
-                        <td align="right" id="parentSampleLabel">Parent Sample</td>
-                        <td class="ui-combobox">
-                          <s:select id="_parentSampleSelect" list="#{'0':''}" name="loadingSample.parentSampleName" required="true"/>
-                        </td>
-                      </tr>
-                      <tr class="gappedTr">
-                        <td align="right">Public</td>
-                        <td class="requiredField">
-                          <s:select id="_isSamplePublic" list="#{0:'No', 1:'Yes'}" name="loadingSample.isPublic" required="true" />
-                        </td>
-                      </tr>
-                    </table>
+                    <div class="row row_spacer">
+                      <div class="col-md-1">Sample Name</div>
+                      <div class="col-md-11">
+                        <input type="text" id="_sampleName" name="loadingSample.sampleName" size="33px"/>
+                      </div>
+                    </div>
+                    <div class="row row_spacer">
+                      <div class="col-md-1">Parent Sample</div>
+                      <div class="col-md-11 combobox">
+                        <s:select id="_parentSampleSelect" list="#{'0':''}" name="loadingSample.parentSampleName" required="true"/>
+                      </div>
+                    </div>
+                    <div class="row row_spacer">
+                      <div class="col-md-1">Public</div>
+                      <div class="col-md-11">
+                        <s:select id="_isSamplePublic" list="#{0:'No', 1:'Yes'}" name="loadingSample.isPublic" required="true" />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div style="margin:25px 10px 0 0;">
-                <div style="float:left;">
-                  <h1 class="csc-firstHeader">Event Attributes</h1>
-                </div>
-                <div style="font-size:0.9em;padding-top:5px;margin-left:135px;padding-left:50px">
-                  [<img style="vertical-align:bottom;" src="images/icon/req.png"/><img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Required, <img style="vertical-align:bottom;" src="images/icon/ontology.png"/>-Ontology]
+                <div class="row">
+                  <div style="float:left;">
+                    <h1 class="csc-firstHeader">Data Template Attributes</h1>
+                  </div>
+                  <div style="font-size:0.9em;padding-top:15px;margin-left:135px;padding-left:50px">
+                    [<img style="vertical-align:bottom;" src="images/icon/req.png"/><img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Required, <img style="vertical-align:bottom;" src="images/icon/ontology.png"/>-Ontology]
+                  </div>
                 </div>
               </div>
               <div id="attributeInputDiv" style="margin:10px 0;clear:both;">
@@ -171,7 +173,7 @@
                   </table>
                 </s:if>
               </div>
-              <div id="gridInputDiv" style="margin:25px 10px 0 0 ;overflow-x: scroll;">
+              <div id="gridInputDiv" style="margin:25px 10px 0 0 ;overflow-x: auto;">
                 <table name="eventTable" id="eventTable" class="contenttable">
                   <thead id="gridHeader"></thead>
                   <tbody id="gridBody"></tbody>
@@ -189,14 +191,12 @@
               </div>
 
               <div id="submitDiv" style="margin:15px 10px 5px 0;width:100%;">
-                <input type="button" onclick="javascript:button.submit('save');" id="saveButton" value="Save" disabled="true"/>
-                <input type="button" onclick="javascript:button.submit('validate');" id="validateButton" value="Validate" disabled="true"/>
+                <input type="button" onclick="javascript:button.submit('save');" id="saveButton" value="Save Data in DPCC" disabled="true"/>
+                <input type="button" onclick="javascript:button.submit('validate');" id="validateButton" value="Validate Data" disabled="true"/>
                 <input type="button" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to DPCC" disabled="true"/>
                 <input type="button" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Event Line" style="display:none;"/>
                 <input type="button" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
-                <input type="button" onclick="javascript:button.clear_form();" value="Clear" />
-                <div>
-                </div>
+                <input type="button" onclick="javascript:button.clear_form();" value="Clear Form" />
               </div>
             </div>
           </s:form>
@@ -235,7 +235,7 @@
                 button.add_event(pn,en);
               }
             },
-            showPS:function(eventName) {
+            showPS: function(eventName) {
               $('#sampleSelectRow').hide();
               if(utils.checkSR(eventName)) { // triggers sample loader
                 $('#sampleDetailInputDiv').show();
@@ -434,7 +434,7 @@
 
                     //convert 0 or 1 options to yes/no
                     if(givenOptions === '0;1' || givenOptions === '1;0') {
-                      options = '<option value="1">Yes</option><option value="0">No</option>';
+                      options = '<option value="0">No</option><option value="1">Yes</option>';
                     } else {
                       $.each(givenOptions.split(';'), function(o_i,o_v) {
                         options += '<option value="' + o_v + '">' + o_v + '</option>';
@@ -597,7 +597,7 @@
                   $('<td/>').append(
                     $('<select/>').attr({
                       'name': 'gridList[' + g_gridLineCount + '].samplePublic'
-                    }).append(vs.ynoption)
+                    }).append(vs.nyoption)
                   )
                 );
               } else {
@@ -740,7 +740,7 @@
           $('div[id$="InputDiv"], #gridAddLineButton, #sampleSelectRow').hide();
           utils.preSelect('_sampleSelect', '');
           var _selectedType = $(this).val();
-          if(_selectedType==='grid') {
+          if(_selectedType === 'grid') {
             $('#gridInputDiv, #gridAddLineButton').show();
             _utils.addGridRows(utils.getProjectName(), utils.getEventName());
           } else if(_selectedType==='file') {
@@ -831,11 +831,14 @@
         utils.error.check();
 
         //handle Create Project
-        var isCreateProject = ('${filter}' === 'pr');
-        if(isCreateProject) {
+        var filter = '${filter}';
+        if(filter === 'pr') {
           $('#projectSelectRow').hide();
           $('#_eventSelect').prop('disabled', true);
           $('#pageTitle').html('Project Registration');
+        } else if(filter === 'su') {
+          $('#pageTitle').html('Edit Data');
+          $('#eventTitle').html('Edit Data For');
         }
       });
     </script>
