@@ -72,7 +72,7 @@
                       <s:select id="_projectSelect" list="projectList" name="selectedProjectId" headerKey="0" headerValue="" listValue="projectName" listKey="projectId" required="true"/>  
                     </div>
                   </div>
-                  <div class="row">
+                  <div class="row row_spacer">
                     <div class="col-md-1">Date Range</div>
                     <div class="col-md-11 combobox">
                       <s:textfield id="fromDate" name="fromDate" label="from"/> ~ <s:textfield id="toDate" name = "toDate" label="to"/> 
