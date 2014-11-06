@@ -79,7 +79,7 @@
                       <legend> Show / Hide Columns </legend>
                       <div id="statusTableColumnToggler"></div>
                   </fieldset>
-                  <div id="statusTableDiv" style="overflow-x: scroll;">
+                  <div id="statusTableDiv" style="overflow-x: auto;">
                       <table id="statusTable" style="float:left;width:100%"></table>
                   </div>
               </div>
