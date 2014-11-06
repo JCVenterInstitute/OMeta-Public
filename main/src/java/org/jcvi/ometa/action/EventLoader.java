@@ -143,6 +143,11 @@ public class EventLoader extends ActionSupport implements Preparable {
         try {
             this.sampleName = (this.sampleName == null || this.sampleName.isEmpty() || this.sampleName.equals("0") ? null : this.sampleName);
 
+            if(this.filter != null && this.filter.equals("pr")) {
+                this.projectId = this.defaultProjectId;
+                this.eventName = Constants.EVENT_PROJECT_REGISTRATION;
+            }
+
             if (jobType != null) {
                 boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION);
                 boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);
@@ -274,11 +279,6 @@ public class EventLoader extends ActionSupport implements Preparable {
             if(ids != null && ids.length() > 0) {
                 jobType = "grid";
             }
-
-            if(this.filter != null && this.filter.equals("pr")) {
-                this.projectId = this.defaultProjectId;
-                this.eventName = Constants.EVENT_PROJECT_REGISTRATION;
-            }
         } catch (Exception ex) {
 
             if(loadedFiles!=null && loadedFiles.size()>0) { //deletes uploaded files in event of error
@@ -346,6 +346,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                 this.eventName = this.eventName.replaceAll(Constants.EVENT_SAMPLE_REGISTRATION, Constants.EVENT_SAMPLE_UPDATE);
             } else if(isProjectRegistration) {
                 this.eventName = this.eventName.replaceAll(Constants.EVENT_PROJECT_REGISTRATION, Constants.EVENT_PROJECT_UPDATE);
+                this.filter = "pu";
             }
         }
 
