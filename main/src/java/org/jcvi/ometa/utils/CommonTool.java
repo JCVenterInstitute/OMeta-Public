@@ -224,11 +224,16 @@ public class CommonTool {
         return rtnVal;
     }
 
-    public static LookupValue createLV(String name, String type, String dataType) {
+    public static LookupValue createLookupValue(String name, String type, String dataType) {
         LookupValue rtnVal = new LookupValue();
         rtnVal.setName(name);
         rtnVal.setType(type);
         rtnVal.setDataType(dataType);
         return rtnVal;
+    }
+
+    public static Long getGuid() throws Exception {
+        GuidGetter guidGetter = new GuidGetter();
+        return guidGetter.getGuid();
     }
 }

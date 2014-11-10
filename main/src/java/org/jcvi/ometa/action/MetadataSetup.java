@@ -458,7 +458,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                                 throw new Exception("Attribute names cannot contain '[' or ']'.");
                             }
 
-                            lvList.add(CommonTool.createLV(name.trim(), lvType, lvDataType));
+                            lvList.add(CommonTool.createLookupValue(name.trim(), lvType, lvDataType));
                         }
                     }
                     psewt.loadLookupValues(lvList);
