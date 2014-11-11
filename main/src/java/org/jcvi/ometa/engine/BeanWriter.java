@@ -114,7 +114,7 @@ public class BeanWriter {
         loadHelper.setOriginalPath(path); //add path to the helper for relative file paths
         loadHelper.setSubmissionId(submissionId);
 
-        loadHelper.gridListToMultiLoadParameter(loadParameter, gridList, projectName, eventName, null, null, null);
+        loadHelper.gridListToMultiLoadParameter(loadParameter, gridList, projectName, eventName, null);
         writeEjb.loadAll(null, loadParameter);
 
         if(gridList != null && gridList.get(0) != null) {

@@ -42,9 +42,7 @@ public class EventLoadHelper {
         this(new ReadBeanPersister(pseb));
     }
 
-    public void gridListToMultiLoadParameter(
-            MultiLoadParameter loadParameter, List<GridBean> gridList,
-            String projectName, String eventName, Project loadingProject, Sample loadingSample, String status) throws Exception {
+    public void gridListToMultiLoadParameter(MultiLoadParameter loadParameter, List<GridBean> gridList, String projectName, String eventName, String status) throws Exception {
 
         if(eventName == null || eventName.isEmpty()) {
             throw new Exception("event name is missing.");
@@ -53,6 +51,9 @@ public class EventLoadHelper {
         boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION);
         boolean isProjectUpdate = eventName.contains(Constants.EVENT_PROJECT_UPDATE);
         boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);
+
+        Project loadingProject = null;
+        Sample loadingSample = null;
 
         int gridRowIndex = 0;
         for(GridBean gBean : gridList) {
@@ -67,9 +68,7 @@ public class EventLoadHelper {
                     }
                     loadingProject = this.readPersister.getProject(projectName);
 
-                    if(isProjectUpdate) {
-                        loadingSample = null;
-                    } else {
+                    if(!isProjectUpdate) {
                         if(gBean.getSampleName() == null || gBean.getSampleName().isEmpty()) {
                             continue;
                         }

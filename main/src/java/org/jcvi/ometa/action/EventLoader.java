@@ -187,7 +187,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                     //delegate populating multiload parameter to the helper
                     MultiLoadParameter loadParameter = new MultiLoadParameter();
                     EventLoadHelper loadHelper = new EventLoadHelper(this.readPersister);
-                    loadHelper.gridListToMultiLoadParameter(loadParameter, gridList, this.projectName, this.eventName, loadingProject, loadingSample, this.status);
+                    loadHelper.gridListToMultiLoadParameter(loadParameter, gridList, this.projectName, this.eventName, this.status);
                     psewt.loadAll(null, loadParameter);
 
                     this.pageDataReset(isProjectRegistration, isSampleRegistration, this.status);
