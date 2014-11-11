@@ -73,12 +73,13 @@
 
               <div id="statusTableDiv">
                 <div id="tableTop">
+                  <div class="row col-md-12"><h5><strong>Submission Information</strong></h5></div>
                   <div class="row">
                     <div class="col-md-1"><strong>Submit Data For:</strong></div>
                     <div class="col-md-11">
-                      <input type="radio" name="loadType" class="loadRadio" value="form"><strong>Single Sample</strong></input>&nbsp;&nbsp;
-                      <input type="radio" name="loadType" class="loadRadio" value="grid"><strong>Multiple Sample (Web)</strong></input>&nbsp;&nbsp;
-                      <input type="radio" name="loadType" class="loadRadio" value="file"><strong>Multiple Sample (Excel)</strong></input> 
+                      <input type="radio" name="loadType" class="loadRadio" value="form"><strong>Single Sample (Web Form)</strong></input>&nbsp;&nbsp;
+                      <input type="radio" name="loadType" class="loadRadio" value="grid"><strong>Multiple Samples (Web Form)</strong></input>&nbsp;&nbsp;
+                      <input type="radio" name="loadType" class="loadRadio" value="file"><strong>Multiple Samples (Excel Template)</strong></input> 
                     </div>
                   </div>
                   <div class="row row_spacer" id="projectSelectRow">
@@ -755,6 +756,13 @@
         var rtnJobType = (oldJobType===''||oldJobType==='insert'||oldJobType==='template'?'form':oldJobType);
         $('input[name="loadType"][value='+rtnJobType+']').attr('checked', true);
         $('input[name="loadType"]:checked').change();
+
+        //empty project select box
+        $('#_projectSelect ~ input').click(function() {
+          if($(this).val() === 'select center project') {
+            $(this).val('');
+          }
+        });
 
         //preload project and event type
         if(oldProjectId) {
