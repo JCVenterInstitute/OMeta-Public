@@ -188,8 +188,10 @@ public class LoadingEngine {
         try {
             BeanWriter writer = new BeanWriter(serverUrl, userName, passWord);
 
+            String submissionId = Long.toString(CommonTool.getGuid()); //submission Id
+
             File eventFile = new File(eventFileName);
-            writer.writeEvent(eventFile, eventType, projectName, true, eventFile.getParent());
+            writer.writeEvent(eventFile, eventType, projectName, true, eventFile.getParent(), submissionId);
 
         } catch (Exception ex) {
             throw ex;
@@ -323,7 +325,7 @@ public class LoadingEngine {
                     writer.writePMAs(file);
                     break;
                 case eventAttributes:
-                    writer.writeEvent(file, null, null, true, null);
+                    writer.writeEvent(file, null, null, true, null, null);
                     break;
                 default:
                     throw new IllegalArgumentException(
@@ -373,6 +375,8 @@ public class LoadingEngine {
         try {
             BeanWriter writer = new BeanWriter(serverUrl, userName, passWord);
 
+            String submissionId = Long.toString(CommonTool.getGuid()); //submission Id
+
             LineIterator lineIterator = FileUtils.lineIterator(eventFile);
             int lineCount = 0;
 
@@ -412,7 +416,7 @@ public class LoadingEngine {
                         FileUtils.writeLines(singleEventFile, lines);
 
                         try {
-                            String eventTarget = writer.writeEvent(singleEventFile, eventName, null, false, eventFile.getParent());
+                            String eventTarget = writer.writeEvent(singleEventFile, eventName, null, false, eventFile.getParent(), submissionId);
                             logWriter.write(String.format("[%d] loaded event%s.\n", lineCount, (eventTarget == null ? "" : " for '" + eventTarget + "'")));
                             processedWriter.write(currLine + "\n");
                             successCount++;

@@ -162,6 +162,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                     gridList = null; // force grid list to be empty
                     MultiLoadParameter loadParameter = new MultiLoadParameter();
                     EventLoadHelper loadHelper = new EventLoadHelper(this.readPersister);
+                    loadHelper.setSubmissionId(Long.toString(CommonTool.getGuid()));
 
                     //manually feed sample name if it is not provided
                     if(this.loadingSample == null) {
@@ -209,7 +210,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                     }
                 } else if(jobType.startsWith("template")) { //download template
                     List<EventMetaAttribute> emaList = this.readPersister.getEventMetaAttributes(this.projectName, this.eventName);
-                    emaList = CommonTool.filterActiveEventMetaAttribute(emaList);
+                    emaList = CommonTool.filterEventMetaAttribute(emaList);
                     CommonTool.sortEventMetaAttributeByOrder(emaList);
 
                     /*

@@ -105,13 +105,14 @@ public class BeanWriter {
         }
     }
 
-    public String writeEvent(File eventFile, String eventName, String projectName, boolean processInput, String path) throws Exception {
+    public String writeEvent(File eventFile, String eventName, String projectName, boolean processInput, String path, String submissionId) throws Exception {
         String lastSampleName = null;
         List<GridBean> gridList = this.getEventBeansFromFile(eventFile, eventName, processInput);
 
         MultiLoadParameter loadParameter = new MultiLoadParameter();
         EventLoadHelper loadHelper = new EventLoadHelper(this.readEjb);
         loadHelper.setOriginalPath(path); //add path to the helper for relative file paths
+        loadHelper.setSubmissionId(submissionId);
 
         loadHelper.gridListToMultiLoadParameter(loadParameter, gridList, projectName, eventName, null, null, null);
         writeEjb.loadAll(null, loadParameter);
