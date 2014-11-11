@@ -182,10 +182,14 @@ public class CommonTool {
         return formattedDate;
     }
 
-    public static List<EventMetaAttribute> filterActiveEventMetaAttribute(List<EventMetaAttribute> list) {
+    public static List<EventMetaAttribute> filterEventMetaAttribute(List<EventMetaAttribute> list) {
         List<EventMetaAttribute> filtered = new ArrayList<EventMetaAttribute>(list.size());
+
+        List<String> hiddenAttributes = Arrays.asList(Constants.HIDDEN_ATTRIBUTES);
+
         for(EventMetaAttribute ema : list) {
-            if(ema.isActive()) {
+            if(ema.isActive() && !hiddenAttributes.contains(ema.getLookupValue().getName())) {
+
                 filtered.add(ema);
             }
         }
