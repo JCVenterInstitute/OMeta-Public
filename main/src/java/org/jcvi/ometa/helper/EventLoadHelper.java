@@ -25,7 +25,8 @@ import java.util.*;
 public class EventLoadHelper {
     private ReadBeanPersister readPersister;
     private String fileStoragePath;
-    private String originalPath; //original path for relative file paths
+    private String originalPath; // original path for relative file paths
+    private String submissionId; // submission id
 
     public EventLoadHelper(ReadBeanPersister readPersister) {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
@@ -41,7 +42,10 @@ public class EventLoadHelper {
         this(new ReadBeanPersister(pseb));
     }
 
-    public void gridListToMultiLoadParameter(MultiLoadParameter loadParameter, List<GridBean> gridList, String projectName, String eventName, Project loadingProject, Sample loadingSample, String status) throws Exception {
+    public void gridListToMultiLoadParameter(
+            MultiLoadParameter loadParameter, List<GridBean> gridList,
+            String projectName, String eventName, Project loadingProject, Sample loadingSample, String status) throws Exception {
+
         if(eventName == null || eventName.isEmpty()) {
             throw new Exception("event name is missing.");
         }
@@ -170,20 +174,26 @@ public class EventLoadHelper {
             loadParameter.addProjectPair(feedProjectData(project, parentProject), loadingList, newPmas, newSmas, newEmas, rowIndex);
         } else {
             boolean listHasData = loadingList != null && loadingList.size() > 0;
-            boolean isProjectLevel = eventName.toLowerCase().contains("project");
+            boolean isProjectLevelEvent = eventName.toLowerCase().contains("project");
             boolean isStatusGiven = status != null && !status.isEmpty();
 
-            if(isStatusGiven && (status.equals("submit") || status.equals("validate")) && listHasData && !isProjectLevel) { //DPCC data validation
+            if(project == null || project.getProjectName() == null || project.getProjectName().isEmpty()) {
+                project = this.readPersister.getProject(projectName);
+            }
+
+            if(sample.getSampleName() == null || sample.getSampleName().isEmpty()) {
+                throw new Exception("Sample is required.");
+            }
+
+            if(isStatusGiven && (status.equals("submit") || status.equals("validate")) && listHasData && !isProjectLevelEvent) { //DPCC data validation
                 this.validateDataForDPCC(loadingList, rowIndex);
                 if(isSampleRegistration || eventName.contains(Constants.EVENT_SAMPLE_UPDATE)) {
-                    this.updateSampleStatus(loadingList, projectName, sample.getSampleName(), status, rowIndex);
+                    this.updateSampleStatus(loadingList, project, sample.getSampleName(), status, rowIndex);
                 }
             }
 
             if(isSampleRegistration) {
-                if(project == null || project.getProjectName() == null || project.getProjectName().isEmpty()) {
-                    project = this.readPersister.getProject(projectName);
-                }
+                this.addSubmissionId(loadingList, project, sample.getSampleName(), rowIndex); // set submission id
                 loadParameter.addSamplePair(feedSampleData(sample, project), loadingList, rowIndex);
             } else {
                 if(listHasData)  {
@@ -279,16 +289,8 @@ public class EventLoadHelper {
         }
     }
 
-    private void updateSampleStatus(List<FileReadAttributeBean> loadingList, String projectName, String sampleName, String status, int index) throws Exception {
-        boolean foundSampleStatus = false;
-        String strStatus = status.equals("submit") ? Constants.DPCC_STATUS_SUBMITTED : status.equals("validate") ? Constants.DPCC_STATUS_VALIDATED : Constants.DPCC_STATUS_EDITING;
-
+    private void updateSampleStatus(List<FileReadAttributeBean> loadingList, Project project, String sampleName, String status, int index) throws Exception {
         try {
-            Project project = this.readPersister.getProject(projectName);
-
-            if(sampleName == null || sampleName.isEmpty()) {
-                throw new Exception("Sample is required.");
-            }
 
             Sample sample = this.readPersister.getSample(project.getProjectId(), sampleName);
             if(sample != null) { //it could be sample registration event
@@ -296,37 +298,16 @@ public class EventLoadHelper {
                 for(SampleAttribute sa : saList) {
                     if(sa.getMetaAttribute().getLookupValue().getName().equals(Constants.ATTR_SAMPLE_STATUS)) {
                         if(sa.getAttributeStringValue() != null && sa.getAttributeStringValue().equals("Data submitted to DPCC")) {
-                            throw new Exception("You cannot load any events for samples that has been submitted to DPCC.");
+                            throw new Exception("You cannot load any events for a sample that has been submitted to DPCC.");
                         }
                     }
                 }
             }
 
-            for(FileReadAttributeBean fBean : loadingList) {
-                if(fBean.getAttributeName().equals(Constants.ATTR_SAMPLE_STATUS)) {
-                    fBean.setAttributeValue(strStatus);
-                    foundSampleStatus = true;
-                }
-            }
-            if(!foundSampleStatus) { //if sample status attribute is not in the list
-                List<SampleMetaAttribute> smaList = this.readPersister.getSampleMetaAttributes(project.getProjectId());
-                for(SampleMetaAttribute sma : smaList) { //check if sample status is in sample meta attributes
-                    if(sma.getLookupValue().getName().equals(Constants.ATTR_SAMPLE_STATUS)) {
-                        foundSampleStatus = true;
-                    }
-                }
+            String strStatus = status.equals("submit") ? Constants.DPCC_STATUS_SUBMITTED : status.equals("validate") ? Constants.DPCC_STATUS_VALIDATED : Constants.DPCC_STATUS_EDITING;
 
-                if(foundSampleStatus) { //manually add sample status with the status value
-                    FileReadAttributeBean statusBean = new FileReadAttributeBean();
-                    statusBean.setAttributeName(Constants.ATTR_SAMPLE_STATUS);
-                    statusBean.setAttributeValue(strStatus);
-                    statusBean.setProjectName(projectName);
-                    statusBean.setSampleName(sampleName);
-                    loadingList.add(statusBean);
-                } else {
-                    throw new Exception("'" + Constants.ATTR_SAMPLE_STATUS + "' attribute not found.");
-                }
-            }
+            this.findAndSetAttributeValue(loadingList, project, sampleName, Constants.ATTR_SAMPLE_STATUS, strStatus, index);
+
         } catch(Exception ex) {
             ex.printStackTrace();
             DetailedException dex = new DetailedException(index, ex.getMessage());
@@ -386,11 +367,67 @@ public class EventLoadHelper {
         }
     }
 
+    private void addSubmissionId(List<FileReadAttributeBean> loadingList, Project project, String sampleName, int index) throws Exception {
+        if(submissionId == null || submissionId.isEmpty()) {
+            GuidGetter guidGetter = new GuidGetter();
+            submissionId = Long.toString(guidGetter.getGuid());
+        }
+
+        this.findAndSetAttributeValue(loadingList, project, sampleName, Constants.ATTR_SUBMISSION_ID, this.submissionId, index);
+    }
+
+    private void findAndSetAttributeValue(
+            List<FileReadAttributeBean> loadingList, Project project, String sampleName,
+            String attributeName, String attributeValue, int index) throws Exception {
+        boolean foundAttribute = false;
+
+        try {
+
+            for(FileReadAttributeBean fBean : loadingList) {
+                if(fBean.getAttributeName().toLowerCase().equals(attributeName.toLowerCase())) {
+                    fBean.setAttributeValue(attributeValue);
+                    foundAttribute = true;
+                }
+            }
+            if(!foundAttribute) {
+                List<SampleMetaAttribute> smaList = this.readPersister.getSampleMetaAttributes(project.getProjectId());
+                for(SampleMetaAttribute sma : smaList) {
+                    if(sma.getLookupValue().getName().equals(attributeName)) {
+                        foundAttribute = true;
+                    }
+                }
+
+                if(foundAttribute) { //manually add submission id
+                    FileReadAttributeBean submissionBean = new FileReadAttributeBean();
+                    submissionBean.setAttributeName(attributeName);
+                    submissionBean.setAttributeValue(attributeValue);
+                    submissionBean.setProjectName(project.getProjectName());
+                    submissionBean.setSampleName(sampleName);
+                    loadingList.add(submissionBean);
+                } else {
+                    throw new Exception("'" + attributeName + "' attribute not found.");
+                }
+            }
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            DetailedException dex = new DetailedException(index, ex.getMessage());
+            throw dex;
+        }
+    }
+
     public String getOriginalPath() {
         return originalPath;
     }
 
     public void setOriginalPath(String originalPath) {
         this.originalPath = originalPath;
+    }
+
+    public String getSubmissionId() {
+        return submissionId;
+    }
+
+    public void setSubmissionId(String submissionId) {
+        this.submissionId = submissionId;
     }
 }
