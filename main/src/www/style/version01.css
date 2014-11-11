@@ -103,10 +103,11 @@ tr.tableHeader th { font-weight: normal; }
 #legal_container { font-size: 1em; }
 p.header1 { clear: none; }
 
-#content {
+/*#content {
     border-left: 1px solid #818080;
     border-right: 1px solid #818080;
-} /* end #container_1 */
+}*/ 
+/* end #container_1 */
 
 #top_dark, #bottom_dark{ /*
   border-left: 1px solid #686868;
@@ -243,6 +244,7 @@ border-right: 1px solid #a0a09b;
 
 
 .hasDatepicker {
+    width: 88%;
     vertical-align : top;
 }
 
