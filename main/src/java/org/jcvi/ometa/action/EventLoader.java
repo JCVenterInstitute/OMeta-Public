@@ -184,6 +184,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                     this.pageDataReset(isProjectRegistration, isSampleRegistration, this.status);
 
                     addActionMessage("Event has been loaded successfully.");
+
                 } else if(jobType.equals("grid")) { //loads multiple events from grid view
                     tx = (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
                     tx.begin();
@@ -212,6 +213,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                             throw ex;
                         }
                     }
+
                 } else if(jobType.startsWith("template")) { //download template
                     List<EventMetaAttribute> emaList = this.readPersister.getEventMetaAttributes(this.projectName, this.eventName);
                     emaList = CommonTool.filterEventMetaAttribute(emaList);
@@ -264,6 +266,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                         this.downloadStream = IOUtils.toInputStream(newTemplateBuffer.toString());
                     }
                     rtnVal = Constants.FILE_DOWNLOAD_MSG;
+
                 } else if(jobType.equals("projectedit")) {
                     AttributeHelper attributeHelper = new AttributeHelper(this.readPersister);
                     if(this.eventId == null && this.eventName != null) {
@@ -349,6 +352,7 @@ public class EventLoader extends ActionSupport implements Preparable {
             resetLists = false;
             if(isSampleRegistration) { //update registration event to update on save requests
                 this.eventName = this.eventName.replaceAll(Constants.EVENT_SAMPLE_REGISTRATION, Constants.EVENT_SAMPLE_UPDATE);
+                this.filter = "su";
             } else if(isProjectRegistration) {
                 this.eventName = this.eventName.replaceAll(Constants.EVENT_PROJECT_REGISTRATION, Constants.EVENT_PROJECT_UPDATE);
                 this.filter = "pu";
