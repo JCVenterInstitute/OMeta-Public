@@ -244,7 +244,7 @@ border-right: 1px solid #a0a09b;
 
 
 .hasDatepicker {
-    width: 88%;
+    max-width: 88%;
     vertical-align : top;
 }
 
