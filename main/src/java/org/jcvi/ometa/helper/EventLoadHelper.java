@@ -82,6 +82,8 @@ public class EventLoadHelper {
                                 //loadingSample.setParentSampleName(gBean.getParentSampleName());
                                 loadingSample.setIsPublic(1); //Integer.valueOf(gBean.getSamplePublic() == null ? "0" : gBean.getSamplePublic())); //default to NO
                                 loadingSample.setSampleLevel(1);
+
+                                gBean.setSampleName(loadingSample.getSampleName()); // set sample name to the grid bean
                             }
                         } else {
                             loadingSample = existingSample;
