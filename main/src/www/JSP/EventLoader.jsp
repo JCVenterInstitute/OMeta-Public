@@ -34,7 +34,7 @@
     <style>
       .loadRadio { margin-left: 10px; margin-right: 3px; }
       #gridBody .ui-autocomplete-input { width: 150px; }
-      .gridIndex { max-width: 15px !important; text-align: center;}
+      .gridIndex { max-width: 20px !important; min-width: 15px; text-align: center;}
       .ms-choice {line-height: 20px; }
       .ms-choice, .ms-choice > div { height: 20px; }
     </style>
@@ -149,17 +149,16 @@
                 </div>
               </div>
 
-              <div style="margin:25px 10px 0 0;">
-                <div class="row">
-                  <div style="float:left;">
-                    <h1 class="csc-firstHeader">Data Template Attributes</h1>
-                  </div>
-                  <div style="font-size:0.9em;padding-top:15px;margin-left:135px;padding-left:50px">
-                    [<img style="vertical-align:bottom;" src="images/icon/req.png"/><img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Required, <img style="vertical-align:bottom;" src="images/icon/ontology.png"/>-Ontology]
-                  </div>
+
+              <div class="row row_spacer">
+                <div class="col-md-2">
+                  <h5><strong>Data Submission</strong></h5>
+                </div>
+                <div style="font-size:0.9em;padding-top:15px;" class="col-md-10">
+                  [<img style="vertical-align:bottom;" src="images/icon/req.png"/><img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Required, <img style="vertical-align:bottom;" src="images/icon/ontology.png"/>-Ontology]
                 </div>
               </div>
-              <div id="attributeInputDiv" style="margin:10px 0;clear:both;">
+              <div id="attributeInputDiv" style="clear:both;">
                 <s:if test="beanList != null && beanList.size() > 0">
                   <table>
                     <s:iterator value="beanList" var="attrName" status="stat">
@@ -197,7 +196,7 @@
                 <input type="button" class="btn btn-success" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to DPCC" disabled="true"/>
                 <input type="button" class="btn btn-default" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Event Line" style="display:none;"/>
                 <input type="button" class="btn btn-default" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
-                <input type="button" class="btn btn-default" onclick="javascript:button.template();" id="exportButton" value="Export to .csv Template"/>
+                <input type="button" class="btn btn-default" onclick="javascript:return;" id="exportButton" value="Export to .csv Template"/>
                 <!-- <input type="button" onclick="javascript:button.clear_form();" value="Clear Form" /> -->
               </div>
             </div>
@@ -370,11 +369,12 @@
                 if(!utils.checkSR(en)) {
                   $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG').append('Sample<br/>', requireImgHtml));
                 } else {
-                  $gridHeaders.append(
-                    $('<th/>').addClass('tableHeaderNoBG').append('Sample Name<br/>', requireImgHtml),
-                    $('<th/>').addClass('tableHeaderNoBG').append('Parent Sample'),
-                    $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
-                  );
+                  // hide sample information
+                  // $gridHeaders.append(
+                  //   $('<th/>').addClass('tableHeaderNoBG').append('Sample Name<br/>', requireImgHtml),
+                  //   $('<th/>').addClass('tableHeaderNoBG').append('Parent Sample'),
+                  //   $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
+                  // );
                 }
               } else {
                 if(utils.checkPR(en)) {
@@ -579,29 +579,30 @@
           if(_pn && _en) {
             if(utils.checkNP(_en)){ //not project related
               if(utils.checkSR(_en)) { //add sample information fields for sample registration
-                $eventLine.append(
-                  $('<td/>').append($('<input/>').attr({
-                      'type': 'text',
-                      'name': 'gridList[' + g_gridLineCount + '].sampleName',
-                      'id': '_sampleName' + g_gridLineCount
-                    })
-                  )
-                );
-                $eventLine.append(
-                  $('<td/>').append(
-                      $('<select/>').attr({
-                        'name': 'gridList[' + g_gridLineCount + '].parentSampleName',
-                        'id': '_parentSelect' + g_gridLineCount
-                      }).append(sample_options)
-                    )
-                );
-                $eventLine.append(
-                  $('<td/>').append(
-                    $('<select/>').attr({
-                      'name': 'gridList[' + g_gridLineCount + '].samplePublic'
-                    }).append(vs.nyoption)
-                  )
-                );
+                // hide sample information
+                // $eventLine.append(
+                //   $('<td/>').append($('<input/>').attr({
+                //       'type': 'text',
+                //       'name': 'gridList[' + g_gridLineCount + '].sampleName',
+                //       'id': '_sampleName' + g_gridLineCount
+                //     })
+                //   )
+                // );
+                // $eventLine.append(
+                //   $('<td/>').append(
+                //       $('<select/>').attr({
+                //         'name': 'gridList[' + g_gridLineCount + '].parentSampleName',
+                //         'id': '_parentSelect' + g_gridLineCount
+                //       }).append(sample_options)
+                //     )
+                // );
+                // $eventLine.append(
+                //   $('<td/>').append(
+                //     $('<select/>').attr({
+                //       'name': 'gridList[' + g_gridLineCount + '].samplePublic'
+                //     }).append(vs.nyoption)
+                //   )
+                // );
               } else {
                 $eventLine.append(
                   $('<td/>').append(
