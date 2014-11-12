@@ -76,9 +76,11 @@ public class EventLoadHelper {
                         if(existingSample == null) {
                             if(isSampleRegistration) {
                                 loadingSample = new Sample();
-                                loadingSample.setSampleName(gBean.getSampleName());
-                                loadingSample.setParentSampleName(gBean.getParentSampleName());
-                                loadingSample.setIsPublic(Integer.valueOf(gBean.getSamplePublic()));
+
+                                String sampleIdentifier = this.getAttributeValue(gBean.getBeanList(), Constants.ATTR_SAMPLE_IDENTIFIER);
+                                loadingSample.setSampleName((sampleIdentifier == null ? "" : sampleIdentifier) + "_" + CommonTool.getGuid());
+                                //loadingSample.setParentSampleName(gBean.getParentSampleName());
+                                loadingSample.setIsPublic(1); //Integer.valueOf(gBean.getSamplePublic() == null ? "0" : gBean.getSamplePublic())); //default to NO
                                 loadingSample.setSampleLevel(1);
                             }
                         } else {
@@ -412,6 +414,18 @@ public class EventLoadHelper {
             DetailedException dex = new DetailedException(index, ex.getMessage());
             throw dex;
         }
+    }
+
+    private String getAttributeValue(List<FileReadAttributeBean> loadingList, String attributeName) throws Exception {
+        String attributeValue = null;
+
+        for(FileReadAttributeBean fBean : loadingList) {
+            if(fBean.getAttributeName().toLowerCase().equals(attributeName.toLowerCase())) {
+                attributeValue = fBean.getAttributeValue();
+            }
+        }
+
+        return attributeValue;
     }
 
     public String getOriginalPath() {
