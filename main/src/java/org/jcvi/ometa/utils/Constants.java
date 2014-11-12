@@ -89,6 +89,7 @@ public class Constants {
     public static final String ATTR_SAMPLE_STATUS = "Sample Status";
     public static final String ATTR_PUBLIC_FLAG = "Public";
     public static final String ATTR_SUBMISSION_ID = "Submission ID";
+    public static final String ATTR_SAMPLE_IDENTIFIER = "Sample Identifier";
     public static final String[] READ_ONLY_ATTRIBUTES = {
             Constants.ATTR_SUBMISSION_ID,
             Constants.ATTR_SAMPLE_STATUS
