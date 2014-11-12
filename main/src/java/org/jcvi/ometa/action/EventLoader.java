@@ -159,22 +159,26 @@ public class EventLoader extends ActionSupport implements Preparable {
                     tx = (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
                     tx.begin();
 
-                    gridList = null; // force grid list to be empty
+                    this.gridList = null; // force grid list to be empty
                     MultiLoadParameter loadParameter = new MultiLoadParameter();
                     EventLoadHelper loadHelper = new EventLoadHelper(this.readPersister);
                     loadHelper.setSubmissionId(Long.toString(CommonTool.getGuid()));
 
-                    //manually feed sample name if it is not provided
-                    if(this.loadingSample == null) {
-                        this.loadingSample = new Sample();
+                    List<GridBean> singleGridList = new ArrayList<GridBean>(1);
+                    GridBean singleGridBean = new GridBean();
+                    singleGridBean.setProjectName(isProjectRegistration ? this.loadingProject.getProjectName() : this.projectName);
+                    if(isProjectRegistration) {
+                        singleGridBean.setProjectPublic(Integer.toString(this.loadingProject.getIsPublic()));
                     }
-                    if(!isSampleRegistration) {
-                        this.loadingSample.setSampleName(this.sampleName);
-                    } else {
-                        this.sampleName = this.loadingSample.getSampleName();
+                    singleGridBean.setSampleName(isSampleRegistration ? this.loadingSample.getSampleName() : this.sampleName);
+                    if(isSampleRegistration) {
+                        singleGridBean.setSamplePublic(Integer.toString(this.loadingSample.getIsPublic()));
+                        singleGridBean.setParentSampleName(this.loadingSample.getParentSampleName());
                     }
+                    singleGridBean.setBeanList(this.beanList);
+                    singleGridList.add(singleGridBean);
 
-                    loadHelper.createMultiLoadParameter(loadParameter, this.projectName, this.eventName, this.loadingProject, this.loadingSample, beanList, this.status, 1);
+                    loadHelper.gridListToMultiLoadParameter(loadParameter, singleGridList, this.projectName, this.eventName, this.status);
                     psewt.loadAll(null, loadParameter);
 
                     this.pageDataReset(isProjectRegistration, isSampleRegistration, this.status);
