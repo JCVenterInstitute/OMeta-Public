@@ -111,7 +111,7 @@ var utils = {
             this.remove();
             $('#errorMessagesPanel').append(
                 $('<input type="hidden" id="error_messages">').attr('value',msg),
-                $('<input type="button" id="error_btn" style="background-color:red;cursor:pointer;"'
+                $('<input type="button" class="btn btn-danger" id="error_btn" '
                     + 'onclick="utils.error.show(\'error_messages\');return false;" '
                     + 'value="ERROR: Click Here to See the Error." />'
                 )

@@ -281,7 +281,7 @@ div#tableTop table tr:first-child td:first-child+td {
 button.ui-button-icon-only { width: 1.2em !important; }
 
 /*global button style*/
-input[type="button"], .pageButton {
+/*input[type="button"], .pageButton {
     display: inline-block;
     border: 1px solid #777777;
     background: #547395;
@@ -312,7 +312,7 @@ input[type="button"]:disabled, .pageButton:disabled {
     background: #dbe3eb;
     color: black;
     cursor: none;  
-}
+}*/
 /* smaller button for inline style */
 .inlineButton {
     padding: 2px 4px;  

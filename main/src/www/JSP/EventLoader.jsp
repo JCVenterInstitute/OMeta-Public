@@ -75,7 +75,7 @@
                 <div id="tableTop">
                   <div class="row col-md-12"><h5><strong>Submission Information</strong></h5></div>
                   <div class="row">
-                    <div class="col-md-1"><strong>Submit Data For:</strong></div>
+                    <div class="col-md-1"><strong>Submit Data By:</strong></div>
                     <div class="col-md-11">
                       <input type="radio" name="loadType" class="loadRadio" value="form"><strong>Single Sample (Web Form)</strong></input>&nbsp;&nbsp;
                       <input type="radio" name="loadType" class="loadRadio" value="grid"><strong>Multiple Samples (Web Form)</strong></input>&nbsp;&nbsp;
@@ -86,22 +86,22 @@
                     <div class="col-md-1">Center Project</div>
                     <div class="col-md-11 combobox">
                       <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
-                                  list="projectList" name="projectId" headerKey="0" headerValue="select center project"
+                                  list="projectList" name="projectId" headerKey="0" headerValue="--select center project--"
                                   listValue="projectName" listKey="projectId" required="true"/>  
                     </div>
                   </div>
                   <div class="row row_spacer">
                     <div class="col-md-1" id="eventTitle">Data Template</div>
                     <div class="col-md-11 combobox">
-                      <s:select id="_eventSelect" list="#{0:'select template'}" name="eventId" required="true" disabled="true"/>
+                      <s:select id="_eventSelect" list="#{0:'--select template--'}" name="eventId" required="true" disabled="true"/>
                     </div>
                   </div>
-                  <div class="row row_spacer" id="sampleSelectRow">
+                  <!-- <div class="row row_spacer" id="sampleSelectRow">
                     <div class="col-md-1">Sample</div>
                     <div class="col-md-11 combobox">
                       <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'':''}" name="sampleName" required="true"/> 
                     </div>
-                  </div>
+                  </div> -->
                 </div>
                 <div id="projectDetailInputDiv">
                   <div style="margin:25px 10px 0 0;">
@@ -192,12 +192,13 @@
               </div>
 
               <div id="submitDiv" style="margin:15px 10px 5px 0;width:100%;">
-                <input type="button" onclick="javascript:button.submit('save');" id="saveButton" value="Save Data in DPCC" disabled="true"/>
-                <input type="button" onclick="javascript:button.submit('validate');" id="validateButton" value="Validate Data" disabled="true"/>
-                <input type="button" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to DPCC" disabled="true"/>
-                <input type="button" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Event Line" style="display:none;"/>
-                <input type="button" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
-                <input type="button" onclick="javascript:button.clear_form();" value="Clear Form" />
+                <input type="button" class="btn btn-info" onclick="javascript:button.submit('save');" id="saveButton" value="Save Progress" disabled="true"/>
+                <input type="button" class="btn btn-primary" onclick="javascript:button.submit('validate');" id="validateButton" value="Validate Submission" disabled="true"/>
+                <input type="button" class="btn btn-success" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to DPCC" disabled="true"/>
+                <input type="button" class="btn btn-default" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Event Line" style="display:none;"/>
+                <input type="button" class="btn btn-default" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
+                <input type="button" class="btn btn-default" onclick="javascript:button.template();" id="exportButton" value="Export to .csv Template"/>
+                <!-- <input type="button" onclick="javascript:button.clear_form();" value="Clear Form" /> -->
               </div>
             </div>
           </s:form>
@@ -239,7 +240,7 @@
             showPS: function(eventName) {
               $('#sampleSelectRow').hide();
               if(utils.checkSR(eventName)) { // triggers sample loader
-                $('#sampleDetailInputDiv').show();
+                //$('#sampleDetailInputDiv').show();
               } else if(utils.checkPR(eventName)) {
                 $('#projectDetailInputDiv').show();
               } else {
@@ -759,7 +760,7 @@
 
         //empty project select box
         $('#_projectSelect ~ input').click(function() {
-          if($(this).val() === 'select center project') {
+          if($(this).val() === '--select center project--') {
             $(this).val('');
           }
         });
