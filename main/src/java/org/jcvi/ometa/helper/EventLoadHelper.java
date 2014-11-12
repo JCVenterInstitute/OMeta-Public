@@ -78,7 +78,7 @@ public class EventLoadHelper {
                                 loadingSample = new Sample();
 
                                 String sampleIdentifier = this.getAttributeValue(gBean.getBeanList(), Constants.ATTR_SAMPLE_IDENTIFIER);
-                                loadingSample.setSampleName((sampleIdentifier == null ? "" : sampleIdentifier + "_") + CommonTool.getGuid());
+                                loadingSample.setSampleName((sampleIdentifier == null || sampleIdentifier.isEmpty() ? "" : sampleIdentifier + "_") + CommonTool.getGuid());
                                 //loadingSample.setParentSampleName(gBean.getParentSampleName());
                                 loadingSample.setIsPublic(1); //Integer.valueOf(gBean.getSamplePublic() == null ? "0" : gBean.getSamplePublic())); //default to NO
                                 loadingSample.setSampleLevel(1);
