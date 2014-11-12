@@ -178,12 +178,12 @@
                     </table>
                   </div>
                   <div id="EMASubmitDiv" style="margin:15px 10px 5px 0;">
-                    <input type="button" onclick="_utils.submit();" id="eventLoadButton" value="Setup Event"/>
-                    <input type="button" onclick="_utils.add.ema('add');" id="eventAddButton" value="Add Event Meta Attribute" disabled="disabled" />
-                    <input type="button" onclick="_utils.popup.attribute('et');" id="newEventButton" value="New Event Type" />
-                    <input type="button" onclick="_utils.popup.attribute('a');" id="newAttributeButton" value="New Attribute" />
-                    <input type="button" onclick="_utils.ontology();" id="ontologyButton" value="Ontology" />
-                    <input type="button" onclick="_utils.clean.all();" value="Clear" />
+                    <input type="button" class="btn btn-success" onclick="_utils.submit();" id="eventLoadButton" value="Setup Event"/>
+                    <input type="button" class="btn btn-primary" onclick="_utils.add.ema('add');" id="eventAddButton" value="Add Event Meta Attribute" disabled="disabled" />
+                    <input type="button" class="btn btn-info" onclick="_utils.popup.attribute('et');" id="newEventButton" value="New Event Type" />
+                    <input type="button" class="btn btn-info" onclick="_utils.popup.attribute('a');" id="newAttributeButton" value="New Attribute" />
+                    <input type="button" class="btn btn-info" onclick="_utils.ontology();" id="ontologyButton" value="Ontology" />
+                    <input type="button" class="btn btn-default" onclick="_utils.clean.all();" value="Clear" />
                   </div>
                 </div>
               </div>
@@ -227,7 +227,7 @@
           '<div><table cellpadding="0" cellspacing="0">' +
               '  <tr><td class="etTD_c" style="text-align:left;float:left;"><strong>$et$</strong></td></tr>' +
               '</table>' +
-              '<div class="pageButton inlineButton" title="Add attribute to the event group" id="add_$imgid$">Add Attribute</div></div>',
+              '<div class="btn-xs btn-warning" style="max-width:60%;" title="Add attribute to the event group" id="add_$imgid$">Add Attribute</div></div>',
       etSelect: '<select name="beanList[$cnt$].et" id="et$cnt$">$et_opts$</select>',
       etHidden: '<input type="hidden" name="beanList[$cnt$].et" id="et$cnt$" value="$et$">'
     };

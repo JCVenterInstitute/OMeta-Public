@@ -151,7 +151,7 @@
                     </thead>
                     <tbody id="sampleTableBody"/>
                   </table>
-                  <input onclick="_page.edit.sampleEvent();" style="" disabled="true" type="button" value="Edit Sample" id="editSampleBtn" />
+                  <input onclick="_page.edit.sampleEvent();" class="btn btn-primary" disabled="true" type="button" value="Edit Sample" id="editSampleBtn" />
                 </div>
 
                 <!-- event -->

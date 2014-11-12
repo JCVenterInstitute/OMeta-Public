@@ -102,8 +102,8 @@
                   </table>
                 </div>
                 <div id="submitDiv" style="margin:15px 0 0 0;">
-                  <input type="button" onclick="javascript:open_status_page();" id="eventReportPageButton" value="Generate Status Page"/>
-                  <input type="button" style="margin-left:15px;" onclick="javascript:doClear();" value="Clear" />
+                  <input type="button" class="btn btn-success" onclick="javascript:open_status_page();" id="eventReportPageButton" value="Generate Status Page"/>
+                  <input type="button" class="btn btn-default" style="margin-left:15px;" onclick="javascript:doClear();" value="Clear" />
                 </div>
               </div>
             </div>

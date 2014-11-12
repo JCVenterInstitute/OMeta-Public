@@ -66,9 +66,9 @@
                 </div>
               </div>
               <div id="buttonDiv" style="margin:15px 10px 5px 0;width:100%;">
-                <input type="button" onclick="submit();" id="setup" value="Setup Role"/>
-                <input type="button" onclick="popup();" id="addRole" value="Add Actor Role"/>
-                <input type="button" onclick="doClear();" value="Clear" />
+                <input type="button" class="btn btn-success" onclick="submit();" id="setup" value="Setup Role"/>
+                <input type="button" class="btn btn-info" class="btn btn-default" onclick="popup();" id="addRole" value="Add Actor Role"/>
+                <input type="button" class="btn btn-default" onclick="doClear();" value="Clear" />
               </div>
             </div>
           </s:form>
