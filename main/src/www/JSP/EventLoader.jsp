@@ -196,7 +196,7 @@
                 <input type="button" class="btn btn-success" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to DPCC" disabled="true"/>
                 <input type="button" class="btn btn-default" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Event Line" style="display:none;"/>
                 <input type="button" class="btn btn-default" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
-                <input type="button" class="btn btn-default" onclick="javascript:return;" id="exportButton" value="Export to .csv Template"/>
+                <!-- <input type="button" class="btn btn-default" onclick="javascript:return;" id="exportButton" value="Export to .csv Template"/> -->
                 <!-- <input type="button" onclick="javascript:button.clear_form();" value="Clear Form" /> -->
               </div>
             </div>
