@@ -77,9 +77,12 @@
                   <div class="row">
                     <div class="col-md-1"><strong>Submit Data By:</strong></div>
                     <div class="col-md-11">
-                      <input type="radio" name="loadType" class="loadRadio" value="form"><strong>Single Sample (Web Form)</strong></input>&nbsp;&nbsp;
-                      <input type="radio" name="loadType" class="loadRadio" value="grid"><strong>Multiple Samples (Web Form)</strong></input>&nbsp;&nbsp;
-                      <input type="radio" name="loadType" class="loadRadio" value="file"><strong>Multiple Samples (Excel Template)</strong></input> 
+                      <input type="radio" name="loadType" class="loadRadio" value="form" id="r_sw" />
+                      <label for="r_sw"><strong>Single Sample (Web Form)</strong></label>
+                      <input type="radio" name="loadType" class="loadRadio" value="grid" id="r_mw" />
+                      <label for="r_mw"><strong>Multiple Samples (Web Form)</strong></label>
+                      <input type="radio" name="loadType" class="loadRadio" value="file" id="r_mf" />
+                      <label for="r_mf"><strong>Multiple Samples (Excel Template)</strong></label>
                     </div>
                   </div>
                   <div class="row row_spacer" id="projectSelectRow">
@@ -112,14 +115,15 @@
                       <div class="col-md-1">Project Name</div>
                       <div class="col-md-11">
                         <input type="text" id="_projectName" name="loadingProject.projectName" size="33px"/>
+                        <hidden name="loadingProject.isPublic" value="1" />
                       </div>
                     </div>
-                    <div class="row row_spacer">
+                    <!-- <div class="row row_spacer">
                       <div class="col-md-1">Public</div>
                       <div class="col-md-11">
                         <s:select id="_isProjectPublic" list="#{0:'No', 1:'Yes'}" name="loadingProject.isPublic" required="true" />
                       </div>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
                 <div id="sampleDetailInputDiv">
@@ -624,12 +628,18 @@
                   )
                 );
                 $eventLine.append(
-                  $('<td/>').append(
-                    $('<select/>').attr({
-                      'name': 'gridList[' + g_gridLineCount + '].projectPublic'
-                    }).append(vs.ynoption)
-                  )
+                  $('<hidden/>').attr({
+                    'name': 'gridList[' + g_gridLineCount + '].projectPublic',
+                    'value': '1'
+                  })
                 );
+                // $eventLine.append(
+                //   $('<td/>').append(
+                //     $('<select/>').attr({
+                //       'name': 'gridList[' + g_gridLineCount + '].projectPublic'
+                //     }).append(vs.ynoption)
+                //   )
+                // );
               }
             }
             var ltVal, bean, avCnt = 0;
@@ -761,7 +771,9 @@
 
         //empty project select box
         $('#_projectSelect ~ input').click(function() {
-          if($(this).val() === '--select center project--') {
+          var $projectSel = $('#_projectSelect');
+          if($projectSel.val() === '0') {
+            $projectSel.val('0');
             $(this).val('');
           }
         });
@@ -842,11 +854,16 @@
 
         //handle Create Project
         var filter = '${filter}';
-        if(filter === 'pr') {
+        if(filter === 'pr') { //project registration
           $('#projectSelectRow').hide();
           $('#_eventSelect').prop('disabled', true);
           $('#pageTitle').html('Project Registration');
-        } else if(filter === 'su') {
+          $('#saveButton, #validateButton').hide(); //hide buttons
+          $('input:radio[id^="r_"]').each(function(i,v) { //change view types to include project
+            var $labelNode = $('label[for="' + $(v).attr('id') + '"]');
+            $labelNode.html($labelNode.html().replace('Sample', 'Project'));
+          })
+        } else if(filter === 'su') { //edit data redirected from search and edit page
           $('#pageTitle').html('Edit Data');
           $('#eventTitle').html('Edit Data For');
         }
