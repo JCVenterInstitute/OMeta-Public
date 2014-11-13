@@ -39,6 +39,8 @@ public class TemplatePreProcessingUtils {
 
         headers.add(new HeaderDetail(Constants.ATTR_PROJECT_NAME, true, "string", "", null));
 
+        /*
+         remove sample information and public flag
         if (isSampleRegistration) { // parent sample name for sample registration
             headers.add(new HeaderDetail(Constants.ATTR_PARENT_SAMPLE_NAME, false, "string", "", null));
         }
@@ -46,6 +48,7 @@ public class TemplatePreProcessingUtils {
         if (isProjectRegistration || isSampleRegistration) { //public flag
             headers.add(new HeaderDetail(Constants.ATTR_PUBLIC_FLAG, true, "int", "", null));
         }
+        */
 
         boolean sampleRequired = false;
         for (EventMetaAttribute ema : emas) {
@@ -57,7 +60,8 @@ public class TemplatePreProcessingUtils {
             ));
         }
 
-        if(isSampleRegistration || sampleRequired) {
+        //if(isSampleRegistration || sampleRequired) { //remove sample name for sample registration
+        if(!isSampleRegistration && sampleRequired) {
             headers.add(1, new HeaderDetail(Constants.ATTR_SAMPLE_NAME, true, "string", "", null));
         }
 
@@ -88,7 +92,9 @@ public class TemplatePreProcessingUtils {
             i++;
         }
 
-        csvContents.append("\n" + comments.toString());
+        // remove hint line
+        // csvContents.append("\n" + comments.toString());
+
         csvContents.append("\n" +
                 (!isProjectRegistration ? projectName : "") +
                 (sampleName != null && !sampleName.trim().isEmpty() ? "," + sampleName : "")
