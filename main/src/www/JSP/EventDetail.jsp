@@ -99,23 +99,23 @@
             <div id="middle_content_template">
               <!--<div id="columnsTable"></div>  for column listing-->
               <div id="statusTableDiv">
-                <div id="tableTop">
-                  <div class="row">
-                    <div class="col-md-2">Center Project</div>
-                    <div class="col-md-10 combobox">
-                      <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
-                                  list="projectList" name="projectId" headerKey="0" headerValue=""
-                                  listValue="projectName" listKey="projectId" required="true"/>  
+                  <div id="tableTop">
+                    <div class="row">
+                      <div class="col-md-2">Center Project</div>
+                      <div class="col-md-10 combobox">
+                        <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
+                                    list="projectList" name="projectId" headerKey="0" headerValue="Select by Center Project ID"
+                                    listValue="projectName" listKey="projectId" required="true"/>
+                      </div>
+                    </div>
+                    <div class="row row_spacer">
+                      <div class="col-md-2">Sample</div>
+                      <div class="col-md-10 combobox">
+                        <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':'Select by Sample'}"
+                                    name="selectedSampleId" required="true"/>
+                      </div>
                     </div>
                   </div>
-                  <div class="row row_spacer">
-                    <div class="col-md-2">Sample</div>
-                    <div class="col-md-10 combobox">
-                      <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':''}"
-                                  name="selectedSampleId" required="true"/> 
-                    </div>
-                  </div>
-                </div>
 
                 <!-- project -->
                 <div style="margin:25px 10px 0 0;"><h1 class="csc-firstHeader">Project Details</h1></div>
@@ -418,6 +418,16 @@
 
         utils.combonize('statusTableDiv');
         utils.initDatePicker();
+
+
+        //empty project select box
+        $('#_projectSelect ~ input').click(function() {
+          var $projectNode = $('#_projectSelect');
+          if($projectNode.val() === '0') {
+            $(this).val('');
+            $projectNode.val('0');
+          }
+        });
 
         $('#fromDate, #toDate').change( function() {
           _page.get.edt($('#_projectSelect').val(), $('#_sampleSelect').val());
