@@ -42,6 +42,7 @@
               <li><a href="eventLoader.action?filter=pr">Project Registration</a></li>
               <li><a href="eventLoader.action?filter=sr">Submit Data</a></li>
               <li><a href="eventDetail.action">Search and Edit Data</a></li>
+              <li><a href="eventHistory.action">Event History</a></li>
               <li><a href="eventReport.action">Report</a></li>
             </ul>
           </li>
