@@ -89,7 +89,7 @@ public class Constants {
     public static final String ATTR_SAMPLE_STATUS = "Sample Status";
     public static final String ATTR_PUBLIC_FLAG = "Public";
     public static final String ATTR_SUBMISSION_ID = "Submission ID";
-    public static final String ATTR_SAMPLE_IDENTIFIER = "Sample Identifier";
+    public static final String ATTR_SAMPLE_IDENTIFIER = "Sample_Identifier";
     public static final String[] READ_ONLY_ATTRIBUTES = {
             Constants.ATTR_SUBMISSION_ID,
             Constants.ATTR_SAMPLE_STATUS
@@ -103,7 +103,7 @@ public class Constants {
     public static final String DPCC_STATUS_SUBMITTED = "Data submitted to DPCC";
 
     public static final String TEMPLATE_COMMENT_INDICATOR = "#";
-    public static final String TEMPLATE_EVENT_TYPE_IDENTIFIER = "EventType";
+    public static final String TEMPLATE_EVENT_TYPE_IDENTIFIER = "DataTemplate";
 
     //variables for creating external links
     public static String NEW_WINDOW_LINK_HTML = "window.open('%s');";
