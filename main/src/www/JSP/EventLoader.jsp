@@ -55,6 +55,7 @@
             <s:hidden name="filter" id="filter"/>
             <s:hidden name="eventName" id="eventName" />
             <s:hidden name="projectName" id="projectName" />
+            <s:hidden name="sampleName" id="sampleName" />
             
             <div id="HeaderPane" style="margin:15px 0 0 30px;">
               <div class="panelHeader" id="pageTitle">Submit Data</div>
@@ -126,6 +127,7 @@
                     </div> -->
                   </div>
                 </div>
+
                 <div id="sampleDetailInputDiv">
                   <div style="margin:25px 10px 0 0;">
                     <h1 class="csc-firstHeader">Sample Information</h1>
@@ -564,7 +566,7 @@
         },
         submit_form: function(type, status) {
           $("#projectName").val(utils.getProjectName());
-          $("#sampleName").val(utils.getSampleName());
+          //$("#sampleName").val(utils.getSampleName());
           $("#eventName").val(utils.getEventName());
           $("#jobType").val(type);
           $("#status").val(status);
@@ -834,15 +836,15 @@
           </s:iterator>
           <s:set name="oldLoadingSample" value="loadingSample" />
           <s:if test="%{#oldLoadingSample != null && #oldLoadingSample.getSampleName() != null}">
-            $('#_sampleName').val('<s:property value="#oldLoadingSample.sampleName"/>');
-            utils.preSelect('_parentSampleSelect', '<s:property value="#oldLoadingSample.parentSampleName"/>');
-            utils.preSelect('_isSamplePublic', '<s:property value="#oldLoadingSample.isPublic"/>');
+            //$('#_sampleName').val('<s:property value="#oldLoadingSample.sampleName"/>');
+            // utils.preSelect('_parentSampleSelect', '<s:property value="#oldLoadingSample.parentSampleName"/>');
+            // utils.preSelect('_isSamplePublic', '<s:property value="#oldLoadingSample.isPublic"/>');
           </s:if>
           <s:else>
             <s:set name="oldLoadingProject" value="loadingProject" />
             <s:if test="%{#oldLoadingProject != null && #oldLoadingProject.getProjectName() != null}">
               $('#_projectName').val('<s:property value="#oldLoadingProject.projectName"/>');
-              utils.preSelect('_isProjectPublic', '<s:property value="#oldLoadingProject.isPublic"/>');
+              //utils.preSelect('_isProjectPublic', '<s:property value="#oldLoadingProject.isPublic"/>');
             </s:if>
           </s:else>
         </s:elseif>

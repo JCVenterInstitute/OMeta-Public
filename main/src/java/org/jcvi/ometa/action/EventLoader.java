@@ -172,8 +172,9 @@ public class EventLoader extends ActionSupport implements Preparable {
                     }
                     singleGridBean.setSampleName(isSampleRegistration ? this.loadingSample.getSampleName() : this.sampleName);
                     if(isSampleRegistration) {
-                        singleGridBean.setSamplePublic(Integer.toString(this.loadingSample.getIsPublic()));
-                        singleGridBean.setParentSampleName(this.loadingSample.getParentSampleName());
+                        //singleGridBean.setSamplePublic(Integer.toString(this.loadingSample.getIsPublic()));
+                        singleGridBean.setSamplePublic("1");
+                        //singleGridBean.setParentSampleName(this.loadingSample.getParentSampleName());
                     }
                     singleGridBean.setBeanList(this.beanList);
                     singleGridList.add(singleGridBean);
@@ -182,6 +183,10 @@ public class EventLoader extends ActionSupport implements Preparable {
                     psewt.loadAll(null, loadParameter);
 
                     this.pageDataReset(isProjectRegistration, isSampleRegistration, this.status);
+
+                    if(isSampleRegistration) {
+                        this.sampleName = singleGridBean.getSampleName();
+                    }
 
                     addActionMessage("Event has been loaded successfully.");
 
