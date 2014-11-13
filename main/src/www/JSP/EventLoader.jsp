@@ -383,8 +383,8 @@
               } else {
                 if(utils.checkPR(en)) {
                   $gridHeaders.append(
-                    $('<th/>').addClass('tableHeaderNoBG').append('Project Name<br/>', requireImgHtml),
-                    $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
+                    $('<th/>').addClass('tableHeaderNoBG').append('Project Name<br/>', requireImgHtml)
+                    // $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
                   );
                 }
               }
@@ -625,13 +625,10 @@
                       'name': 'gridList[' + g_gridLineCount + '].projectName',
                       'id': '_projectName' + g_gridLineCount
                     })
-                  )
-                );
-                $eventLine.append(
-                  $('<hidden/>').attr({
+                  ).append($('<hidden/>').attr({
                     'name': 'gridList[' + g_gridLineCount + '].projectPublic',
                     'value': '1'
-                  })
+                  }))
                 );
                 // $eventLine.append(
                 //   $('<td/>').append(
