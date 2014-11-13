@@ -48,9 +48,13 @@
 
             <url-pattern>forceLoginForProductionStatus.action</url-pattern>
             <url-pattern>forceLoginForEventDetails.action</url-pattern>
+            <url-pattern>forceLoginForEventHistory.action</url-pattern>
 
             <url-pattern>eventDetail.action</url-pattern>
             <url-pattern>/JSP/EventDetail.jsp</url-pattern>
+
+            <url-pattern>eventHistory.action</url-pattern>
+            <url-pattern>/JSP/EventHistory.jsp</url-pattern>
 
             <url-pattern>eventLoader.action</url-pattern>
             <url-pattern>/JSP/eventLoader.jsp</url-pattern>
@@ -82,8 +86,8 @@
         <auth-method>FORM</auth-method>
         <realm-name>jcvi</realm-name>
         <form-login-config>
-        <form-login-page>/JSP/Login.jsp</form-login-page>
-        <form-error-page>/JSP/ErrorOnLogin.jsp</form-error-page>
+            <form-login-page>/JSP/Login.jsp</form-login-page>
+            <form-error-page>/JSP/ErrorOnLogin.jsp</form-error-page>
         </form-login-config>
     </login-config>
 
