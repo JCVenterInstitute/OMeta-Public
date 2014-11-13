@@ -101,16 +101,16 @@
               <div id="statusTableDiv">
                 <div id="tableTop">
                   <div class="row">
-                    <div class="col-md-1">Project</div>
-                    <div class="col-md-11 combobox">
+                    <div class="col-md-2">Center Project</div>
+                    <div class="col-md-10 combobox">
                       <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
                                   list="projectList" name="projectId" headerKey="0" headerValue=""
                                   listValue="projectName" listKey="projectId" required="true"/>  
                     </div>
                   </div>
                   <div class="row row_spacer">
-                    <div class="col-md-1">Sample</div>
-                    <div class="col-md-11 combobox">
+                    <div class="col-md-2">Sample</div>
+                    <div class="col-md-10 combobox">
                       <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':''}"
                                   name="selectedSampleId" required="true"/> 
                     </div>
@@ -132,9 +132,9 @@
                 <div style="margin:25px 10px 0 0;">
 
                   <h1 class="csc-firstHeader">Sample Details
-                    <a href="javascript:_page.button.toggleSample();">
+                    <!-- <a href="javascript:_page.button.toggleSample();">
                       <img id="sampleToggleImage"/>
-                    </a>
+                    </a> -->
                   </h1>
                 </div>
                 <div id="sampleTableDiv" style="margin:0 10px 5px 0;clear:both">
@@ -367,7 +367,7 @@
           if(option.value!=null && option.text!=null && option.text!='') {
             _page.change.sample($('#_projectSelect').val(), option.value);
             
-            _page.button.showSample();
+            //_page.button.showSample();
           }
         }
       }
@@ -431,6 +431,7 @@
           "bServerSide": true,
           "sPaginationType": "full_numbers",
           "sAjaxSource": "",
+          "iDeferLoading": 0,
           "fnServerData": function (sSource, aoData, fnCallback) {
             if(sSource!=='') {
               $.ajax({
@@ -578,7 +579,8 @@
         // $('.dataTables_filter[id$="_filter"]').each(function(i1) {
         //   $(this).append('<img id="dosearch_'+this.id+'" style="float:right;" class="ui-icon ui-icon-search" title="Search" />&nbsp;');
         // });
-        $('#sampleTableDiv, #eventTableDiv, #eventDateDiv').toggle(300);
+        
+        //$('#sampleTableDiv, #eventTableDiv, #eventDateDiv').toggle(300);
 
         utils.error.check();
       });
