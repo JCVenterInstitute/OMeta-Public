@@ -25,7 +25,9 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
+import org.jcvi.ometa.configuration.AccessLevel;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.engine.MultiLoadParameter;
 import org.jcvi.ometa.exception.DetailedException;
@@ -126,7 +128,10 @@ public class EventLoader extends ActionSupport implements Preparable {
         } else {
             projectNameList.add(projectNames);
         }
-        projectList = readPersister.getProjects(projectNameList);
+
+        String userName = ServletActionContext.getRequest().getRemoteUser();
+        projectList = readPersister.getAuthorizedProjects(userName, AccessLevel.View);
+        // projectList = readPersister.getProjects(projectNameList);
     }
 
     /**

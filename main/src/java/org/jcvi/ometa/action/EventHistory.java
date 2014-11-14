@@ -1,3 +1,5 @@
+package org.jcvi.ometa.action;
+
 /*
  * Copyright J. Craig Venter Institute, 2013
  *
@@ -19,8 +21,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.jcvi.ometa.action;
-
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -37,14 +37,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-/**
- * Created by IntelliJ IDEA.
- * User: hkim
- * Date: 4/25/11
- * Time: 1:58 PM
- * To change this template use File | Settings | File Templates.
- */
-public class EventDetail extends ActionSupport {
+public class EventHistory extends ActionSupport {
     private Logger logger = Logger.getLogger(EventDetail.class);
 
     private ReadBeanPersister readPersister;
@@ -56,12 +49,12 @@ public class EventDetail extends ActionSupport {
     private Long projectId;
     private Long sampleId;
 
-    public EventDetail() {
+    public EventHistory() {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
         readPersister = new ReadBeanPersister( props );
     }
 
-    public String eventDetail() {
+    public String eventHistory() {
         String returnValue = ERROR;
 
         try {
@@ -76,7 +69,7 @@ public class EventDetail extends ActionSupport {
 
             String userName = ServletActionContext.getRequest().getRemoteUser();
             projectList = readPersister.getAuthorizedProjects( userName, AccessLevel.View );
-            //projectList = readPersister.getProjects( projectNameList );
+            // projectList = readPersister.getProjects( projectNameList );
 
             returnValue = SUCCESS;
 

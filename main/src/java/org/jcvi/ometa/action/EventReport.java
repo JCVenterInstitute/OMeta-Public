@@ -24,10 +24,11 @@ package org.jcvi.ometa.action;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
+import org.jcvi.ometa.configuration.AccessLevel;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
-import org.jcvi.ometa.model.Project;
 import org.jcvi.ometa.exception.ForbiddenResourceException;
 import org.jcvi.ometa.exception.LoginRequiredException;
+import org.jcvi.ometa.model.Project;
 import org.jcvi.ometa.utils.Constants;
 import org.jtc.common.util.property.PropertyHelper;
 
@@ -72,8 +73,8 @@ public class EventReport extends ActionSupport {
                 projectNameList.add( projectNames );
 
             String userName = ServletActionContext.getRequest().getRemoteUser();
-            //projectList = readPersister.getAuthorizedProjects( userName, AccessLevel.View );
-            projectList = readPersister.getProjects( projectNameList );
+            projectList = readPersister.getAuthorizedProjects(userName, AccessLevel.View);
+            // projectList = readPersister.getProjects( projectNameList );
 
             returnValue = SUCCESS;
 
