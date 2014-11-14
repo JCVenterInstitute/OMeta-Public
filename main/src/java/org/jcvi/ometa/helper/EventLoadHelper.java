@@ -114,8 +114,15 @@ public class EventLoadHelper {
         boolean isSampleRegistration = (eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) && sample.getSampleName() != null && !sample.getSampleName().isEmpty());
 
         List<FileReadAttributeBean> loadingList = null;
-        if (frab != null && frab.size() > 0) {
+
+        if (isProjectRegistration) {
+            if (frab != null && frab.size() > 0) {
+                                    loadingList = this.feedAndFilterFileReadBeans(eventName, isProjectRegistration ? project.getProjectName() : projectName, null, frab);
+                        }
+        }else{
+          if (frab != null && frab.size() > 0) {
             loadingList = this.feedAndFilterFileReadBeans(eventName, isProjectRegistration ? project.getProjectName() : projectName, sample.getSampleName(), frab);
+          }
         }
 
         if (isProjectRegistration) {
@@ -181,7 +188,8 @@ public class EventLoadHelper {
             loadParameter.addProjectPair(feedProjectData(project, parentProject), loadingList, newPmas, newSmas, newEmas, rowIndex);
         } else {
             boolean listHasData = loadingList != null && loadingList.size() > 0;
-            boolean isProjectLevelEvent = eventName.toLowerCase().contains("project");
+            boolean isProjectLevelEvent = isProjectRegistration || eventName.toLowerCase().contains(Constants.EVENT_PROJECT_UPDATE.toLowerCase());
+            boolean isSampleLevelEvent = isSampleRegistration || eventName.toLowerCase().contains(Constants.EVENT_SAMPLE_UPDATE.toLowerCase());
             boolean isStatusGiven = status != null && !status.isEmpty();
 
             if(project == null || project.getProjectName() == null || project.getProjectName().isEmpty()) {
@@ -192,9 +200,13 @@ public class EventLoadHelper {
                 throw new Exception("Sample is required.");
             }
 
-            if(isStatusGiven && (status.equals("submit") || status.equals("validate")) && listHasData && !isProjectLevelEvent) { //DPCC data validation
-                this.validateDataForDPCC(loadingList, rowIndex);
-                if(isSampleRegistration || eventName.contains(Constants.EVENT_SAMPLE_UPDATE)) {
+            //if save button is pressed then status should be set to Editing and status should be validated for Data Submitted to DPCC
+            if(isStatusGiven && listHasData && !isProjectLevelEvent) {
+                if(status.equals("submit") || status.equals("validate")) { //run DPCC validation
+                    this.validateDataForDPCC(loadingList, rowIndex);
+                }
+
+                if(isSampleLevelEvent && !status.equals("validate")) { //do not update status for validate request
                     this.updateSampleStatus(loadingList, project, sample.getSampleName(), status, rowIndex);
                 }
             }
