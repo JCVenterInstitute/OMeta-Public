@@ -31,7 +31,7 @@
                             <td>
                                 <select name="jobType" id="jobType">
                                     <option value="template_c">CSV</option>
-                                    <option value="template_e">Excel</option>
+                                    <!-- <option value="template_e">Excel</option> -->
                                 </select>
                             </td>
                         </tr>
