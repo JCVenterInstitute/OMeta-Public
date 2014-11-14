@@ -161,7 +161,7 @@
                   <h5><strong>Data Submission</strong></h5>
                 </div>
                 <div style="font-size:0.9em;padding-top:15px;" class="col-md-10">
-                  [<img style="vertical-align:bottom;" src="images/icon/req.png"/><img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Required, <img style="vertical-align:bottom;" src="images/icon/ontology.png"/>-Ontology]
+                  [<img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Required, <img style="vertical-align:bottom;" src="images/icon/ontology.png"/>-Ontology]
                 </div>
               </div>
               <div id="attributeInputDiv" style="clear:both;">
@@ -366,7 +366,7 @@
               g_gridLineCount=0;
               g_avDic={};
 
-              var requireImgHtml = '<img class="attributeIcon" src="images/icon/req.png"/>';
+              var requireImgHtml = '<img class="attributeIcon" src="images/icon/info_r.png"/>';
 
               // //add table headers for grid view
               var gridHeaders = '', $gridHeaders = $('<tr/>');
@@ -407,9 +407,9 @@
                       (_ma.label != null && _ma.label !== '' ?_ma.label:_ma.lookupValue.name),
                       "&nbsp;",
                       (
-                        isDesc && isRequired ? '<img class="attributeIcon" src="images/icon/info_r.png"/>'
+                        isRequired ? requireImgHtml
                           : isDesc ? '<img class="attributeIcon" src="images/icon/info.png"/>'
-                            : isRequired ? requireImgHtml : ''
+                            : ''
                       ),
                       (hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
                     )
