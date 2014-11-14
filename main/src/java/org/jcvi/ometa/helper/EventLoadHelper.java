@@ -62,6 +62,8 @@ public class EventLoadHelper {
                     loadingProject = new Project();
                     loadingProject.setProjectName(gBean.getProjectName());
                     loadingProject.setIsPublic(gBean.getProjectPublic() == null ? 0 : Integer.valueOf(gBean.getProjectPublic()));
+
+                    loadingProject.setIsSecure(1); //secure all new projects
                 } else {
                     if(projectName == null || projectName.isEmpty()) {
                         projectName = gBean.getProjectName();
