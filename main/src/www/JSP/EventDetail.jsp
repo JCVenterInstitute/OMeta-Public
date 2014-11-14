@@ -261,7 +261,7 @@
                       // eDT.fnNewAjax("eventDetailAjax.action?type=sdt&projectId=0");
                   }
                   $("#editProjectBtn, #editSampleBtn").attr("disabled", "true");
-                  utils.error.add("You do not have permission to access the project.");
+                  utils.error.add(utils.error.message.permission);
                 }
               },
               sample: function(projectId, sampleId) {

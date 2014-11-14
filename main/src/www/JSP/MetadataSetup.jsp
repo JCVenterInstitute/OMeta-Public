@@ -254,7 +254,7 @@
             if(res.dataMap.errorMsg) {
             	var err = res.dataMap.errorMsg;
             	if(err.indexOf("Forbidden") > 0) {
-            		err = "You do not have permission to access the project.";
+            		err = utils.error.message.permission;
             	}
               utils.error.add(err);
             } else {

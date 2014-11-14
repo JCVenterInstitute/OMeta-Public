@@ -134,6 +134,9 @@ var utils = {
                 "<strong>" + msg + "</strong>"
             );
             $('#errorMessagesPanel').append($errorNode);
+        },
+        message: {
+            permission: "You do not have the permission to access the project"
         }
     }
 };

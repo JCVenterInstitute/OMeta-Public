@@ -193,7 +193,7 @@
                   if(eDT) {
                       eDT.fnNewAjax("eventDetailAjax.action?type=edt&projectId=0");
                   }
-                  utils.error.add("You do not have permission to access the project.");
+                  utils.error.add(utils.error.message.permission);
                 }
               },
               sample: function(projectId, sampleId) {

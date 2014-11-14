@@ -341,6 +341,11 @@
             },
             event: function(data) {
               var list = vs.empty;
+              
+              if(data['aaData'] == null && data['err'].indexOf('Forbidden') > 0) {
+                utils.error.add(utils.error.message.permission);
+                return false;
+              }
               $.each(data, function(i1,v1) {
                 if(v1 != null) {
                   $.each(v1, function(i2,v2) {
