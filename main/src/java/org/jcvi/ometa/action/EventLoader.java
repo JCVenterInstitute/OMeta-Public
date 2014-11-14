@@ -363,9 +363,10 @@ public class EventLoader extends ActionSupport implements Preparable {
             if(isSampleRegistration) { //update registration event to update on save requests
                 this.eventName = this.eventName.replaceAll(Constants.EVENT_SAMPLE_REGISTRATION, Constants.EVENT_SAMPLE_UPDATE);
                 this.filter = "su";
-            } else if(isProjectRegistration) {
-                this.eventName = this.eventName.replaceAll(Constants.EVENT_PROJECT_REGISTRATION, Constants.EVENT_PROJECT_UPDATE);
-                this.filter = "pu";
+            }
+        } else {
+            if(status.equals("submit") && isProjectRegistration) { // do not reset project and event for project registration
+                resetIdsAndNames = false;
             }
         }
 
