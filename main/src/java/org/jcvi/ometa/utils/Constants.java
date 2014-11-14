@@ -124,4 +124,8 @@ public class Constants {
     public static String BEI_URL="http://www.beiresources.org/";
     public static String STEC_URL="http://www.shigatox.net/new/";
     public static String NCPF_URL="http://www.hpacultures.org.uk/collections/ncpf.jsp";
+
+
+    /* ERROR MESSAGES */
+    public static String ERROR_DPCC_NOT_MODIFIABLE = "Sample already has been submitted to DPCC. No changes can be made.";
 }
