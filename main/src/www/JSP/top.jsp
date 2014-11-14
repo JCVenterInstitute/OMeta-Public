@@ -3,7 +3,7 @@
 
 <header id="header" class="header clearfix" role="banner">
   <div class="site-title">
-    <h1>Centers of Excellence for Influenza Research and Surveillance</h1>
+    <h1 class="container">Centers of Excellence for Influenza Research and Surveillance</h1>
   </div>
 
   <div class="top-links container">
