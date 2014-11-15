@@ -31,7 +31,7 @@
       <nav class="navbar visible-lg" role="navigation">
         <ul id="menu-the-main-menu" class="nav navbar-nav">
           <li id="menu-item-9" class="dropdown">
-            <a href="/dpcc/reports" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Reports &amp; Analytics <span class="caret"></span></a>
+            <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Reports &amp; Analytics <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="centerreport.action">CEIRS Center Reports</a></li>
               <li><a href="analytics.action">Web Analytics</a></li>
@@ -59,8 +59,8 @@
             <a href="dpcc_help.action" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Help <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="support.action">Support</a></li>
-              <li><a href="#">Knowledgebase</a></li>
-              <li><a href="#">Training</a></li>
+              <li><a href="dpcc_help.action">Knowledgebase</a></li>
+              <li><a href="dpcc_help.action">Training</a></li>
             </ul>
           </li>
           <!-- <li id="menu-item-187"><a href="#">Support</a></li> -->

@@ -177,6 +177,17 @@
             </result>
         </action>
 
+        <action name="dropboxLoader" >
+        <!--<action name="dropboxLoader" class="org.jcvi.ometa.action.dropboxLoader" method="execute">-->
+            <result>/JSP/DropboxLoader.jsp</result>
+<!--
+             <result name="forbidden">/JSP/DropboxLoader.jsp</result>
+             <result name="success">/JSP/DropboxLoader.jsp</result>
+             <result name="error">/JSP/DropboxLoader.jsp</result>
+             <result name="input" type="redirectAction">error</result>
+             -->
+         </action>
+
         <!-- POPUP -->
         <action name="projectEditOpen" class="org.jcvi.ometa.action.Editor" method="projectEditOpen">
             <result name="success">/JSP/popup/LPopupProjectEdit.jsp</result>
