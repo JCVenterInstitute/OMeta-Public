@@ -44,7 +44,7 @@
      	#dropbox {
 
      		border-style: dashed dashed dashed dashed ;
-     		border-color: gray;
+     		border-color: #3276b1;
      		width: 500px;
      		height: 200px
 
@@ -69,13 +69,13 @@
                                <div class="panel-body">
                                    <div class="form-group">
                                        <div class="row row_spacer" id="projectSelectRow">
-                                         <div class="col-md-1">Select file</div>
+                                         <div class="col-md-1"><strong>Select file</strong></div>
                                          <div class="col-md-11">
                                              <input id="multiple" type="file" multiple>
                                          </div>
                                        </div>
                                    </div>
-                                   <p>Drap and Drop file in box to upload </p>
+                                   <p>Drap and Drop file in box to upload (Max file size is 2GB) </p>
                                    <div id="dropbox"></div>
                                </div>
                            </div>
