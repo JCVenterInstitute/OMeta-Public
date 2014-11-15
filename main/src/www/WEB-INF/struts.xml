@@ -286,6 +286,11 @@
         <action name="support">
             <result>/JSP/support.jsp</result>
         </action>
+
+        <action name="dpcc_help">
+            <result>/JSP/dpcc_help.jsp</result>
+        </action>
+
         <action name="centerreport">
             <result>/JSP/centerreport.jsp</result>
         </action>

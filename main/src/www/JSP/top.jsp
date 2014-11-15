@@ -56,7 +56,7 @@
             </ul>
           </li>
           <li id="menu-item-11" class="dropdown">
-            <a href="/dpcc/help/" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Help <span class="caret"></span></a>
+            <a href="dpcc_help.action" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Help <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="support.action">Support</a></li>
               <li><a href="#">Knowledgebase</a></li>
