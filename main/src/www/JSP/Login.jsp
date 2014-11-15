@@ -36,26 +36,38 @@
 								<h1>CEIRS Member Login</h1>
 							</div>
 							<div class="row">
+
 								<div class="col-12-xs col-sm-4 col-md-4">
+
 									<div class="panel panel-primary">
 										 <div class="panel-heading">
 										 	<h3 class="panel-title">Sign In</h3>
 										 </div>
 										 <div class="panel-body">
 										 	<form method="POST" action="j_security_check" id="loginPage" name="loginPage" role="form">
-										 		<div class="form-group">
-										 			<label for="usernameInput">Username</label>
-										 			<input type="text" class="form-control" name="j_username" id="id" placeholder="Enter username">
-										 		</div>
-										 		<div class="form-group">
-										 			<label for="passwordInput">Password</label>
-										 			<input type="password" class="form-control" name="j_password" id="password" placeholder="Password">
-										 		</div>
-										 		<button type="submit" class="btn btn-sm btn-default">Sign in</button>
-										 	</form>
+                        <div class="form-group">
+                          <label for="usernameInput">Username</label>
+                          <input type="text" class="form-control" name="j_username" placeholder="Enter username">
+                        </div>
+                        <div class="form-group">
+                          <a class="pull-right" href="#">Forgot Password?</a>
+                          <label for="passwordInput">Password</label>
+                          <input type="password" class="form-control" name="j_password" id="password" placeholder="Password">
+                        </div>
+                        <button id="loginButton" type="submit" class="btn btn-block btn-lg btn-primary">Sign in</button>
+                        <!-- <button type="submit" disabled="disabled" class="btn btn-sm btn-default">Sign in</button> -->
+                        <hr>
+                        <div class="row">
+                          <div class="col-sm-12">
+                            <p><strong>Don't have an account?</strong> <a href="access.php">Request Access</a></p>
+                          </div>
+                        </div>
+                      </form>
 										 </div>
 									</div>
+
 								</div>
+
 								<div class="col-sm-8 col-md-8 hidden-xs">
 									<p>Welcome to the future home of the CEIRS Data Processing and Coordinating site. This area of the site is under development with an expected release date of November 18, 2014.</p>
 									<p>Here, members of the CEIRS network will be able to:</p>
@@ -66,6 +78,7 @@
 										<li>Access training and education materials to help investigators take full advantage of the services offered by the DPCC</li>
 									</ol>
 								</div>
+
 							</div>
 						</div>
 				</div>
