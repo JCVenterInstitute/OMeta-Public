@@ -3,7 +3,7 @@
 
 <header id="header" class="header clearfix" role="banner">
   <div class="site-title">
-    <h1 class="container">Centers of Excellence for Influenza Research and Surveillance</h1>
+    <h1 style="margin-left:20px;">Centers of Excellence for Influenza Research and Surveillance</h1>
   </div>
 
   <div class="top-links container">
@@ -13,10 +13,13 @@
     </div>
   </div>
 
-  <div class="inner-header container">
-    <div id="logo" class="h1"><a href="/" rel="nofollow"></a></div>
+  <div class="inner-header">
+    <div id="logo" class="h1"><a href="secureIndex.action" rel="nofollow"></a></div>
 
     <div class="pull-right">
+      <!-- <div style="min-height:50px;line-height:50px" class="pull-right authuser">
+        <div id="currUserName" style="color:#fff">Welcome, Username</div>
+      </div> -->
   
       <!-- collapse menu button -->
       <div id="hide-menu" class="btn-header pull-right visible-xs visible-sm visible-md">
@@ -25,8 +28,46 @@
       <!-- end collapse menu -->
     
       <!-- #MOBILE -->            
-
       <nav class="navbar visible-lg" role="navigation">
+        <ul id="menu-the-main-menu" class="nav navbar-nav">
+          <li id="menu-item-9" class="dropdown">
+            <a href="/dpcc/reports" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Reports &amp; Analytics <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="centerreport.action">CEIRS Center Reports</a></li>
+              <li><a href="webanalytic.action">Web Analytics</a></li>
+            </ul>
+          </li>
+          <li id="menu-item-10" class="dropdown">
+            <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Data Submission <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="eventLoader.action?filter=sr">Submit Data</a></li>
+              <li><a href="eventDetail.action">Search and Edit Data</a></li>
+              <li><a href="eventHistory.action">Event History</a></li>
+              <li><a href="eventReport.action">Report</a></li>
+            </ul>
+          </li>
+          <li id="admin_li" class="dropdown">
+            <a href="#" data-toggle="dropdown">Admin<span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="eventLoader.action?filter=pr">Project Registration</a></li>
+              <li><a href="projectSetup.action">Project Setup</a></li>
+              <li><a href="metadataSetup.action?type=e">Metadata Setup</a></li>
+              <li><a href="actorRole.action">User/Role</a></li>
+            </ul>
+          </li>
+          <li id="menu-item-11" class="dropdown">
+            <a href="/dpcc/help/" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Help <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu">
+              <li><a href="support.action">Support</a></li>
+              <li><a href="#">Knowledgebase</a></li>
+              <li><a href="#">Training</a></li>
+            </ul>
+          </li>
+          <!-- <li id="menu-item-187"><a href="#">Support</a></li> -->
+          <li style="margin-right: 90px;"></li>
+        </ul>
+      </nav>
+      <!-- <nav class="navbar visible-lg" role="navigation">
         <ul id="menu-the-main-menu" class="nav navbar-nav">
           <li id="menu-item-9" class="dropdown">
             <a href="#" data-toggle="dropdown">Data Statistics <span class="caret"></span></a>
@@ -56,7 +97,7 @@
           </li>
           <li id="menu-item-187"><a href="#">Support</a></li>
         </ul>
-      </nav>
+      </nav> -->
 
     </div>
   </div>
