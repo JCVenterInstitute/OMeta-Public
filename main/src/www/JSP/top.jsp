@@ -34,7 +34,7 @@
             <a href="/dpcc/reports" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Reports &amp; Analytics <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="centerreport.action">CEIRS Center Reports</a></li>
-              <li><a href="webanalytic.action">Web Analytics</a></li>
+              <li><a href="analytics.action">Web Analytics</a></li>
             </ul>
           </li>
           <li id="menu-item-10" class="dropdown">
