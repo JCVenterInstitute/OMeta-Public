@@ -206,7 +206,7 @@ public class EventLoadHelper {
                     this.validateDataForDPCC(loadingList, rowIndex);
                 }
 
-                if(isSampleLevelEvent && !status.equals("validate")) { //do not update status for validate request
+                if(isSampleLevelEvent) { // && !status.equals("validate")) { //do not update status for validate request
                     this.updateSampleStatus(loadingList, project, sample.getSampleName(), status, rowIndex);
                 }
             }
@@ -323,7 +323,7 @@ public class EventLoadHelper {
                 }
             }
 
-            String strStatus = status.equals("submit") ? Constants.DPCC_STATUS_SUBMITTED : status.equals("validate") ? Constants.DPCC_STATUS_VALIDATED : Constants.DPCC_STATUS_EDITING;
+            String strStatus = status.equals("submit") ? Constants.DPCC_STATUS_SUBMITTED : Constants.DPCC_STATUS_EDITING;
 
             this.findAndSetAttributeValue(loadingList, project, sampleName, Constants.ATTR_SAMPLE_STATUS, strStatus, index);
 
