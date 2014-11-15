@@ -78,6 +78,8 @@
             <url-pattern>/JSP/EventReport.jsp</url-pattern>
 
             <url-pattern>secureIndex.action</url-pattern>
+            <url-pattern>centerreport.action</url-pattern>
+            <url-pattern>analytics.action</url-pattern>
 
         </web-resource-collection>
         <auth-constraint>

@@ -281,6 +281,17 @@
         <action name="error">
             <result>/JSP/index.jsp</result>
         </action>
+
+        <!-- DPCC framed pages -->
+        <action name="support">
+            <result>/JSP/support.jsp</result>
+        </action>
+        <action name="centerreport">
+            <result>/JSP/centerreport.jsp</result>
+        </action>
+        <action name="analytics">
+            <result>/JSP/analytics.jsp</result>
+        </action>
     </package>
 
     <!-- AJAX -->
