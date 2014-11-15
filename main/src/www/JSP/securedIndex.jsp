@@ -20,8 +20,12 @@
   --%>
 
 <!doctype html>
+  <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
   <head>
     <jsp:include page="../html/header.html" />
+    <style>
+
+    </style>
   </head>
 
   <body class="smart-style-2">
@@ -30,25 +34,11 @@
 
       <div id="main" class="">
         <div id="content" role="main">
-          <div class="page-header">
-            <h1>Data Processing and Coordination Center</h1>
-          </div>
-          <section>
-            <div class="row">
-              <article class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                <div class="jarviswidget" role="widget">
-                  <header role="heading">
-                    <h2>Site Traffic</h2>
-                  </header>
-                  <div role="content"></div>
-                </div>
-              </article>
-            </div>
-          </section>
+          <c:import url="http://niaidceirs-staging.elasticbeanstalk.com/dpcc/dashboard.php?framed=1" />
         </div>
       </div>
+      
       <jsp:include page="../html/footer.html" />
-    
     </div>
   </body>
 </html>
