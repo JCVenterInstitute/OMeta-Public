@@ -138,4 +138,18 @@ public class Constants {
 
     /* ERROR MESSAGES */
     public static String ERROR_DPCC_NOT_MODIFIABLE = "Sample already has been submitted to DPCC. No changes can be made.";
+
+    //all should be in lower case for comparison
+    public enum DURATION_ATTRIBUTES {duration_of_poultry_exposure,duration_of_wild_bird_exposure,duration_of_swine_exposure
+              ,duration_of_human_exposure;
+
+        public static boolean contains(String s) {
+                try {
+                    DURATION_ATTRIBUTES.valueOf(s);
+                    return true;
+                } catch (Exception e) {
+                    return false;
+                }
+        }
+    }
 }
