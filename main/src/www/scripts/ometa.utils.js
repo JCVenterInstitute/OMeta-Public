@@ -94,11 +94,8 @@ var utils = {
             buttonImageOnly: true, buttonImage: 'images/jqueryUI/icon_cal_21x19.png'
         });   
     },
-    smartDatePicker: function() {
-        $('input[id^="date_"]').datepicker({
-            dateFormat: 'yy-mm-dd',showOn: 'button',
-            buttonImageOnly: true, buttonImage: 'images/jqueryUI/icon_cal_21x19.png'
-        });   
+    smartDatePicker: function($node) {
+        $node.find('input[id^="date_"]').datepicker({dateFormat: 'yy-mm-dd'});
     },
     error: {
         check: function() {

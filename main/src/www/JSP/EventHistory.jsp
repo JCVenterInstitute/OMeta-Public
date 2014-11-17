@@ -80,16 +80,16 @@
 
                   <div id="tableTop">
                     <div class="row">
-                      <div class="col-md-2">Center Project</div>
-                      <div class="col-md-10 combobox">
+                      <div class="col-lg-1 col-md-2">Center Project</div>
+                      <div class="col-lg-11 col-md-10 combobox">
                         <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
                                     list="projectList" name="projectId" headerKey="0" headerValue="Select by Center Project ID"
                                     listValue="projectName" listKey="projectId" required="true"/>
                       </div>
                     </div>
                     <div class="row row_spacer">
-                      <div class="col-md-2">Sample</div>
-                      <div class="col-md-10 combobox">
+                      <div class="col-lg-1 col-md-2">Sample</div>
+                      <div class="col-lg-11 col-md-10 combobox">
                         <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':'Select by Sample'}"
                                     name="selectedSampleId" required="true"/>
                       </div>
@@ -100,9 +100,27 @@
                   <div style="margin:25px 10px 0 0;">
                     <h1 class="csc-firstHeader">Event Details</h1>
                   </div>
-                  <div id="eventDateDiv" style="margin:3px 10px 0 0;">
-                    Date Range:
-                    <s:textfield id="fromDate" name="fromDate"/> ~ <s:textfield id="toDate" name = "toDate"/>
+                  <div id="eventDateDiv" style="margin:3px 10px 0 0;" class="row">
+                    <fieldset class="row">
+                      <div class="col-sm-1" style="padding-top:7px;">Date Range:</div>
+                      <div class="col-sm-2">
+                        <div class="input-group col-sm-12">
+                          <input id="fromDate" type="text" class="form-control" />
+                          <label for="fromDate" class="input-group-addon">
+                            <span class=""><i class="fa fa-calendar"></i></span>
+                          </label>
+                        </div>
+                      </div>
+                      <div class="col-sm-1" style="width:auto;padding-top:7px;">~</div>
+                      <div class="col-sm-2">
+                        <div class="input-group col-sm-11">
+                          <input id="toDate" type="text" class="form-control" />
+                          <label for="toDate" class="input-group-addon">
+                            <span class=""><i class="fa fa-calendar"></i></span>
+                          </label>
+                        </div>
+                      </div>
+                    </fieldset>
                   </div>
                   <div id="eventTableDiv" style="margin:10px 10px 5px 0;clear:both">
                     <table name="eventTable" id="eventTable" class="contenttable" style="width:95%;">
@@ -211,7 +229,7 @@
                 return gethtmlByType("sample", projectId, 0, 0);
               },
               edt: function(projectId, sampleId, eventId) {
-                var dates = "&fd="+$('input[name="fromDate"]').val()+"&td="+$('input[name="toDate"]').val();
+                var dates = "&fd="+$('#fromDate').val()+"&td="+$('#toDate').val();
                 eDT.fnNewAjax("eventDetailAjax.action?type=edt&projectId="+projectId+"&sampleId="+sampleId+"&eventId=0"+dates);
               }
             },
@@ -309,10 +327,10 @@
         return rtnVal;
       }
 
-      $(document).ready(function() {
+      $(function() {
 
         utils.combonize('statusTableDiv');
-        utils.initDatePicker();
+        $('#fromDate, #toDate').datepicker({ dateFormat: 'yy-mm-dd' });
 
         //empty project select box
         $('#_projectSelect ~ input').click(function() {

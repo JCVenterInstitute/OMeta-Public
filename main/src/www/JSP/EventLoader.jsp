@@ -37,6 +37,7 @@
       .gridIndex { max-width: 20px !important; min-width: 15px; text-align: center;}
       .ms-choice {line-height: 20px; }
       .ms-choice, .ms-choice > div { height: 20px; }
+
     </style>
   </head>
 
@@ -76,13 +77,13 @@
                 <div id="tableTop">
                   <div class="row col-md-12"><h5><strong>Submission Information</strong></h5></div>
                   <div class="row">
-                    <div class="col-md-1"><strong>Submit Data By:</strong></div>
+                    <div class="col-md-1"><strong>Submit Data For</strong></div>
                     <div class="col-md-11">
                       <input type="radio" name="loadType" class="loadRadio" value="form" id="r_sw" />
                       <label for="r_sw"><strong>Single Sample (Web Form)</strong></label>
-                      <input type="radio" name="loadType" class="loadRadio" value="grid" id="r_mw" />
+                      <input type="radio" name="loadType" class="loadRadio" value="grid" id="r_mw" style="margin-left:15px;"/>
                       <label for="r_mw"><strong>Multiple Samples (Web Form)</strong></label>
-                      <input type="radio" name="loadType" class="loadRadio" value="file" id="r_mf" />
+                      <input type="radio" name="loadType" class="loadRadio" value="file" id="r_mf" style="margin-left:15px;"/>
                       <label for="r_mf"><strong>Multiple Samples (Excel Template)</strong></label>
                     </div>
                   </div>
@@ -90,14 +91,14 @@
                     <div class="col-md-1">Center Project</div>
                     <div class="col-md-11 combobox">
                       <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
-                                  list="projectList" name="projectId" headerKey="0" headerValue="--select center project--"
+                                  list="projectList" name="projectId" headerKey="0" headerValue="Select by Center Project ID"
                                   listValue="projectName" listKey="projectId" required="true"/>  
                     </div>
                   </div>
                   <div class="row row_spacer">
                     <div class="col-md-1" id="eventTitle">Data Template</div>
                     <div class="col-md-11 combobox">
-                      <s:select id="_eventSelect" list="#{0:'--select template--'}" name="eventId" required="true" disabled="true"/>
+                      <s:select id="_eventSelect" list="#{0:'Select by Data Type Template'}" name="eventId" required="true" disabled="true"/>
                     </div>
                   </div>
                   <!-- <div class="row row_spacer" id="sampleSelectRow">
@@ -157,11 +158,11 @@
 
 
               <div class="row row_spacer">
-                <div class="col-md-2">
+                <div class="col-lg-2 col-md-2">
                   <h5><strong>Data Submission</strong></h5>
                 </div>
-                <div style="font-size:0.9em;padding-top:15px;" class="col-md-10">
-                  [<img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Required, <img style="vertical-align:bottom;" src="images/icon/ontology.png"/>-Ontology]
+                <div style="font-size:0.9em;padding-top:15px;" class="col-lg-10 col-md-10">
+                  [<img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Information]
                 </div>
               </div>
               <div id="attributeInputDiv" style="clear:both;">
@@ -200,9 +201,9 @@
                 <input type="button" class="btn btn-info" onclick="javascript:button.submit('save');" id="saveButton" value="Save Progress" disabled="true"/>
                 <input type="button" class="btn btn-primary" onclick="javascript:button.submit('validate');" id="validateButton" value="Validate Submission" disabled="true"/>
                 <input type="button" class="btn btn-success" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to DPCC" disabled="true"/>
-                <input type="button" class="btn btn-default" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Event Line" style="display:none;"/>
-                <input type="button" class="btn btn-default" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
-                <!-- <input type="button" class="btn btn-default" onclick="javascript:return;" id="exportButton" value="Export to .csv Template"/> -->
+                <input type="button" class="btn btn-info" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Event Line" style="display:none;"/>
+                <input type="button" class="btn btn-info" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
+                <!--<input type="button" class="btn btn-info" onclick="javascript:return;" id="exportButton" value="Export to .csv Template"/>  -->
                 <!-- <input type="button" onclick="javascript:button.clear_form();" value="Clear Form" /> -->
               </div>
             </div>
@@ -409,21 +410,19 @@
 
                   $attributeTr.append(//icons and hover over information
                     $('<td align="right"/>').attr('title', (isDesc ? _ma.desc : '')).append(
+                      isRequired ? '<small class="text-danger">*</small>' : '',
                       (_ma.label != null && _ma.label !== '' ?_ma.label:_ma.lookupValue.name),
                       "&nbsp;",
-                      (
-                        isRequired ? requireImgHtml
-                          : isDesc ? '<img class="attributeIcon" src="images/icon/info.png"/>'
-                            : ''
-                      ),
-                      (hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
+                      isDesc ? requireImgHtml : ''
+                      //, (hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
                     )
                   );
                   $gridHeaders.append(
                     $('<th/>').addClass('tableHeaderNoBG').attr('title', (isDesc ? _ma.desc : '')).append(
+                      isRequired ? '<small class="text-danger">*</small>' : '',
                       (_ma.label ? _ma.label : _ma.lookupValue.name) + '<br/>',
-                      (isRequired ? requireImgHtml : ''),
-                      (hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
+                      isDesc ? requireImgHtml : ''
+                      //,(hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
                     )
                   );
 
@@ -455,14 +454,21 @@
                     }
                     inputElement += '<select id="select_$id$" name="$lt$attributeValue" style="min-width:35px;width:200px;" ' + (isMulti ? 'multiple="multiple"':'') + '>' + options + '</select>';
                   } else {
-                    if(_ma.lookupValue.dataType==='file') { //file
-                      inputElement += '<input type="file" id="' + _ma.lookupValue.dataType + '_$id$" name="$lt$upload"/>';
+                    var maDatatype = _ma.lookupValue.dataType;
+                    if(maDatatype === 'file') { //file
+                      inputElement += '<input type="file" id="' + maDatatype + '_$id$" name="$lt$upload"/>';
+                    } else if(maDatatype ==='date') {
+                      inputElement += 
+                        '<div class="input-group col-sm-12">'+ 
+                        '  <input type="text" id="' + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$"/>' +
+                        '  <label for="' + maDatatype + '_$id$" class="input-group-addon" style="padding:4px;"><span><i class="fa fa-calendar"></i></span></label>' +
+                        '</div>';
                     } else { //text input
                       isText = true;
-                      inputElement += '<input type="text" id="' + _ma.lookupValue.dataType + '_$id$" name="$lt$attributeValue" value="$val$"/>';
+                      inputElement += '<input type="text" id="' + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$"/>';
                     }
                   }
-                  inputElement = inputElement.replace("$id$",_ma.lookupValue.name.replace(/ /g,"_")+"_$id$");
+                  inputElement = inputElement.replace(/\\$id\\$/g,_ma.lookupValue.name.replace(/ /g,"_")+"_$id$");
 
                   g_avDic[_ma.lookupValue.name] = { //store html contents with its attribute name for later use in adding row
                     'ma': _ma,
@@ -473,7 +479,8 @@
                     'isMulti': isMulti
                   };
 
-                  var $inputNode = $('<td/>').append(inputElement.replace(/\\$val\\$/g, '').replace("$id$", 'f_' + count).replace(/\\$lt\\$/g,"beanList["+count+"]."));
+                  var $inputNode = $('<td/>').append(inputElement.replace(/\\$val\\$/g, '').replace(/\\$id\\$/g, 'f_' + count).replace(/\\$lt\\$/g,"beanList["+count+"]."));
+                  utils.smartDatePicker($inputNode);
 
                   if(isText && hasOntology) {
                     _utils.ontologify(_ma.desc, $inputNode);
@@ -677,6 +684,7 @@
               $eventLine.append($inputNode);
             });
 
+            utils.smartDatePicker($eventLine);
             //add to grid body
             $('#gridBody').append($eventLine);
 
@@ -694,7 +702,6 @@
               }
             }
 
-            utils.smartDatePicker();
             $('select[id^="_"]').combobox();
 
             //set minimum width for date and autocomplete TDs
