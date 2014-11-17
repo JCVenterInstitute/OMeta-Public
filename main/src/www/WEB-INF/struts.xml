@@ -29,7 +29,7 @@
     <constant name="struts.action.extension" value="action" />
     <constant name="struts.devMode" value="true" />
     <constant name="struts.enable.DynamicMethodInvocation" value="false" />
-    <constant name="struts.multipart.maxSize" value="5242880" />
+    <constant name="struts.multipart.maxSize" value="2147483648" />
 
     <package name="productionStatus" namespace="/" extends="struts-default">
 
@@ -335,6 +335,12 @@
         <action name="actorRoleAjax" class="org.jcvi.ometa.action.ActorRole" method="runAjax">
             <result name="success" type="json"/>
             <result name="error" type="json"/>
+        </action>
+        <!-- file upload ajax-->
+        <action name="fileUploadAjax" class="org.jcvi.ometa.action.ajax.FileUploadAjax" method="runAjax">
+            <result name="success" type="json"/>
+            <result name="error" type="json"/>
+            <result name="input" type="json"/>
         </action>
     </package>
 

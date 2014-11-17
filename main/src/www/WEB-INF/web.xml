@@ -77,6 +77,9 @@
             <url-pattern>eventReport.action</url-pattern>
             <url-pattern>/JSP/EventReport.jsp</url-pattern>
 
+            <url-pattern>dropboxLoader.action</url-pattern>
+            <url-pattern>fileUploadAjax.action</url-pattern>
+
             <url-pattern>secureIndex.action</url-pattern>
             <url-pattern>centerreport.action</url-pattern>
             <url-pattern>analytics.action</url-pattern>
