@@ -308,6 +308,10 @@
         <action name="analytics">
             <result>/JSP/analytics.jsp</result>
         </action>
+
+        <action name="access">
+            <result>/JSP/access.jsp</result>
+        </action>
     </package>
 
     <!-- AJAX -->
