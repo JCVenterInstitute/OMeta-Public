@@ -32,73 +32,115 @@
 
     <link rel="stylesheet" href="style/version01.css" />
     <style>
-      .loadRadio { margin-left: 10px; margin-right: 3px; }
-      #gridBody .ui-autocomplete-input { width: 150px; }
-      .gridIndex { max-width: 20px !important; min-width: 15px; text-align: center;}
-      .ms-choice {line-height: 20px; }
-      .ms-choice, .ms-choice > div { height: 20px; }
-
-    </style>
-      <style>
-
-     	#dropbox {
-
-     		border-style: dashed dashed dashed dashed ;
+     	#dropzone {
+     		border-style: dashed;
      		border-color: #3276b1;
      		width: 500px;
-     		height: 200px
-
+     		height: 100px;
      	}
-     	</style>
-
+      .bar {
+        height: 18px;
+        background: green;
+      }
+   	</style>
   </head>
 
   <body class="smart-style-2">
     <div id="container">
 
       <jsp:include page="top.jsp" />
-          <div id="main" class="container">
-               <div id="inner-content" class="">
-                   <div id="content" class="" role="main">
-                       <div class="page-header">
-                           <h1>Data Submission Dropbox</h1>
-                       </div>
-                       <div id="tableTop">
-                           <div class="row col-md-12"><h5><strong> </strong></h5></div>
-                           <div class="row row_spacer">
-                               <div class="panel-body">
-                                   <div class="form-group">
-                                       <div class="row row_spacer" id="projectSelectRow">
-                                         <div class="col-md-1"><strong>Select file</strong></div>
-                                         <div class="col-md-11">
-                                             <input id="multiple" type="file" multiple>
-                                         </div>
-                                       </div>
-                                   </div>
-                                   <p>Drap and Drop file in box to upload (Max file size is 2GB) </p>
-                                   <div id="dropbox"></div>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-               </div>
-           </div>
+        <div id="main" class="container">
+          <div id="inner-content" class="">
+            <div id="content" class="" role="main">
+              <div class="page-header">
+                <h1>Data Submission Dropbox</h1>
+              </div>
+              <div id="tableTop">
+                <div class="row col-md-12"><h5><strong> </strong></h5></div>
+                <div class="row">
+                  <div id="progress">
+                    <div class="bar" style="width: 0%;"></div>
+                  </div>
+                </div>
+                <div class="row row_spacer">
+                  <div class="panel-body">
+                    <div class="form-group">
+                      <div class="row row_spacer" id="projectSelectRow">
+                        <div class="col-md-1"><strong>Select file</strong></div>
+                        <div class="col-md-11">
+                          <input id="uploadFile" type="file" name="upload" data-url="fileUploadAjax.action">
+                        </div>
+                      </div>
+                    </div>
+                    <p>Drap and Drop file in box to upload (Max file size is 2GB) </p>
+                    <div id="dropzone" class="well">Drop files here</div>
+                    <div class="row row_space">
+                      <div id="files" class="files"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
       <jsp:include page="../html/footer.html" />
 
     </div>
 
-    <script src="scripts/jquery/jquery.multiple.select.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
-   	<script type="text/javascript" src="scripts/jquery.html5uploader.min.js"></script>
-   	<script type="text/javascript">
-   	$(function() {
-   		$("#dropbox, #multiple").html5Uploader({
-   			name: "foo",
-   			postUrl: "bar.aspx"
-   		});
-   	});
+    <script src="scripts/jquery/jquery.ui.widget.js"></script>
+    <script src="scripts/jquery/jquery.iframe-transport.js"></script>
+    <script src="scripts/jquery/jquery.fileupload.js"></script>
+
+   	<script>
+      $(function () {
+        $('#uploadFile').fileupload({
+          dataType: 'json',
+          done: function (e, data) {
+            $.each(data.result.result.files, function (index, file) {
+              $('<p/>').html("'<strong>" + file.name + "</strong>' has been uploaded.").appendTo('#files');
+            });
+            //$('#progress .bar').css('width', '0%');
+          },
+          dropZone: $('#dropzone'),
+          progressall: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $('#progress .bar').css('width', progress + '%');
+          }
+        });
+
+        $(document).bind('dragover', function (e) {
+          var dropZone = $('#dropzone'),
+              timeout = window.dropZoneTimeout;
+          if(!timeout) {
+            dropZone.addClass('in');
+          } else {
+            clearTimeout(timeout);
+          }
+          var found = false, node = e.target;
+          do {
+            if(node === dropZone[0]) {
+              found = true;
+              break;
+            }
+            node = node.parentNode;
+          } while(node != null);
+          if(found) {
+            dropZone.addClass('hover');
+          } else {
+            dropZone.removeClass('hover');
+          }
+          window.dropZoneTimeout = setTimeout(function () {
+            window.dropZoneTimeout = null;
+            dropZone.removeClass('in hover');
+          }, 100);
+        });
+
+        $(document).bind('drop dragover', function (e) {
+          e.preventDefault();
+        });
+     	});
    	</script>
 
   </body>
