@@ -32,12 +32,36 @@
 
     <link rel="stylesheet" href="style/version01.css" />
     <style>
-      .loadRadio { margin-left: 10px; margin-right: 3px; }
-      #gridBody .ui-autocomplete-input { width: 150px; }
-      .gridIndex { max-width: 20px !important; min-width: 15px; text-align: center;}
-      .ms-choice {line-height: 20px; }
-      .ms-choice, .ms-choice > div { height: 20px; }
+      .loadRadio { 
+        margin-left: 10px; 
+        margin-right: 3px; 
+      }
+      #gridBody .ui-autocomplete-input { 
+        width: 150px; 
+      }
+      .gridIndex { 
+        max-width: 20px !important; 
+        min-width: 15px; 
+        text-align: center;
+      }
+      .ms-choice {
+        line-height: 20px; 
+      }
+      .ms-choice, .ms-choice > div { 
+        height: 20px; 
+      }
 
+      /* dropbox */
+      #dropzone {
+        border-style: dashed;
+        border-color: #3276b1;
+        width: 500px;
+        height: 100px;
+      }
+      .bar {
+        height: 18px;
+        background: green;
+      }
     </style>
   </head>
 
@@ -60,6 +84,11 @@
             
             <div id="HeaderPane" style="margin:15px 0 0 30px;">
               <div class="panelHeader" id="pageTitle">Submit Data</div>
+              <div class="row col-lg-11">
+                <p>The DPCC offers multiple interfaces to submit research data. The three Web-based options are interactive in that they offer the opportunity to review and validate your data before submitting it to the DPCC.</p>
+                <p id="toBulkP">If you prefer to simply transmit your data in bulk using one of the standard submission templates, please click <input type="button" onClick="javascript:toBulk();" class="btn-xs btn-info" value="HERE" />.</p>
+                <p id="toInteractiveP" style="display:none;">Please click <input type="button" onClick="javascript:toInteractive();" class="btn-xs btn-info" value="HERE" /> to switch to the Interactive Submission.</p>
+              </div>
               <div id="errorMessagesPanel" style="margin-top:15px;"></div>
               <s:if test="hasActionErrors()">
                 <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
@@ -73,149 +102,184 @@
 
             <div id="middle_content_template">
 
-              <div id="statusTableDiv">
+              <!-- file drop box -->
+              <div id="dropBoxDiv" style="float:left;width:100%;">
                 <div id="tableTop">
-                  <div class="row col-md-12"><h5><strong>Submission Information</strong></h5></div>
-                  <div class="row">
-                    <div class="col-md-1"><strong>Submit Data For</strong></div>
-                    <div class="col-md-11">
-                      <input type="radio" name="loadType" class="loadRadio" value="form" id="r_sw" />
-                      <label for="r_sw"><strong>Single Sample (Web Form)</strong></label>
-                      <input type="radio" name="loadType" class="loadRadio" value="grid" id="r_mw" style="margin-left:15px;"/>
-                      <label for="r_mw"><strong>Multiple Samples (Web Form)</strong></label>
-                      <input type="radio" name="loadType" class="loadRadio" value="file" id="r_mf" style="margin-left:15px;"/>
-                      <label for="r_mf"><strong>Multiple Samples (Excel Template)</strong></label>
-                    </div>
-                  </div>
-                  <div class="row row_spacer" id="projectSelectRow">
-                    <div class="col-md-1">Center Project</div>
-                    <div class="col-md-11 combobox">
-                      <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
-                                  list="projectList" name="projectId" headerKey="0" headerValue="Select by Center Project ID"
-                                  listValue="projectName" listKey="projectId" required="true"/>  
-                    </div>
-                  </div>
+                  <div class="row col-md-12"><h5><strong>Bulk Submission</strong></h5></div>
                   <div class="row row_spacer">
-                    <div class="col-md-1" id="eventTitle">Data Template</div>
-                    <div class="col-md-11 combobox">
-                      <s:select id="_eventSelect" list="#{0:'Select by Data Type Template'}" name="eventId" required="true" disabled="true"/>
-                    </div>
-                  </div>
-                  <!-- <div class="row row_spacer" id="sampleSelectRow">
-                    <div class="col-md-1">Sample</div>
-                    <div class="col-md-11 combobox">
-                      <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'':''}" name="sampleName" required="true"/> 
-                    </div>
-                  </div> -->
-                </div>
-                <div id="projectDetailInputDiv">
-                  <div style="margin:25px 10px 0 0;">
-                    <h1 class="csc-firstHeader">Project Information</h1>
-                  </div>
-                  <div id="projectDetailSubDiv">
-                    <div class="row row_spacer">
-                      <div class="col-md-1">Project Name</div>
-                      <div class="col-md-11">
-                        <input type="text" id="_projectName" name="loadingProject.projectName" size="33px"/>
-                        <hidden name="loadingProject.isPublic" value="1" />
+                    <div class="panel-body">
+                      <div class="form-group">
+                        <div class="row row_spacer" id="projectSelectRow">
+                          <div class="col-lg-2 col-md-4"><strong>Select file</strong></div>
+                          <div class="col-lg-10 col-md-8">
+                            <input id="uploadFile" type="file" name="upload" data-url="fileUploadAjax.action">
+                          </div>
+                        </div>
+                      </div>
+                      <p>Drap and Drop file in box to upload (Max file size is 2GB) </p>
+                      <div id="dropzone" class="well">Drop files here</div>
+                      <div class="row row_spacer">
+                        <div id="progress">
+                          <div class="bar" style="width: 0%;"></div>
+                        </div>
+                      </div>
+                      <div class="row row_spacer">
+                        <div id="files" class="files" style="padding-left:20px;"></div>
                       </div>
                     </div>
-                    <!-- <div class="row row_spacer">
-                      <div class="col-md-1">Public</div>
-                      <div class="col-md-11">
-                        <s:select id="_isProjectPublic" list="#{0:'No', 1:'Yes'}" name="loadingProject.isPublic" required="true" />
+                  </div>
+                </div>    
+              </div>
+
+              <!-- regular interactive event loader -->
+              <div id="interactiveDiv" style="float:left;width:100%;">
+                <div id="statusTableDiv">
+                  <div id="tableTop">
+                    <div class="row col-md-12"><h5><strong>Interactive Submission</strong></h5></div>
+                    <div class="row col-md-12">
+                      <div class="col-lg-1 col-md-3"><strong>Submit Data For</strong></div>
+                      <div class="col-lg-11 col-md-9">
+                        <input type="radio" name="loadType" class="loadRadio" value="form" id="r_sw" />
+                        <label for="r_sw"><strong>Single Sample</strong></label>
+                        <input type="radio" name="loadType" class="loadRadio" value="grid" id="r_mw" style="margin-left:15px;"/>
+                        <label for="r_mw"><strong>Multiple Samples (Web Form)</strong></label>
+                        <input type="radio" name="loadType" class="loadRadio" value="file" id="r_mf" style="margin-left:15px;"/>
+                        <label for="r_mf"><strong>Multiple Samples (Excel Template)</strong></label>
+                      </div>
+                    </div>
+                    <div class="row row_spacer" id="projectSelectRow">
+                      <div class="col-md-1">Center Project</div>
+                      <div class="col-md-11 combobox">
+                        <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
+                                    list="projectList" name="projectId" headerKey="0" headerValue="Select by Center Project ID"
+                                    listValue="projectName" listKey="projectId" required="true"/>  
+                      </div>
+                    </div>
+                    <div class="row row_spacer">
+                      <div class="col-md-1" id="eventTitle">Data Template</div>
+                      <div class="col-md-11 combobox">
+                        <s:select id="_eventSelect" list="#{0:'Select by Data Type Template'}" name="eventId" required="true" disabled="true"/>
+                      </div>
+                    </div>
+                    <!-- <div class="row row_spacer" id="sampleSelectRow">
+                      <div class="col-md-1">Sample</div>
+                      <div class="col-md-11 combobox">
+                        <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'':''}" name="sampleName" required="true"/> 
                       </div>
                     </div> -->
                   </div>
-                </div>
-
-                <div id="sampleDetailInputDiv">
-                  <div style="margin:25px 10px 0 0;">
-                    <h1 class="csc-firstHeader">Sample Information</h1>
-                  </div>
-                  <div id="sampleDetailSubDiv">
-                    <div class="row row_spacer">
-                      <div class="col-md-1">Sample Name</div>
-                      <div class="col-md-11">
-                        <input type="text" id="_sampleName" name="loadingSample.sampleName" size="33px"/>
-                      </div>
+                  <div id="projectDetailInputDiv">
+                    <div style="margin:25px 10px 0 0;">
+                      <h1 class="csc-firstHeader">Project Information</h1>
                     </div>
-                    <div class="row row_spacer">
-                      <div class="col-md-1">Parent Sample</div>
-                      <div class="col-md-11 combobox">
-                        <s:select id="_parentSampleSelect" list="#{'0':''}" name="loadingSample.parentSampleName" required="true"/>
+                    <div id="projectDetailSubDiv">
+                      <div class="row row_spacer">
+                        <div class="col-md-1">Project Name</div>
+                        <div class="col-md-11">
+                          <input type="text" id="_projectName" name="loadingProject.projectName" size="33px"/>
+                          <hidden name="loadingProject.isPublic" value="1" />
+                        </div>
                       </div>
-                    </div>
-                    <div class="row row_spacer">
-                      <div class="col-md-1">Public</div>
-                      <div class="col-md-11">
-                        <s:select id="_isSamplePublic" list="#{0:'No', 1:'Yes'}" name="loadingSample.isPublic" required="true" />
-                      </div>
+                      <!-- <div class="row row_spacer">
+                        <div class="col-md-1">Public</div>
+                        <div class="col-md-11">
+                          <s:select id="_isProjectPublic" list="#{0:'No', 1:'Yes'}" name="loadingProject.isPublic" required="true" />
+                        </div>
+                      </div> -->
                     </div>
                   </div>
+
+                  <div id="sampleDetailInputDiv">
+                    <div style="margin:25px 10px 0 0;">
+                      <h1 class="csc-firstHeader">Sample Information</h1>
+                    </div>
+                    <div id="sampleDetailSubDiv">
+                      <div class="row row_spacer">
+                        <div class="col-md-1">Sample Name</div>
+                        <div class="col-md-11">
+                          <input type="text" id="_sampleName" name="loadingSample.sampleName" size="33px"/>
+                        </div>
+                      </div>
+                      <div class="row row_spacer">
+                        <div class="col-md-1">Parent Sample</div>
+                        <div class="col-md-11 combobox">
+                          <s:select id="_parentSampleSelect" list="#{'0':''}" name="loadingSample.parentSampleName" required="true"/>
+                        </div>
+                      </div>
+                      <div class="row row_spacer">
+                        <div class="col-md-1">Public</div>
+                        <div class="col-md-11">
+                          <s:select id="_isSamplePublic" list="#{0:'No', 1:'Yes'}" name="loadingSample.isPublic" required="true" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
 
 
-              <div class="row row_spacer">
-                <div class="col-lg-2 col-md-2">
-                  <h5><strong>Data Submission</strong></h5>
+                <div class="row row_spacer">
+                  <div class="col-lg-3 col-md-4">
+                    <h5><strong>Data Submission</strong></h5>
+                  </div>
+                  <div style="font-size:0.9em;padding-top:15px;" class="col-lg-9 col-md-8">
+                    [<img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Information]
+                  </div>
                 </div>
-                <div style="font-size:0.9em;padding-top:15px;" class="col-lg-10 col-md-10">
-                  [<img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Information]
+                <div id="attributeInputDiv" style="clear:both;">
+                  <s:if test="beanList != null && beanList.size() > 0">
+                    <table>
+                      <s:iterator value="beanList" var="attrName" status="stat">
+                        <tr class="gappedTr">
+                          <s:hidden name="beanList[%{#stat.index}].projectName" />
+                          <s:hidden name="beanList[%{#stat.index}].sampleName" />
+                          <s:hidden name="beanList[%{#stat.index}].attributeName" />
+                          <td align="right"><s:property value="attributeName"/></td>
+                          <td><s:textfield name="beanList[%{#stat.index}].attributeValue"/></td>
+                        </tr>
+                      </s:iterator>
+                    </table>
+                  </s:if>
                 </div>
-              </div>
-              <div id="attributeInputDiv" style="clear:both;">
-                <s:if test="beanList != null && beanList.size() > 0">
-                  <table>
-                    <s:iterator value="beanList" var="attrName" status="stat">
-                      <tr class="gappedTr">
-                        <s:hidden name="beanList[%{#stat.index}].projectName" />
-                        <s:hidden name="beanList[%{#stat.index}].sampleName" />
-                        <s:hidden name="beanList[%{#stat.index}].attributeName" />
-                        <td align="right"><s:property value="attributeName"/></td>
-                        <td><s:textfield name="beanList[%{#stat.index}].attributeValue"/></td>
-                      </tr>
-                    </s:iterator>
+                <div id="gridInputDiv" style="margin:25px 10px 0 0 ;overflow-x: auto;">
+                  <table name="eventTable" id="eventTable" class="contenttable">
+                    <thead id="gridHeader"></thead>
+                    <tbody id="gridBody"></tbody>
                   </table>
-                </s:if>
-              </div>
-              <div id="gridInputDiv" style="margin:25px 10px 0 0 ;overflow-x: auto;">
-                <table name="eventTable" id="eventTable" class="contenttable">
-                  <thead id="gridHeader"></thead>
-                  <tbody id="gridBody"></tbody>
-                </table>
-              </div>
-              <div id="fileInputDiv" style="margin:25px 10px 0 0 ;">
-                <table>
-                  <tr>
-                    <td>Loader CSV File</td>
-                    <td>
-                      <s:file name="dataTemplate" id="upload" cssStyle="margin:0 0 0 14px;" size="75px" />
-                    </td>
-                  </tr>
-                </table>
-              </div>
+                </div>
+                <div id="fileInputDiv" style="margin:25px 10px 0 0 ;">
+                  <table>
+                    <tr>
+                      <td>Loader CSV File</td>
+                      <td>
+                        <s:file name="dataTemplate" id="upload" cssStyle="margin:0 0 0 14px;" size="75px" />
+                      </td>
+                    </tr>
+                  </table>
+                </div>
 
-              <div id="submitDiv" style="margin:15px 10px 5px 0;width:100%;">
-                <input type="button" class="btn btn-info" onclick="javascript:button.submit('save');" id="saveButton" value="Save Progress" disabled="true"/>
-                <input type="button" class="btn btn-primary" onclick="javascript:button.submit('validate');" id="validateButton" value="Validate Submission" disabled="true"/>
-                <input type="button" class="btn btn-success" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to DPCC" disabled="true"/>
-                <input type="button" class="btn btn-info" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Event Line" style="display:none;"/>
-                <input type="button" class="btn btn-info" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
-                <!--<input type="button" class="btn btn-info" onclick="javascript:return;" id="exportButton" value="Export to .csv Template"/>  -->
-                <!-- <input type="button" onclick="javascript:button.clear_form();" value="Clear Form" /> -->
+                <div id="submitDiv" style="margin:15px 10px 5px 0;width:100%;">
+                  <input type="button" class="btn btn-info" onclick="javascript:button.submit('save');" id="saveButton" value="Save Progress" disabled="true"/>
+                  <input type="button" class="btn btn-primary" onclick="javascript:button.submit('validate');" id="validateButton" value="Validate Submission" disabled="true"/>
+                  <input type="button" class="btn btn-success" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to DPCC" disabled="true"/>
+                  <input type="button" class="btn btn-info" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Event Line" style="display:none;"/>
+                  <input type="button" class="btn btn-info" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
+                  <!--<input type="button" class="btn btn-info" onclick="javascript:return;" id="exportButton" value="Export to .csv Template"/>  -->
+                  <!-- <input type="button" onclick="javascript:button.clear_form();" value="Clear Form" /> -->
+                </div>
               </div>
             </div>
           </s:form>
         </div>
       </div>
-
+      <div class="row"></div>
       <jsp:include page="../html/footer.html" />
       
     </div>
 
     <script src="scripts/jquery/jquery.multiple.select.js"></script>
+    <script src="scripts/jquery/jquery.ui.widget.js"></script>
+    <script src="scripts/jquery/jquery.iframe-transport.js"></script>
+    <script src="scripts/jquery/jquery.fileupload.js"></script>
     
     <script>
       var g_eventAttributes = [];
@@ -753,7 +817,66 @@
           }*/
         }
       }
-      $(document).ready(function() {
+
+      function toBulk() {
+        $('#interactiveDiv, #toBulkP').hide();
+        $('#dropBoxDiv, #toInteractiveP').slideDown(400);
+
+        // file drop box
+        $('#uploadFile').fileupload({
+          dataType: 'json',
+          done: function (e, data) {
+            $.each(data.result.result.files, function (index, file) {
+              $('<p/>').html("'<strong>" + file.name + "</strong>' has been uploaded.").appendTo('#files');
+            });
+            //$('#progress .bar').css('width', '0%');
+          },
+          dropZone: $('#dropzone'),
+          progressall: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            $('#progress .bar').css('width', progress + '%');
+          }
+        });
+
+        $(document).bind('dragover', function (e) {
+          var dropZone = $('#dropzone'),
+              timeout = window.dropZoneTimeout;
+          if(!timeout) {
+            dropZone.addClass('in');
+          } else {
+            clearTimeout(timeout);
+          }
+          var found = false, node = e.target;
+          do {
+            if(node === dropZone[0]) {
+              found = true;
+              break;
+            }
+            node = node.parentNode;
+          } while(node != null);
+          if(found) {
+            dropZone.addClass('hover');
+          } else {
+            dropZone.removeClass('hover');
+          }
+          window.dropZoneTimeout = setTimeout(function () {
+            window.dropZoneTimeout = null;
+            dropZone.removeClass('in hover');
+          }, 100);
+        });
+
+        $(document).bind('drop dragover', function (e) {
+          e.preventDefault();
+        });
+      }
+
+      function toInteractive() {
+        $('#dropBoxDiv, #toInteractiveP').hide();
+        $('#interactiveDiv, #toBulkP').slideDown(400);
+      }
+
+      $(function() {
+        $('#dropBoxDiv').hide();
         $('select[id$="Select"]').combobox();
 
         //retrieve existing values for preload
