@@ -86,8 +86,8 @@
               <div class="panelHeader" id="pageTitle">Submit Data</div>
               <div class="row col-lg-11">
                 <p>The DPCC offers multiple interfaces to submit research data. The three Web-based options are interactive in that they offer the opportunity to review and validate your data before submitting it to the DPCC.</p>
-                <p id="toBulkP">If you prefer to simply transmit your data in bulk using one of the standard submission templates, please click <input type="button" onClick="javascript:toBulk();" class="btn-xs btn-info" value="HERE" />.</p>
-                <p id="toInteractiveP" style="display:none;">Please click <input type="button" onClick="javascript:toInteractive();" class="btn-xs btn-info" value="HERE" /> to switch to the Interactive Submission.</p>
+                <p id="toBulkP">If you prefer to simply transmit your data in bulk using one of the standard submission templates, please click <input type="button" onclick="javascript:toBulk();" class="btn-xs btn-primary" value="HERE" />.</p>
+                <p id="toInteractiveP" style="display:none;">Please click <input type="button" onclick="javascript:toInteractive();" class="btn-xs btn-primary" value="HERE" /> to switch to the Interactive Submission.</p>
               </div>
               <div id="errorMessagesPanel" style="margin-top:15px;"></div>
               <s:if test="hasActionErrors()">
@@ -258,10 +258,10 @@
                 </div>
 
                 <div id="submitDiv" style="margin:15px 10px 5px 0;width:100%;">
-                  <input type="button" class="btn btn-info" onclick="javascript:button.submit('save');" id="saveButton" value="Save Progress" disabled="true"/>
-                  <input type="button" class="btn btn-primary" onclick="javascript:button.submit('validate');" id="validateButton" value="Validate Submission" disabled="true"/>
-                  <input type="button" class="btn btn-success" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to DPCC" disabled="true"/>
-                  <input type="button" class="btn btn-info" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Event Line" style="display:none;"/>
+                  <input type="button" class="btn btn-info" onclick="javascript:button.submit('save');" id="saveButton" value="Save Progress" disabled="true" title="Saves the data currently entered in the form to the DPCC database. This does not submit data to the DPCC but allows the user to complete the data submission task at a later time. A temporary submission ID will be generated for later retrieval."/>
+                  <input type="button" class="btn btn-primary" onclick="javascript:button.submit('validate');" id="validateButton" value="Validate Submission" disabled="true" title="Performs validation of the data currently entered in the form and ensures compliance with the CEIRS data standards. Returns a list of validation errors encountered, if any. This does not submit the data to the DPCC."/>
+                  <input type="button" class="btn btn-success" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to DPCC" disabled="true" title="Submits the data entered in the form to the DPCC validation process. If errors are encountered (missing required fields, data format issues, etc), the page will highlights errors on the form and give users an opportunity to correct errors. This is the same process as the one users can run manually from the "Validate Submission" button. If no error, the data will be submitted to DPCC and a submission receipt sent to the user."/>
+                  <input type="button" class="btn btn-info" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Row" style="display:none;"/>
                   <input type="button" class="btn btn-info" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
                   <!--<input type="button" class="btn btn-info" onclick="javascript:return;" id="exportButton" value="Export to .csv Template"/>  -->
                   <!-- <input type="button" onclick="javascript:button.clear_form();" value="Clear Form" /> -->
