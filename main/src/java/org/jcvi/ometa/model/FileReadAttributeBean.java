@@ -106,4 +106,5 @@ public class FileReadAttributeBean implements ProjectNamerOnFileRead, Serializab
     public void setUploadContentType(String uploadContentType) {
         this.uploadContentType = uploadContentType;
     }
+
 }

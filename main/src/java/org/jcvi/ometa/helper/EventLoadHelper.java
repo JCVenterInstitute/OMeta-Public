@@ -295,18 +295,88 @@ public class EventLoadHelper {
 
     private void validateDataForDPCC(List<FileReadAttributeBean> loadingList, int index) throws Exception {
         String attributeName = null;
+        Collection errorMessages = new ArrayList();
         try {
             for(FileReadAttributeBean fBean : loadingList) {
-                if(fBean.getAttributeName().toLowerCase().contains("date")) {
+                if(fBean.getAttributeName().toLowerCase().contains("Collection_Date".toLowerCase())) {
                     attributeName = fBean.getAttributeName();
-                    DPCCValidator.validateDate(fBean.getAttributeValue());
+                    try{
+                        DPCCValidator.validateDate(fBean.getAttributeValue());
+                    }catch(Exception e){
+                        errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
+                    }
+                }
+                if(fBean.getAttributeName().toLowerCase().contains("Receipt_Date".toLowerCase())) {
+                   attributeName = fBean.getAttributeName();
+                   try{
+                       DPCCValidator.validateDate(fBean.getAttributeValue());
+                   }catch(Exception e){
+                       errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
+                   }
+                }
+                if(fBean.getAttributeName().toLowerCase().contains("Influenza_Vaccination_Date".toLowerCase())) {
+                   attributeName = fBean.getAttributeName();
+                   try{
+                       DPCCValidator.validateDate(fBean.getAttributeValue());
+                   }catch(Exception e){
+                       errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
+                   }
+                }
+                if(fBean.getAttributeName().toLowerCase().contains("Test_for_Influenza_Serology".toLowerCase())) {
+                   attributeName = fBean.getAttributeName();
+                   try{
+                       //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
+                       DPCCValidator.validatePairs("Test_for_Influenza_Serology","^[a-zA-Z0-9, ]*$","Text with space and comma","Serology_Test_Result","^[PNU,]*$","P/N/U",loadingList);
+                   }catch(Exception e){
+                       errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
+                   }
+                }
+
+                if(fBean.getAttributeName().toLowerCase().contains("Influenza_Test_Type".toLowerCase())) {
+                   attributeName = fBean.getAttributeName();
+                   try{
+                       //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
+                       DPCCValidator.validatePairs("Influenza_Test_Type","^([a-zA-Z0-9]*|NT|NA|,)*$","Text/NT(Not tested)/NA","Serology_Test_Result","^(P|N|NT|NA|,)*$","P/N/NT/NA",loadingList);
+                   }catch(Exception e){
+                       errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
+                   }
+                }
+
+                if(fBean.getAttributeName().toLowerCase().contains("Other_Pathogens_Tested".toLowerCase())) {
+                   attributeName = fBean.getAttributeName();
+                   try{
+                       //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
+                       DPCCValidator.validatePairs("Other_Pathogens_Tested","^([a-zA-Z0-9]*|NT|NA|,)*$","Text/NT(Not tested)/NA","Other_Pathogen_Test_Result","^(P|N|U|NT|NA|,)*$","P/N/U/NT/NA",loadingList);
+                   }catch(Exception e){
+                       errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
+                   }
+                }
+                if(fBean.getAttributeName().toLowerCase().contains("Duration_of_Poultry_Exposure".toLowerCase())) {
+                               attributeName = fBean.getAttributeName();
+                               try{
+                                   //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
+                                   DPCCValidator.validatePairs("Other_Pathogens_Tested","^([a-zA-Z0-9]*|NT|NA|,)*$","Text/NT(Not tested)/NA","Other_Pathogen_Test_Result","^(P|N|U|NT|NA|,)*$","P/N/U/NT/NA",loadingList);
+                               }catch(Exception e){
+                                   errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
+                               }
+                }
+                //"^(([0-9.]*[ ]*[days|month|years])|NA|U|Unknown)*$"
+                //throw DetailedException with all error messages
+                if (!errorMessages.isEmpty()) {
+                    DetailedException dex = new DetailedException(index,errorMessages.toString());
+                    throw dex;
                 }
             }
-        } catch(Exception ex) {
-            DetailedException dex = new DetailedException(index, "date parse error: '" + attributeName + "'");
+        }
+        catch (DetailedException e){
+            throw e;
+        }
+        catch(Exception ex) {
+            DetailedException dex = new DetailedException(index, "DPCC validation Failed." + ex.getMessage()+ "'");
             throw dex;
         }
     }
+
 
     private void updateSampleStatus(List<FileReadAttributeBean> loadingList, Project project, String sampleName, String status, int index) throws Exception {
         try {

@@ -56,7 +56,17 @@ public class Constants {
             Constants.DATE_ALTERNATIVE_FORMAT,
             "yyyy-MM-dd'T'HH:mm:ss"
     };
+    public final static String[] DPCC_DATE_ALL_POSSIBLE_FORMATS = {
+            "yyyy",
+            "MMM-yyyy",
+            "DD-MMM-yyyy"
+    };
+
+    public static enum  serologyTestResult {P,N,U};
+
     public final static String[] DATE_NO_VALUES = {"Unknown", "Not applicable", "Not available", "Available upon request"};
+
+    public final static String[] DPCC_DATE_NO_VALUES = {"Unknown"};
 
     public static final String DATE_DATA_TYPE = "date";
     public static final String STRING_DATA_TYPE = "string";
