@@ -101,7 +101,7 @@ public class DPCCHelper {
                     try{
                         DPCCValidator.validateDate(fBean.getAttributeValue());
                     }catch(Exception e){
-                        errorMessages.add(attributeName+" is invalid "+ e.getMessage());
+                        errorMessages.add(attributeName+" data is invalid "+ e.getMessage());
                     }
                 }
                 if(fBean.getAttributeName().toLowerCase().contains("Receipt_Date")) {
@@ -109,15 +109,28 @@ public class DPCCHelper {
                    try{
                        DPCCValidator.validateDate(fBean.getAttributeValue());
                    }catch(Exception e){
-                       errorMessages.add(attributeName+" is invalid "+ e.getMessage());
+                       errorMessages.add(attributeName+" data is invalid "+ e.getMessage());
                    }
                 }
+
                 if(fBean.getAttributeName().toLowerCase().contains("Influenza_Vaccination_Date")) {
                    attributeName = fBean.getAttributeName();
-                   try{
-                       DPCCValidator.validateDate(fBean.getAttributeValue());
-                   }catch(Exception e){
-                       errorMessages.add(attributeName+" is invalid "+ e.getMessage());
+
+                   FileReadAttributeBean influenzaVaccinationType = DPCCHelper.findAttribute( "Influenza_Vaccination_Type",  loadingList);
+                   if (influenzaVaccinationType == null){
+                      throw new Exception("Attribute "+influenzaVaccinationType+" is required.");
+                   }
+                   if (influenzaVaccinationType.getAttributeValue().equalsIgnoreCase("none")) {
+                       if (attributeName.equalsIgnoreCase("na")){
+                           //it's ok'
+                       }else{
+                           attributeName = fBean.getAttributeName();
+                           try{
+                               DPCCValidator.validateDate(fBean.getAttributeValue());
+                           }catch(Exception e){
+                               errorMessages.add(attributeName+" data is invalid "+ e.getMessage());
+                           }
+                       }
                    }
                 }
                 if(fBean.getAttributeName().toLowerCase().contains("Test_for_Influenza_Serology")) {
@@ -126,7 +139,7 @@ public class DPCCHelper {
                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
                        DPCCValidator.validatePairs("Test_for_Influenza_Serology","^[a-zA-Z0-9,]*$","Text","Serology_Test_Result","^[PNU,]*$","P/N/U",loadingList);
                    }catch(Exception e){
-                       errorMessages.add(attributeName+" is invalid "+ e.getMessage());
+                       errorMessages.add(attributeName+" data is invalid "+ e.getMessage());
                    }
                 }
 
@@ -134,9 +147,9 @@ public class DPCCHelper {
                    attributeName = fBean.getAttributeName();
                    try{
                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                       DPCCValidator.validatePairs("Influenza_Test_Type","^([a-zA-Z0-9]*|NT|NA|,)*$","Text/NT(Not tested)/NA","Serology_Test_Result","^(P|N|NT|NA|,)*$","P/N/NT/NA",loadingList);
+                       DPCCValidator.validatePairs("Influenza_Test_Type","^([a-zA-Z0-9]*|NT|NA|,)*$","Text/NT(Not tested)/NA","Influenza_Test_Result","^(P|N|NT|NA|,)*$","P/N/NT/NA",loadingList);
                    }catch(Exception e){
-                       errorMessages.add(attributeName+" is invalid "+ e.getMessage());
+                       errorMessages.add(attributeName+" data is invalid "+ e.getMessage());
                    }
                 }
 
@@ -146,9 +159,37 @@ public class DPCCHelper {
                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
                        DPCCValidator.validatePairs("Other_Pathogens_Tested","^([a-zA-Z0-9]*|NT|NA|,)*$","Text/NT(Not tested)/NA","Other_Pathogen_Test_Result","^(P|N|U|NT|NA|,)*$","P/N/U/NT/NA",loadingList);
                    }catch(Exception e){
-                       errorMessages.add(attributeName+" is invalid "+ e.getMessage());
+                       errorMessages.add(attributeName+" data is invalid "+ e.getMessage());
                    }
                 }
+                if (Constants.DURATION_ATTRIBUTES.contains(fBean.getAttributeName().toLowerCase())) {
+                   attributeName = fBean.getAttributeName();
+                   try{
+                       //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
+                       DPCCValidator.validateRegEx(attributeName,fBean.getAttributeValue(),"^(([0-9.]*[ ]*[days|month|years])|NA|U|Unknown)*$","Number (2 days, 0.33 days) or NA or Unknown");
+                   }catch(Exception e){
+                       errorMessages.add(attributeName+" data is invalid "+ e.getMessage());
+                   }
+                }
+                if (fBean.getAttributeName().toLowerCase().contains("Age")) {
+                   attributeName = fBean.getAttributeName();
+                   try{
+                       //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
+                       DPCCValidator.validateRegEx(attributeName,fBean.getAttributeValue(),"^(([0-9.]*[ ]*[years])|NA|U|Unknown)*$","Number (2 years, 0.33 years) or NA or Unknown");
+                   }catch(Exception e){
+                       errorMessages.add(attributeName+" data is invalid "+ e.getMessage());
+                   }
+                }
+                if (fBean.getAttributeName().toLowerCase().contains("Vaccine_Dosage")) {
+                   attributeName = fBean.getAttributeName();
+                   try{
+                       //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
+                       DPCCValidator.validateRegEx(attributeName,fBean.getAttributeValue(),"^(([0-9.]*[ ]*[mL])|NA|U|Unknown)*$","number (0.05 mL) or NA or Unknown");
+                   }catch(Exception e){
+                       errorMessages.add(attributeName+" data is invalid "+ e.getMessage());
+                   }
+                }
+
                 //throw DetailedException with all error messages
                 if (!errorMessages.isEmpty()) {
                     DetailedException dex = new DetailedException(index,errorMessages.toString());
@@ -174,4 +215,7 @@ public class DPCCHelper {
         }
         return bean;
     }
+
+
 }
+

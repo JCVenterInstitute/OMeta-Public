@@ -110,23 +110,12 @@ public class DPCCValidator {
         }
 
     }
-    public static void validateRegex(String attribute1, String attribute1Values, String attribute1Message
-                                     ,List<FileReadAttributeBean> loadingList
-                                     )
+
+    public static void validateRegEx(String attributeName, String attributeValue, String attribute1RegEx, String attribute1Message)
     throws Exception{
 
-        boolean isValid = false;
-
-        FileReadAttributeBean beanAttribute1 = DPCCHelper.findAttribute( attribute1,  loadingList);
-        if (beanAttribute1 == null){
-           throw new Exception("Attribute "+attribute1+" is required.");
-        }
-
-
-        String[] attributeResult1 = beanAttribute1.getAttributeValue().split(",");
-
-        if (!beanAttribute1.getAttributeValue().matches(attribute1Values)){
-            throw new Exception("Invalid value '"+beanAttribute1.getAttributeValue()+"'. Allowed values are "+ attribute1Message);
+        if (!attributeValue.matches(attribute1RegEx)){
+            throw new Exception( " Invalid data '"+attributeValue+"'. Allowed values are "+ attribute1Message);
         }
 
     }
