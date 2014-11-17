@@ -67,37 +67,6 @@
           <li style="margin-right: 90px;"></li>
         </ul>
       </nav>
-      <!-- <nav class="navbar visible-lg" role="navigation">
-        <ul id="menu-the-main-menu" class="nav navbar-nav">
-          <li id="menu-item-9" class="dropdown">
-            <a href="#" data-toggle="dropdown">Data Statistics <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="#">DPCC Overall</a></li>
-              <li><a href="#">Centers Specific</a></li>
-              <li><a href="#">Web Traffic</a></li>
-            </ul>
-          </li>
-          <li id="menu-item-11" class="dropdown">
-            <a href="#" data-toggle="dropdown">Data Submission<span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="eventLoader.action?filter=pr">Project Registration</a></li>
-              <li><a href="eventLoader.action?filter=sr">Submit Data</a></li>
-              <li><a href="eventDetail.action">Search and Edit Data</a></li>
-              <li><a href="eventHistory.action">Event History</a></li>
-              <li><a href="eventReport.action">Report</a></li>
-            </ul>
-          </li>
-          <li id="admin_li" class="dropdown">
-            <a href="#" data-toggle="dropdown">Admin<span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="projectSetup.action">New Project</a></li>
-              <li><a href="metadataSetup.action?type=e">Metadata Setup</a></li>
-              <li><a href="actorRole.action">User/Role</a></li>
-            </ul>
-          </li>
-          <li id="menu-item-187"><a href="#">Support</a></li>
-        </ul>
-      </nav> -->
 
     </div>
   </div>
@@ -139,9 +108,11 @@
     if(userName!=null && userName!=='null') {
       $('div#currUserName').html('<font color="#b6cad9">' + userName + '</font>&nbsp;&nbsp;<a class="headerLink" href="logout.action">Log Out</a>');
       $('.noauthuser').hide();
+      $('#menu-the-main-menu-1, #menu-the-main-menu').show();
     } else {
       $('.authuser').hide();
       $('.noauthuser').show();
+      $('#menu-the-main-menu-1, #menu-the-main-menu').hide();
     }
   });
 </script>
