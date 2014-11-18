@@ -382,14 +382,14 @@ public class EventLoader extends ActionSupport implements Preparable {
         }
 
         if(resetIdsAndNames) {
+            if((isSampleRegistration || this.eventName.contains(Constants.EVENT_SAMPLE_UPDATE)) && status.equals(SUBMISSION_STATUS_SUBMIT)) {
+                this.filter = "sr";
+            }
+
             projectId = null;
             projectName = null;
             eventId = null;
             eventName = null;
-
-            if((isSampleRegistration || this.eventName.contains(Constants.EVENT_SAMPLE_UPDATE)) && status.equals(SUBMISSION_STATUS_SUBMIT)) {
-                this.filter = "sr";
-            }
         }
         if(resetLists) {
             beanList = null;
