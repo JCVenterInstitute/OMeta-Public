@@ -84,18 +84,28 @@
             
             <div id="HeaderPane" style="margin:15px 0 0 30px;">
               <div class="panelHeader" id="pageTitle">Submit Data</div>
-              <div class="row col-lg-11">
-                <p>The DPCC offers multiple interfaces to submit research data. The three Web-based options are interactive in that they offer the opportunity to review and validate your data before submitting it to the DPCC.</p>
-                <p id="toBulkP">If you prefer to simply transmit your data in bulk using one of the standard submission templates, please click <input type="button" onclick="javascript:toBulk();" class="btn-xs btn-primary" value="HERE" />.</p>
-                <p id="toInteractiveP" style="display:none;">Please click <input type="button" onclick="javascript:toInteractive();" class="btn-xs btn-primary" value="HERE" /> to switch to the Interactive Submission.</p>
+              <div class="row">
+                <div class="col-lg-11">
+                  <p>The DPCC offers multiple interfaces to submit research data. The three Web-based options are interactive in that they offer the opportunity to review and validate your data before submitting it to the DPCC.</p>
+                  <p id="toBulkP">If you prefer to simply transmit your data in bulk using one of the standard submission templates, please click <input type="button" onclick="javascript:toBulk();" class="btn-xs btn-primary" value="HERE" />.</p>
+                  <p id="toInteractiveP" style="display:none;">Please click <input type="button" onclick="javascript:toInteractive();" class="btn-xs btn-primary" value="HERE" /> to switch to the Interactive Submission.</p>
+                </div>
               </div>
-              <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+
+              <!-- error messages -->
+              <div class="row">
+                <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+              </div>
               <s:if test="hasActionErrors()">
                 <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
               </s:if>
+
+              <!-- action messages -->
               <s:if test="hasActionMessages()">
-                <div class="alert_info" onclick="$('.alert_info').remove();">
-                  <strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
+                <div class="row">
+                  <div class="alert_info" onclick="$('.alert_info').remove();">
+                    <strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
+                  </div>
                 </div>
               </s:if>
             </div>
