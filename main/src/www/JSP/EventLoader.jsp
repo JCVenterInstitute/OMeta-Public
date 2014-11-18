@@ -84,9 +84,7 @@
             
             <div id="HeaderPane" style="margin:15px 0 0 30px;">
               <!-- error messages -->
-              <div class="row">
-                <div id="errorMessagesPanel" style="margin-top:15px;"></div>
-              </div>
+              <div id="errorMessagesPanel" style="margin-top:15px;"></div>
               <s:if test="hasActionErrors()">
                 <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
               </s:if>
@@ -1011,6 +1009,7 @@
           $('#pageTitle').html('Edit Data');
           $('#eventTitle').html('Edit Data For');
         }
+        utils.error.add("123123123");
       });
     </script>
   </body>
