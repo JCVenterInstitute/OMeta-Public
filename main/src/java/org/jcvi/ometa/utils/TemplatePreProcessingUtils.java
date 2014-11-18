@@ -306,6 +306,10 @@ public class TemplatePreProcessingUtils {
                             continue;
                     }
 
+                    if(lineCount > 20) {
+                        throw new Exception("Please use the Bulk Submission to load a large set of data.");
+                    }
+
                     if(line[0].startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) || line[0].startsWith("\"" + Constants.TEMPLATE_COMMENT_INDICATOR)) { //skip comment line
                         continue;
                     }
