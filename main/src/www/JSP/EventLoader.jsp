@@ -634,7 +634,7 @@
       var button = {
         submit: function(status) {
           var loadType = $('input[name="loadType"]:radio:checked').val();
-          this.submit_form(loadType==='form'? 'insert' : loadType, status);
+          this.submit_form(loadType, status);
         },
         template: function() {
           if(_utils.validation()) {
@@ -907,7 +907,7 @@
         });
 
         //preselect load type radio button
-        var rtnJobType = (oldJobType===''||oldJobType==='insert'||oldJobType==='template'?'form':oldJobType);
+        var rtnJobType = (oldJobType===''||oldJobType==='form'||oldJobType==='template'?'form':oldJobType);
         $('input[name="loadType"][value='+rtnJobType+']').attr('checked', true);
         $('input[name="loadType"]:checked').change();
 
