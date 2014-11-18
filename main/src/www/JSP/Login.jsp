@@ -81,7 +81,7 @@
             <ol>
               <li>Submit data to the DPCC for processing and re-distribution to public databases</li>
               <li>Retrieve data submission metrics for their Center</li>
-              <li>Retrieve data submission metrics for their Center</li>
+              <li>Request technical support</li>
               <li>Access training and education materials</li>
             </ol>
 
