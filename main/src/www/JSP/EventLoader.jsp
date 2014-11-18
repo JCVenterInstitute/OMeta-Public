@@ -259,7 +259,7 @@
                     <tr>
                       <td>Loader CSV File</td>
                       <td>
-                        <s:file name="dataTemplate" id="upload" cssStyle="margin:0 0 0 14px;" size="75px" />
+                        <s:file name="dataTemplate" id="dataTemplate" cssStyle="margin:0 0 0 14px;" size="75px" />
                       </td>
                     </tr>
                   </table>
@@ -654,8 +654,16 @@
           $("#eventName").val(utils.getEventName());
           $("#jobType").val(type);
           $("#status").val(status);
+
           if(type === 'file') {
-            $("form#eventLoaderPage").attr("enctype", "multipart/form-data");
+            var $fileNode = $('#dataTemplate');
+            console.log($fileNode.val());
+            if($fileNode.val() == null || $fileNode.val().length == 0) { //check if file is there
+              utils.error.add("Please select a data template file.");
+              return false;
+            } else {
+              $("form#eventLoaderPage").attr("enctype", "multipart/form-data");
+            }
           }
           $('form#eventLoaderPage').submit();
         },
