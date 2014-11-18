@@ -87,26 +87,26 @@ public class DPCCValidator {
 
         FileReadAttributeBean beanAttribute1 = DPCCHelper.findAttribute( attribute1,  loadingList);
         if (beanAttribute1 == null){
-           throw new Exception("Attribute "+attribute1+" is required.");
+           throw new Exception(attribute1+": Attribute "+attribute1+" is required.");
         }
 
         FileReadAttributeBean beanAttribute2 = DPCCHelper.findAttribute( attribute2,  loadingList);
         if (beanAttribute2 == null){
-           throw new Exception("Attribute "+attribute2+" is required.");
+           throw new Exception(attribute2+": Attribute "+attribute2+" is required.");
         }
 
         String[] attributeResult1 = beanAttribute1.getAttributeValue().split(",");
         String[] attributeResult2 = beanAttribute2.getAttributeValue().split(",");
 
         if (attributeResult1.length != attributeResult2.length) {
-            throw new Exception("Number of tests for "+beanAttribute1.getAttributeName()+" and test results for "+beanAttribute2.getAttributeName()+" should be same.");
+            throw new Exception(attribute1+" or "+attribute1+":is invalid. Number of tests for "+beanAttribute1.getAttributeName()+" and test results for "+beanAttribute2.getAttributeName()+" should be same.");
         }
 
         if (!beanAttribute1.getAttributeValue().matches(attribute1Values)){
-            throw new Exception("Invalid value '"+beanAttribute1.getAttributeValue()+"'. Allowed values are "+ attribute1Message);
+            throw new Exception(attribute1+": is invalid. Invalid value '"+beanAttribute1.getAttributeValue()+"'. Allowed values are "+ attribute1Message);
         }
         if (!beanAttribute2.getAttributeValue().matches(attribute2Values)){
-            throw new Exception("Invalid value '"+beanAttribute2.getAttributeValue()+"'. Allowed values are "+ attribute2Message);
+            throw new Exception(attribute2+": is invalid. Invalid value '"+beanAttribute2.getAttributeValue()+"'. Allowed values are "+ attribute2Message);
         }
 
     }
