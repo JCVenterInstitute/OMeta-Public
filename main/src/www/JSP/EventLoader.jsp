@@ -124,7 +124,7 @@
                           </div>
                         </div>
                       </div>
-                      <p>Drap and Drop file in box to upload (Max file size is 2GB) </p>
+                      <p>Drag and Drop file in box to upload (Max file size is 2GB) </p>
                       <div id="dropzone" class="well">Drop files here</div>
                       <div class="row row_spacer">
                         <div id="progress">
