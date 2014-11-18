@@ -387,7 +387,7 @@ public class EventLoader extends ActionSupport implements Preparable {
             eventId = null;
             eventName = null;
 
-            if(isSampleRegistration && status.equals(SUBMISSION_STATUS_SUBMIT)) {
+            if((isSampleRegistration || this.eventName.contains(Constants.EVENT_SAMPLE_UPDATE)) && status.equals(SUBMISSION_STATUS_SUBMIT)) {
                 this.filter = "sr";
             }
         }
