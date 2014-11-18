@@ -94,6 +94,16 @@ public class EventLoader extends ActionSupport implements Preparable {
     private String ids;
     private Long defaultProjectId;
 
+    /* final string values from the form*/
+    private final String SUBMISSION_TYPE_GRID = "grid";
+    private final String SUBMISSION_TYPE_FILE = "file";
+    private final String SUBMISSION_TYPE_FORM = "form";
+    private final String TEMPLATE_DOWNLOAD = "template";
+
+    private final String SUBMISSION_STATUS_SAVE = "save";
+    private final String SUBMISSION_STATUS_VALIDATE = "validate";
+    private final String SUBMISSION_STATUS_SUBMIT = "submit";
+
     private static final String DEFAULT_USER_MESSAGE = "Not yet entered";
     private final String MULTIPLE_SUBJECT_IN_FILE_MESSAGE = "Multiple projects are found in the file";
     private final String UNSUPPORTED_UPLOAD_FILE_TYPE_MESSAGE = "File type is not supported. Supported file types are JPG, JPEG, GIF and BMP.";
@@ -160,7 +170,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                 if(this.projectName==null || this.projectName.equals("0") || eventName==null || eventName.equals("0"))
                     throw new Exception("Project or Event type is not selected.");
 
-                if (jobType.equals("insert")) { //loads single event
+                if (jobType.equals(SUBMISSION_TYPE_FORM)) { //loads single event
                     tx = (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
                     tx.begin();
 
@@ -193,9 +203,9 @@ public class EventLoader extends ActionSupport implements Preparable {
                         this.sampleName = singleGridBean.getSampleName();
                     }
 
-                    addActionMessage("Event has been loaded successfully.");
+                    addActionMessage(this.getResultMessage());
 
-                } else if(jobType.equals("grid")) { //loads multiple events from grid view
+                } else if(jobType.equals(SUBMISSION_TYPE_GRID)) { //loads multiple events from grid view
                     tx = (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
                     tx.begin();
 
@@ -207,8 +217,9 @@ public class EventLoader extends ActionSupport implements Preparable {
 
                     this.pageDataReset(isProjectRegistration, isSampleRegistration, this.status);
 
-                    addActionMessage("Events have been loaded successfully.");
-                } else if (jobType.equals("file")) { //loads data from a CSV file to grid view
+                    addActionMessage(this.getResultMessage());
+
+                } else if (jobType.equals(SUBMISSION_TYPE_FILE)) { //loads data from a CSV file to grid view
                     if(!this.dataTemplate.canRead()) {
                         throw new Exception("Error in reading the file.");
                     } else {
@@ -218,13 +229,13 @@ public class EventLoader extends ActionSupport implements Preparable {
                                     this.dataTemplateFileName, this.dataTemplate,
                                     this.projectName, isProjectRegistration, isSampleRegistration
                             );
-                            jobType = "grid";
+                            jobType = SUBMISSION_TYPE_GRID;
                         } catch(Exception ex) {
                             throw ex;
                         }
                     }
 
-                } else if(jobType.startsWith("template")) { //download template
+                } else if(jobType.startsWith(TEMPLATE_DOWNLOAD)) { //download template
                     List<EventMetaAttribute> emaList = this.readPersister.getEventMetaAttributes(this.projectName, this.eventName);
                     emaList = CommonTool.filterEventMetaAttribute(emaList);
                     CommonTool.sortEventMetaAttributeByOrder(emaList);
@@ -290,12 +301,12 @@ public class EventLoader extends ActionSupport implements Preparable {
                         AttributePair projectPair = projectPairList.get(0);
                         this.beanList = projectPair.getAttributeList();
                     }
-                    jobType = "form";
+                    jobType = SUBMISSION_TYPE_FORM;
                 }
             }
 
             if(ids != null && ids.length() > 0) {
-                jobType = "grid";
+                jobType = SUBMISSION_TYPE_GRID;
             }
         } catch (Exception ex) {
 
@@ -339,7 +350,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                     tx.commit();
                 }
 
-                if(jobType != null && jobType.equals("grid") && this.dataTemplate != null) {
+                if(jobType != null && jobType.equals(SUBMISSION_TYPE_GRID) && this.dataTemplate != null) {
                     this.dataTemplate.delete();
                     this.dataTemplate = null;
                     this.dataTemplateContentType = null;
@@ -357,7 +368,7 @@ public class EventLoader extends ActionSupport implements Preparable {
         boolean resetIdsAndNames = true;
         boolean resetLists = true;
 
-        if(status.equals("save") || status.equals("validate")) {
+        if(status.equals(SUBMISSION_STATUS_SAVE) || status.equals(SUBMISSION_STATUS_VALIDATE)) {
             resetIdsAndNames = false;
             resetLists = false;
             if(isSampleRegistration) { //update registration event to update on save requests
@@ -365,7 +376,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                 this.filter = "su";
             }
         } else {
-            if(status.equals("submit") && isProjectRegistration) { // do not reset project and event for project registration
+            if(status.equals(SUBMISSION_STATUS_SUBMIT) && isProjectRegistration) { // do not reset project and event for project registration
                 resetIdsAndNames = false;
             }
         }
@@ -375,11 +386,27 @@ public class EventLoader extends ActionSupport implements Preparable {
             projectName = null;
             eventId = null;
             eventName = null;
+
+            if(isSampleRegistration && status.equals(SUBMISSION_STATUS_SUBMIT)) {
+                this.filter = "sr";
+            }
         }
         if(resetLists) {
             beanList = null;
             gridList = null;
         }
+    }
+
+    private String getResultMessage() {
+        String resultMessage;
+        if(this.status.equals(SUBMISSION_STATUS_SUBMIT)) {
+            resultMessage = "Data successfully submitted to the DPCC.";
+        } else if(this.status.equals(SUBMISSION_STATUS_VALIDATE)) {
+            resultMessage = "Data submission is validated.";
+        } else {
+            resultMessage = "Data submission is saved.";
+        }
+        return resultMessage;
     }
 
     public void setMessage(String message) {
