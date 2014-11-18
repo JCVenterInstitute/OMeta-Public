@@ -83,15 +83,6 @@
             <s:hidden name="sampleName" id="sampleName" />
             
             <div id="HeaderPane" style="margin:15px 0 0 30px;">
-              <div class="panelHeader" id="pageTitle">Submit Data</div>
-              <div class="row">
-                <div class="col-lg-11">
-                  <p>The DPCC offers multiple interfaces to submit research data. The three Web-based options are interactive in that they offer the opportunity to review and validate your data before submitting it to the DPCC.</p>
-                  <p id="toBulkP">If you prefer to simply transmit your data in bulk using one of the standard submission templates, please click <input type="button" onclick="javascript:toBulk();" class="btn-xs btn-primary" value="HERE" />.</p>
-                  <p id="toInteractiveP" style="display:none;">Please click <input type="button" onclick="javascript:toInteractive();" class="btn-xs btn-primary" value="HERE" /> to switch to the Interactive Submission.</p>
-                </div>
-              </div>
-
               <!-- error messages -->
               <div class="row">
                 <div id="errorMessagesPanel" style="margin-top:15px;"></div>
@@ -108,9 +99,18 @@
                   </div>
                 </div>
               </s:if>
+
+              <div class="panelHeader" id="pageTitle">Submit Data</div>
+              <div class="row">
+                <div class="col-lg-11">
+                  <p>The DPCC offers multiple interfaces to submit research data. The three Web-based options are interactive in that they offer the opportunity to review and validate your data before submitting it to the DPCC.</p>
+                  <p id="toBulkP">If you prefer to simply transmit your data in bulk using one of the standard submission templates, please click <input type="button" onclick="javascript:toBulk();" class="btn-xs btn-primary" value="HERE" />.</p>
+                  <p id="toInteractiveP" style="display:none;">Please click <input type="button" onclick="javascript:toInteractive();" class="btn-xs btn-primary" value="HERE" /> to switch to the Interactive Submission.</p>
+                </div>
+              </div>
             </div>
 
-            <div id="middle_content_template">
+            <div id="middle_content_template" style="padding: 0 10px; margin: 0 0 0 20px;">
 
               <!-- file drop box -->
               <div id="dropBoxDiv" style="float:left;width:100%;">
@@ -147,25 +147,25 @@
                   <div id="tableTop">
                     <div class="row col-md-12"><h5><strong>Interactive Submission</strong></h5></div>
                     <div class="row col-md-12">
-                      <div class="col-lg-1 col-md-3"><strong>Submit Data For</strong></div>
-                      <div class="col-lg-11 col-md-9">
+                      <div class="col-lg-1 col-md-2">Submit Data For</div>
+                      <div class="col-lg-11 col-md-10">
                         <input type="radio" name="loadType" class="loadRadio" value="form" id="r_sw" />
-                        <label for="r_sw"><strong>Single Sample</strong></label>
+                        <label for="r_sw">Single Sample</label>
                         <input type="radio" name="loadType" class="loadRadio" value="grid" id="r_mw" style="margin-left:15px;"/>
-                        <label for="r_mw"><strong>Multiple Samples (Web Form)</strong></label>
+                        <label for="r_mw">Multiple Samples (Web Form)</label>
                         <input type="radio" name="loadType" class="loadRadio" value="file" id="r_mf" style="margin-left:15px;"/>
-                        <label for="r_mf"><strong>Multiple Samples (Excel Template)</strong></label>
+                        <label for="r_mf">Multiple Samples (Excel Template)</label>
                       </div>
                     </div>
-                    <div class="row row_spacer" id="projectSelectRow">
-                      <div class="col-md-1">Center Project</div>
-                      <div class="col-md-11 combobox">
+                    <div class="row row_spacer col-md-12" id="projectSelectRow">
+                      <div class="col-lg-1 col-md-1">Center Project</div>
+                      <div class="col-lg-11 col-md-11 combobox">
                         <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
                                     list="projectList" name="projectId" headerKey="0" headerValue="Select by Center Project ID"
                                     listValue="projectName" listKey="projectId" required="true"/>  
                       </div>
                     </div>
-                    <div class="row row_spacer">
+                    <div class="row row_spacer col-md-12">
                       <div class="col-md-1" id="eventTitle">Data Template</div>
                       <div class="col-md-11 combobox">
                         <s:select id="_eventSelect" list="#{0:'Select by Data Type Template'}" name="eventId" required="true" disabled="true"/>
