@@ -1009,7 +1009,6 @@
           $('#pageTitle').html('Edit Data');
           $('#eventTitle').html('Edit Data For');
         }
-        utils.error.add("123123123");
       });
     </script>
   </body>
