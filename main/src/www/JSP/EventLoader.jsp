@@ -111,7 +111,7 @@
             <div id="middle_content_template" style="padding: 0 10px; margin: 0 0 0 20px;">
 
               <!-- file drop box -->
-              <div id="dropBoxDiv" style="float:left;width:100%;">
+              <div id="dropBoxDiv" style="display:none;float:left;width:100%;">
                 <div id="tableTop">
                   <div class="row col-md-12"><h5><strong>Bulk Submission</strong></h5></div>
                   <div class="row row_spacer">
@@ -176,7 +176,7 @@
                       </div>
                     </div> -->
                   </div>
-                  <div id="projectDetailInputDiv">
+                  <div id="projectDetailInputDiv" style="display:none;">
                     <div style="margin:25px 10px 0 0;">
                       <h1 class="csc-firstHeader">Project Information</h1>
                     </div>
@@ -197,7 +197,7 @@
                     </div>
                   </div>
 
-                  <div id="sampleDetailInputDiv">
+                  <div id="sampleDetailInputDiv" style="display:none;">
                     <div style="margin:25px 10px 0 0;">
                       <h1 class="csc-firstHeader">Sample Information</h1>
                     </div>
@@ -233,7 +233,7 @@
                     [<img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Information]
                   </div>
                 </div>
-                <div id="attributeInputDiv" style="clear:both;">
+                <div id="attributeInputDiv" style="clear:both;display:none;">
                   <s:if test="beanList != null && beanList.size() > 0">
                     <table>
                       <s:iterator value="beanList" var="attrName" status="stat">
@@ -248,13 +248,13 @@
                     </table>
                   </s:if>
                 </div>
-                <div id="gridInputDiv" style="margin:25px 10px 0 0 ;overflow-x: auto;">
+                <div id="gridInputDiv" style="margin:25px 10px 0 0 ;overflow-x: auto;display:none;">
                   <table name="eventTable" id="eventTable" class="contenttable">
                     <thead id="gridHeader"></thead>
                     <tbody id="gridBody"></tbody>
                   </table>
                 </div>
-                <div id="fileInputDiv" style="margin:25px 10px 0 0 ;">
+                <div id="fileInputDiv" style="margin:25px 10px 0 0 ;display:none;">
                   <table>
                     <tr>
                       <td>Loader CSV File</td>
