@@ -20,11 +20,19 @@
   --%>
 
 <!doctype html>
-  <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+  <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+  <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
+  <%@ page isELIgnored="false" %>
+  <c:set var="req" value="${pageContext.request}" />
+  <c:set var="baseURL" value="${fn:replace(req.requestURL, req.requestURI, req.contextPath)}" />
+  <c:set var="host" value="http://niaidceirs-staging.elasticbeanstalk.com" />
+  <c:if test="${fn:containsIgnoreCase(baseURL , 'dpcc.niaidceirs.org')}">
+    <c:set var="host" value="http://niaidceirs.org" />
+  </c:if>
+
   <head>
     <jsp:include page="../html/header.html" />
     <style>
-
     </style>
   </head>
 
@@ -34,7 +42,7 @@
 
       <div id="main" class="">
         <div id="content" role="main">
-          <c:import url="http://niaidceirs-staging.elasticbeanstalk.com/dpcc/reports/analytics.php?framed=1" />
+          <c:import url="${host}/dpcc/reports/analytics.php?framed=1" />
         </div>
       </div>
       
