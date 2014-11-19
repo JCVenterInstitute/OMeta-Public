@@ -131,7 +131,7 @@
                         <th class="tableHeaderStyle">Sample Name</th>
                         <th class="tableHeaderStyle">Date</th>
                         <th class="tableHeaderStyle">User</th>
-                        <th class="tableHeaderStyle">Status</th>
+                        <!-- <th class="tableHeaderStyle">Status</th> -->
                         <th>Hidden</th>
                       </tr>
                       </thead>
@@ -373,9 +373,9 @@
                          rowData.createdOn,
                          rowData.actor
                        );
-                       if(rowData.eventStatus) {
-                         row.push(rowData.eventStatus + "<a href='javascript:changeEventStatus(" + rowData.eventId + ");'><img src='images/blue/" + (rowData.eventStatus === 'Active' ? 'cross' : 'tick') + ".png'/></a>");
-                       }
+                       // if(rowData.eventStatus) {
+                       //   row.push(rowData.eventStatus + "<a href='javascript:changeEventStatus(" + rowData.eventId + ");'><img src='images/blue/" + (rowData.eventStatus === 'Active' ? 'cross' : 'tick') + ".png'/></a>");
+                       // }
                        if(rowData.attributes) {
                          var headers = '', values = '';
                          $.each(rowData.attributes, function(ai, av) {
@@ -400,12 +400,13 @@
            "bAutoWidth" : false,
            "aoColumnDefs": [
              {"sWidth": "23px", "bSortable": false, "aTargets": [ 0 ]},
-             {"sWidth": "20%", "aTargets":[1]},
+             {"sWidth": "30%", "aTargets":[1]},
              {"sWidth": "30%", "aTargets":[2]},
              {"sWidth": "20%", "aTargets":[3]},
              {"sWidth": "20%", "aTargets":[4]},
-             {"sWidth": "10%", "aTargets":[5]},
-             {"bSearchable": true, "bVisible": false, "aTargets": [ 6 ]}
+             {"bSearchable": true, "bVisible": false, "aTargets": [ 5 ]}
+             // {"sWidth": "10%", "aTargets":[5]},
+             // {"bSearchable": true, "bVisible": false, "aTargets": [ 6 ]}
            ]
         }).fnFilterOnReturn();
 
@@ -417,8 +418,8 @@
             _table.fnClose(_row);
           } else {
             this.src = closeBtn;
-            _table.fnOpen(_row, subrow_html.replace(/\\$d\\$/, _table.fnGetData(_row)[(_is_event?6:5)]), '_details');
-            $('td._details').attr('colspan', 7); //fix misalignment issue in chrome by incresing colspan by 1
+            _table.fnOpen(_row, subrow_html.replace(/\\$d\\$/, _table.fnGetData(_row)[5]), '_details');
+            $('td._details').attr('colspan', 6); //fix misalignment issue in chrome by incresing colspan by 1
             $('td._details>div').css('width', $('#statusTableDiv').width()-90);
           }
         });
