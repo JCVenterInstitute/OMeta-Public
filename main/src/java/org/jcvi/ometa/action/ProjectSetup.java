@@ -136,7 +136,7 @@ public class ProjectSetup extends ActionSupport {
                             EventMetaAttribute ema = CommonTool.createEMA(
                                     null, loadingProject.getProjectName(), Constants.EVENT_PROJECT_REGISTRATION, pma.getAttributeName(),
                                     pma.isRequired(), pma.isActive(), pma.getDataType(), pma.getDesc(),
-                                    pma.getOntology(), pma.getLabel(), pma.getOptions(), false);
+                                    pma.getOntology(), pma.getLabel(), pma.getOptions(), false, 0);
                             emaList.add(ema);
 
                             if(bean.getValue()!=null && !bean.getValue().isEmpty()) {

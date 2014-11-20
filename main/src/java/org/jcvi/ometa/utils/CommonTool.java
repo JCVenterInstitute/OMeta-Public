@@ -211,7 +211,7 @@ public class CommonTool {
     public static EventMetaAttribute createEMA(
             Long projectId, String projectName, String eventName, String attrName,
             boolean required, boolean active, String dataType, String desc,
-            String ontology, String label, String options, boolean sampleRequired) {
+            String ontology, String label, String options, boolean sampleRequired, int order) {
         EventMetaAttribute rtnVal = new EventMetaAttribute();
         rtnVal.setProjectId(projectId);
         rtnVal.setProjectName(projectName);
@@ -225,6 +225,7 @@ public class CommonTool {
         rtnVal.setLabel(label);
         rtnVal.setOntology(ontology);
         rtnVal.setOptions(options);
+        rtnVal.setOrder(order);
         return rtnVal;
     }
 

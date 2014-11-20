@@ -140,7 +140,7 @@ public class EventLoadHelper {
                     EventMetaAttribute newEma = CommonTool.createEMA(
                             null, project.getProjectName(), ema.getEventName(), ema.getAttributeName(),
                             ema.isRequired(), ema.isActive(), ema.getDataType(), ema.getDesc(),
-                            ema.getOntology(), ema.getLabel(), ema.getOptions(), ema.isSampleRequired());
+                            ema.getOntology(), ema.getLabel(), ema.getOptions(), ema.isSampleRequired(), ema.getOrder());
                     newEma.setEventTypeLookupId(ema.getEventTypeLookupId());
                     newEma.setNameLookupId(ema.getNameLookupId());
                     newEmas.add(newEma);
