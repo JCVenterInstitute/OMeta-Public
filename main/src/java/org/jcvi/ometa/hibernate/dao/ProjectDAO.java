@@ -293,35 +293,19 @@ public class ProjectDAO extends HibernateDAO {
      * @param session hibernate session that knows the project.
      * @throws Exception thrown by called methods, or if the general edit group lookup value has wrong cardinality.
      */
-    public void applyDefaultWriteSecurity(
-            Project project,
-            Session session
-    ) throws Exception {
+    public void applyDefaultWriteSecurity(Project project, Session session) throws Exception {
         logger.info( "Setting default security on project " + project.getProjectName() );
 
         LookupValueDAO dao = new LookupValueDAO();
-        LookupValue groupLv = dao.getLookupValue(
-                GENERAL_EDIT_GROUP, ModelValidator.EDIT_GROUP_LV_TYPE_NAME, session );
-        if ( groupLv == null ) {
+        LookupValue groupLv = dao.getLookupValue(GENERAL_EDIT_GROUP, ModelValidator.EDIT_GROUP_LV_TYPE_NAME, session );
+        if(groupLv == null) {
             throw new DAOException( "Failed to find lookup value for " + GENERAL_EDIT_GROUP );
         }
 
         // Need to get the ID for the target group.
-        logger.info("Querying for group with name lookup ID of " + groupLv.getLookupValueId() + " named " + groupLv.getName() + " typed " + groupLv.getType() );
         Criteria crit = session.createCriteria( Group.class );
-        crit.add( Restrictions.eq( "nameLookupId", groupLv.getLookupValueId() ) );
+        crit.add(Restrictions.eq("nameLookupId", groupLv.getLookupValueId()));
 
-// Returned nothing.
-//        Criteria crit = session.createCriteria( Group.class );
-//        crit
-//            .createCriteria("groupNameLookupValue")
-//            .add(Restrictions.eq("name", GENERAL_EDIT_GROUP));
-
-
-// REturned nothing.
-//        crit
-//            .createAlias("groupNameLookupValue", "GLV")
-//            .add( Restrictions.eqProperty( "GLV.name", GENERAL_EDIT_GROUP ));
         List<Group> groups = crit.list();
         if ( groups.size() == 0 ) {
             throw new DAOException(
