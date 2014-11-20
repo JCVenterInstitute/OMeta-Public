@@ -30,7 +30,7 @@ import org.hibernate.criterion.Restrictions;
 import org.jcvi.ometa.model.Group;
 import org.jcvi.ometa.model.LookupValue;
 import org.jcvi.ometa.model.Project;
-import org.jcvi.ometa.validation.ModelValidator;
+import org.jcvi.ometa.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,18 +45,10 @@ import java.util.List;
  * Data Access Object for encapsulating database access to project table.
  */
 public class ProjectDAO extends HibernateDAO {
-    public static final String GENERAL_EDIT_GROUP = "General-Edit";
-
     private static final String RTN_PROJECT_NAME = "projectName";
     private static final String RTN_PROJECT_ID = "projectId";
-    private static final String SECURED_PROJECTS_SQL_QUERY =
-            "select P.projet_name as projectName " +
-                    "from project P " +
-                    "where P.projet_is_secure=1";
-
-    private static final String CHILD_PROJECTS_SQL_QUERY =
-            "select * from project P " +
-                    "where P.projet_projet_parent_id=:parantId";
+    private static final String SECURED_PROJECTS_SQL_QUERY = "select P.projet_name as projectName from project P where P.projet_is_secure=1";
+    private static final String CHILD_PROJECTS_SQL_QUERY = "select * from project P where P.projet_projet_parent_id=:parantId";
 
 
     /**
@@ -233,13 +225,12 @@ public class ProjectDAO extends HibernateDAO {
      * @param project may or may not have all its data.
      * @throws Exception by called methods.
      */
-    private void prepareProjectForWriteback( Project project, String actorName, Date transactionDate, Session session )
-            throws Exception {
+    private void prepareProjectForWriteback( Project project, String actorName, Date transactionDate, Session session ) throws Exception {
 
         handleNonNewProject(project, session);
         handleCreationTracking(project, actorName, transactionDate, session);
         resolveParentProjectId(project, session);
-        applyDefaultWriteSecurity(project, session);
+        applyDefaultSecurity(project, session);
     }
 
     private void handleNonNewProject(Project project, Session session) {
@@ -249,11 +240,7 @@ public class ProjectDAO extends HibernateDAO {
         crit.add( Restrictions.eq("projectName", projectName) );
         List results = crit.list();
         if ( results != null  &&  results.size() > 0 ) {
-            throw new IllegalStateException(
-                    "Do not call writeback loop with an existing project.  Project " +
-                            projectName +
-                            " is in the database."
-            );
+            throw new IllegalStateException("Do not call writeback loop with an existing project.  Project " + projectName + " is in the database.");
         }
     }
 
@@ -293,44 +280,33 @@ public class ProjectDAO extends HibernateDAO {
      * @param session hibernate session that knows the project.
      * @throws Exception thrown by called methods, or if the general edit group lookup value has wrong cardinality.
      */
-    public void applyDefaultWriteSecurity(Project project, Session session) throws Exception {
+    public void applyDefaultSecurity(Project project, Session session) throws Exception {
         logger.info( "Setting default security on project " + project.getProjectName() );
 
-        LookupValueDAO dao = new LookupValueDAO();
-        LookupValue groupLv = dao.getLookupValue(GENERAL_EDIT_GROUP, ModelValidator.EDIT_GROUP_LV_TYPE_NAME, session );
-        if(groupLv == null) {
-            throw new DAOException( "Failed to find lookup value for " + GENERAL_EDIT_GROUP );
+        if(project.getEditGroup() == null) {
+            Group editGroup = this.getGroup(Constants.GROUP_GENERAL_EDIT, Constants.LOOKUP_VALUE_TYPE_EDIT_GROUP, project.getProjectName(), session);
+            project.setEditGroup(editGroup.getGroupId());
         }
 
-        // Need to get the ID for the target group.
-        Criteria crit = session.createCriteria( Group.class );
-        crit.add(Restrictions.eq("nameLookupId", groupLv.getLookupValueId()));
-
-        List<Group> groups = crit.list();
-        if ( groups.size() == 0 ) {
-            throw new DAOException(
-                    "Cannot find group " + GENERAL_EDIT_GROUP + " to secure " + project.getProjectName() );
+        if(project.getViewGroup() == null) {
+            Group viewGroup = this.getGroup(Constants.GROUP_GENERAL_VIEW, Constants.LOOKUP_VALUE_TYPE_ACCESS_GROUP, project.getProjectName(), session);
+            project.setViewGroup(viewGroup.getGroupId());
         }
-        else if ( groups.size() > 1 ) {
-            throw new DAOException("Too many groups named " + GENERAL_EDIT_GROUP);
-        }
-
-        // First, getting the ID for the target lookup value.
-//        Criteria crit = session.createCriteria( LookupValue.class );
-//        crit.add( Restrictions.eq( "name", GENERAL_EDIT_GROUP ));
-//        List<LookupValue> lvs = crit.list();
-//        if ( lvs.size() == 0 ) {
-//            throw new DAOException(
-//                    "Cannot find group " + GENERAL_EDIT_GROUP + " to secure " + project.getProjectName() );
-//        }
-//        else if ( lvs.size() > 1 ) {
-//            throw new DAOException("Too many lookup values named " + GENERAL_EDIT_GROUP);
-//        }
-/*
-select G.group_id from ifx_projects.group G, ifx_projects.lookup_value LV
-where LV.lkuvlu_name='General-Edit' and G.group_name_lkuvl_id=LV.lkuvlu_id;
- */
-        project.setEditGroup( groups.get( 0 ).getGroupId() );
     }
 
+    private Group getGroup(String groupName, String roleType, String projectName, Session session) throws Exception {
+        LookupValueDAO lvDAO = new LookupValueDAO();
+        LookupValue groupLv = lvDAO.getLookupValue(groupName, roleType, session);
+        if(groupLv == null) {
+            throw new DAOException( "Failed to find lookup value for " + groupName );
+        }
+
+        GroupDAO groupDAO = new GroupDAO();
+        Group group = groupDAO.getGroupByLookupId(groupLv. getLookupValueId(), session);
+        if(group == null) {
+            throw new DAOException("Cannot find group " + groupName + " to secure " + projectName);
+        }
+
+        return group;
+    }
 }
