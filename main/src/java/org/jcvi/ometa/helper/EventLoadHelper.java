@@ -117,12 +117,12 @@ public class EventLoadHelper {
 
         if (isProjectRegistration) {
             if (frab != null && frab.size() > 0) {
-                                    loadingList = this.feedAndFilterFileReadBeans(eventName, isProjectRegistration ? project.getProjectName() : projectName, null, frab);
-                        }
+                loadingList = this.feedAndFilterFileReadBeans(eventName, isProjectRegistration ? project.getProjectName() : projectName, null, frab);
+            }
         }else{
-          if (frab != null && frab.size() > 0) {
+            if (frab != null && frab.size() > 0) {
             loadingList = this.feedAndFilterFileReadBeans(eventName, isProjectRegistration ? project.getProjectName() : projectName, sample.getSampleName(), frab);
-          }
+            }
         }
 
         if (isProjectRegistration) {
@@ -227,6 +227,9 @@ public class EventLoadHelper {
             project.setParentProjectName(parentProject.getProjectName());
             project.setParentProjectId(parentProject.getProjectId());
             project.setProjectLevel(parentProject.getProjectLevel() + 1);
+
+            project.setEditGroup(parentProject.getEditGroup());
+            project.setViewGroup(parentProject.getViewGroup());
         } else {
             project.setProjectLevel(1);
         }
@@ -278,7 +281,7 @@ public class EventLoadHelper {
             }
 
             String attributeName = fBean.getAttributeName();
-            LookupValue lv = this.readPersister.getLookupValue(attributeName, Constants.ATTRIBUTE_LV_TYPE_NAME); //search for attribute name from the lookup table
+            LookupValue lv = this.readPersister.getLookupValue(attributeName, Constants.LOOKUP_VALUE_TYPE_ATTRIBUTE); //search for attribute name from the lookup table
             if(lv == null) {
                 throw new Exception("attribute '" + attributeName + "' does not exist.");
             } else {
