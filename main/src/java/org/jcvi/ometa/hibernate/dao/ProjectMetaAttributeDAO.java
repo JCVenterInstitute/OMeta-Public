@@ -130,12 +130,6 @@ public class ProjectMetaAttributeDAO extends HibernateDAO {
     }
 
     private void prepareForWriteback(ProjectMetaAttribute model, String actorName, Date transactionDate, Session session) throws DAOException {
-        /*
-         * Only apply active flag to newly added meta attribute
-         * by hkim 9/7/12
-         */
-        if (model.getCreationDate() == null)
-            model.setActive(true);
         handleProjectRelation(model, model.getProjectName(), model.getAttributeName(), session);
         handleCreationTracking(model, actorName, transactionDate, session);
         locateAttribNameLookupId(model, session, ModelValidator.ATTRIBUTE_LV_TYPE_NAME);

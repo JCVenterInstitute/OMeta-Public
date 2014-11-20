@@ -166,12 +166,6 @@ public class EventMetaAttributeDAO extends HibernateDAO {
     }
 
     private void prepareForWriteback(EventMetaAttribute model, String actorName, Date transactionDate, Session session ) throws Exception {
-        /*
-         * Only apply active flag to newly added meta attribute
-         * by hkim 9/7/12
-         */
-        if (model.getCreationDate() == null)
-            model.setActive(true);
         handleProjectRelation( model, model.getProjectName(), model.getAttributeName(), session );
         handleCreationTracking( model, actorName, transactionDate, session );
         locateAttribNameLookupId( model, session, ModelValidator.ATTRIBUTE_LV_TYPE_NAME);
