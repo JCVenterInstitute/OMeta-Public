@@ -44,6 +44,15 @@ public class Constants {
     public static final String DEVELOPMENT_DATABASE = "development";
     public static final String FILE_DOWNLOAD_MSG = "FILE_DOWNLOAD";
 
+    public static final String GROUP_GENERAL_EDIT = "General-Edit";
+    public static final String GROUP_GENERAL_VIEW = "General-View";
+
+    public static final String LOOKUP_VALUE_TYPE_ACCESS_GROUP = "Access Group";
+    public static final String LOOKUP_VALUE_TYPE_EDIT_GROUP = "Edit Group";
+    public static final String LOOKUP_VALUE_TYPE_ATTRIBUTE = "Attribute";
+    public static final String LOOKUP_VALUE_TYPE_EVENT_STATUS = "Event Status";
+    public static final String LOOKUP_VALUE_TYPE_EVENT_TYPE = "Event Type";
+
     public static final String ACCEPTABLE_CHARACTERS = "A-Za-z0-9=.,;:!?@$%#+()\\[\\]/\\-_'\" ";
     public final static String DATE_DEFAULT_FORMAT = "yyyy-MM-dd";
     public final static String DATE_ALTERNATIVE_FORMAT = "dd-MMM-yyyy";
@@ -74,12 +83,6 @@ public class Constants {
     public static final String INT_DATA_TYPE = "int";
     public static final String URL_DATA_TYPE = "url";
     public static final String FILE_DATA_TYPE = "file";
-
-    public static final String ATTRIBUTE_LV_TYPE_NAME = "Attribute";
-    public static final String EVENT_STATUS_LV_TYPE_NAME = "Event Status";
-    public static final String EVENT_TYPE_LV_TYPE_NAME = "Event Type";
-    public static final String VIEW_GROUP_LV_TYPE_NAME = "Access Group";
-    public static final String EDIT_GROUP_LV_TYPE_NAME = "Edit Group";
 
     public static final String DENIED_USER_EDIT_MESSAGE = "You do not have permission to edit the project.";
     public static final String DENIED_USER_VIEW_MESSAGE = "You do not have permission to access the project.";
@@ -141,15 +144,15 @@ public class Constants {
 
     //all should be in lower case for comparison
     public enum DURATION_ATTRIBUTES {duration_of_poultry_exposure,duration_of_wild_bird_exposure,duration_of_swine_exposure
-              ,duration_of_human_exposure;
+        ,duration_of_human_exposure;
 
         public static boolean contains(String s) {
-                try {
-                    DURATION_ATTRIBUTES.valueOf(s);
-                    return true;
-                } catch (Exception e) {
-                    return false;
-                }
+            try {
+                DURATION_ATTRIBUTES.valueOf(s);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
         }
     }
 }

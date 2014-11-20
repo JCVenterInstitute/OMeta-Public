@@ -291,7 +291,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                 } else if(jobType.equals("projectedit")) {
                     AttributeHelper attributeHelper = new AttributeHelper(this.readPersister);
                     if(this.eventId == null && this.eventName != null) {
-                        LookupValue eventLV = this.readPersister.getLookupValue(this.eventName, Constants.EVENT_TYPE_LV_TYPE_NAME);
+                        LookupValue eventLV = this.readPersister.getLookupValue(this.eventName, Constants.LOOKUP_VALUE_TYPE_EVENT_TYPE);
                         if(eventLV != null) {
                             this.eventId = eventLV.getLookupValueId();
                         }
