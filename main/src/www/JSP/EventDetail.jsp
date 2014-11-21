@@ -59,18 +59,34 @@
         padding:0 0 0 35px;
         border: 1px gray dotted;
       }
-      td._details div { position: relative; overflow: auto; overflow-y: hidden; }
-      td._details table td { border:1px solid white; }
+      td._details div { 
+        position: relative; overflow: auto; overflow-y: hidden; 
+      }
+      td._details table td { 
+        border:1px solid white; 
+      }
 
-      .datatable_top, .datatable_table, .datatable_bottom { float:left; clear:both; width:100%;}
+      .datatable_top, .datatable_table, .datatable_bottom { 
+        float:left; 
+        clear:both; 
+        width:100%;
+        min-width: 165px;
+      }
       .dataTables_length { 
         height: 29px;
         vertical-align: middle;
-        width: 155px !important;
+        min-width: 165px !important;
+        margin-top: 2px;
       }
-      .dataTables_filter { width: 260px !important;}
-      .dataTables_info { padding-top: 0 !important;}
-      .dataTables_paginate { float: left !important; }
+      .dataTables_filter { 
+        width: 260px !important;
+      }
+      .dataTables_info { 
+        padding-top: 0 !important;
+      }
+      .dataTables_paginate { 
+        float: left !important; 
+      }
     </style>
   </head>
 
