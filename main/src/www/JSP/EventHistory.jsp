@@ -76,90 +76,95 @@
       <jsp:include page="top.jsp" />
 
       <div id="main" class="">
-        <div id="content" role="main">
+        <div id="inner-content" class=""> 
+          <div id="content" role="main">
 
-          <s:form id="eventHistoryPage" name="eventHistoryPage" namespace="/" action="eventHistory" method="post" theme="simple">
-            <s:hidden id="editable" name="editable" value="0" />
-            <div id="HeaderPane" style="margin:15px 0 0 30px;">
-              <div class="panelHeader">Event History</div>
-              <div id="errorMessagesPanel" style="margin-top:15px;"></div>
-              <s:if test="hasActionErrors()">
-                <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
-              </s:if>
-              <s:if test="hasActionMessages()">
-                <div class="alert_info" onclick="$('.alert_info').remove();">
-                  <strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
-                </div>
-              </s:if>
-            </div>
-            <div id="middle_content_template">
-              <!--<div id="columnsTable"></div>  for column listing-->
-              <div id="statusTableDiv">
-
-                  <div id="tableTop">
-                    <div class="row">
-                      <div class="col-lg-1 col-md-2">Center Project</div>
-                      <div class="col-lg-11 col-md-10 combobox">
-                        <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
-                                    list="projectList" name="projectId" headerKey="0" headerValue="Select by Center Project ID"
-                                    listValue="projectName" listKey="projectId" required="true"/>
-                      </div>
-                    </div>
-                    <div class="row row_spacer">
-                      <div class="col-lg-1 col-md-2">Sample</div>
-                      <div class="col-lg-11 col-md-10 combobox">
-                        <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':'Select by Sample'}"
-                                    name="selectedSampleId" required="true"/>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- event -->
-                  <div style="margin:25px 10px 0 0;">
-                    <h1 class="csc-firstHeader">Event Details</h1>
-                  </div>
-                  <div id="eventDateDiv" style="margin:3px 10px 0 0;" class="row">
-                    <fieldset class="row">
-                      <div class="col-sm-1" style="padding-top:7px;">Date Range:</div>
-                      <div class="col-sm-2">
-                        <div class="input-group col-sm-12">
-                          <input id="fromDate" type="text" class="form-control" />
-                          <label for="fromDate" class="input-group-addon">
-                            <span class=""><i class="fa fa-calendar"></i></span>
-                          </label>
-                        </div>
-                      </div>
-                      <div class="col-sm-1" style="width:auto;padding-top:7px;">~</div>
-                      <div class="col-sm-2">
-                        <div class="input-group col-sm-11">
-                          <input id="toDate" type="text" class="form-control" />
-                          <label for="toDate" class="input-group-addon">
-                            <span class=""><i class="fa fa-calendar"></i></span>
-                          </label>
-                        </div>
-                      </div>
-                    </fieldset>
-                  </div>
-                  <div id="eventTableDiv" style="margin:10px 10px 5px 0;clear:both">
-                    <table name="eventTable" id="eventTable" class="contenttable" style="width:95%;">
-                      <thead id="eventTableHeader">
-                      <tr>
-                        <th style="width:23px !important;text-align:center"><img id="table_openBtn"/></th>
-                        <th class="tableHeaderStyle">Event Type</th>
-                        <th class="tableHeaderStyle">Sample Name</th>
-                        <th class="tableHeaderStyle">Date</th>
-                        <th class="tableHeaderStyle">User</th>
-                        <!-- <th class="tableHeaderStyle">Status</th> -->
-                        <th>Hidden</th>
-                      </tr>
-                      </thead>
-                      <tbody id="eventTableBody" />
-                    </table>
-                  </div>
+            <s:form id="eventHistoryPage" name="eventHistoryPage" namespace="/" action="eventHistory" method="post" theme="simple">
+              <s:hidden id="editable" name="editable" value="0" />
+              <div class="page-header">
+                <h1>Event History</h1>
               </div>
-            </div>
+              <div id="HeaderPane" style="margin:15px 0 0 30px;">
+                <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+                <s:if test="hasActionErrors()">
+                  <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
+                </s:if>
+                <s:if test="hasActionMessages()">
+                  <div class="alert_info" onclick="$('.alert_info').remove();">
+                    <strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
+                  </div>
+                </s:if>
+              </div>
+              <div id="mainContent">
+                <!--<div id="columnsTable"></div>  for column listing-->
+                <div id="statusTableDiv">
 
-          </s:form>
+                    <div id="tableTop">
+                      <div class="row">
+                        <div class="col-lg-1 col-md-2">Center Project</div>
+                        <div class="col-lg-11 col-md-10 combobox">
+                          <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
+                                      list="projectList" name="projectId" headerKey="0" headerValue="Select by Center Project ID"
+                                      listValue="projectName" listKey="projectId" required="true"/>
+                        </div>
+                      </div>
+                      <div class="row row_spacer">
+                        <div class="col-lg-1 col-md-2">Sample</div>
+                        <div class="col-lg-11 col-md-10 combobox">
+                          <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':'Select by Sample'}"
+                                      name="selectedSampleId" required="true"/>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- event -->
+                    <div style="margin:25px 10px 0 0;">
+                      <h1 class="csc-firstHeader">Event Details</h1>
+                    </div>
+                    <div id="eventDateDiv" style="margin:3px 10px 0 0;" class="row">
+                      <fieldset class="row">
+                        <div class="col-sm-1" style="padding-top:7px;">Date Range:</div>
+                        <div class="col-sm-2">
+                          <div class="input-group col-sm-12">
+                            <input id="fromDate" type="text" class="form-control" />
+                            <label for="fromDate" class="input-group-addon">
+                              <span class=""><i class="fa fa-calendar"></i></span>
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-sm-1" style="width:auto;padding-top:7px;">~</div>
+                        <div class="col-sm-2">
+                          <div class="input-group col-sm-11">
+                            <input id="toDate" type="text" class="form-control" />
+                            <label for="toDate" class="input-group-addon">
+                              <span class=""><i class="fa fa-calendar"></i></span>
+                            </label>
+                          </div>
+                        </div>
+                      </fieldset>
+                    </div>
+                    <div id="eventTableDiv" style="margin:10px 10px 5px 0;clear:both">
+                      <table name="eventTable" id="eventTable" class="contenttable" style="width:95%;">
+                        <thead id="eventTableHeader">
+                        <tr>
+                          <th style="width:23px !important;text-align:center"><img id="table_openBtn"/></th>
+                          <th class="tableHeaderStyle">Event Type</th>
+                          <th class="tableHeaderStyle">Sample Name</th>
+                          <th class="tableHeaderStyle">Date</th>
+                          <th class="tableHeaderStyle">User</th>
+                          <!-- <th class="tableHeaderStyle">Status</th> -->
+                          <th>Hidden</th>
+                        </tr>
+                        </thead>
+                        <tbody id="eventTableBody" />
+                      </table>
+                    </div>
+                </div>
+              </div>
+
+            </s:form>
+
+          </div>
         </div>
       </div>
       <div class="row row_spacer" style="margin-bottom:30px;"></div>

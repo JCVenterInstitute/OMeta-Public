@@ -48,66 +48,74 @@
       <jsp:include page="top.jsp" />
 
       <div id="main" class="">
-        <div id="content" role="main">
+        <div id="inner-content" class="">
+          <div id="content" role="main">
 
-          <s:form id="eventReportPage" name="eventReportPage" namespace="/" action="eventReport" method="post" theme="simple">
-            <div id="HeaderPane" style="margin:15px 0 0 30px;">
-              <div class="panelHeader">Event Report</div>
-              <div id="errorMessagesPanel" style="margin-top:15px;"></div>
-              <s:if test="hasActionErrors()">
-                <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
-              </s:if>
-              <s:if test="hasActionMessages()">
-                <div class="alert_info" onclick="$('.alert_info').remove();">
-                  <strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
-                </div>
-              </s:if>
-            </div>
-            <div id="middle_content_template">
-              <div id="statusTableDiv">
-                <div id="tableTop">
-                  <div class="row">
-                    <div class="col-md-1">Project</div>
-                    <div class="col-md-11 combobox">
-                      <s:select id="_projectSelect" list="projectList" name="selectedProjectId" headerKey="0" headerValue="" listValue="projectName" listKey="projectId" required="true"/>  
+            <s:form id="eventReportPage" name="eventReportPage" namespace="/" action="eventReport" method="post" theme="simple">
+            
+              <div class="page-header">
+                <h1>Event Report</h1>
+              </div>
+
+              <div id="HeaderPane" style="margin:15px 0 0 30px;">
+                <!-- <div class="panelHeader">Event Report</div> -->
+                <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+                <s:if test="hasActionErrors()">
+                  <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
+                </s:if>
+                <s:if test="hasActionMessages()">
+                  <div class="alert_info" onclick="$('.alert_info').remove();">
+                    <strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
+                  </div>
+                </s:if>
+              </div>
+              <div id="mainContent">
+                <div id="statusTableDiv">
+                  <div id="tableTop">
+                    <div class="row">
+                      <div class="col-md-1">Project</div>
+                      <div class="col-md-11 combobox">
+                        <s:select id="_projectSelect" list="projectList" name="selectedProjectId" headerKey="0" headerValue="" listValue="projectName" listKey="projectId" required="true"/>  
+                      </div>
+                    </div>
+                    <div class="row row_spacer">
+                      <div class="col-md-1">Date Range</div>
+                      <div class="col-md-11 combobox">
+                        <s:textfield id="fromDate" name="fromDate" label="from"/> ~ <s:textfield id="toDate" name = "toDate" label="to"/> 
+                      </div>
                     </div>
                   </div>
-                  <div class="row row_spacer">
-                    <div class="col-md-1">Date Range</div>
-                    <div class="col-md-11 combobox">
-                      <s:textfield id="fromDate" name="fromDate" label="from"/> ~ <s:textfield id="toDate" name = "toDate" label="to"/> 
-                    </div>
-                  </div>
-                </div>
 
-                <div style="margin-top:25px;">
-                  <h1 class="csc-firstHeader">Attributes</h1>
-                </div>
-                <div id="attributesTableDiv">
-                  <table name="attributesTable" id="attributesTable" class="contenttable" style="width:95%;">
-                    <tbody id="attributesTableBody">
-                    <tr class="even">
-                      <td width="20%" style="padding:5px 0 5px 5px;">Project</td>
-                      <td style="padding:5px 0 5px 0;" colspan="2" id="projectMetaAttributesTD"></td>
-                    </tr>
-                    <tr class="odd">
-                      <td width="20%" style="padding:5px 0 5px 5px;">Sample</td>
-                      <td style="padding:5px 0 5px 0;" colspan="2" id="sampleMetaAttributesTD"></td>
-                    </tr>
-                    <tr class="even">
-                      <td width="20%" style="padding:5px 0 5px 5px;">Event</td>
-                      <td style="padding:5px 0 5px 0;" id="eventMetaAttributesTD" ></td>
-                    </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div id="submitDiv" style="margin:15px 0 0 0;">
-                  <input type="button" class="btn btn-success" onclick="javascript:open_status_page();" id="eventReportPageButton" value="Generate Status Page"/>
-                  <input type="button" class="btn btn-default" style="margin-left:15px;" onclick="javascript:doClear();" value="Clear" />
+                  <div style="margin-top:25px;">
+                    <h1 class="csc-firstHeader">Attributes</h1>
+                  </div>
+                  <div id="attributesTableDiv">
+                    <table name="attributesTable" id="attributesTable" class="contenttable" style="width:95%;">
+                      <tbody id="attributesTableBody">
+                      <tr class="even">
+                        <td width="20%" style="padding:5px 0 5px 5px;">Project</td>
+                        <td style="padding:5px 0 5px 0;" colspan="2" id="projectMetaAttributesTD"></td>
+                      </tr>
+                      <tr class="odd">
+                        <td width="20%" style="padding:5px 0 5px 5px;">Sample</td>
+                        <td style="padding:5px 0 5px 0;" colspan="2" id="sampleMetaAttributesTD"></td>
+                      </tr>
+                      <tr class="even">
+                        <td width="20%" style="padding:5px 0 5px 5px;">Event</td>
+                        <td style="padding:5px 0 5px 0;" id="eventMetaAttributesTD" ></td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div id="submitDiv" style="margin:15px 0 0 0;">
+                    <input type="button" class="btn btn-success" onclick="javascript:open_status_page();" id="eventReportPageButton" value="Generate Status Page"/>
+                    <input type="button" class="btn btn-default" style="margin-left:15px;" onclick="javascript:doClear();" value="Clear" />
+                  </div>
                 </div>
               </div>
-            </div>
-          </s:form>
+            </s:form>
+
+          </div>
         </div>
       </div>
 

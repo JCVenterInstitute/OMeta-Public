@@ -41,106 +41,111 @@
       <jsp:include page="top.jsp" />
 
       <div id="main" class="">
-        <div id="content" role="main">
+        <div id="inner-content" class="">
+          <div id="content" role="main">
 
-          <s:form id="projectLoaderPage" name="projectLoaderPage" namespace="/" action="projectSetup" method="post" theme="simple">
-            <s:hidden name="jobType" id="jobType"/>
-
-            <div id="HeaderPane" style="margin:15px 0 0 30px;">
-              <div class="panelHeader">Create Project</div>
-              <div id="errorMessagesPanel" style="margin-top:15px;"></div>
-              <s:if test="hasActionErrors()">
-                <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
-              </s:if>
-              <s:if test="hasActionMessages()">
-                <div class="alert_info" onclick="$('.alert_info').remove();">
-                  <strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
-                </div>
-              </s:if>
-            </div>
-            <div id="middle_content_template">
-              <!--<div id="columnsTable"></div>  for column listing-->
-              <div id="statusTableDiv">
-                <div style="margin:0 10px 0 0;">
-                  <h1 class="csc-firstHeader">Project Information</h1>
-                </div>
-                <div id="tableTop">
-                  <div class="row row_spacer">
-                    <div class="col-md-1">Project Name</div>
-                    <div class="col-md-11">
-                      <s:textfield id="_projectName" name="loadingProject.projectName" size="35px"/>
-                    </div>
-                  </div>
-                  <div class="row row_spacer">
-                    <div class="col-md-1">Parent Project</div>
-                    <div class="col-md-11 combobox">
-                      <s:select id="_parentProjectSelect"
-                                  list="projectList" name="loadingProject.parentProjectId" headerKey="0" headerValue="None"
-                                  listValue="projectName" listKey="projectId" required="true" />
-                    </div>
-                  </div>
-                  <div class="row row_spacer">
-                    <div class="col-md-1">Public</div>
-                    <div class="col-md-11">
-                      <s:select id="_isPublic" list="#{0:'No', 1:'Yes'}" name="loadingProject.isPublic" required="true" />
-                    </div>
-                  </div>
-                  <div class="row row_spacer">
-                    <div class="col-md-1">Secure</div>
-                    <div class="col-md-11">
-                      <s:select id="_isSecure" list="#{0:'No', 1:'Yes'}" name="loadingProject.isSecure" required="true" />
-                    </div>
-                  </div>
-                  <div class="row row_spacer">
-                    <div class="col-md-1">Edit Group</div>
-                    <div class="col-md-11">
-                      <s:select id="_editGroupSelect"
-                                  list="groupList" headerKey="0" headerValue="Select Edit Group"
-                                  listValue="groupNameLookupValue.name" listKey="groupId"
-                                  name="loadingProject.editGroup" required="true" disabled="false" />
-                    </div>
-                  </div>
-                  <div class="row row_spacer">
-                    <div class="col-md-1">View Group</div>
-                    <div class="col-md-11">
-                      <s:select id="_viewGroupSelect"
-                                  list="groupList" headerKey="0" headerValue="Select View Group"
-                                  listValue="groupNameLookupValue.name" listKey="groupId"
-                                  name="loadingProject.viewGroup" required="true" disabled="false" />
-                    </div>
-                  </div>
-                  
-                </div>
-                <!--
-                <div style="margin:10px 10px 0 0;">
-                  <h1 class="csc-firstHeader">Project Attributes</h1>
-                </div>
-                <div id="attributeInputDiv" style="margin:5px 10px 0 0;">
-                  <table>
-                    <thead>
-                    <tr>
-                      <th class="tableHeaderNoSort boxesHeader">Attribute</th>
-                      <th class="tableHeaderNoSort checkBoxHeader">Active</th>
-                      <th class="tableHeaderNoSort checkBoxHeader">Required</th>
-                      <th class="tableHeaderNoSort boxesHeader">Options</th>
-                      <th class="tableHeaderNoSort boxesHeader">Desc</th>
-                      <th class="tableHeaderNoSort boxesHeader">Value</th>
-                    </tr>
-                    </thead>
-                    <tbody id="pmaTbody"></tbody>
-                  </table>
-                </div>
-                -->
-                <s:div id="submitDiv" cssStyle="margin:15px 10px 5px 0;width:100%;">
-                  <input type="button" class="btn btn-success" onclick="loadProject();" id="projectLoadButton" value="Create Project"/>
-                  <!--<input type="button" onclick="addAttribute();" id="attributeAddButton" value="Add Project Attribute" />
-                  <input type="button" onclick="newAttribute('a');" id="newAttributeButton" value="New Attribute" />-->
-                  <input type="button" class="btn btn-default" onclick="doClear();" value="Clear" />
-                </s:div>
+            <s:form id="projectLoaderPage" name="projectLoaderPage" namespace="/" action="projectSetup" method="post" theme="simple">
+              <s:hidden name="jobType" id="jobType"/>
+              <div class="page-header">
+                <h1>Create Project</h1>
               </div>
-            </div>
-          </s:form>
 
+              <div id="HeaderPane" style="margin:15px 0 0 30px;">
+                <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+                <s:if test="hasActionErrors()">
+                  <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
+                </s:if>
+                <s:if test="hasActionMessages()">
+                  <div class="alert_info" onclick="$('.alert_info').remove();">
+                    <strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
+                  </div>
+                </s:if>
+              </div>
+              <div id="mainContent">
+                <!--<div id="columnsTable"></div>  for column listing-->
+                <div id="statusTableDiv">
+                  <div style="margin:0 10px 0 0;">
+                    <h2>Project Information</h2>
+                  </div>
+                  <div id="tableTop">
+                    <div class="row row_spacer">
+                      <div class="col-md-1">Project Name</div>
+                      <div class="col-md-11">
+                        <s:textfield id="_projectName" name="loadingProject.projectName" size="35px"/>
+                      </div>
+                    </div>
+                    <div class="row row_spacer">
+                      <div class="col-md-1">Parent Project</div>
+                      <div class="col-md-11 combobox">
+                        <s:select id="_parentProjectSelect"
+                                    list="projectList" name="loadingProject.parentProjectId" headerKey="0" headerValue="None"
+                                    listValue="projectName" listKey="projectId" required="true" />
+                      </div>
+                    </div>
+                    <div class="row row_spacer">
+                      <div class="col-md-1">Public</div>
+                      <div class="col-md-11">
+                        <s:select id="_isPublic" list="#{0:'No', 1:'Yes'}" name="loadingProject.isPublic" required="true" />
+                      </div>
+                    </div>
+                    <div class="row row_spacer">
+                      <div class="col-md-1">Secure</div>
+                      <div class="col-md-11">
+                        <s:select id="_isSecure" list="#{0:'No', 1:'Yes'}" name="loadingProject.isSecure" required="true" />
+                      </div>
+                    </div>
+                    <div class="row row_spacer">
+                      <div class="col-md-1">Edit Group</div>
+                      <div class="col-md-11">
+                        <s:select id="_editGroupSelect"
+                                    list="groupList" headerKey="0" headerValue="Select Edit Group"
+                                    listValue="groupNameLookupValue.name" listKey="groupId"
+                                    name="loadingProject.editGroup" required="true" disabled="false" />
+                      </div>
+                    </div>
+                    <div class="row row_spacer">
+                      <div class="col-md-1">View Group</div>
+                      <div class="col-md-11">
+                        <s:select id="_viewGroupSelect"
+                                    list="groupList" headerKey="0" headerValue="Select View Group"
+                                    listValue="groupNameLookupValue.name" listKey="groupId"
+                                    name="loadingProject.viewGroup" required="true" disabled="false" />
+                      </div>
+                    </div>
+                    
+                  </div>
+                  <!--
+                  <div style="margin:10px 10px 0 0;">
+                    <h1 class="csc-firstHeader">Project Attributes</h1>
+                  </div>
+                  <div id="attributeInputDiv" style="margin:5px 10px 0 0;">
+                    <table>
+                      <thead>
+                      <tr>
+                        <th class="tableHeaderNoSort boxesHeader">Attribute</th>
+                        <th class="tableHeaderNoSort checkBoxHeader">Active</th>
+                        <th class="tableHeaderNoSort checkBoxHeader">Required</th>
+                        <th class="tableHeaderNoSort boxesHeader">Options</th>
+                        <th class="tableHeaderNoSort boxesHeader">Desc</th>
+                        <th class="tableHeaderNoSort boxesHeader">Value</th>
+                      </tr>
+                      </thead>
+                      <tbody id="pmaTbody"></tbody>
+                    </table>
+                  </div>
+                  -->
+                  <s:div id="submitDiv" cssStyle="margin:15px 10px 5px 0;width:100%;">
+                    <input type="button" class="btn btn-success" onclick="loadProject();" id="projectLoadButton" value="Create Project"/>
+                    <!--<input type="button" onclick="addAttribute();" id="attributeAddButton" value="Add Project Attribute" />
+                    <input type="button" onclick="newAttribute('a');" id="newAttributeButton" value="New Attribute" />-->
+                    <input type="button" class="btn btn-default" onclick="doClear();" value="Clear" />
+                  </s:div>
+                </div>
+              </div>
+
+            </s:form>
+
+          </div>
         </div>
       </div>
 

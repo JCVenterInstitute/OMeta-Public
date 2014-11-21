@@ -32,28 +32,6 @@
     
     <link rel="stylesheet" href="style/version01.css" />
     <style>
-      #popup {
-        height: 100%;
-        width: 100%;
-        background: #000000;
-        position: absolute;
-        top: 0;
-        -moz-opacity:0.75;
-        -khtml-opacity: 0.75;
-        opacity: 0.75;
-        filter:alpha(opacity=75);
-      }
-
-      #window {
-        width: 600px;
-        height: 300px;
-        margin: 0 auto;
-        border: 1px solid #000000;
-        background: #ffffff;
-        position: absolute;
-        top: 200px;
-        left: 25%;
-      }
       td._details {
         text-align:left;
         padding:0 0 0 35px;
@@ -96,113 +74,86 @@
       <jsp:include page="top.jsp" />
 
       <div id="main" class="">
-        <div id="content" role="main">
-  
-          <s:form id="eventDetailPage" name="eventDetailPage" namespace="/" action="eventDetail" method="post" theme="simple">
-            <s:hidden id="editable" name="editable" value="0" />
-            <div id="HeaderPane" style="margin:15px 0 0 30px;">
-              <div class="panelHeader">Search and Edit Data</div>
-              <div id="errorMessagesPanel" style="margin-top:15px;"></div>
-              <s:if test="hasActionErrors()">
-                <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
-              </s:if>
-              <s:if test="hasActionMessages()">
-                <div class="alert_info" onclick="$('.alert_info').remove();">
-                  <strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
-                </div>
-              </s:if>
-            </div>
-            <div id="middle_content_template">
-              <!--<div id="columnsTable"></div>  for column listing-->
-              <div id="statusTableDiv">
-                  <div id="tableTop">
-                    <div class="row">
-                      <div class="col-md-2">Center Project</div>
-                      <div class="col-md-10 combobox">
-                        <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
-                                    list="projectList" name="projectId" headerKey="0" headerValue="Select by Center Project ID"
-                                    listValue="projectName" listKey="projectId" required="true"/>
+        <div id="inner-content" class="">
+          <div id="content" role="main">
+    
+            <s:form id="eventDetailPage" name="eventDetailPage" namespace="/" action="eventDetail" method="post" theme="simple">
+              <s:hidden id="editable" name="editable" value="0" />
+              <div class="page-header">
+                <h1>Search and Edit Data</h1>
+              </div>
+              <div id="HeaderPane" style="margin:15px 0 0 30px;">
+                <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+                <s:if test="hasActionErrors()">
+                  <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
+                </s:if>
+                <s:if test="hasActionMessages()">
+                  <div class="alert_info" onclick="$('.alert_info').remove();">
+                    <strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
+                  </div>
+                </s:if>
+              </div>
+              <div id="mainContent">
+                <!--<div id="columnsTable"></div>  for column listing-->
+                <div id="statusTableDiv">
+                    <div id="tableTop">
+                      <div class="row">
+                        <div class="col-md-2">Center Project</div>
+                        <div class="col-md-10 combobox">
+                          <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
+                                      list="projectList" name="projectId" headerKey="0" headerValue="Select by Center Project ID"
+                                      listValue="projectName" listKey="projectId" required="true"/>
+                        </div>
+                      </div>
+                      <div class="row row_spacer">
+                        <div class="col-md-2">Sample</div>
+                        <div class="col-md-10 combobox">
+                          <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':'Select by Sample'}"
+                                      name="selectedSampleId" required="true"/>
+                        </div>
                       </div>
                     </div>
-                    <div class="row row_spacer">
-                      <div class="col-md-2">Sample</div>
-                      <div class="col-md-10 combobox">
-                        <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':'Select by Sample'}"
-                                    name="selectedSampleId" required="true"/>
-                      </div>
-                    </div>
+
+                  <!-- project -->
+                  <div style="margin:25px 10px 0 0;">
+                    <h2 class="csc-firstHeader">Project Details</h2>
                   </div>
 
-                <!-- project -->
-                <div style="margin:25px 10px 0 0;"><h1 class="csc-firstHeader">Project Details</h1></div>
+                  <div id="projectTableDiv" style="margin:0 10px 5px 0;">
+                    <table name="projectTable" id="projectTable" class="contenttable" style="width:95%;">
+                      <tbody id="projectTableBody">
+                      </tbody>
+                    </table>
+                    <!-- <input onclick="_page.edit.project();" style="margin-top:10px;" disabled="true" type="button" value="Edit Project" id="editProjectBtn" /> -->
+                  </div>
 
-                <div id="projectTableDiv" style="margin:0 10px 5px 0;">
-                  <table name="projectTable" id="projectTable" class="contenttable" style="width:95%;">
-                    <tbody id="projectTableBody">
-                    </tbody>
-                  </table>
-                  <!-- <input onclick="_page.edit.project();" style="margin-top:10px;" disabled="true" type="button" value="Edit Project" id="editProjectBtn" /> -->
-                </div>
+                  <!-- sample -->
+                  <div style="margin:25px 10px 0 0;">
+                    <h2 class="csc-firstHeader">Sample Details</h2>
+                  </div>
+                  <div id="sampleTableDiv" style="margin:0 10px 5px 0;clear:both">
+                    <table name="sampleTable" id="sampleTable" class="contenttable" style="width:95%;">
+                      <thead id="sampleTableHeader">
+                      <tr>
+                        <th style="width:23px !important;text-align:center"><img id="table_openBtn"/></th>
+                        <th class="tableHeaderStyle">Sample Name</th>
+                        <th class="tableHeaderStyle">Parent</th>
+                        <th class="tableHeaderStyle">User</th>
+                        <th class="tableHeaderStyle">Date</th>
+                        <th>Hidden</th>
+                      </tr>
+                      </thead>
+                      <tbody id="sampleTableBody"/>
+                    </table>
+                    <input onclick="_page.edit.sampleEvent();" class="btn btn-primary" disabled="true" type="button" value="Edit Sample" id="editSampleBtn" />
+                  </div>
 
-                <!-- sample -->
-                <div style="margin:25px 10px 0 0;">
-
-                  <h1 class="csc-firstHeader">Sample Details
-                    <!-- <a href="javascript:_page.button.toggleSample();">
-                      <img id="sampleToggleImage"/>
-                    </a> -->
-                  </h1>
                 </div>
-                <div id="sampleTableDiv" style="margin:0 10px 5px 0;clear:both">
-                  <table name="sampleTable" id="sampleTable" class="contenttable" style="width:95%;">
-                    <thead id="sampleTableHeader">
-                    <tr>
-                      <th style="width:23px !important;text-align:center"><img id="table_openBtn"/></th>
-                      <th class="tableHeaderStyle">Sample Name</th>
-                      <th class="tableHeaderStyle">Parent</th>
-                      <th class="tableHeaderStyle">User</th>
-                      <th class="tableHeaderStyle">Date</th>
-                      <th>Hidden</th>
-                    </tr>
-                    </thead>
-                    <tbody id="sampleTableBody"/>
-                  </table>
-                  <input onclick="_page.edit.sampleEvent();" class="btn btn-primary" disabled="true" type="button" value="Edit Sample" id="editSampleBtn" />
-                </div>
-
-                <!-- event -->
-                <!-- <div style="margin:25px 10px 0 0;">
-                  <h1 class="csc-firstHeader">Event Details
-                    <a href="javascript:$('#eventDateDiv').toggle(400);$('#eventTableDiv').toggle(400);buttonSwitch(null,'eventToggleImage');">
-                      <img id="eventToggleImage"/>
-                    </a>
-                  </h1>
-                </div>
-                <div id="eventDateDiv" style="margin:3px 10px 0 0;">
-                  Date Range:
-                  <s:textfield id="fromDate" name="fromDate"/> ~ <s:textfield id="toDate" name = "toDate"/>
-                </div>
-                <div id="eventTableDiv" style="margin:10px 10px 5px 0;clear:both">
-                  <table name="eventTable" id="eventTable" class="contenttable" style="width:95%;">
-                    <thead id="eventTableHeader">
-                    <tr>
-                      <th style="width:23px !important;text-align:center"><img id="table_openBtn"/></th>
-                      <th class="tableHeaderStyle">Event Type</th>
-                      <th class="tableHeaderStyle">Sample Name</th>
-                      <th class="tableHeaderStyle">Date</th>
-                      <th class="tableHeaderStyle">User</th>
-                      <th class="tableHeaderStyle">Status</th>
-                      <th>Hidden</th>
-                    </tr>
-                    </thead>
-                    <tbody id="eventTableBody" />
-                  </table>
-                </div> -->
-
               </div>
-            </div>
 
-          </s:form>
+            </s:form>
+
+          </div>
         </div>
       </div>
 
@@ -288,22 +239,6 @@
                 gethtmlByType("ces", 0, 0, eventId);
               }
             },
-            popup: {
-              project: function() {
-                $.openPopupLayer({
-                  name: "LPopupProjectEdit",
-                  width: 450,
-                  url: "projectEditOpen.action?projectId="+$('#_projectSelect').val()
-                });
-              },
-              sample: function(sampleId) {
-                $.openPopupLayer({
-                  name: "LPopupSampleEdit",
-                  width: 450,
-                  url: "sampleEditOpen.action?projectId="+$('#_projectSelect').val()+"&sampleId="+sampleId
-                });
-              }
-            },
             get: {
               project: function(projectId) {
                 return gethtmlByType("project", projectId, 0, 0);
@@ -317,7 +252,6 @@
               },
               edt: function(projectId, sampleId, eventId) {
                 var dates = "&fd="+$('input[name="fromDate"]').val()+"&td="+$('input[name="toDate"]').val();
-                // eDT.fnNewAjax("eventDetailAjax.action?type=edt&projectId="+projectId+"&sampleId="+sampleId+"&eventId=0"+dates);
               }
             },
             edit: {
@@ -357,12 +291,6 @@
               }
             }
           },
-          openSampleEditPopup = function(sampleId) {
-            _page.popup.sample(sampleId);
-          },
-          changeEventStatus = function(eventId) {
-            _page.change.eventStatus(eventId);
-          },
           buttonSwitch = function(node, name) {
             if(node==null) { node = document.getElementById(name); }
             if(node.src.match('details_close')){ node.src = openBtn; } else { node.src = closeBtn; }
@@ -372,7 +300,6 @@
       function comboBoxChanged(option, id) {
         if(id==='_projectSelect') {
           document.getElementById('sampleTable').getElementsByTagName('img')[0].src = openBtn;
-          // document.getElementById('eventTable').getElementsByTagName('img')[0].src = openBtn;
           if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
             _page.change.project(option.value, 0);
             $('.ui-autocomplete-input').val('');
@@ -382,8 +309,6 @@
         } else if(id==='_sampleSelect') {
           if(option.value!=null && option.text!=null && option.text!='') {
             _page.change.sample($('#_projectSelect').val(), option.value);
-            
-            //_page.button.showSample();
           }
         }
       }
@@ -444,7 +369,7 @@
             $projectNode.val('0');
           }
         });
-
+        
         $('#fromDate, #toDate').change( function() {
           _page.get.edt($('#_projectSelect').val(), $('#_sampleSelect').val());
         });
@@ -509,68 +434,6 @@
           ]
         }).fnFilterOnReturn();
 
-        <!-- EVENT TABLE -->
-        // eDT =  $("#eventTable").dataTable({
-        //   "sDom": '<"datatable_top"lf><"datatable_table"rt><"datatable_bottom"ip>',
-        //   "bProcessing": true,
-        //   "bServerSide": true,
-        //   "sPaginationType": "full_numbers",
-        //   "sAjaxSource": "",  
-        //   "fnServerData": function ( sSource, aoData, fnCallback ) {
-        //     if(sSource!=='') {
-        //       $.ajax({
-        //         dataType: 'json',
-        //         type: "POST",
-        //         url: sSource,
-        //         data: aoData,
-        //         success: function(json) {
-        //           if(json && json.aaData) {
-        //             var rows = [];
-        //             $.each(json.aaData, function(ri,rowData) {
-        //               var row = [], attributes;
-        //               row.push(
-        //                 "<img src='images/dataTables/details_open.png' id='rowDetail_openBtn'/>",
-        //                 rowData.eventName,
-        //                 rowData.sampleName,
-        //                 rowData.createdOn,
-        //                 rowData.actor
-        //               );
-        //               if(rowData.eventStatus) {
-        //                 row.push(rowData.eventStatus + "<a href='javascript:changeEventStatus(" + rowData.eventId + ");'><img src='images/blue/" + (rowData.eventStatus === 'Active' ? 'cross' : 'tick') + ".png'/></a>");
-        //               }
-        //               if(rowData.attributes) {
-        //                 var headers = '', values = '';
-        //                 $.each(rowData.attributes, function(ai, av) {
-        //                   headers += '<td>' + ai + '</td>';
-        //                   values += '<td>' + av + '</td>';
-        //                 })
-        //                 attributes = '<tr class="even">' + headers + '</tr><tr class="odd">' + values + '</tr>';
-        //               } else {
-        //                 attributes = '<tr class="odd"><td colspan="7">No Data</td></tr>';
-        //               }
-        //               row.push(attributes);
-
-        //               rows.push(row);
-        //             })
-        //           }
-        //           json.aaData = rows;
-        //           fnCallback(json);
-        //         }
-        //       });
-        //     }
-        //   },
-        //   "bAutoWidth" : false,
-        //   "aoColumnDefs": [
-        //     {"sWidth": "23px", "bSortable": false, "aTargets": [ 0 ]},
-        //     {"sWidth": "20%", "aTargets":[1]},
-        //     {"sWidth": "30%", "aTargets":[2]},
-        //     {"sWidth": "20%", "aTargets":[3]},
-        //     {"sWidth": "20%", "aTargets":[4]},
-        //     {"sWidth": "10%", "aTargets":[5]},
-        //     {"bSearchable": true, "bVisible": false, "aTargets": [ 6 ]}
-        //   ]
-        // }).fnFilterOnReturn();
-
         //add click listener on row expander
         $('tbody td #rowDetail_openBtn').live('click', function () {
           var _row = this.parentNode.parentNode, _is_event=(_row.parentNode.id.indexOf('event')>=0), _table=_is_event?eDT:sDT;
@@ -600,13 +463,6 @@
             utils.preSelect('_sampleSelect', sampleId);
           }
         }
-
-        //add search button to filter box
-        // $('.dataTables_filter[id$="_filter"]').each(function(i1) {
-        //   $(this).append('<img id="dosearch_'+this.id+'" style="float:right;" class="ui-icon ui-icon-search" title="Search" />&nbsp;');
-        // });
-        
-        //$('#sampleTableDiv, #eventTableDiv, #eventDateDiv').toggle(300);
 
         utils.error.check();
       });

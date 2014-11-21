@@ -63,132 +63,140 @@
       <jsp:include page="top.jsp" />
 
       <div id="main" class="">
-        <div id="content" role="main">
+        <div id="inner-content" class="">
+          <div id="content" role="main">
 
-          <s:form id="metadataSetupPage" name="metadataSetupPage" namespace="/" action="metadataSetup" method="post" theme="simple">
-            <s:hidden name="type" id="type" />
-            <div id="HeaderPane" style="margin:15px 0 0 30px;">
-              <div class="panelHeader">Metadata</div>
-              <div id="errorMessagesPanel" style="margin-top:15px;"></div>
-              <s:if test="hasActionErrors()">
-                <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
-              </s:if>
-              <s:if test="hasActionMessages()">
-            		<div class="alert_info" onclick="$('.alert_info').remove();">
-            			<strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
-            		</div>
-              </s:if>
-            </div>
-            <div id="middle_content_template">
-              <div id="statusTableDiv">
-                <div id="tableTop">
-                  <div class="row row_spacer">
-                    <div class="col-md-1">Project Name</div>
-                    <div class="col-md-11 combobox">
-                      <s:select id="_projectSelect" list="projectList" name="projectId" headerKey="0" headerValue="" listValue="projectName" listKey="projectId" required="true" />
+            <s:form id="metadataSetupPage" name="metadataSetupPage" namespace="/" action="metadataSetup" method="post" theme="simple">
+              <s:hidden name="type" id="type" />
+
+              <div class="page-header">
+                <h1>Metadata Setup</h1>
+              </div>
+
+              <div id="HeaderPane" style="margin:15px 0 0 30px;">
+                <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+                <s:if test="hasActionErrors()">
+                  <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
+                </s:if>
+                <s:if test="hasActionMessages()">
+              		<div class="alert_info" onclick="$('.alert_info').remove();">
+              			<strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
+              		</div>
+                </s:if>
+              </div>
+              <div id="mainContent">
+                <div id="statusTableDiv">
+                  <div id="tableTop">
+                    <div class="row row_spacer">
+                      <div class="col-md-1">Project Name</div>
+                      <div class="col-md-11 combobox">
+                        <s:select id="_projectSelect" list="projectList" name="projectId" headerKey="0" headerValue="" listValue="projectName" listKey="projectId" required="true" />
+                      </div>
+                    </div>
+                    <div class="row row_spacer">
+                      <div class="col-md-1">Event</div>
+                      <div class="col-md-11 combobox">
+                        <s:select id="_eventSelect" list="#{'0':''}" required="true" disabled="true" />
+                      </div>
                     </div>
                   </div>
-                  <div class="row row_spacer">
-                    <div class="col-md-1">Event</div>
-                    <div class="col-md-11 combobox">
-                      <s:select id="_eventSelect" list="#{'0':''}" required="true" disabled="true" />
+                  <div id="loadingImg" style="padding-left:5px;display:none;">
+                    <img src="images/loading.gif" />
+                  </div>
+                  <div id="PMADiv" style="display:none;">
+                    <div style="margin:10px 10px 0 0;">
+                      <h1 class="csc-firstHeader">Project Meta Attributes</h1>
+                    </div>
+                    <div id="PMAInputDiv" style="margin:5px 10px 0 0;">
+                      <table>
+                        <thead>
+                        <tr>
+                          <th class="tableHeaderNoSort boxesHeader">Attribute</th>
+                          <th class="tableHeaderNoSort boxesHeader">Label</th>
+                          <th class="tableHeaderNoSort checkBoxHeader">Active</th>
+                          <th class="tableHeaderNoSort checkBoxHeader">Required</th>
+                          <th class="tableHeaderNoSort boxesHeader">Default Options</th>
+                          <th class="tableHeaderNoSort boxesHeader">Desc</th>
+                          <th class="tableHeaderNoSort boxesHeader">Ontology</th>
+                        </tr>
+                        </thead>
+                        <tbody id="pmaAdditionTbody"></tbody>
+                      </table>
+                    </div>
+                    <div id="PMASubmitDiv" style="margin:15px 10px 5px 0;width:100%;">
+                      <input type="button" onclick="_utils.submit();" id="projectLoadButton" value="Setup Project"/>
+                      <input type="button" onclick="_utils.add.ma('a','pmaAdditionTbody');" id="pmaAddButton" value="Add Project Meta Attribute" disabled="disabled"/>
+                      <input type="button" onClick="_utils.ontology();" id="ontologyBtn" value="Ontology"/>
+                      <input type="button" onclick="_utils.clean.all();" value="Clear" />
                     </div>
                   </div>
-                </div>
-                <div id="loadingImg" style="padding-left:5px;display:none;">
-                  <img src="images/loading.gif" />
-                </div>
-                <div id="PMADiv" style="display:none;">
-                  <div style="margin:10px 10px 0 0;">
-                    <h1 class="csc-firstHeader">Project Meta Attributes</h1>
+                  <div id="SMADiv" style="display:none;">
+                    <div style="margin:10px 10px 0 0;">
+                      <h1 class="csc-firstHeader">Sample Meta Attributes</h1>
+                    </div>
+                    <div id="SMAInputDiv" style="margin:5px 10px 0 0;">
+                      <table>
+                        <thead>
+                        <tr>
+                          <th class="tableHeaderNoSort boxesHeader">Attribute</th>
+                          <th class="tableHeaderNoSort boxesHeader">Label</th>
+                          <th class="tableHeaderNoSort checkBoxHeader">Active</th>
+                          <th class="tableHeaderNoSort checkBoxHeader">Required</th>
+                          <th class="tableHeaderNoSort boxesHeader">Default Options</th>
+                          <th class="tableHeaderNoSort boxesHeader">Desc</th>
+                          <th class="tableHeaderNoSort boxesHeader">Ontology</th>
+                        </tr>
+                        </thead>
+                        <tbody id="smaAdditionTbody"></tbody>
+                      </table>
+                    </div>
+                    <div id="SMASubmitDiv" style="margin:15px 10px 5px 0;width:100%;">
+                      <input type="button" onclick="_utils.submit();" id="sampleLoadButton" value="Setup Sample"/>
+                      <input type="button" onclick="_utils.add.ma('a','smaAdditionTbody');" id="smaAddButton" value="Add Sample Meta Attribute" disabled="disabled"/>
+                      <input type="button" onclick="_utils.ontology();" id="ontologyButton" value="Ontology" />
+                      <input type="button" onclick="_utils.clean.all();" value="Clear" />
+                    </div>
                   </div>
-                  <div id="PMAInputDiv" style="margin:5px 10px 0 0;">
-                    <table>
-                      <thead>
-                      <tr>
-                        <th class="tableHeaderNoSort boxesHeader">Attribute</th>
-                        <th class="tableHeaderNoSort boxesHeader">Label</th>
-                        <th class="tableHeaderNoSort checkBoxHeader">Active</th>
-                        <th class="tableHeaderNoSort checkBoxHeader">Required</th>
-                        <th class="tableHeaderNoSort boxesHeader">Default Options</th>
-                        <th class="tableHeaderNoSort boxesHeader">Desc</th>
-                        <th class="tableHeaderNoSort boxesHeader">Ontology</th>
-                      </tr>
-                      </thead>
-                      <tbody id="pmaAdditionTbody"></tbody>
-                    </table>
-                  </div>
-                  <div id="PMASubmitDiv" style="margin:15px 10px 5px 0;width:100%;">
-                    <input type="button" onclick="_utils.submit();" id="projectLoadButton" value="Setup Project"/>
-                    <input type="button" onclick="_utils.add.ma('a','pmaAdditionTbody');" id="pmaAddButton" value="Add Project Meta Attribute" disabled="disabled"/>
-                    <input type="button" onClick="_utils.ontology();" id="ontologyBtn" value="Ontology"/>
-                    <input type="button" onclick="_utils.clean.all();" value="Clear" />
-                  </div>
-                </div>
-                <div id="SMADiv" style="display:none;">
-                  <div style="margin:10px 10px 0 0;">
-                    <h1 class="csc-firstHeader">Sample Meta Attributes</h1>
-                  </div>
-                  <div id="SMAInputDiv" style="margin:5px 10px 0 0;">
-                    <table>
-                      <thead>
-                      <tr>
-                        <th class="tableHeaderNoSort boxesHeader">Attribute</th>
-                        <th class="tableHeaderNoSort boxesHeader">Label</th>
-                        <th class="tableHeaderNoSort checkBoxHeader">Active</th>
-                        <th class="tableHeaderNoSort checkBoxHeader">Required</th>
-                        <th class="tableHeaderNoSort boxesHeader">Default Options</th>
-                        <th class="tableHeaderNoSort boxesHeader">Desc</th>
-                        <th class="tableHeaderNoSort boxesHeader">Ontology</th>
-                      </tr>
-                      </thead>
-                      <tbody id="smaAdditionTbody"></tbody>
-                    </table>
-                  </div>
-                  <div id="SMASubmitDiv" style="margin:15px 10px 5px 0;width:100%;">
-                    <input type="button" onclick="_utils.submit();" id="sampleLoadButton" value="Setup Sample"/>
-                    <input type="button" onclick="_utils.add.ma('a','smaAdditionTbody');" id="smaAddButton" value="Add Sample Meta Attribute" disabled="disabled"/>
-                    <input type="button" onclick="_utils.ontology();" id="ontologyButton" value="Ontology" />
-                    <input type="button" onclick="_utils.clean.all();" value="Clear" />
-                  </div>
-                </div>
-                <div id="EMADiv" style="display:none;">
-                  <div style="margin:10px 10px 0 0;">
-                    <h1 class="csc-firstHeader">Event Meta Attributes</h1>
-                  </div>
-                  <div id="EMAInputDiv" style="margin:5px 10px 0 0;">
-                    <table>
-                      <thead>
-                      <tr>
-                        <th class="tableHeaderNoSort boxesHeader">Event Type</th>
-                        <th class="tableHeaderNoSort boxesHeader">Attribute</th>
-                        <th class="tableHeaderNoSort boxesHeader">Label</th>
-                        <th class="tableHeaderNoSort checkBoxHeader">Active</th>
-                        <th class="tableHeaderNoSort checkBoxHeader">Required</th>
-                        <th class="tableHeaderNoSort checkBoxHeader">Sample Required</th>
-                        <th class="tableHeaderNoSort boxesHeader">Default Options</th>
-                        <th class="tableHeaderNoSort boxesHeader">Desc</th>
-                        <th class="tableHeaderNoSort boxesHeader">Ontology</th>
-                        <th class="tableHeaderNoSort checkBoxHeader">Project Metadata</th>
-                        <th class="tableHeaderNoSort checkBoxHeader">Sample Metadata</th>
-                        <th class="tableHeaderNoSort boxesHeader">Pos</th>
-                      </tr>
-                      </thead>
-                      <tbody id="etAdditionTbody"></tbody>
-                    </table>
-                  </div>
-                  <div id="EMASubmitDiv" style="margin:15px 10px 5px 0;">
-                    <input type="button" class="btn btn-success" onclick="_utils.submit();" id="eventLoadButton" value="Setup Event"/>
-                    <input type="button" class="btn btn-primary" onclick="_utils.add.ema('add');" id="eventAddButton" value="Add Event Meta Attribute" disabled="disabled" />
-                    <input type="button" class="btn btn-info" onclick="_utils.popup.attribute('et');" id="newEventButton" value="New Event Type" />
-                    <input type="button" class="btn btn-info" onclick="_utils.popup.attribute('a');" id="newAttributeButton" value="New Attribute" />
-                    <input type="button" class="btn btn-info" onclick="_utils.ontology();" id="ontologyButton" value="Ontology" />
-                    <input type="button" class="btn btn-default" onclick="_utils.clean.all();" value="Clear" />
+                  <div id="EMADiv" style="display:none;">
+                    <div style="margin:10px 10px 0 0;">
+                      <h1 class="csc-firstHeader">Event Meta Attributes</h1>
+                    </div>
+                    <div id="EMAInputDiv" style="margin:5px 10px 0 0;">
+                      <table>
+                        <thead>
+                        <tr>
+                          <th class="tableHeaderNoSort boxesHeader">Event Type</th>
+                          <th class="tableHeaderNoSort boxesHeader">Attribute</th>
+                          <th class="tableHeaderNoSort boxesHeader">Label</th>
+                          <th class="tableHeaderNoSort checkBoxHeader">Active</th>
+                          <th class="tableHeaderNoSort checkBoxHeader">Required</th>
+                          <th class="tableHeaderNoSort checkBoxHeader">Sample Required</th>
+                          <th class="tableHeaderNoSort boxesHeader">Default Options</th>
+                          <th class="tableHeaderNoSort boxesHeader">Desc</th>
+                          <th class="tableHeaderNoSort boxesHeader">Ontology</th>
+                          <th class="tableHeaderNoSort checkBoxHeader">Project Metadata</th>
+                          <th class="tableHeaderNoSort checkBoxHeader">Sample Metadata</th>
+                          <th class="tableHeaderNoSort boxesHeader">Pos</th>
+                        </tr>
+                        </thead>
+                        <tbody id="etAdditionTbody"></tbody>
+                      </table>
+                    </div>
+                    <div id="EMASubmitDiv" style="margin:15px 10px 5px 0;">
+                      <input type="button" class="btn btn-success" onclick="_utils.submit();" id="eventLoadButton" value="Setup Event"/>
+                      <input type="button" class="btn btn-primary" onclick="_utils.add.ema('add');" id="eventAddButton" value="Add Event Meta Attribute" disabled="disabled" />
+                      <input type="button" class="btn btn-info" onclick="_utils.popup.attribute('et');" id="newEventButton" value="New Event Type" />
+                      <input type="button" class="btn btn-info" onclick="_utils.popup.attribute('a');" id="newAttributeButton" value="New Attribute" />
+                      <input type="button" class="btn btn-info" onclick="_utils.ontology();" id="ontologyButton" value="Ontology" />
+                      <input type="button" class="btn btn-default" onclick="_utils.clean.all();" value="Clear" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </s:form>
+
+            </s:form>
+
+          </div>
         </div>
       </div>
 
