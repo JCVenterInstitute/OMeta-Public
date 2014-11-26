@@ -114,6 +114,8 @@ public class LoadingEngine {
 
     }
 
+    public LoadingEngine() {}
+
     /**
      * Given the project and event, will create an incomplete "template/form" event TSV file.
      *
@@ -355,13 +357,20 @@ public class LoadingEngine {
 
         File eventFile = new File(eventFileName);
 
-        Long timeStamp = new Date().getTime();
         File logFile = new File(outputPath + File.separator + "Log-"+LoadingEngine.getNameWoExt(eventFile.getName())+".log");
         FileWriter logWriter = new FileWriter(logFile, false);
+
+        if(!eventFile.canRead() || !eventFile.isFile()) {
+            throw new Exception("input file does not exist.");
+        }
+        if(!eventFileName.endsWith(".csv")) { // temporary?
+            throw new Exception("only csv files are supported.");
+        }
 
         int successCount = 0;
         File processedFile = new File(outputPath + File.separator + "Processed-"+LoadingEngine.getNameWoExt(eventFile.getName())+".csv");
         FileWriter processedWriter = new FileWriter(processedFile, false);
+
         int failedCount = 0;
         File failedFile = new File(outputPath + File.separator + "Failed-"+LoadingEngine.getNameWoExt(eventFile.getName())+".csv");
         FileWriter failedWriter = new FileWriter(failedFile, false);
@@ -369,7 +378,7 @@ public class LoadingEngine {
         // Must break this file up, and deposit it into a temporary output directory.
         String userBase = System.getProperty("user.home");
         ScratchUtils.setScratchBaseLocation(userBase + "/" + Constants.SCRATCH_BASE_LOCATION);
-        File scratchLoc = ScratchUtils.getScratchLocation(timeStamp, "LoadingEngine__" + eventFile.getName());
+        File scratchLoc = ScratchUtils.getScratchLocation(new Date().getTime(), "LoadingEngine__" + eventFile.getName());
 
         int processedLineCount = 0;
         try {
@@ -462,5 +471,9 @@ public class LoadingEngine {
         int index = name.lastIndexOf(".");
         if (index < 1) return name;
         return name.substring(0,index);
+    }
+
+    public void setUsage(LoadingEngineUsage usage) {
+        this.usage = usage;
     }
 }
