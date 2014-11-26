@@ -40,9 +40,16 @@ public class Constants {
     public static final String CONFIG_GUID_HOST = "ometa.guid.host";
     public static final String CONFIG_GUID_PORT = "ometa.guid.port";
     public static final String CONFIG_DEFAULT_PROJECT_ID = "default.project.id";
+    public static final String CONFIG_BULK_LOAD_SERVER = "ometa.load.server";
+    public static final String CONFIG_SYSTEM_USER = "ometa.load.system.user";
+    public static final String CONFIG_SYSTEM_USER_PASS = "ometa.load.system.user.pass";
+
     public static final String PRODUCTION_DATABASE = "production";
     public static final String DEVELOPMENT_DATABASE = "development";
     public static final String FILE_DOWNLOAD_MSG = "FILE_DOWNLOAD";
+
+    public static final String DIRECTORY_USER_BULK = "users";
+    public static final String DIRECTORY_PROCESSED_BULK = "processed";
 
     public static final String GROUP_GENERAL_EDIT = "General-Edit";
     public static final String GROUP_GENERAL_VIEW = "General-View";
