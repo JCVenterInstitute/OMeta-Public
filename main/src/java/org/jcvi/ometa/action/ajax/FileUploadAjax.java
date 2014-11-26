@@ -46,7 +46,7 @@ public class FileUploadAjax extends ActionSupport implements IAjaxAction {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
                 String storagePathDate = sdf.format(date);
 
-                String storagePath = "users" + File.separator + userName + File.separator + storagePathDate;
+                String storagePath = Constants.DIRECTORY_USER_BULK + File.separator + userName + File.separator + storagePathDate;
 
                 File storingDirectory = new File(this.fileStoragePath + File.separator + storagePath);
                 storingDirectory.mkdirs();
