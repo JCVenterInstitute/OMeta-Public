@@ -24,7 +24,7 @@ import java.util.*;
  */
 public class EventLoadHelper {
     private ReadBeanPersister readPersister;
-    private String fileStoragePath;
+    private final String fileStoragePath;
     private String originalPath; // original path for relative file paths
     private String submissionId; // submission id
 
