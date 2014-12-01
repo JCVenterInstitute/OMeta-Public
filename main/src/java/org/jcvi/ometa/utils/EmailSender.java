@@ -27,11 +27,15 @@ import org.jtc.common.util.property.PropertyHelper;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-import javax.mail.*;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.io.File;
 import java.util.Properties;
 
 /**
@@ -71,18 +75,22 @@ public class EmailSender {
         msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
         msg.setSubject(subject);
 
+        Multipart multipart = new MimeMultipart();
         MimeBodyPart messageBodyPart = new MimeBodyPart();
         messageBodyPart.setText(body);
-
-        Multipart multipart = new MimeMultipart();
         multipart.addBodyPart(messageBodyPart);
 
-        messageBodyPart = new MimeBodyPart();
-        DataSource source = new FileDataSource(filePath);
-        messageBodyPart.setDataHandler(new DataHandler(source));
-        messageBodyPart.setFileName(filePath);
-        multipart.addBodyPart(messageBodyPart);
+        if(filePath != null && !filePath.isEmpty()) {
+            File attachment = new File(filePath);
 
+            if(attachment.exists() && attachment.isFile()) {
+                messageBodyPart = new MimeBodyPart();
+                DataSource source = new FileDataSource(filePath);
+                messageBodyPart.setDataHandler(new DataHandler(source));
+                messageBodyPart.setFileName(attachment.getName());
+                multipart.addBodyPart(messageBodyPart);
+            }
+        }
         msg.setContent(multipart);
 
         Transport transport = session.getTransport();
