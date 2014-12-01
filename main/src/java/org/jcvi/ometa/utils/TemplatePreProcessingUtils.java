@@ -541,9 +541,10 @@ public class TemplatePreProcessingUtils {
 
         public String getDisplayHeader() { //append square brackets wrapped attribute name with a label
             String displayHeader = this.getName();
-            if(this.getLabel() != null && !this.getLabel().isEmpty()) {
-                displayHeader = this.getLabel() + "[" + displayHeader + "]";
-            }
+//            Following lines commented for DPCC
+//            if(this.getLabel() != null && !this.getLabel().isEmpty()) {
+//                displayHeader = this.getLabel() + "[" + displayHeader + "]";
+//            }
             return displayHeader;
         }
     }
