@@ -59,7 +59,7 @@ public class EmailSenderTest {
     public void notification() {
         try {
             RuntimeException re = new RuntimeException("ONLY A TEST:  Does the notification work.");
-            en.send( "help", re.toString(), re.toString() );
+            //en.send( "help", re.toString(), re.toString() );
 
             System.out.println("Expect an email to be sent to " + notificationListStr);
         } catch ( Exception ex ) {
