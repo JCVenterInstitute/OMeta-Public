@@ -22,7 +22,6 @@
 package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.EmailSender;
 
 /**
@@ -45,7 +44,7 @@ public class Help extends ActionSupport {
                 StringBuffer sb = new StringBuffer(msg);
                 sb.append("\n name:  " + name);
                 sb.append("\n email: " + email);
-                emailSender.send("help", Constants.SERVICE_NAME+"-Help", sb.toString());
+                //emailSender.send("help", Constants.SERVICE_NAME+"-Help", sb.toString());
                 rtnVal = SUCCESS;
             }
         } catch(Exception ex) {

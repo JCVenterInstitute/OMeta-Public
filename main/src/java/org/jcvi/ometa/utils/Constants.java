@@ -43,6 +43,10 @@ public class Constants {
     public static final String CONFIG_BULK_LOAD_SERVER = "ometa.load.server";
     public static final String CONFIG_SYSTEM_USER = "ometa.load.system.user";
     public static final String CONFIG_SYSTEM_USER_PASS = "ometa.load.system.user.pass";
+    public static final String CONFIG_SMTP_HOST = "ometa.mail.host";
+    public static final String CONFIG_SMTP_USER = "ometa.mail.user";
+    public static final String CONFIG_SMTP_PASSWD = "ometa.mail.passwd";
+    public static final String CONFIG_SMTP_FROM = "ometa.mail.from";
 
     public static final String PRODUCTION_DATABASE = "production";
     public static final String DEVELOPMENT_DATABASE = "development";

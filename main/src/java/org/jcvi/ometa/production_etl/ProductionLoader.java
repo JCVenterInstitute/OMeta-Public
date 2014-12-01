@@ -22,7 +22,6 @@
 package org.jcvi.ometa.production_etl;
 
 import org.jcvi.ometa.production_etl.dbi.ProductionLoaderConnectionFactory;
-import org.jcvi.ometa.utils.EmailSender;
 
 import java.io.*;
 import java.sql.*;
@@ -117,7 +116,7 @@ public class ProductionLoader {
             dbInterface.closeConnections();
 
         } catch (Exception ex) {
-            new EmailSender().send( "etl", "[PST} Failure in ETL Process", ex.toString() );
+            //new EmailSender().send( "etl", "[PST} Failure in ETL Process", ex.toString() );
             System.out.println("FAILED to carry out database update.  See error below.");
             ex.printStackTrace();
         }
