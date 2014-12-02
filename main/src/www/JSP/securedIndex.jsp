@@ -22,7 +22,7 @@
 <!doctype html>
   <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
   <head>
-    <jsp:include page="../html/header.html" />
+    <jsp:include page="header.jsp" />
     <style>
 
     </style>
@@ -34,7 +34,14 @@
 
       <div id="main" class="">
         <div id="content" role="main">
-          <c:import url="http://niaidceirs-staging.elasticbeanstalk.com/dpcc/dashboard.php?framed=1" />
+          <%@ page import = "java.util.ResourceBundle" %>
+          <% 
+            ResourceBundle resource = ResourceBundle.getBundle("resource/LoadingEngine");
+            String websiteUrl=resource.getString("ometa.dpcc.website.url");
+            pageContext.setAttribute("websiteUrl", websiteUrl); 
+          %>
+
+          <c:import url="${websiteUrl}/dpcc/dashboard.php?framed=1" />
         </div>
       </div>
       
