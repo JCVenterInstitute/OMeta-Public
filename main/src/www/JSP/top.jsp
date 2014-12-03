@@ -9,7 +9,7 @@
 
   <div class="top-links clearfix">
     <div class="pull-right">
-      <div class="HeaderLink" id="currUserName" display="none"></div>
+      <div class="HeaderLink" id="currUserName" style="display:none;"></div>
       <div class="noauthuser"><a href="secureIndex.action">CEIRS Member Login</a></div>
     </div>
   </div>
@@ -128,11 +128,10 @@
     if(userName!=null && userName!=='null') {
       $('div#currUserName').html('<font color="#b6cad9">' + userName + '</font>&nbsp;&nbsp;<a class="headerLink" href="logout.action">Log Out</a>');
       $('.noauthuser').hide();
-      $('#menu-the-main-menu-1, #menu-the-main-menu').show();
+      $('#currUserName, #menu-the-main-menu-1, #menu-the-main-menu').show();
     } else {
-      $('.authuser').hide();
       $('.noauthuser').show();
-      $('#menu-the-main-menu-1, #menu-the-main-menu').hide();
+      $('#currUserName, #menu-the-main-menu-1, #menu-the-main-menu').hide();
     }
   });
 </script>

@@ -43,7 +43,7 @@
         </div>
       </div>
       
-      <jsp:include page="../html/footer.html" />
+      <jsp:include page="../../html/footer.html" />
     </div>
   </body>
 </html>

@@ -43,7 +43,7 @@ String s3Url = props.getProperty("ometa.dpcc.s3.url");
 <![endif]-->
 <link rel='stylesheet' id='googleFonts-css'  href='http://fonts.googleapis.com/css?family=Lato%3A400%2C700%2C400italic%2C700italic' type='text/css' media='all' />
 
-<script id="modernizr" src="https://s3.amazonaws.com/ceirs-dev-publicweb/js/libs/modernizr.custom.min.js"></script>
+<script id="modernizr" src="<%=s3Url%>/js/libs/modernizr.custom.min.js"></script>
 
 <script src="scripts/jquery/jquery-1.7.2.js"></script>
 <script src="scripts/jquery/jquery-ui.js"></script>
