@@ -18,40 +18,33 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
-
 <!doctype html>
-  <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
-  <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
-  <%@ page isELIgnored="false" %>
-  <c:set var="req" value="${pageContext.request}" />
-  <c:set var="baseURL" value="${fn:replace(req.requestURL, req.requestURI, req.contextPath)}" />
-  <c:set var="host" value="http://niaidceirs-staging.elasticbeanstalk.com" />
-  <c:if test="${fn:containsIgnoreCase(baseURL , 'dpcc.niaidceirs.org')}">
-    <c:set var="host" value="http://niaidceirs.org" />
-  </c:if>
-
+  <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
   <head>
-    <jsp:include page="../html/header.html" />
+    <c:import url="../header.jsp" />
     <style>
     </style>
   </head>
 
   <body class="smart-style-2">
     <div id="container">
-      <jsp:include page="top.jsp" />
+      <jsp:include page="../top.jsp" />
 
       <div id="main" class="">
         <div id="content" role="main">
-          <c:import url="${host}/dpcc/reports/center-reports.php?framed=1" />
+          <%@ page import = "java.util.Properties" %>
+          <%@ page import = "org.jtc.common.util.property.PropertyHelper" %>
+          <% 
+            Properties props = PropertyHelper.getHostnameProperties("resource/LoadingEngine");
+            String websiteUrl=props.getProperty("ometa.dpcc.website.url");
+            pageContext.setAttribute("websiteUrl", websiteUrl);
+          %>
+
+          <c:import url="${websiteUrl}/dpcc/reports/center-reports.php?framed=1" />
         </div>
       </div>
       
       <jsp:include page="../html/footer.html" />
     </div>
-
-    <script>
-    </script>
   </body>
-
-
 </html>
