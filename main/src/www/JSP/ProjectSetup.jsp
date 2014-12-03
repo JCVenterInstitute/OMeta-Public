@@ -26,7 +26,7 @@
   <%@ page isELIgnored="false" %>
 
   <head>
-    <jsp:include page="../html/header.html" />
+    <jsp:include page="header.jsp" />
     <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
     
     <link rel="stylesheet" href="style/version01.css" />
