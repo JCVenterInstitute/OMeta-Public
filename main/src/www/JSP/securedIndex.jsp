@@ -34,11 +34,12 @@
 
       <div id="main" class="">
         <div id="content" role="main">
-          <%@ page import = "java.util.ResourceBundle" %>
+          <%@ page import = "java.util.Properties" %>
+          <%@ page import = "org.jtc.common.util.property.PropertyHelper" %>
           <% 
-            ResourceBundle resource = ResourceBundle.getBundle("resource/LoadingEngine");
-            String websiteUrl=resource.getString("ometa.dpcc.website.url");
-            pageContext.setAttribute("websiteUrl", websiteUrl); 
+            Properties props = PropertyHelper.getHostnameProperties("resource/LoadingEngine");
+            String websiteUrl=props.getProperty("ometa.dpcc.website.url");
+            pageContext.setAttribute("websiteUrl", websiteUrl);
           %>
 
           <c:import url="${websiteUrl}/dpcc/dashboard.php?framed=1" />
