@@ -36,6 +36,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.File;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -61,7 +62,7 @@ public class EmailSender {
         this.EMAIL_FROM = props.getProperty(Constants.CONFIG_SMTP_FROM);
     }
 
-    public void send(String to, String subject, String body, String filePath) throws Exception {
+    public void send(String to, String subject, String body, List<String> files) throws Exception {
         Properties mailProps = System.getProperties();
         mailProps.put("mail.transport.protocol", "smtp");
         mailProps.put("mail.smtp.port", 25);
@@ -77,18 +78,20 @@ public class EmailSender {
 
         Multipart multipart = new MimeMultipart();
         MimeBodyPart messageBodyPart = new MimeBodyPart();
-        messageBodyPart.setText(body);
+        messageBodyPart.setText(body, "UTF-8", "html");
         multipart.addBodyPart(messageBodyPart);
 
-        if(filePath != null && !filePath.isEmpty()) {
-            File attachment = new File(filePath);
+        if(files != null && files.size() > 0) {
+            for(String filePath : files) {
+                File attachment = new File(filePath);
 
-            if(attachment.exists() && attachment.isFile()) {
-                messageBodyPart = new MimeBodyPart();
-                DataSource source = new FileDataSource(filePath);
-                messageBodyPart.setDataHandler(new DataHandler(source));
-                messageBodyPart.setFileName(attachment.getName());
-                multipart.addBodyPart(messageBodyPart);
+                if(attachment.exists() && attachment.isFile()) {
+                    messageBodyPart = new MimeBodyPart();
+                    DataSource source = new FileDataSource(filePath);
+                    messageBodyPart.setDataHandler(new DataHandler(source));
+                    messageBodyPart.setFileName(attachment.getName());
+                    multipart.addBodyPart(messageBodyPart);
+                }
             }
         }
         msg.setContent(multipart);
