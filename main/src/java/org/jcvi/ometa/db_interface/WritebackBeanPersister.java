@@ -393,7 +393,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                 if(attribute.getId()==null)
                     attribute.setId(guidGetter.getGuid());
 
-                if(attribute.getActiveDB() == null) {
+                if(attribute.isActive() == null) {
                     attribute.setActive(true);
                 }
 
@@ -429,7 +429,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                 if(attribute.getId()==null)
                     attribute.setId(guidGetter.getGuid());
 
-                if(attribute.getActiveDB() == null) {
+                if(attribute.isActive() == null) {
                     attribute.setActive(true);
                 }
 
