@@ -65,7 +65,7 @@ public class EmailSender {
     public void send(String to, String subject, String body, List<String> files) throws Exception {
         Properties mailProps = System.getProperties();
         mailProps.put("mail.transport.protocol", "smtp");
-        mailProps.put("mail.smtp.port", 25);
+        mailProps.put("mail.smtp.port", 465);
         mailProps.put("mail.smtp.auth", "true");
         mailProps.put("mail.smtp.starttls.enable", "true");
         mailProps.put("mail.smtp.starttls.required", "true");
