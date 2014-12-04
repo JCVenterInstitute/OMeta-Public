@@ -32,7 +32,7 @@ public class Constants {
     public final static String SERVICE_NAME = "ometa";
     public static String SCRATCH_BASE_LOCATION = "."+SERVICE_NAME;
 
-    public final static String CONFIGURATION_PREFIX = "ometa";
+    public final static String TEXT_PATTERN = "^[a-zA-Z0-9><=_\\-(),\\s ]*$";
 
     public static final String PROPERTIES_FILE_NAME = "resource/LoadingEngine";
     public static final String CONIFG_FILE_STORAGE_PATH = "ometa.fileStorage.path";
@@ -119,7 +119,8 @@ public class Constants {
             Constants.ATTR_SAMPLE_STATUS
     };
     public static final String[] HIDDEN_ATTRIBUTES = {
-            Constants.ATTR_SUBMISSION_ID
+            Constants.ATTR_SUBMISSION_ID,
+            Constants.ATTR_SAMPLE_STATUS
     };
 
     public static final String DPCC_STATUS_EDITING = "Editing";
