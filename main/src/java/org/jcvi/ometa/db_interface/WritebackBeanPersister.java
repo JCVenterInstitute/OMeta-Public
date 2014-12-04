@@ -389,8 +389,13 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                     attribute.setCreatedBy(actorId);
                 else
                     attribute.setModifiedBy(actorId);
+
                 if(attribute.getId()==null)
                     attribute.setId(guidGetter.getGuid());
+
+                if(attribute.getActiveDB() == null) {
+                    attribute.setActive(true);
+                }
 
                 if(attribute.getCreationDate()==null)
                     pmaDAO.write(attribute, sessionAndTransactionManager.getTransactionStartDate(), session);
@@ -423,6 +428,10 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                     attribute.setModifiedBy(actorId);
                 if(attribute.getId()==null)
                     attribute.setId(guidGetter.getGuid());
+
+                if(attribute.getActiveDB() == null) {
+                    attribute.setActive(true);
+                }
 
                 if(attribute.getCreationDate()==null)
                     smaDAO.write(attribute, sessionAndTransactionManager.getTransactionStartDate(), session);
