@@ -358,7 +358,7 @@ public class LoadingEngine {
 
         File eventFile = new File(eventFileName);
 
-        File logFile = new File(outputPath + File.separator + "Log-"+LoadingEngine.getNameWoExt(eventFile.getName())+".log");
+        File logFile = new File(outputPath + File.separator + LoadingEngine.getNameWoExt(eventFile.getName()) + "_summary.txt");
         FileWriter logWriter = new FileWriter(logFile, false);
 
         if(!eventFile.canRead() || !eventFile.isFile()) {
@@ -369,11 +369,11 @@ public class LoadingEngine {
         }
 
         int successCount = 0;
-        File processedFile = new File(outputPath + File.separator + "Processed-"+LoadingEngine.getNameWoExt(eventFile.getName())+".csv");
+        File processedFile = new File(outputPath + File.separator + LoadingEngine.getNameWoExt(eventFile.getName()) + "-success.csv");
         FileWriter processedWriter = new FileWriter(processedFile, false);
 
         int failedCount = 0;
-        File failedFile = new File(outputPath + File.separator + "Failed-"+LoadingEngine.getNameWoExt(eventFile.getName())+".csv");
+        File failedFile = new File(outputPath + File.separator + LoadingEngine.getNameWoExt(eventFile.getName())  + "-errors.csv");
         FileWriter failedWriter = new FileWriter(failedFile, false);
 
         // Must break this file up, and deposit it into a temporary output directory.
