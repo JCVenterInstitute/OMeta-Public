@@ -100,7 +100,7 @@ public class BulkLoader {
                     if(dateItem.isDirectory() && !dateItem.isHidden()) {
                         for(File fileItem : dateItem.listFiles()) {
 
-                            if(fileItem.exists() && fileItem.isFile() && !fileItem.isHidden()) {
+                            if(fileItem.exists() && fileItem.isFile() && !fileItem.isHidden() && fileItem.getName().endsWith(".csv")) {
                                 fileList.add(fileItem.getAbsolutePath());
                             }
                         }
@@ -116,15 +116,15 @@ public class BulkLoader {
         /*
         Dear <first> <last>,
 
-        Your bulk data upload of 'test.csv' has been received and processed by the CEIRS DPCC.
-        Please consult the attached Submission Summary which confirms your data submission and identifies quality control errors we detected, if any.
+        Your bulk data upload of “<submission-file-name>.csv" has been received and processed by the CEIRS DPCC.
+        Please consult the attached “<submission-file-name>_summary.txt” file which confirms your data submission and identifies quality control errors we detected, if any.
 
              Total Submitted Records: 3
              Total Successfully Processed Records: 1
              Total Records With Quality Control Errors: 2
 
         Samples for which quality control errors were detected could not be written to the DPCC database and will need to be corrected and re-submitted.
-        If this applies to your submission, please use the Submission Summary as a guide to correct the rejected records directly on the attached “errors.csv" file and re-submit only that file to the DPCC.
+        If this applies to your submission, please use the “<submission-file-name>_summary.txt” as a guide to correct the rejected records directly on the attached “<submission-file-name>_errors.csv" file and re-submit only that file to the DPCC.
 
         Thank you for your data contribution,
         The CEIRS DPCC Team
@@ -135,23 +135,23 @@ public class BulkLoader {
         	By Email: support@niaidceirs.org
          */
 
-        if(failPath == null) {
-            failPath = "unknown";
-        }
-        String failedFileName = failPath.substring(failPath.lastIndexOf(File.separator) + 1);
+        String failedFileName = failPath == null ? "unknown" : failPath.substring(failPath.lastIndexOf(File.separator) + 1);
+        String logFileName = logPath == null ? "unknown" : logPath.substring(logPath.lastIndexOf(File.separator) + 1);
 
         StringBuilder bodyBuilder = new StringBuilder();
         bodyBuilder.append("Dear ").append(userName).append(",<br/><br/>");
 
         bodyBuilder.append("Your bulk data upload of '").append(fileName).append("' has been received and processed by the CEIRS DPCC. ")
-                .append("Please consult the attached Submission Summary which confirms your data submission and identifies quality control errors we detected, if any.<br/><br/>");
+                .append("Please consult the attached '").append(logFileName)
+                .append("' file which confirms your data submission and identifies quality control errors we detected, if any.<br/><br/>");
 
         bodyBuilder.append("&nbsp;&nbsp;&nbsp;&nbsp; Total Submitted Records: ").append(total).append("<br/>")
                    .append("&nbsp;&nbsp;&nbsp;&nbsp; Total Successfully Processed Records: ").append(success).append("<br/>")
                    .append("&nbsp;&nbsp;&nbsp;&nbsp; Total Records With Errors: ").append(fail).append("<br/><br/>");
 
         bodyBuilder.append("Samples for which quality control errors were detected could not be written to the DPCC database and will need to be corrected and re-submitted. ")
-                .append("If this applies to your submission, please use the Submission Summary as a guide to correct the rejected records directly on the attached '")
+                .append("If this applies to your submission, please use the '").append(logFileName)
+                .append("' as a guide to correct the rejected records directly on the attached '")
                 .append(failedFileName).append("' file and re-submit only that file to the DPCC.<br/><br/>");
 
         bodyBuilder.append("Thank you for your data contribution,<br/>The CEIRS DPCC Team<br/><br/>");
