@@ -306,7 +306,7 @@ public class TemplatePreProcessingUtils {
                             continue;
                     }
 
-                    if(lineCount > 20) {
+                    if(lineCount > Constants.TEMPLATE_MAX_ROW_LIMIT) {
                         throw new Exception("Please use the Bulk Submission to load a large set of data.");
                     }
 

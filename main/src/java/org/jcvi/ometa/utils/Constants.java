@@ -129,6 +129,7 @@ public class Constants {
 
     public static final String TEMPLATE_COMMENT_INDICATOR = "#";
     public static final String TEMPLATE_EVENT_TYPE_IDENTIFIER = "DataTemplate";
+    public static final Integer TEMPLATE_MAX_ROW_LIMIT = 50;
 
     //variables for creating external links
     public static String NEW_WINDOW_LINK_HTML = "window.open('%s');";
