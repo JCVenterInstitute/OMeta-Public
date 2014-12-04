@@ -29,6 +29,7 @@ import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
 import org.jcvi.ometa.configuration.FileMappingSupport;
 import org.jcvi.ometa.configuration.InputBeanType;
 import org.jcvi.ometa.hibernate.dao.DAOException;
+import org.jcvi.ometa.model.Actor;
 import org.jcvi.ometa.model.EventMetaAttribute;
 import org.jcvi.ometa.model.Project;
 import org.jcvi.ometa.model.Sample;
@@ -193,7 +194,7 @@ public class LoadingEngine {
             String submissionId = Long.toString(CommonTool.getGuid()); //submission Id
 
             File eventFile = new File(eventFileName);
-            writer.writeEvent(eventFile, eventType, projectName, true, eventFile.getParent(), submissionId);
+            writer.writeEvent(eventFile, eventType, projectName, true, eventFile.getParent(), submissionId, null);
 
         } catch (Exception ex) {
             throw ex;
@@ -327,7 +328,7 @@ public class LoadingEngine {
                     writer.writePMAs(file);
                     break;
                 case eventAttributes:
-                    writer.writeEvent(file, null, null, true, null, null);
+                    writer.writeEvent(file, null, null, true, null, null, null);
                     break;
                 default:
                     throw new IllegalArgumentException(
@@ -425,7 +426,7 @@ public class LoadingEngine {
                         FileUtils.writeLines(singleEventFile, lines);
 
                         try {
-                            String eventTarget = writer.writeEvent(singleEventFile, eventName, null, false, eventFile.getParent(), submissionId);
+                            String eventTarget = writer.writeEvent(singleEventFile, eventName, null, false, eventFile.getParent(), submissionId, usage.getSubmitter());
                             logWriter.write(String.format("[%d] loaded event%s.\n", lineCount, (eventTarget == null ? "" : " for '" + eventTarget + "'")));
                             processedWriter.write(currLine + "\n");
                             successCount++;
@@ -439,6 +440,17 @@ public class LoadingEngine {
                     }
                 }
             }
+            usage.setTotalCount(processedLineCount);
+            usage.setSuccessCount(successCount);
+            usage.setFailCount(failedCount);
+            usage.setLogFilePath(logFile.getAbsolutePath());
+            usage.setFailFilePath(failedFile.getAbsolutePath());
+            if(writer.getSubmitter() != null) {
+                Actor submitter = writer.getSubmitter();
+                usage.setSubmitterEmail(submitter.getEmail());
+                usage.setSubmitterName(submitter.getFirstName() + " " + submitter.getLastName());
+            }
+
         } catch(IOException ioe) {
             System.err.println("IOException: " + ioe.getMessage());
             success = 0;

@@ -44,9 +44,12 @@ import java.util.*;
  * Takes care of specifics to type of data.
  */
 public class BeanWriter {
+    private Logger logger = Logger.getLogger(BeanWriter.class);
+
     private ProjectSampleEventWritebackBusiness writeEjb;
     private ProjectSampleEventPresentationBusiness readEjb;
-    private Logger logger = Logger.getLogger(BeanWriter.class);
+
+    private Actor submitter;
 
     /** Construct with all stuff needed for subsequent calls. */
     public BeanWriter(String server, String userName, String password) {
@@ -105,16 +108,23 @@ public class BeanWriter {
         }
     }
 
-    public String writeEvent(File eventFile, String eventName, String projectName, boolean processInput, String path, String submissionId) throws Exception {
+    public String writeEvent(File eventFile, String eventName, String projectName, boolean processInput, String path, String submissionId, String submitterId) throws Exception {
         String lastSampleName = null;
         List<GridBean> gridList = this.getEventBeansFromFile(eventFile, eventName, processInput);
 
         MultiLoadParameter loadParameter = new MultiLoadParameter();
+
+        if(submitterId != null && !submitterId.isEmpty()) { //manually set createdBy for bulk load
+            loadParameter.setSubmitterId(submitterId);
+            this.submitter = this.readEjb.getActorByUserName(submitterId);
+        }
+
         EventLoadHelper loadHelper = new EventLoadHelper(this.readEjb);
         loadHelper.setOriginalPath(path); //add path to the helper for relative file paths
         loadHelper.setSubmissionId(submissionId);
 
         loadHelper.gridListToMultiLoadParameter(loadParameter, gridList, projectName, eventName, null);
+
         writeEjb.loadAll(null, loadParameter);
 
         if(gridList != null && gridList.get(0) != null) {
@@ -426,4 +436,8 @@ public class BeanWriter {
         return eventName;
     }
     */
+
+    public Actor getSubmitter() {
+        return submitter;
+    }
 }

@@ -48,6 +48,9 @@ public class MultiLoadParameter implements Serializable {
     private List<LoadableEventBean> otherEvents;
     private String eventName;
 
+    private String submitterId;
+    private Long submitterActorId;
+
     /**
      * Adders: all add list to the list of list.
      */
@@ -290,5 +293,22 @@ public class MultiLoadParameter implements Serializable {
         public void setRowIndex(int rowIndex) {
             this.rowIndex = rowIndex;
         }
+    }
+
+
+    public String getSubmitterId() {
+        return submitterId;
+    }
+
+    public void setSubmitterId(String submitterId) {
+        this.submitterId = submitterId;
+    }
+
+    public Long getSubmitterActorId() {
+        return submitterActorId;
+    }
+
+    public void setSubmitterActorId(Long submitterActorId) {
+        this.submitterActorId = submitterActorId;
     }
 }

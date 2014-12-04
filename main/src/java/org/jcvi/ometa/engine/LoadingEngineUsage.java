@@ -66,6 +66,16 @@ public class LoadingEngineUsage {
     private OptionParameter serverUrlParam;
     private StringBuilder errors;
 
+    //bulk load variables
+    private String submitter;
+    private String submitterName;
+    private String submitterEmail;
+    private int totalCount;
+    private int successCount;
+    private int failCount;
+    private String logFilePath;
+    private String failFilePath;
+
 
     /**
      * Established this one to allow post-construction set-up.  Should call validate after all
@@ -388,5 +398,69 @@ public class LoadingEngineUsage {
 
     public String getBatchSize() {
         return batchSizeParam.getValue();
+    }
+
+    public String getSubmitter() {
+        return submitter;
+    }
+
+    public void setSubmitter(String submitter) {
+        this.submitter = submitter;
+    }
+
+    public int getTotalCount() {
+        return totalCount;
+    }
+
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
+    }
+
+    public int getSuccessCount() {
+        return successCount;
+    }
+
+    public void setSuccessCount(int successCount) {
+        this.successCount = successCount;
+    }
+
+    public int getFailCount() {
+        return failCount;
+    }
+
+    public void setFailCount(int failCount) {
+        this.failCount = failCount;
+    }
+
+    public String getLogFilePath() {
+        return logFilePath;
+    }
+
+    public void setLogFilePath(String logFilePath) {
+        this.logFilePath = logFilePath;
+    }
+
+    public String getFailFilePath() {
+        return failFilePath;
+    }
+
+    public void setFailFilePath(String failFilePath) {
+        this.failFilePath = failFilePath;
+    }
+
+    public String getSubmitterName() {
+        return submitterName;
+    }
+
+    public void setSubmitterName(String submitterName) {
+        this.submitterName = submitterName;
+    }
+
+    public String getSubmitterEmail() {
+        return submitterEmail;
+    }
+
+    public void setSubmitterEmail(String submitterEmail) {
+        this.submitterEmail = submitterEmail;
     }
 }
