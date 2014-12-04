@@ -83,9 +83,9 @@ public class WriteableAllOrNothingAuthInterceptor {
             rtnVal = invocationContext.proceed();
         }
         else {
-            String message = "One or more projects have been denied to user " + user;
-            logger.debug( message );
-            throw new IllegalAccessError( message );
+            String systemError = "One or more projects have been denied to user " + user;
+            logger.debug(systemError);
+            throw new IllegalAccessError("You do not have permission to a project or the project does not exist.");
         }
 
         return rtnVal;

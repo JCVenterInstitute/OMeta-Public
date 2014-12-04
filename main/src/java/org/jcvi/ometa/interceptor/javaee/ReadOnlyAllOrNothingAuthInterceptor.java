@@ -98,9 +98,9 @@ public class ReadOnlyAllOrNothingAuthInterceptor {
             throw new LoginRequiredException( message );
         }
         else {
-            String message = "One or more projects have been denied to user " + user;
-            logger.debug( message );
-            throw new ForbiddenResourceException( message );
+            String systemError = "One or more projects have been denied to user " + user;
+            logger.debug(systemError);
+            throw new IllegalAccessError("You do not have permission to a project or the project does not exist.");
         }
 
         return rtnVal;
