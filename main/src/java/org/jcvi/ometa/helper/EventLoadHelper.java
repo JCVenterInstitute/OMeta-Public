@@ -115,14 +115,11 @@ public class EventLoadHelper {
 
         List<FileReadAttributeBean> loadingList = null;
 
-        if (isProjectRegistration) {
-            if (frab != null && frab.size() > 0) {
-                loadingList = this.feedAndFilterFileReadBeans(eventName, isProjectRegistration ? project.getProjectName() : projectName, null, frab);
-            }
-        }else{
-            if (frab != null && frab.size() > 0) {
-            loadingList = this.feedAndFilterFileReadBeans(eventName, isProjectRegistration ? project.getProjectName() : projectName, sample.getSampleName(), frab);
-            }
+        if (frab != null && frab.size() > 0) {
+            loadingList = this.feedAndFilterFileReadBeans(
+                    eventName,
+                    isProjectRegistration ? project.getProjectName() : projectName, isProjectRegistration ? null : sample.getSampleName(),
+                    frab);
         }
 
         if (isProjectRegistration) {
@@ -296,6 +293,7 @@ public class EventLoadHelper {
         return processedList;
     }
 
+
     private void validateDataForDPCC(List<FileReadAttributeBean> loadingList, int index,String eventName) throws Exception {
         String attributeName = null;
         Collection errorMessages = new ArrayList();
@@ -304,105 +302,128 @@ public class EventLoadHelper {
                 if(fBean.getAttributeName().toLowerCase().contains("Collection_Date".toLowerCase())) {
                     attributeName = fBean.getAttributeName();
                     try{
-                        DPCCValidator.validateDate(fBean.getAttributeValue());
+                        DPCCValidator.validateDateDPCC(fBean.getAttributeValue());
                     }catch(Exception e){
                         errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
                     }
                 }
                 if(fBean.getAttributeName().toLowerCase().contains("Receipt_Date".toLowerCase())) {
-                   attributeName = fBean.getAttributeName();
-                   try{
-                       DPCCValidator.validateDate(fBean.getAttributeValue());
-                   }catch(Exception e){
-                       errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
-                   }
+                    attributeName = fBean.getAttributeName();
+                    try{
+                        DPCCValidator.validateDateDPCC(fBean.getAttributeValue());
+                    }catch(Exception e){
+                        errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
+                    }
+                }
+                if(fBean.getAttributeName().toLowerCase().contains("Date_of_Illness_Onset".toLowerCase())) {
+                    attributeName = fBean.getAttributeName();
+                    try{
+                        DPCCValidator.validateDateDPCC(fBean.getAttributeValue());
+                    }catch(Exception e){
+                        errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
+                    }
                 }
                 if(fBean.getAttributeName().toLowerCase().contains("Influenza_Vaccination_Date".toLowerCase())) {
-                   attributeName = fBean.getAttributeName();
-                   try{
-                       DPCCValidator.validateDate(fBean.getAttributeValue());
-                   }catch(Exception e){
-                       errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
-                   }
+                    attributeName = fBean.getAttributeName();
+                    try{
+                        DPCCValidator.validateDateDPCC(fBean.getAttributeValue());
+                    }catch(Exception e){
+                        errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
+                    }
                 }
                 if(fBean.getAttributeName().toLowerCase().contains("Test_for_Influenza_Serology".toLowerCase())) {
-                   attributeName = fBean.getAttributeName();
-                   try{
-                       //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                       DPCCValidator.validatePairs("Test_for_Influenza_Serology","^[a-zA-Z0-9><=_\\-(),\\s ]*$","Text with space and comma","Serology_Test_Result","^[PNU,\\s]*$","P/N/U",loadingList);
-                   }catch(Exception e){
-                       errorMessages.add(e.getMessage());
-                   }
+                    attributeName = fBean.getAttributeName();
+                    try{
+                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
+                        DPCCValidator.validatePairs("Test_for_Influenza_Serology","^[a-zA-Z0-9><=_\\-(),\\s ]*$","Text with space and comma","Serology_Test_Result","^[PNU,\\s]*$","P/N/U",loadingList);
+                    }catch(Exception e){
+                        errorMessages.add(e.getMessage());
+                    }
                 }
 
                 if(fBean.getAttributeName().toLowerCase().contains("Influenza_Test_Type".toLowerCase())) {
-                   attributeName = fBean.getAttributeName();
-                   try{
-                       //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                       DPCCValidator.validatePairs("Influenza_Test_Type","^([a-zA-Z0-9><=_\\-(),\\s ]*|NT|NA|,)*$","Text/NT(Not tested)/NA","Influenza_Test_Result","^(P|N|NT|NA|,|\\s)*$","P/N/NT/NA",loadingList);
-                   }catch(Exception e){
-                       errorMessages.add(e.getMessage());
-                   }
+                    attributeName = fBean.getAttributeName();
+                    try{
+                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
+                        DPCCValidator.validatePairs("Influenza_Test_Type","^([a-zA-Z0-9><=_\\-(),\\s ]*|NT|NA|,)*$","Text/NT(Not tested)/NA","Influenza_Test_Result","^(P|N|NT|NA|,|\\s)*$","P/N/NT/NA",loadingList);
+                    }catch(Exception e){
+                        errorMessages.add(e.getMessage());
+                    }
                 }
 
                 if(fBean.getAttributeName().toLowerCase().contains("Other_Pathogens_Tested".toLowerCase())) {
-                   attributeName = fBean.getAttributeName();
-                   try{
-                       //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                       DPCCValidator.validatePairs("Other_Pathogens_Tested","^([a-zA-Z0-9><=_\\-(),\\s ]*|NT|NA|,)*$","Text/NT(Not tested)/NA","Other_Pathogen_Test_Result","^(P|N|U|NT|NA|,|\\s)*$","P/N/U/NT/NA",loadingList);
-                   }catch(Exception e){
-                       errorMessages.add(e.getMessage());
-                   }
+                    attributeName = fBean.getAttributeName();
+                    try{
+                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
+                        DPCCValidator.validatePairs("Other_Pathogens_Tested","^([a-zA-Z0-9><=_\\-(),\\s ]*|NT|NA|,)*$","Text/NT(Not tested)/NA","Other_Pathogen_Test_Result","^(P|N|U|NT|NA|,|\\s)*$","P/N/U/NT/NA",loadingList);
+                    }catch(Exception e){
+                        errorMessages.add(e.getMessage());
+                    }
                 }
                 if(fBean.getAttributeName().toLowerCase().contains("Duration_of_Poultry_Exposure".toLowerCase())) {
-                   attributeName = fBean.getAttributeName();
-                   try{
-                       //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                       DPCCValidator.validatePairs("Other_Pathogens_Tested","^([a-zA-Z0-9><=_\\-(),\\s ]*|NT|NA|,)*$","Text/NT(Not tested)/NA","Other_Pathogen_Test_Result","^(P|N|U|NT|NA|,|\\s)*$","P/N/U/NT/NA",loadingList);
-                   }catch(Exception e){
-                       errorMessages.add(e.getMessage());
-                   }
+                    attributeName = fBean.getAttributeName();
+                    try{
+                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
+                        DPCCValidator.validatePairs("Other_Pathogens_Tested","^([a-zA-Z0-9><=_\\-(),\\s ]*|NT|NA|,)*$","Text/NT(Not tested)/NA","Other_Pathogen_Test_Result","^(P|N|U|NT|NA|,|\\s)*$","P/N/U/NT/NA",loadingList);
+                    }catch(Exception e){
+                        errorMessages.add(e.getMessage());
+                    }
                 }
                 if (Constants.DURATION_ATTRIBUTES.contains(fBean.getAttributeName().toLowerCase())) {
-                   attributeName = fBean.getAttributeName();
-                   try{
-                       //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                       DPCCValidator.validateRegEx(attributeName,fBean.getAttributeValue(),"^(([0-9.]*[ ]*[days|month|years])|NA|U|Unknown)*$","Number (2 days, 0.33 days) or NA or Unknown");
-                   }catch(Exception e){
-                       errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ e.getMessage());
-                   }
+                    attributeName = fBean.getAttributeName();
+                    try{
+                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
+                        DPCCValidator.validateRegEx(attributeName,fBean.getAttributeValue(),"^(([0-9.]*[ ]*[days|month|years])|NA|U|Unknown)*$","Number (2 days, 0.33 days) or NA or Unknown");
+                    }catch(Exception e){
+                        errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ e.getMessage());
+                    }
                 }
                 if (eventName.contains("Human Surveillance")){
                     if (fBean.getAttributeName().toLowerCase().contains("Age".toLowerCase())) {
-                       attributeName = fBean.getAttributeName();
-                       String message="Number (2 years, 0.33 years) or NA or U or Unknown";
-                       try{
-                           //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                           //DPCCValidator.validateNumberPattern(String value, String pattern,Boolean isNumber,String otherPattern, String message)
-                           Boolean ret = DPCCValidator.validateNumberPattern(attributeName,"^((\\d*\\.?\\d*[\\s]*mL))$",Boolean.TRUE,"^(NA|U|Unknown)*$","Number (2 years, 0.33 years) or NA or U or Unknown");
-                           //DPCCValidator.validateRegEx(attributeName,fBean.getAttributeValue(),"^(([0-9.]*[ ]*[years])|NA|U|Unknown)*$","Number (2 years, 0.33 years) or NA or U or Unknown");
-                           if (!ret){
-                             errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
-                           }
+                        attributeName = fBean.getAttributeName();
+                        String message="Number (2 years, 0.33 years) or NA or U or Unknown";
+                        try{
+                            //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
+                            //DPCCValidator.validateNumberPattern(String value, String pattern,Boolean isNumber,String otherPattern, String message)
+                            Boolean ret = DPCCValidator.validateNumberPattern(fBean.getAttributeValue(),"^((\\d*\\.?\\d*[\\s]*years))$",Boolean.TRUE,"^(NA|U|Unknown)*$","Number (2 years, 0.33 years) or NA or U or Unknown");
+                            //DPCCValidator.validateRegEx(attributeName,fBean.getAttributeValue(),"^(([0-9.]*[ ]*[years])|NA|U|Unknown)*$","Number (2 years, 0.33 years) or NA or U or Unknown");
+                            if (!ret){
+                                errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
+                            }
 
-                       }catch(Exception e){
-                           errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
-                       }
+                        }catch(Exception e){
+                            errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
+                        }
                     }
                 }
                 if (fBean.getAttributeName().toLowerCase().contains("Vaccine_Dosage".toLowerCase())) {
-                   attributeName = fBean.getAttributeName();
-                   String message="Number (2 years, 0.33 years) or NA or U or Unknown";
-                   try{
-                       //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                       Boolean ret = DPCCValidator.validateNumberPattern(attributeName,"^((\\d*\\.?\\d*[\\s]*mL))$",Boolean.TRUE,"^(NA|U|Unknown)*$",message);
-                       //DPCCValidator.validateRegEx(attributeName,fBean.getAttributeValue(),"^(([0-9.]*[ ]*[mL])|NA|U|Unknown)*$","number (0.05 mL) or NA or Unknown");
-                       if (!ret){
-                         errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
-                       }
-                   }catch(Exception e){
-                       errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
-                   }
+                    attributeName = fBean.getAttributeName();
+                    String message="number (0.05 mL) or NA or Unknown";
+                    try{
+                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
+                        Boolean ret = DPCCValidator.validateNumberPattern(fBean.getAttributeValue(),"^((\\d*\\.?\\d*[\\s]*mL))$",Boolean.TRUE,"^(NA|U|Unknown)*$",message);
+                        //DPCCValidator.validateRegEx(attributeName,fBean.getAttributeValue(),"^(([0-9.]*[ ]*[mL])|NA|U|Unknown)*$","number (0.05 mL) or NA or Unknown");
+                        if (!ret){
+                            errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
+                        }
+                    }catch(Exception e){
+                        errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
+                    }
+                }
+
+                if (fBean.getAttributeName().toLowerCase().contains("Treatment_Dosage".toLowerCase())) {
+                    attributeName = fBean.getAttributeName();
+                    String message="(0.05 mg or ml) or NA or Unknown";
+                    try{
+                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
+                        Boolean ret = DPCCValidator.validateNumberPattern(fBean.getAttributeValue(),"^((\\d*\\.*\\d*[\\s]*(ml|mg)))$",Boolean.TRUE,"^(NA|U|Unknown)*$",message);
+                        //DPCCValidator.validateRegEx(attributeName,fBean.getAttributeValue(),"^(([0-9.]*[ ]*[mL])|NA|U|Unknown)*$","number (0.05 mL) or NA or Unknown");
+                        if (!ret){
+                            errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
+                        }
+                    }catch(Exception e){
+                        errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
+                    }
                 }
 
                 //"^(([0-9.]*[ ]*[days|month|years])|NA|U|Unknown)*$"
