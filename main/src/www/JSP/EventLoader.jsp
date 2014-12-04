@@ -263,7 +263,7 @@
                   <div id="fileInputDiv" style="margin:25px 10px 0 0 ;display:none;">
                     <table>
                       <tr>
-                        <td>Loader CSV File</td>
+                        <td>Load CSV File</td>
                         <td>
                           <s:file name="dataTemplate" id="dataTemplate" cssStyle="margin:0 0 0 14px;" size="75px" />
                         </td>
