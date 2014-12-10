@@ -4,6 +4,7 @@
 <% 
 Properties props = PropertyHelper.getHostnameProperties("resource/LoadingEngine");
 String s3Url = props.getProperty("ometa.dpcc.s3.url");
+String websiteUrl = props.getProperty("ometa.dpcc.website.url");
 %>
 
 <!--[if lt IE 7]><html lang="en-US" class="no-js lt-ie9 lt-ie8 lt-ie7"><![endif]-->
@@ -22,9 +23,9 @@ String s3Url = props.getProperty("ometa.dpcc.s3.url");
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <link rel="apple-touch-icon" href="<%=s3Url%>/images/apple-icon-touch.png">
-<!-- <link rel="icon" href="http://localhost/ceirs/wp-content/themes/ceirs/favicon.png"> -->
+<link rel="icon" href="<%=websiteUrl%>/wp-content/themes/ceirs/favicon.png">
 <!--[if IE]>
-  <link rel="shortcut icon" href="http://localhost/ceirs/wp-content/themes/ceirs/favicon.ico">
+  <link rel="shortcut icon" href="<%=websiteUrl%>/wp-content/themes/ceirs/favicon.ico">
 <![endif]-->
 <meta name="msapplication-TileColor" content="#f01d4f">
 <meta name="msapplication-TileImage" content="<%=s3Url%>/images/win8-tile-icon.png">
@@ -39,7 +40,7 @@ String s3Url = props.getProperty("ometa.dpcc.s3.url");
 <link rel='stylesheet' id='ceirs-smartadmin-production-stylesheet-css'  href='<%=s3Url%>/css/smartadmin-production.css' type='text/css' media='all' />
 <link rel='stylesheet' id='ceirs-smartadmin-skins-stylesheet-css'  href='<%=s3Url%>/css/smartadmin-skins.css' type='text/css' media='all' />
 <!--[if lt IE 9]>
-<link rel='stylesheet' id='bones-ie-only-css'  href='https://s3.amazonaws.com/ceirs-dev-publicweb/css/ie.css' type='text/css' media='all' />
+<link rel='stylesheet' id='bones-ie-only-css'  href='<%=s3Url%>/css/ie.css' type='text/css' media='all' />
 <![endif]-->
 <link rel='stylesheet' id='googleFonts-css'  href='http://fonts.googleapis.com/css?family=Lato%3A400%2C700%2C400italic%2C700italic' type='text/css' media='all' />
 
