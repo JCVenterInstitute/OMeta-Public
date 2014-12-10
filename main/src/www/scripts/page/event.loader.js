@@ -224,7 +224,7 @@ callbacks = {
               options += '<option value="' + o_v + '">' + o_v + '</option>';
             });
           }
-          inputElement += '<select id="select_$id$" name="$lt$attributeValue" style="min-width:35px;width:200px;" ' + (isMulti ? 'multiple="multiple"':'') + '>' + options + '</select>';
+          inputElement += '<select id="'  + (isRequired ? 'req_' : '') + 'select_$id$" name="$lt$attributeValue" style="min-width:35px;width:200px;" ' + (isMulti ? 'multiple="multiple"':'') + '>' + options + '</select>';
         } else {
           var maDatatype = _ma.lookupValue.dataType;
           if(maDatatype === 'file') { //file
@@ -237,10 +237,10 @@ callbacks = {
               '</div>';
           } else { //text input
             isText = true;
-            inputElement += '<input type="text" id="' + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$"/>';
+            inputElement += '<input type="text" id="' + (isRequired ? 'req_' : '') + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$"/>';
           }
         }
-        inputElement = inputElement.replace(/\$id\$/g,_ma.lookupValue.name.replace(/ /g,"_")+"_$id$");
+        inputElement = inputElement.replace(/\$id\$/g,_ma.lookupValue.name.replace(/ /g,"_") + "_$id$");
 
         g_avDic[_ma.lookupValue.name] = { //store html contents with its attribute name for later use in adding row
           'ma': _ma,
@@ -336,6 +336,38 @@ changes = {
 var button = {
   submit: function(status) {
     var loadType = $('input[name="loadType"]:radio:checked').val();
+
+    if(loadType === 'form') { //check is form is empty
+
+      var hasAllReq = true, reqErrorMsg = ""; // require field check
+      var $formFields = $('#attributeInputDiv > tr > td');
+      $formFields.find('[id^="req_"]:not(:hidden)').each(function(i, v) {
+        var $node = $(v);
+        if($node.val() === null || $node.val() === '') {
+          hasAllReq = false;
+          reqErrorMsg += "&nbsp;&nbsp;" + $node.siblings('[name$="attributeName"]').val() + "<br />";
+        }
+      });
+
+      if(!hasAllReq) {
+        utils.error.add("Required Field(s):<br/>" + reqErrorMsg);
+        return;
+      }
+
+      var allEmpty = true; // empty submission form
+      $formFields.find('[name$=".attributeValue"]').each(function(i,v) {
+        var $node = $(v);
+        if($node.val() !== null && $node.val() !== '') {
+          allEmpty = false;
+        }
+      });
+
+      if(allEmpty) {
+        utils.error.add("Data submission form is empty. Please insert value(s).");
+        return;
+      }
+    }
+
     this.submit_form(loadType, status);
   },
   template: function() {
