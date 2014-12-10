@@ -175,7 +175,7 @@ border-right: 1px solid #a0a09b;
 }
 
 .popup {background:#FFF; border:1px solid #333; padding:1px;}
-.popup-header {height:24px; padding:7px; background:url("../images/popup/bgr_popup_header.jpg") repeat-x;}
+.popup-header {padding:7px; background:url("../images/popup/bgr_popup_header.jpg") repeat-x;}
 .popup-header h2 {margin:0; padding:0; font-size:18px; float:left;}
 .popup-header .close-link {float:right; font-size:11px;}
 
