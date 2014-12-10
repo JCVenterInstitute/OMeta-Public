@@ -427,14 +427,13 @@ public class LoadingEngine {
 
                         try {
                             String eventTarget = writer.writeEvent(singleEventFile, eventName, null, false, eventFile.getParent(), submissionId, usage.getSubmitter());
-                            logWriter.write(String.format("[%d] loaded event%s.\n", lineCount, (eventTarget == null ? "" : " for '" + eventTarget + "'")));
+                            //logWriter.write(String.format("[%d] loaded event%s.\n", lineCount, (eventTarget == null ? "" : " for '" + eventTarget + "'")));
                             processedWriter.write(currLine + "\n");
                             successCount++;
                         } catch (Exception ex) {
                             failedWriter.write(currLine + "\n");
-                            logWriter.write(String.format("[%d] failed :\n", lineCount));
+                            logWriter.write(String.format("[%d] failed : ", ++failedCount));
                             logWriter.write(ex.getMessage() + "\n");
-                            failedCount++;
                         }
                         processedLineCount++;
                     }
