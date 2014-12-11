@@ -85,7 +85,7 @@ public class WriteableAllOrNothingAuthInterceptor {
         else {
             String systemError = "One or more projects have been denied to user " + user;
             logger.debug(systemError);
-            throw new IllegalAccessError("You do not have permission to a project or the project does not exist.");
+            throw new IllegalAccessError("You do not have permission to the project or the project does not exist.");
         }
 
         return rtnVal;

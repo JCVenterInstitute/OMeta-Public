@@ -399,7 +399,7 @@ public class LoadingEngine {
 
                 if(lineCount == 1) {
                     if(!currLine.startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && currLine.contains(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER)) {
-                        throw new Exception("event name must present in the input file.");
+                        throw new Exception("event type does not exist in the data file.");
                     }
                     eventNameLine = currLine;
                     String[] eventTypeTokens = eventNameLine.split(":");
@@ -430,10 +430,24 @@ public class LoadingEngine {
                             //logWriter.write(String.format("[%d] loaded event%s.\n", lineCount, (eventTarget == null ? "" : " for '" + eventTarget + "'")));
                             processedWriter.write(currLine + "\n");
                             successCount++;
-                        } catch (Exception ex) {
+                        } catch(java.lang.IllegalAccessError iae) {
+                            String exceptionString = iae.getCause() == null ? iae.getMessage() : iae.getCause().getMessage();
+                            logWriter.write(exceptionString);
+                            success = 0;
+                            throw iae;
+                        }catch (Exception ex) {
                             failedWriter.write(currLine + "\n");
                             logWriter.write(String.format("[%d] failed : ", ++failedCount));
-                            logWriter.write(ex.getMessage() + "\n");
+
+
+                            if(ex.getClass() == javax.ejb.EJBException.class) {
+                                String accessError = ex.getMessage();
+                                if(accessError != null && accessError.contains("java.lang.IllegalAccessError")) {
+                                    logWriter.write("You do not have permission to the project or the project does not exist.");
+                                }
+                            } else {
+                                logWriter.write(ex.getCause() == null ? ex.getMessage() : ex.getCause().getMessage() + "\n");
+                            }
                         }
                         processedLineCount++;
                     }
@@ -458,7 +472,7 @@ public class LoadingEngine {
             logWriter.write(exceptionString);
             success = 0;
             throw ex;
-        } finally {
+        }  finally {
             if(scratchLoc != null  &&  scratchLoc.exists()) {
                 File cleanupDir = scratchLoc;
                 String parentDirName = cleanupDir.getParentFile().getName();
@@ -467,6 +481,10 @@ public class LoadingEngine {
                     cleanupDir = cleanupDir.getParentFile();
                 } catch (NumberFormatException nf) {}
                 FileUtils.forceDelete(cleanupDir);
+            }
+
+            if(failedCount == 0 && processedLineCount == success) {
+                logWriter.write("All data has been loaded successfully.");
             }
 
             logWriter.close();

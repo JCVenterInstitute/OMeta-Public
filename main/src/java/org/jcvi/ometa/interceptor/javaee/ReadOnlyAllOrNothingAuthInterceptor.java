@@ -22,11 +22,11 @@
 package org.jcvi.ometa.interceptor.javaee;
 
 import org.apache.log4j.Logger;
-import org.jcvi.ometa.configuration.*;
+import org.jcvi.ometa.configuration.AccessLevel;
+import org.jcvi.ometa.configuration.ResponseToFailedAuthorization;
+import org.jcvi.ometa.exception.LoginRequiredException;
 import org.jcvi.ometa.hibernate.dao.SecurityDAO;
 import org.jcvi.ometa.interceptor.InterceptorHelper;
-import org.jcvi.ometa.exception.LoginRequiredException;
-import org.jcvi.ometa.exception.ForbiddenResourceException;
 import org.jcvi.ometa.utils.Constants;
 import org.jtc.common.util.property.PropertyHelper;
 
@@ -100,7 +100,7 @@ public class ReadOnlyAllOrNothingAuthInterceptor {
         else {
             String systemError = "One or more projects have been denied to user " + user;
             logger.debug(systemError);
-            throw new IllegalAccessError("You do not have permission to a project or the project does not exist.");
+            throw new IllegalAccessError("You do not have permission to the project or the project does not exist.");
         }
 
         return rtnVal;
