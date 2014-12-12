@@ -2,30 +2,36 @@
 <!-- top menu starts -->
 
 <header id="header" class="header clearfix" role="banner">
+
+  <div class="site-title"></div>
   
-  <div class="site-title">
-    <h1 style="margin-left:13px;">Centers of Excellence for Influenza Research and Surveillance</h1>
-  </div>
+  <div class="inner-header container max-container">
+    
+    <h1>Data Processing and Coordinating Center</h1>
 
-  <div class="top-links clearfix">
-    <div class="pull-right">
-      <div class="HeaderLink" id="currUserName" style="display:none;"></div>
-      <div class="noauthuser"><a href="secureIndex.action">CEIRS Member Login</a></div>
+    <div class="top-links clearfix">
+      <div class="pull-right">
+        <div class="user-info">
+          <button style="display:none;background:transparent;color:white" id="userNameDropdown" class="btn dropdown-toggle" type="button" data-toggle="dropdown" style="color:white;background:transparent"><span class="glyphicon glyphicon-user" style="margin-right:5px;background-color:#C2C2C2;padding:3px"></span><div class="HeaderLink" id="currUserName" style="display:inline-block"></div> <span class="caret"></span></button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="userNameDropdown" style="left:auto;right:0;top:30px">
+            <li><a href="accountInformation.action">Account Information</a></li>
+            <li><a href="logout.action">Log Out</a></li>
+          </ul>
+        </div>
+        <div class="noauthuser"><a href="secureIndex.action">CEIRS Member Login</a></div>
+      </div>
     </div>
-  </div>
 
-  <div class="inner-header">
     <div id="logo" class="h1"><a href="http://www.niaidceirs.org/" rel="nofollow"></a></div>
 
     <div class="pull-right">
-  
+
       <!-- collapse menu button -->
       <div id="hide-menu" class="btn-header pull-right visible-xs visible-sm">
         <span> <a href="javascript:void(0);" data-action="toggleMenu" title="Collapse Menu"><i class="fa fa-reorder"></i></a> </span>
       </div>
       <!-- end collapse menu -->
-    
-      <!-- #MOBILE -->            
+
       <nav class="navbar visible-md visible-lg visible-xl" role="navigation">
         <ul class="nav navbar-nav" id="menu-the-main-menu" style="display:none;">
           <li id="menu-item-9" class="dropdown">
@@ -44,7 +50,7 @@
               <li><a href="eventReport.action">Report</a></li>
             </ul>
           </li>
-          <li id="admin_li" class="dropdown">
+          <li id="admin_li" class="dropdown" style="display:none;">
             <a href="#" data-toggle="dropdown">Admin <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="eventLoader.action?filter=pr">Project Registration</a></li>
@@ -64,6 +70,7 @@
           </li>
         </ul>
       </nav>
+      
     </div>
   </div>
 
@@ -88,7 +95,7 @@
           <li><a href="eventReport.action">Report</a></li>
         </ul>
       </li>
-      <li id="admin_li" class="dropdown">
+      <li id="admin_li" class="dropdown" style="display:hidden;">
         <a href="#" data-toggle="dropdown">Admin</a>
         <ul class="sub-menu" role="menu">
           <li><a href="eventLoader.action?filter=pr">Project Registration</a></li>
@@ -110,10 +117,8 @@
   </nav>
 </aside>
 
+<jsp:include page="include/i_admin.jsp" />
 <script>
-  <jsp:useBean id="userBean" class="org.jcvi.ometa.web_bean.UserInfoWebBean"/>
-  <jsp:setProperty name="userBean" property="userId" value="<%=request.getRemoteUser()%>"/>
-
   $(document).ready(function() {
     $('div#nav ul li').mouseover(function() {
       $(this).find('ul:first').show();
@@ -121,17 +126,5 @@
     $('div#nav ul li, div#nav ul li ul').mouseleave(function() {
       $('div#nav ul li ul').hide();
     });
-
-    var userName='<jsp:getProperty name="userBean" property="fullname"/>',
-        isAdmin='<jsp:getProperty name="userBean" property="admin"/>';
-    (isAdmin!=null && isAdmin!=='null' && isAdmin==='true')?$('#admin_li').show():$('#admin_li').hide();
-    if(userName!=null && userName!=='null') {
-      $('div#currUserName').html('<font color="#b6cad9">' + userName + '</font>&nbsp;&nbsp;<a class="headerLink" href="logout.action">Log Out</a>');
-      $('.noauthuser').hide();
-      $('#currUserName, #menu-the-main-menu-1, #menu-the-main-menu').show();
-    } else {
-      $('.noauthuser').show();
-      $('#currUserName, #menu-the-main-menu-1, #menu-the-main-menu').hide();
-    }
   });
 </script>

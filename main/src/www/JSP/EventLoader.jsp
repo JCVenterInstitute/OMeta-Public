@@ -72,7 +72,7 @@
 
       <div id="main" class="">
         <div id="inner-content" class="">
-          <div id="content" role="main">
+          <div id="content" class="container max-container" role="main">
 
             <s:form id="eventLoaderPage" name="eventLoaderPage" namespace="/" action="eventLoader" method="post" theme="simple" enctype="multipart/form-data">
               <s:hidden name="jobType" id="jobType"/>

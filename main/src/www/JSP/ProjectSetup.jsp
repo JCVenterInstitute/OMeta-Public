@@ -42,7 +42,7 @@
 
       <div id="main" class="">
         <div id="inner-content" class="">
-          <div id="content" role="main">
+          <div id="content" class="container max-container" role="main">
 
             <s:form id="projectLoaderPage" name="projectLoaderPage" namespace="/" action="projectSetup" method="post" theme="simple">
               <s:hidden name="jobType" id="jobType"/>

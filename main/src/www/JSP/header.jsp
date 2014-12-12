@@ -52,4 +52,4 @@ String websiteUrl = props.getProperty("ometa.dpcc.website.url");
 
 <script type='text/javascript' src='<%=s3Url%>/js/public.app.config.js'></script>
 <script type='text/javascript' src='<%=s3Url%>/js/libs/bootstrap.js'></script>
-<script type='text/javascript' src='<%=s3Url%>/js/scripts.js'></script>
+<!--<script type='text/javascript' src='<%=s3Url%>/js/scripts.js'></script>-->

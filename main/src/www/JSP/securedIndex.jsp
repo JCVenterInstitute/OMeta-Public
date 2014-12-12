@@ -33,7 +33,7 @@
       <jsp:include page="top.jsp" />
 
       <div id="main" class="">
-        <div id="content" role="main">
+        <div id="content" class="container max-container" role="main">
           <%@ page import = "java.util.Properties" %>
           <%@ page import = "org.jtc.common.util.property.PropertyHelper" %>
           <% 

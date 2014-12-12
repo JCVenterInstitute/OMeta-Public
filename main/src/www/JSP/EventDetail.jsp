@@ -75,7 +75,7 @@
 
       <div id="main" class="">
         <div id="inner-content" class="">
-          <div id="content" role="main">
+          <div id="content" class="container max-container" role="main">
     
             <s:form id="eventDetailPage" name="eventDetailPage" namespace="/" action="eventDetail" method="post" theme="simple">
               <s:hidden id="editable" name="editable" value="0" />
