@@ -238,7 +238,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                 } else if(jobType.startsWith(TEMPLATE_DOWNLOAD)) { //download template
                     List<EventMetaAttribute> emaList = this.readPersister.getEventMetaAttributes(this.projectName, this.eventName);
                     emaList = CommonTool.filterEventMetaAttribute(emaList);
-                    CommonTool.sortEventMetaAttributeByOrder(emaList);
+                    //CommonTool.sortEventMetaAttributeByOrder(emaList);
 
                     /*
                      * removing the sanity check on sample requirement since multiple sample support is in action
