@@ -476,6 +476,8 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                     }
                 }
             } else if("g_all".equals(type)) {
+                /* Metadata Setup page selects the first event type by default
+
                 Map<String, List> listMap = new HashMap<String, List>();
                 List tempList = null;
 
@@ -537,6 +539,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                     }
                 }
                 dataMap.put("ema", tempList);
+                */
 
                 dataMap.put("et", psept.getLookupValueByType(ModelValidator.EVENT_TYPE_LV_TYPE_NAME));
                 dataMap.put("pet", psept.getEventTypesForProject(projectId));
