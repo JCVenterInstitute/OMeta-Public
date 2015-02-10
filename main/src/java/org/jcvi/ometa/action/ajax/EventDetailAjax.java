@@ -122,9 +122,19 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                     sampleMap.put("createdOn", ModelValidator.PST_DEFAULT_TIMESTAMP_FORMAT.format(sample.getCreationDate()));
 
                     if(sampleIdVsAttributes.containsKey(sample.getSampleId())) {
-                        Map<String, Object> attributeMap = new HashMap<String, Object>();
+                        Map<String, Object> attributeMap = new LinkedHashMap<String, Object>();
+
+                        List<SampleAttribute> sampleAttributes = sampleIdVsAttributes.get(sample.getSampleId());
+                        Collections.sort(sampleAttributes, new Comparator<SampleAttribute>() {
+                            @Override
+                            public int compare(SampleAttribute sa1, SampleAttribute sa2) {
+                                String sa1Name = sa1.getMetaAttribute().getLookupValue().getName();
+                                String sa2Name = sa2.getMetaAttribute().getLookupValue().getName();
+                                return sa1Name.compareTo(sa2Name);
+                            }
+                        });
                         for (SampleAttribute sa : sampleIdVsAttributes.get(sample.getSampleId())) {
-                            if(sa.getMetaAttribute()!=null) {
+                            if(sa.getMetaAttribute() != null) {
                                 LookupValue tempLookupValue = sa.getMetaAttribute().getLookupValue();
                                 Object attrValue = ModelValidator.getModelValue(tempLookupValue, sa);
                                 attributeMap.put(tempLookupValue.getName(), attributeDecorator(tempLookupValue, attrValue));
@@ -149,18 +159,18 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                 List<Event> filteredList = eventList.subList(iDisplayStart, iDisplayStart+iDisplayLength>eventList.size()?eventList.size():iDisplayLength+iDisplayStart);
                 Map<Long, List<EventAttribute>> eventIdVsAttributes = this.getEventIdVsAttributeList(filteredList);
 
-                Map<Long, String> sampleNames = new HashMap<Long, String>();
+                Map<Long, String> sampleIdtoNames = new HashMap<Long, String>();
                 Map<Long, String> actors = new HashMap<Long, String>();
                 for (Event event : filteredList) {
                     Map<String, Object> eventMap = new HashMap<String, Object>();
 
                     String sampleName = null;
-                    if(event.getSampleId()!=null && event.getSampleId()!=0) {
-                        if(sampleNames.containsKey(event.getSampleId()))
-                            sampleName = sampleNames.get(event.getSampleId());
+                    if(event.getSampleId() != null && event.getSampleId() != 0) {
+                        if(sampleIdtoNames.containsKey(event.getSampleId()))
+                            sampleName = sampleIdtoNames.get(event.getSampleId());
                         else {
                             sampleName = readPersister.getSample(event.getSampleId()).getSampleName();
-                            sampleNames.put(event.getSampleId(), sampleName);
+                            sampleIdtoNames.put(event.getSampleId(), sampleName);
                         }
                     }
                     if (!actors.containsKey(event.getCreatedBy())) {
