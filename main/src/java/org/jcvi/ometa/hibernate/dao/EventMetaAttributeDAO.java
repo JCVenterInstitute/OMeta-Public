@@ -122,11 +122,15 @@ public class EventMetaAttributeDAO extends HibernateDAO {
             throws DAOException {
         List<EventMetaAttribute> attributeList = new ArrayList<EventMetaAttribute>();
         try {
-            if ( projectIds.size() > 0 ) {
-                Criteria crit = session.createCriteria( EventMetaAttribute.class );
-                crit.add( Restrictions.in("projectId", projectIds) );
-                if(eventTypeLookupId != null)
-                    crit.add( Restrictions.eq( "eventTypeLookupId", eventTypeLookupId ) );
+            if(projectIds.size() > 0) {
+                Criteria crit = session.createCriteria(EventMetaAttribute.class);
+                crit.add(Restrictions.in("projectId", projectIds));
+                if(eventTypeLookupId != null) {
+                    crit.add(Restrictions.eq("eventTypeLookupId", eventTypeLookupId));
+                }
+
+                crit.addOrder(Order.asc("order")); //order by position value
+
                 List<EventMetaAttribute> results = crit.list();
 
                 if ( results != null   &&   results.size() > 0 ) {
