@@ -20,38 +20,36 @@
   --%>
 
 <!doctype html>
-  <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
-  <head>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<head>
     <jsp:include page="header.jsp" />
     <style>
 
     </style>
-  </head>
+</head>
 
-  <body class="smart-style-2">
-    <div id="container">
-      <jsp:include page="top.jsp" />
+<body class="smart-style-2">
+<div id="container">
+    <jsp:include page="top.jsp" />
 
-      <div id="main" class="">
+    <div id="main" class="">
         <div id="content" class="container max-container" role="main">
-          <%@ page import = "java.util.Properties" %>
-          <%@ page import = "org.jtc.common.util.property.PropertyHelper" %>
-          <% 
-            Properties props = PropertyHelper.getHostnameProperties("resource/LoadingEngine");
-            String websiteUrl=props.getProperty("ometa.dpcc.website.url");
-            pageContext.setAttribute("websiteUrl", websiteUrl);
-          %>
+            <%@ page import = "java.util.Properties" %>
+            <%@ page import = "org.jtc.common.util.property.PropertyHelper" %>
+            <%-- <%
+               Properties props = PropertyHelper.getHostnameProperties("resource/LoadingEngine");
+               String websiteUrl=props.getProperty("ometa.dpcc.website.url");
+               pageContext.setAttribute("websiteUrl", websiteUrl);
+             %>--%>
 
-          <c:import url="${websiteUrl}/dpcc/dashboard.php?framed=1" />
+            <%--<c:import url="${websiteUrl}/dpcc/dashboard.php?framed=1&userid=${pageContext.request.remoteUser}" />--%>
         </div>
-      </div>
-      
-      <jsp:include page="../html/footer.html" />
     </div>
-
-    <script>
-    </script>
-  </body>
+</div>
+<jsp:include page="../html/footer.html" />
+<script>
+</script>
+</body>
 
 
 </html>
