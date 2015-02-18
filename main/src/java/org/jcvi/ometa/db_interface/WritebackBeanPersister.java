@@ -301,6 +301,22 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
     }
 
     /**
+     * Call this when you have an actor to update.
+     *
+     * @param actor       actor to update.
+     * @throws Exception thrown by called methods.
+     */
+    public void updateActor(Actor actor) throws  Exception {
+        try {
+            ActorDAO actorDAO = daoFactory.getActorDAO();
+            actorDAO.update(actor, session);
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        }
+    }
+
+    /**
      * Call this when you have a project to update.
      *
      * @param project       project to update.
