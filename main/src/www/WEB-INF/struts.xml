@@ -31,7 +31,7 @@
     <constant name="struts.enable.DynamicMethodInvocation" value="false" />
     <constant name="struts.multipart.maxSize" value="2147483648" />
 
-    <package name="productionStatus" namespace="/" extends="struts-default">
+    <package name="ometa" namespace="/" extends="struts-default">
 
         <interceptors>
             <!-- Different rules = different interceptors. -->
@@ -165,28 +165,37 @@
             <result name="forbidden">/JSP/EventDetail.jsp</result>
         </action>
 
+        <action name="forceLoginForEventHistory" class="org.jcvi.ometa.action.ForceLogin" method="silentRedirect">
+            <result name="success" type="redirectAction">
+                <param name="actionName">eventHistory</param>
+                <param name="namespace">/</param>
+                <param name="projectNames">${projectNames}</param>
+                <param name="attributes">${attributes}</param>
+            </result>
+        </action>
+
+        <action name="eventHistory" class="org.jcvi.ometa.action.EventHistory" method="eventHistory">
+            <result name="login" type="redirectAction">
+                <param name="actionName">forceLoginForEventHistory</param>
+                <param name="namespace">/</param>
+                <param name="projectNames">${projectNames}</param>
+                <param name="attributes">${attributes}</param>
+            </result>
+            <result name="success">/JSP/EventHistory.jsp</result>
+            <result name="forbidden">/JSP/EventHistory.jsp</result>
+        </action>
+
         <action name="eventLoader" class="org.jcvi.ometa.action.EventLoader" method="execute">
             <result name="forbidden">/JSP/EventLoader.jsp</result>
             <result name="success">/JSP/EventLoader.jsp</result>
             <result name="error">/JSP/EventLoader.jsp</result>
             <result name="input" type="redirectAction">error</result>
-            <result name="FILE_DOWNLOAD" type="stream">
-                <param name="contentType">${downloadContentType}</param>
-                <param name="contentDisposition">attachment;filename="${downloadFileName}"</param>
-                <param name="inputName">downloadStream</param>
+            <result name="DOWNLOAD" type="stream">
+                <param name="contentType">${dataTemplateContentType}</param>
+                <param name="contentDisposition">attachment;filename="${dataTemplateFileName}"</param>
+                <param name="inputName">dataTemplateStream</param>
             </result>
         </action>
-
-        <action name="dropboxLoader" >
-        <!--<action name="dropboxLoader" class="org.jcvi.ometa.action.dropboxLoader" method="execute">-->
-            <result>/JSP/DropboxLoader.jsp</result>
-<!--
-             <result name="forbidden">/JSP/DropboxLoader.jsp</result>
-             <result name="success">/JSP/DropboxLoader.jsp</result>
-             <result name="error">/JSP/DropboxLoader.jsp</result>
-             <result name="input" type="redirectAction">error</result>
-             -->
-         </action>
 
         <!-- POPUP -->
         <action name="projectEditOpen" class="org.jcvi.ometa.action.Editor" method="projectEditOpen">
@@ -229,6 +238,12 @@
 
         <action name="popup" class="org.jcvi.ometa.action.Popup" method="run">
             <result name="SELECT_TEMPLATE">/JSP/popup/LPopupTemplateSelect.jsp</result>
+            <result name="PROJECT_DETAIL_POP">/JSP/popup/LPopupProjectDetails.jsp</result>
+            <result name="PROJECT_DETAIL" type="redirectAction">
+                <param name="actionName">projectdetail</param>
+                <param name="ids">${ids}</param>
+                <param name="namespace">/</param>
+            </result>
         </action>
 
         <action name="ontologySearch" class="org.jcvi.ometa.action.Ontology">
@@ -237,6 +252,10 @@
         </action>
         <!-- POPUP ENDS -->
 
+        <action name="accountInformation">
+            <result>/JSP/dpcc/accountInformation.jsp</result>
+        </action>
+
         <action name="addActor" class="org.jcvi.ometa.action.AddActor" method="process">
             <result name="input">/JSP/AddActor.jsp</result>
             <result name="success" type="redirectAction">
@@ -244,11 +263,28 @@
                 <param name="namespace">/</param>
             </result>
             <result name="error">/JSP/AddActor.jsp</result>
+            <result name="denied" type="redirectAction">error</result>
         </action>
         <action name="actorRole" class="org.jcvi.ometa.action.ActorRole">
             <result name="input">/JSP/ActorRole.jsp</result>
             <result name="success">/JSP/ActorRole.jsp</result>
             <result name="error">/JSP/ActorRole.jsp</result>
+        </action>
+        <action name="editActor" class="org.jcvi.ometa.action.EditActor">
+            <result name="none" type="redirectAction">
+                <param name="actionName">actorRole</param>
+            </result>
+            <result name="input">/JSP/EditActor.jsp</result>
+            <result name="success">/JSP/EditActor.jsp</result>
+            <result name="error">/JSP/EditActor.jsp</result>
+        </action>
+        <action name="passwordUpdate" class="org.jcvi.ometa.action.PasswordUpdate">
+            <result name="input">/JSP/PasswordUpdate.jsp</result>
+            <result name="error">/JSP/PasswordUpdate.jsp</result>
+            <result name="success" type="redirectAction">
+                <param name="actionName">secureIndex</param>
+                <param name="namespace">/</param>
+            </result>
         </action>
         <action name="help" class="org.jcvi.ometa.action.Help" method="process">
             <result name="input">/JSP/help.jsp</result>
@@ -260,10 +296,10 @@
         </action>
 
         <!-- FILE DOWNLOADER -->
-        <action name="getFile" class="org.jcvi.ometa.action.FileDownloader" method="download">
+        <action name="download" class="org.jcvi.ometa.action.FileDownloader" method="download">
             <result name="success" type="stream">
-                <param name="contentType">image/jpeg</param>
-                <param name="contentDisposition">attachment;filename="${fn}"</param>
+                <param name="contentType">${fileType}</param>
+                <param name="contentDisposition">attachment;filename="${fileName}"</param>
                 <param name="inputName">fileInputStream</param>
                 <param name="bufferSize">2048</param>
             </result>
@@ -290,33 +326,45 @@
             <result>/JSP/index.jsp</result>
         </action>
         <action name="error">
-            <result>/JSP/index.jsp</result>
+            <result>/JSP/error.jsp</result>
         </action>
 
         <!-- DPCC framed pages -->
         <action name="support">
-            <result>/JSP/support.jsp</result>
+            <result>/JSP/dpcc/support.jsp</result>
         </action>
 
         <action name="dpcc_help">
-            <result>/JSP/dpcc_help.jsp</result>
+            <result>/JSP/dpcc/help.jsp</result>
         </action>
 
         <action name="centerreport">
-            <result>/JSP/centerreport.jsp</result>
+            <result>/JSP/dpcc/centerreport.jsp</result>
         </action>
         <action name="analytics">
-            <result>/JSP/analytics.jsp</result>
+            <result>/JSP/dpcc/analytics.jsp</result>
         </action>
 
         <action name="access">
-            <result>/JSP/access.jsp</result>
+            <result>/JSP/dpcc/access.jsp</result>
+        </action>
+
+        <action name="projectdetail">
+            <result>/JSP/ProjectDetails.jsp</result>
         </action>
     </package>
 
     <!-- AJAX -->
     <package name="json" extends="json-default">
         <action name="sharedAjax" class="org.jcvi.ometa.action.ajax.SharedAjax" method="runAjax">
+            <result name="success" type="json"/>
+            <result name="error" type="json"/>
+        </action>
+        <action name="getproject" class="org.jcvi.ometa.action.ajax.SharedAjax" method="singleProject">
+            <result name="success" type="json"/>
+            <result name="error" type="json"/>
+        </action>
+        <action name="getprojectbyuser" class="org.jcvi.ometa.action.ajax.SharedAjax" method="projectInfoByUser">
             <result name="success" type="json"/>
             <result name="error" type="json"/>
         </action>
