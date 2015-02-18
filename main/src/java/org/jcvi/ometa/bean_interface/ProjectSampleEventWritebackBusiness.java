@@ -36,6 +36,7 @@ import java.util.List;
  */
 public interface ProjectSampleEventWritebackBusiness {
     void loadActor(Actor actor) throws Exception;
+    void updateActor(Actor actor) throws Exception;
 
     void loadActorGroup(List<ActorGroup> actorGroups) throws Exception;
     void deleteActorGroup(List<ActorGroup> actorGroups) throws Exception;
