@@ -391,6 +391,23 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
     @Override
     @WebMethod
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void updateActor(Actor actor) throws Exception {
+        BeanPersistenceFacadeI beanPersister = getBeanPersister();
+        beanPersister.open();
+        try {
+            beanPersister.updateActor(actor);
+        } catch (Exception ex) {
+            logger.error(ex);
+            beanPersister.error();
+            throw ex;
+        } finally {
+            beanPersister.close();
+        }
+    }
+
+    @Override
+    @WebMethod
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void updateEventStatus(Event event) throws Exception {
         BeanPersistenceFacadeI beanPersister = getBeanPersister();
         beanPersister.open();
