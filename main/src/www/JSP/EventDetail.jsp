@@ -97,10 +97,10 @@
                             <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
                         </s:if>
                         <s:if test="hasActionMessages()">
-                            <div class="row" style="margin-top: 15px;margin-bottom: 15px;margin-left: 0px;">
-                                <div class="alert_info" onclick="$('.alert_info').remove();" >
-                                    <strong style="color: #ffffff;background-color: #348338;border-color: #348338;padding: 7px;"><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
-                                </div>
+                            <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
+                              <div class="alert_info" onclick="$('.alert_info').remove();">
+                                <strong style="color: #ffffff;background-color: #a90329;padding: 3px;border-color: #900323;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
+                              </div>
                             </div>
                         </s:if>
                     </div>
