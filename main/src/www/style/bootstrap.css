@@ -6240,7 +6240,8 @@ button.close {
 
 /*EVENT LOADER JSP*/
 
-#interactive-submission-table td, #project-information-table td, #attributeInputDiv td, #eventTable td, #eventTable th{
+#interactive-submission-table td, #project-information-table td,
+#attributeInputDiv td, #eventTable td, #eventTable th, #addActorTable td, #editActorTable td{
     padding : 5px;
 }
 
