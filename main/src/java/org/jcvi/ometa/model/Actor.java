@@ -44,6 +44,14 @@ public class Actor implements Serializable {
     private String email;
     private Date creationDate;
 
+    /*private String phone;
+    private String centerName;
+    private String role;
+    private String piName;
+    private String piEmail;*/
+
+    private String password;
+
     @Id
     @Column(name="actor_id", nullable=false)
     public Long getLoginId() {
@@ -106,5 +114,59 @@ public class Actor implements Serializable {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    /*@Column(name="actor_phone")
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    @Column(name="actor_ceirs_center_name")
+    public String getCenterName() {
+        return centerName;
+    }
+
+    public void setCenterName(String centerName) {
+        this.centerName = centerName;
+    }
+
+    @Column(name="actor_role")
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    @Column(name="actor_lab_pi_name")
+    public String getPiName() {
+        return piName;
+    }
+
+    public void setPiName(String piName) {
+        this.piName = piName;
+    }
+
+    @Column(name="actor_lab_pi_email")
+    public String getPiEmail() {
+        return piEmail;
+    }
+
+    public void setPiEmail(String piEmail) {
+        this.piEmail = piEmail;
+    }*/
+
+    @Transient
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
