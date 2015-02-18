@@ -150,6 +150,16 @@ public class ActorDAO extends HibernateDAO {
         }
     }
 
+    public void update( Actor actor, Session session ) throws DAOException {
+        try {
+            actor = (Actor) session.merge(actor);
+            session.update(actor);
+            session.flush();
+        } catch ( Exception ex ) {
+            throw new DAOException( ex );
+        }
+    }
+
     public void deleteActorGroup(List<ActorGroup> groups, Session session) throws DAOException {
         for(ActorGroup group : groups) {
             this.deleteActorGroup(group, session);
