@@ -182,7 +182,7 @@ var _utils = {
 
                     $attributeTr.append(//icons and hover over information
                         $('<td align="right"/>').attr('class', (isDesc ? 'table-tooltip' : '')).attr('title', (isDesc ? _ma.desc : '')).append(
-                            isRequired ? '<img class="attributeIcon" src="images/icon/req_red.gif" style="float: right;"/>' : '',
+                            isRequired ? '<small class="text-danger">*</small>' : '',
                             (_ma.label != null && _ma.label !== '' ?_ma.label:_ma.lookupValue.name),
                             "&nbsp;",
                             isDesc ? requireImgHtml : ''
@@ -191,7 +191,7 @@ var _utils = {
                     );
                     $gridHeaders.append(
                         $('<th/>').addClass('tableHeaderNoBG').attr('title', (isDesc ? _ma.desc : '')).append(
-                            isRequired ? '<img class="attributeIcon" src="images/icon/req_red.gif" style="float: right;"/>' : '',
+                            isRequired ? '<small class="text-danger">*</small>' : '',
                             (_ma.label ? _ma.label : _ma.lookupValue.name) + '<br/>',
                             isDesc ? requireImgHtml : ''
                             //,(hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
