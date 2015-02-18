@@ -56,6 +56,8 @@ public interface BeanPersistenceFacadeI {
 
     void writeBackAttributes(List<FileReadAttributeBean> aBeans, String eventName, String actorUserName) throws Exception;
 
+    void updateActor(Actor actor) throws Exception;
+
     void updateEventStatus(Event event, String actorUserName) throws Exception;
 
     void updateProject(Project project, String actorUserName) throws Exception;
