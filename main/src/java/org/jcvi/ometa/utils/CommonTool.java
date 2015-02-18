@@ -95,6 +95,15 @@ public class CommonTool {
                                     "&sampleId=" + attributeMap.get("sampleId"),
                             decoratedValue
                     );
+                } else if(decoratedValue.contains("http://")){
+                    String[] decoratedValueArr = decoratedValue.split(",");
+                    StringBuilder dvBuild = new StringBuilder();
+                    for(String url : decoratedValueArr){
+                        if(dvBuild.length() > 0) dvBuild.append(" - ");
+                        dvBuild.append(convertIntoATag(url, url));
+                    }
+
+                    decoratedValue = dvBuild.toString();
                 }
             }
         }
@@ -115,12 +124,23 @@ public class CommonTool {
         }
         return rtnVal;
     }
+
+    public static String truncateURL(String URL, int length){
+        return URL.substring(0, Math.min(URL.length(), length)) + "...";
+    }
+
     public static String convertIntoATag(String url, String displayValue) {
         return (
                 String.format(Constants.A_TAG_HTML, "#", String.format(Constants.NEW_WINDOW_LINK_HTML, url))+
                         displayValue+Constants.A_TAG_CLOSING_HTML
         ).replaceAll("\\\"", "\\\\\"");
+    }
 
+    public static String convertIntoATagWithTooltip(String url, String displayValue) {
+        return (
+                String.format(Constants.A_TAG_HTML_WITH_TOOLTIP, "#", String.format(Constants.NEW_WINDOW_LINK_HTML, url), url, "tooltip")+
+                        displayValue+Constants.A_TAG_CLOSING_HTML
+        ).replaceAll("\\\"", "\\\\\"");
     }
 
     public static String convertIntoFileLink(String fileName, Long attributeId) {
