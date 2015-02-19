@@ -124,13 +124,21 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                     if(sampleIdVsAttributes.containsKey(sample.getSampleId())) {
                         Map<String, Object> attributeMap = new LinkedHashMap<String, Object>();
 
+                        List<Event> sampleEvents = this.readPersister.getEventsForSample(sample.getSampleId());
+                        Event registrationEvent = sampleEvents.get(0);
+                        List<EventMetaAttribute> registrationEMA = this.readPersister.getEventMetaAttributes(sample.getProjectId(), registrationEvent.getEventTypeLookupValue().getLookupValueId());
+                        final List<String> orderedEMANames = new ArrayList<String>(registrationEMA.size());
+                        for(EventMetaAttribute ema : registrationEMA) {
+                            orderedEMANames.add(ema.getLookupValue().getName());
+                        }
+
                         List<SampleAttribute> sampleAttributes = sampleIdVsAttributes.get(sample.getSampleId());
                         Collections.sort(sampleAttributes, new Comparator<SampleAttribute>() {
                             @Override
                             public int compare(SampleAttribute sa1, SampleAttribute sa2) {
-                                String sa1Name = sa1.getMetaAttribute().getLookupValue().getName();
-                                String sa2Name = sa2.getMetaAttribute().getLookupValue().getName();
-                                return sa1Name.compareTo(sa2Name);
+                                Integer sa1Index = orderedEMANames.indexOf(sa1.getMetaAttribute().getLookupValue().getName());
+                                Integer sa2Index = orderedEMANames.indexOf(sa2.getMetaAttribute().getLookupValue().getName());
+                                return sa1Index.compareTo(sa2Index);
                             }
                         });
                         for (SampleAttribute sa : sampleIdVsAttributes.get(sample.getSampleId())) {
@@ -141,6 +149,7 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                             }
                         }
                         sampleMap.put("attributes", attributeMap);
+                        sampleMap.put("event", registrationEvent.getEventTypeLookupValue().getName());
                     }
                     aaData.add(sampleMap);
 
