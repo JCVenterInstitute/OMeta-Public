@@ -44,6 +44,8 @@ public class CommonTool {
         if(attributeList==null) { //when attribute list is not available, utilizes keyset from the map
             attributeList = new ArrayList<String>(attributeMap.size());
             attributeList.addAll(attributeMap.keySet());
+        } else if(attributeList.contains("Project Name") && !attributeMap.containsKey("Project Name")){
+            attributeMap.put("Project Name", project.getProjectName());
         }
 
         for(String attribute : attributeList) {
