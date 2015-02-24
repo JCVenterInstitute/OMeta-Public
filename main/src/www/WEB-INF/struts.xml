@@ -123,6 +123,37 @@
             <result name="error">/JSP/ProjectSetup.jsp</result>
         </action>
 
+        <action name="projectManagement" class="org.jcvi.ometa.action.ProjectManagement" method="manageProject">
+            <result name="forbidden">/JSP/ProjectManagement.jsp</result>
+            <result name="login" type="redirectAction">
+                <param name="actionName">forceLoginForEventDetails</param>
+                <param name="namespace">/</param>
+                <param name="projectNames">${projectNames}</param>
+                <param name="attributes">${attributes}</param>
+            </result>
+            <result name="success">/JSP/ProjectManagement.jsp</result>
+            <result name="none">/JSP/ProjectManagement.jsp</result>
+            <result name="error">/JSP/ProjectManagement.jsp</result>
+        </action>
+
+        <action name="editProject" class="org.jcvi.ometa.action.EditProject" method="editProject">
+            <result name="none" type="redirectAction">
+                <param name="actionName">projectManagement</param>
+                <param name="namespace">/</param>
+                <param name="errorMsg">${errorMsg}</param>
+            </result>
+            <result name="forbidden">/JSP/EditProject.jsp</result>
+            <result name="login" type="redirectAction">
+                <param name="actionName">forceLoginForEventDetails</param>
+                <param name="namespace">/</param>
+                <param name="projectNames">${projectNames}</param>
+                <param name="attributes">${attributes}</param>
+            </result>
+            <result name="input">/JSP/EditProject.jsp</result>
+            <result name="success">/JSP/EditProject.jsp</result>
+            <result name="error">/JSP/EditProject.jsp</result>
+        </action>
+
         <action name="metadataSetup" class="org.jcvi.ometa.action.MetadataSetup" method="process">
             <result name="forbidden">/JSP/MetadataSetup.jsp</result>
             <result name="success">/JSP/MetadataSetup.jsp</result>
