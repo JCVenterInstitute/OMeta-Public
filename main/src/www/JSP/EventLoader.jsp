@@ -124,6 +124,7 @@
             <s:hidden name="eventName" id="eventName" />
             <s:hidden name="projectName" id="projectName" />
             <s:hidden name="sampleName" id="sampleName" />
+            <input type="hidden" value="<s:property value="%{gridList.size}"/>" id="gridListSize" />
             <div id="interactiveDiv" style="float:left;width:100%;">
               <div id="statusTableDiv">
                 <div class="row"></div>

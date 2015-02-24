@@ -1,6 +1,7 @@
 package org.jcvi.ometa.helper;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.engine.MultiLoadParameter;
@@ -9,11 +10,10 @@ import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.GuidGetter;
-import org.jcvi.ometa.validation.DPCCValidator;
+import org.jcvi.ometa.validation.ErrorMessages;
 import org.jtc.common.util.property.PropertyHelper;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -24,9 +24,13 @@ import java.util.*;
  */
 public class EventLoadHelper {
     private ReadBeanPersister readPersister;
+
+    private DPCCHelper dpccHelper;
+
     private final String fileStoragePath;
     private String originalPath; // original path for relative file paths
     private String submissionId; // submission id
+    private String dataRole;
 
     public EventLoadHelper(ReadBeanPersister readPersister) {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
@@ -36,13 +40,16 @@ public class EventLoadHelper {
             this.readPersister = readPersister;
         }
         this.fileStoragePath = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH);
+
+        this.dataRole = props.getProperty(Constants.CONFIG_DPCC_DATA_ROLE);
+        this.dpccHelper = new DPCCHelper();
     }
 
     public EventLoadHelper(ProjectSampleEventPresentationBusiness pseb) {
         this(new ReadBeanPersister(pseb));
     }
 
-    public void gridListToMultiLoadParameter(MultiLoadParameter loadParameter, List<GridBean> gridList, String projectName, String eventName, String status) throws Exception {
+    public void gridListToMultiLoadParameter(MultiLoadParameter loadParameter, List<GridBean> gridList, String projectName, String eventName, String status, String actorId) throws Exception {
 
         if(eventName == null || eventName.isEmpty()) {
             throw new Exception("event name is missing.");
@@ -52,13 +59,28 @@ public class EventLoadHelper {
         boolean isProjectUpdate = eventName.contains(Constants.EVENT_PROJECT_UPDATE);
         boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);
 
+        // check if the user has data support role
+        boolean isUserDataSupporter = false;
+        // set containing role names
+        String[] dataRoleArr = this.dataRole.split(",");
+        Set<String> dataRoleSet = new HashSet<String>(Arrays.asList(dataRoleArr));
+        // check if current user has proper role to update status after data is submitted to DPCC
+        Actor actor = this.readPersister.getActorByUserName(actorId);
+        List<ActorGroup> actorGroups = this.readPersister.getActorGroup(actor.getLoginId());
+        for(ActorGroup ag : actorGroups) {
+            if(dataRoleSet.contains(ag.getGroup().getGroupNameLookupValue().getName())) {
+                isUserDataSupporter = true;
+                break;
+            }
+        }
+
         Project loadingProject = null;
         Sample loadingSample = null;
 
         int gridRowIndex = 0;
         for(GridBean gBean : gridList) {
-            if(gBean!=null) {
-                if(isProjectRegistration && gBean.getProjectName() != null) {
+            if(gBean!=null && gBean.getProjectName() != null && !gBean.getProjectName().equals("")) {
+                if(isProjectRegistration && gBean.getProjectName() != null) { // new project
                     loadingProject = new Project();
                     loadingProject.setProjectName(gBean.getProjectName());
                     loadingProject.setIsPublic(gBean.getProjectPublic() == null ? 0 : Integer.valueOf(gBean.getProjectPublic()));
@@ -98,7 +120,7 @@ public class EventLoadHelper {
                 List<FileReadAttributeBean> fBeanList = gBean.getBeanList();
                 // process empty attribute lists events for project/sample registrations
                 if((fBeanList != null && fBeanList.size() > 0) || isProjectRegistration || isSampleRegistration) {
-                    this.createMultiLoadParameter(loadParameter, projectName, eventName, loadingProject,  loadingSample, fBeanList, status, ++gridRowIndex);
+                    this.createMultiLoadParameter(loadParameter, projectName, eventName, loadingProject,  loadingSample, fBeanList, status, ++gridRowIndex, isUserDataSupporter);
                 }
             }
         }
@@ -106,11 +128,12 @@ public class EventLoadHelper {
 
     public void createMultiLoadParameter(
             MultiLoadParameter loadParameter, String projectName, String eventName,
-            Project project, Sample sample, List<FileReadAttributeBean> frab, String status, int rowIndex) throws Exception {
+            Project project, Sample sample, List<FileReadAttributeBean> frab, String status, int rowIndex, boolean isUserDataSupporter) throws Exception {
 
         loadParameter.setEventName(eventName);
 
-        boolean isProjectRegistration = (eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) && project.getProjectName() != null && !project.getProjectName().isEmpty());
+        boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION);
+        boolean isProjectLevelEvent = isProjectRegistration || eventName.toLowerCase().contains(Constants.EVENT_PROJECT_UPDATE.toLowerCase());
         boolean isSampleRegistration = (eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) && sample.getSampleName() != null && !sample.getSampleName().isEmpty());
 
         List<FileReadAttributeBean> loadingList = null;
@@ -118,11 +141,17 @@ public class EventLoadHelper {
         if (frab != null && frab.size() > 0) {
             loadingList = this.feedAndFilterFileReadBeans(
                     eventName,
-                    isProjectRegistration ? project.getProjectName() : projectName, isProjectRegistration ? null : sample.getSampleName(),
+                    isProjectRegistration ? project.getProjectName() : projectName,
+                    isProjectLevelEvent ? null : sample != null ? sample.getSampleName() : null,
                     frab);
         }
 
+        boolean listHasData = loadingList != null && loadingList.size() > 0;
+
         if (isProjectRegistration) {
+            if(!listHasData && (project.getProjectName() == null || project.getProjectName().isEmpty())) {
+                throw new Exception(rowIndex + ": " + ErrorMessages.EVENT_LOADER_MISSING_PROJECT);
+            }
             /*
             *   loads all meta attributes from the parent
             *   by hkim 6/11/13
@@ -137,7 +166,10 @@ public class EventLoadHelper {
                     EventMetaAttribute newEma = CommonTool.createEMA(
                             null, project.getProjectName(), ema.getEventName(), ema.getAttributeName(),
                             ema.isRequired(), ema.isActive(), ema.getDataType(), ema.getDesc(),
-                            ema.getOntology(), ema.getLabel(), ema.getOptions(), ema.isSampleRequired(), ema.getOrder());
+                            ema.getOntology() == null ? "" : ema.getOntology(),
+                            ema.getLabel() == null ? "" : ema.getLabel(),
+                            ema.getOptions() == null ? "" : ema.getOptions(),
+                            ema.isSampleRequired(), ema.getOrder() == null ? 0 : ema.getOrder());
                     newEma.setEventTypeLookupId(ema.getEventTypeLookupId());
                     newEma.setNameLookupId(ema.getNameLookupId());
                     newEmas.add(newEma);
@@ -184,8 +216,6 @@ public class EventLoadHelper {
 
             loadParameter.addProjectPair(feedProjectData(project, parentProject), loadingList, newPmas, newSmas, newEmas, rowIndex);
         } else {
-            boolean listHasData = loadingList != null && loadingList.size() > 0;
-            boolean isProjectLevelEvent = isProjectRegistration || eventName.toLowerCase().contains(Constants.EVENT_PROJECT_UPDATE.toLowerCase());
             boolean isSampleLevelEvent = isSampleRegistration || eventName.toLowerCase().contains(Constants.EVENT_SAMPLE_UPDATE.toLowerCase());
             boolean isStatusGiven = status != null && !status.isEmpty();
 
@@ -193,18 +223,18 @@ public class EventLoadHelper {
                 project = this.readPersister.getProject(projectName);
             }
 
-            if(sample.getSampleName() == null || sample.getSampleName().isEmpty()) {
-                throw new Exception("Sample is required.");
+            if(!isProjectLevelEvent && (sample == null || sample.getSampleName() == null || sample.getSampleName().isEmpty())) {
+                throw new Exception(rowIndex + ": " + ErrorMessages.EVENT_LOADER_MISSING_SAMPLE);
             }
 
             //if save button is pressed then status should be set to Editing and status should be validated for Data Submitted to DPCC
-            if(isStatusGiven && listHasData && !isProjectLevelEvent) {
-                if(status.equals("submit") || status.equals("validate")) { //run DPCC validation
-                    this.validateDataForDPCC(loadingList, rowIndex,eventName);
+            if(!isProjectLevelEvent && isStatusGiven && listHasData) {
+                if(status.equals(Constants.DPCC_STATUS_SUBMITTED_FORM) || status.equals(Constants.DPCC_STATUS_VALIDATED_FORM)) { //run DPCC validation
+                    this.dpccHelper.validateDataForDPCC(loadingList, rowIndex, eventName);
                 }
 
                 if(isSampleLevelEvent) { // && !status.equals("validate")) { //do not update status for validate request
-                    this.updateSampleStatus(loadingList, project, sample.getSampleName(), status, rowIndex);
+                    this.updateSampleStatus(loadingList, project, sample.getSampleName(), status, rowIndex, isUserDataSupporter);
                 }
             }
 
@@ -258,6 +288,8 @@ public class EventLoadHelper {
 
     private List<FileReadAttributeBean> feedAndFilterFileReadBeans(String eventName, String projectName, String sampleName, List<FileReadAttributeBean> loadingList) throws Exception {
         List<FileReadAttributeBean> processedList = new ArrayList<FileReadAttributeBean>();
+        String sampleIdentifier = null;
+        boolean isSequenceSubmission = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) && eventName.contains(Constants.EVENT_SEQUENCE_SUBMISSION);
 
         for(FileReadAttributeBean fBean : loadingList) { //skip invalid attribute bean
             boolean hasValue = !fBean.getAttributeName().equals("0") && fBean.getAttributeValue() != null
@@ -272,7 +304,7 @@ public class EventLoadHelper {
             }
             if(fBean.getSampleName() == null && !eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) && !eventName.contains(Constants.EVENT_PROJECT_UPDATE)) {
                 if(sampleName == null || sampleName.isEmpty()) {
-                    throw new Exception("sample does not exist or sample name is empty.");
+                    throw new Exception(ErrorMessages.SAMPLE_NOT_FOUND);
                 }
                 fBean.setSampleName(sampleName);
             }
@@ -280,10 +312,20 @@ public class EventLoadHelper {
             String attributeName = fBean.getAttributeName();
             LookupValue lv = this.readPersister.getLookupValue(attributeName, Constants.LOOKUP_VALUE_TYPE_ATTRIBUTE); //search for attribute name from the lookup table
             if(lv == null) {
-                throw new Exception("attribute '" + attributeName + "' does not exist.");
+                throw new Exception(String.format(ErrorMessages.ATTRIBUTE_NOT_FOUND, attributeName));
+
             } else {
+
                 if(lv.getDataType().equals(Constants.FILE_DATA_TYPE)) { //process file upload
-                    this.processFileUpload(fBean, projectName, sampleName);
+
+                    // sample_identifier must come before the sequence file for the validation
+                    if(isSequenceSubmission && sampleIdentifier == null) { //sample_identifier is required
+                        throw new Exception(String.format(ErrorMessages.ATTRIBUTE_VALUE_MISSING, attributeName));
+                    }
+
+                    this.processFileUpload(fBean, projectName, sampleName, isSequenceSubmission, sampleIdentifier);
+                } else if(attributeName.equals(Constants.ATTR_SAMPLE_IDENTIFIER)) {
+                    sampleIdentifier = fBean.getAttributeValue();
                 }
             }
 
@@ -293,158 +335,7 @@ public class EventLoadHelper {
         return processedList;
     }
 
-
-    private void validateDataForDPCC(List<FileReadAttributeBean> loadingList, int index,String eventName) throws Exception {
-        String attributeName = null;
-        Collection errorMessages = new ArrayList();
-        try {
-            for(FileReadAttributeBean fBean : loadingList) {
-                if(fBean.getAttributeName().toLowerCase().contains("Collection_Date".toLowerCase())) {
-                    attributeName = fBean.getAttributeName();
-                    try{
-                        DPCCValidator.validateDateDPCC(fBean.getAttributeValue());
-                    }catch(Exception e){
-                        errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
-                    }
-                }
-                if(fBean.getAttributeName().toLowerCase().contains("Receipt_Date".toLowerCase())) {
-                    attributeName = fBean.getAttributeName();
-                    try{
-                        DPCCValidator.validateDateDPCC(fBean.getAttributeValue());
-                    }catch(Exception e){
-                        errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
-                    }
-                }
-                if(fBean.getAttributeName().toLowerCase().contains("Date_of_Illness_Onset".toLowerCase())) {
-                    attributeName = fBean.getAttributeName();
-                    try{
-                        DPCCValidator.validateDateDPCC(fBean.getAttributeValue());
-                    }catch(Exception e){
-                        errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
-                    }
-                }
-                if(fBean.getAttributeName().toLowerCase().contains("Influenza_Vaccination_Date".toLowerCase())) {
-                    attributeName = fBean.getAttributeName();
-                    try{
-                        DPCCValidator.validateDateDPCC(fBean.getAttributeValue());
-                    }catch(Exception e){
-                        errorMessages.add(attributeName+" is invalid. "+ e.getMessage());
-                    }
-                }
-                if(fBean.getAttributeName().toLowerCase().contains("Test_for_Influenza_Serology".toLowerCase())) {
-                    attributeName = fBean.getAttributeName();
-                    try{
-                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                        DPCCValidator.validatePairs("Test_for_Influenza_Serology","^[a-zA-Z0-9><=_\\-(),\\s ]*$","Text with space and comma","Serology_Test_Result","^[PNU,\\s]*$","P/N/U",loadingList);
-                    }catch(Exception e){
-                        errorMessages.add(e.getMessage());
-                    }
-                }
-
-                if(fBean.getAttributeName().toLowerCase().contains("Influenza_Test_Type".toLowerCase())) {
-                    attributeName = fBean.getAttributeName();
-                    try{
-                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                        DPCCValidator.validatePairs("Influenza_Test_Type","^([a-zA-Z0-9><=_\\-(),\\s ]*|NT|NA|,)*$","Text/NT(Not tested)/NA","Influenza_Test_Result","^(P|N|NT|NA|,|\\s)*$","P/N/NT/NA",loadingList);
-                    }catch(Exception e){
-                        errorMessages.add(e.getMessage());
-                    }
-                }
-
-                if(fBean.getAttributeName().toLowerCase().contains("Other_Pathogens_Tested".toLowerCase())) {
-                    attributeName = fBean.getAttributeName();
-                    try{
-                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                        DPCCValidator.validatePairs("Other_Pathogens_Tested","^([a-zA-Z0-9><=_\\-(),\\s ]*|NT|NA|,)*$","Text/NT(Not tested)/NA","Other_Pathogen_Test_Result","^(P|N|U|NT|NA|,|\\s)*$","P/N/U/NT/NA",loadingList);
-                    }catch(Exception e){
-                        errorMessages.add(e.getMessage());
-                    }
-                }
-                if(fBean.getAttributeName().toLowerCase().contains("Duration_of_Poultry_Exposure".toLowerCase())) {
-                    attributeName = fBean.getAttributeName();
-                    try{
-                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                        DPCCValidator.validatePairs("Other_Pathogens_Tested","^([a-zA-Z0-9><=_\\-(),\\s ]*|NT|NA|,)*$","Text/NT(Not tested)/NA","Other_Pathogen_Test_Result","^(P|N|U|NT|NA|,|\\s)*$","P/N/U/NT/NA",loadingList);
-                    }catch(Exception e){
-                        errorMessages.add(e.getMessage());
-                    }
-                }
-                if (Constants.DURATION_ATTRIBUTES.contains(fBean.getAttributeName().toLowerCase())) {
-                    attributeName = fBean.getAttributeName();
-                    try{
-                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                        DPCCValidator.validateRegEx(attributeName,fBean.getAttributeValue(),"^(([0-9.]*[ ]*[days|month|years])|NA|U|Unknown)*$","Number (2 days, 0.33 days) or NA or Unknown");
-                    }catch(Exception e){
-                        errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ e.getMessage());
-                    }
-                }
-                if (eventName.contains("Human Surveillance")){
-                    if (fBean.getAttributeName().toLowerCase().contains("Age".toLowerCase())) {
-                        attributeName = fBean.getAttributeName();
-                        String message="Number (2 years, 0.33 years) or NA or U or Unknown";
-                        try{
-                            //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                            //DPCCValidator.validateNumberPattern(String value, String pattern,Boolean isNumber,String otherPattern, String message)
-                            Boolean ret = DPCCValidator.validateNumberPattern(fBean.getAttributeValue(),"^((\\d*\\.?\\d*[\\s]*years))$",Boolean.TRUE,"^(NA|U|Unknown)*$","Number (2 years, 0.33 years) or NA or U or Unknown");
-                            //DPCCValidator.validateRegEx(attributeName,fBean.getAttributeValue(),"^(([0-9.]*[ ]*[years])|NA|U|Unknown)*$","Number (2 years, 0.33 years) or NA or U or Unknown");
-                            if (!ret){
-                                errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
-                            }
-
-                        }catch(Exception e){
-                            errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
-                        }
-                    }
-                }
-                if (fBean.getAttributeName().toLowerCase().contains("Vaccine_Dosage".toLowerCase())) {
-                    attributeName = fBean.getAttributeName();
-                    String message="number (0.05 mL) or NA or Unknown";
-                    try{
-                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                        Boolean ret = DPCCValidator.validateNumberPattern(fBean.getAttributeValue(),"^((\\d*\\.?\\d*[\\s]*mL))$",Boolean.TRUE,"^(NA|U|Unknown)*$",message);
-                        //DPCCValidator.validateRegEx(attributeName,fBean.getAttributeValue(),"^(([0-9.]*[ ]*[mL])|NA|U|Unknown)*$","number (0.05 mL) or NA or Unknown");
-                        if (!ret){
-                            errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
-                        }
-                    }catch(Exception e){
-                        errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
-                    }
-                }
-
-                if (fBean.getAttributeName().toLowerCase().contains("Treatment_Dosage".toLowerCase())) {
-                    attributeName = fBean.getAttributeName();
-                    String message="(0.05 mg or ml) or NA or Unknown";
-                    try{
-                        //DPCCValidator.validateSerologyTestAndResult(fBean, loadingList);
-                        Boolean ret = DPCCValidator.validateNumberPattern(fBean.getAttributeValue(),"^((\\d*\\.*\\d*[\\s]*(ml|mg)))$",Boolean.TRUE,"^(NA|U|Unknown)*$",message);
-                        //DPCCValidator.validateRegEx(attributeName,fBean.getAttributeValue(),"^(([0-9.]*[ ]*[mL])|NA|U|Unknown)*$","number (0.05 mL) or NA or Unknown");
-                        if (!ret){
-                            errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
-                        }
-                    }catch(Exception e){
-                        errorMessages.add(attributeName+": data is invalid. Allowed values are: "+ message);
-                    }
-                }
-
-                //"^(([0-9.]*[ ]*[days|month|years])|NA|U|Unknown)*$"
-                //throw DetailedException with all error messages
-                if (!errorMessages.isEmpty()) {
-                    DetailedException dex = new DetailedException(index,errorMessages.toString().replaceAll("^(\\[)|(\\])$", ""));
-                    throw dex;
-                }
-            }
-        }
-        catch (DetailedException e){
-            throw e;
-        }
-        catch(Exception ex) {
-            DetailedException dex = new DetailedException(index, "DPCC validation Failed." + ex.getMessage()+ "'");
-            throw dex;
-        }
-    }
-
-
-    private void updateSampleStatus(List<FileReadAttributeBean> loadingList, Project project, String sampleName, String status, int index) throws Exception {
+    private void updateSampleStatus(List<FileReadAttributeBean> loadingList, Project project, String sampleName, String status, int index, boolean isUserDataSupporter) throws Exception {
         try {
 
             Sample sample = this.readPersister.getSample(project.getProjectId(), sampleName);
@@ -452,14 +343,14 @@ public class EventLoadHelper {
                 List<SampleAttribute> saList = this.readPersister.getSampleAttributes(sample.getSampleId());
                 for(SampleAttribute sa : saList) {
                     if(sa.getMetaAttribute().getLookupValue().getName().equals(Constants.ATTR_SAMPLE_STATUS)) {
-                        if(sa.getAttributeStringValue() != null && sa.getAttributeStringValue().equals(Constants.DPCC_STATUS_SUBMITTED)) {
+                        if(sa.getAttributeStringValue() != null && sa.getAttributeStringValue().equals(Constants.DPCC_STATUS_SUBMITTED) && !isUserDataSupporter) {
                             throw new Exception(Constants.ERROR_DPCC_NOT_MODIFIABLE);
                         }
                     }
                 }
             }
 
-            String strStatus = status.equals("submit") ? Constants.DPCC_STATUS_SUBMITTED : Constants.DPCC_STATUS_EDITING;
+            String strStatus = status.equals(Constants.DPCC_STATUS_SUBMITTED_FORM) ? Constants.DPCC_STATUS_SUBMITTED : Constants.DPCC_STATUS_EDITING;
 
             this.findAndSetAttributeValue(loadingList, project, sampleName, Constants.ATTR_SAMPLE_STATUS, strStatus, index);
 
@@ -470,7 +361,7 @@ public class EventLoadHelper {
         }
     }
 
-    private void processFileUpload(FileReadAttributeBean fBean, String projectName, String sampleName) throws Exception {
+    private void processFileUpload(FileReadAttributeBean fBean, String projectName, String sampleName, boolean isSequenceSubmission, String sampleIdentifier) throws Exception {
 
         try {
             File fileToUpload = null;
@@ -492,15 +383,33 @@ public class EventLoadHelper {
                 throw new Exception("file '" + fBean.getUploadFileName() + "' does not exist!");
             }
 
-            String storagePathProject = projectName.replaceAll(" ", "_"); //project folder
-            String storagePathSample = (sampleName != null && !sampleName.isEmpty() ? sampleName.replaceAll(" ", "_") : "project"); //sample folder
-            Date date = Calendar.getInstance().getTime();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-            String storagePathDate = sdf.format(date);
+            if(isSequenceSubmission) {
+                if(sampleIdentifier == null) {
+                    throw new Exception(String.format(ErrorMessages.ATTRIBUTE_VALUE_MISSING, Constants.ATTR_SAMPLE_IDENTIFIER));
+                }
 
-            String storagePath = storagePathProject + File.separator + storagePathSample + File.separator + storagePathDate;
+                if(FilenameUtils.isExtension(fBean.getUploadFileName(), Constants.SEQUENCE_EXTENSIONS)) {
+                    SequenceHelper sequenceHelper = new SequenceHelper();
+                    Map<String, List<String>> parsedSequenceFileMap = sequenceHelper.parseSequenceFileIntoMapBySI(fileToUpload);
 
-            File storingDirectory = new File(this.fileStoragePath + File.separator + storagePath);
+                    if(parsedSequenceFileMap.size() == 0 || parsedSequenceFileMap.size() > 1) {
+                        throw new Exception(ErrorMessages.SEQUENCE_SINGLE_SEQUENCE_ONLY);
+                    }
+
+                    if(!parsedSequenceFileMap.containsKey(sampleIdentifier)) {
+                        throw new Exception(ErrorMessages.SEQUENCE_SI_NOT_MATCHING);
+                    }
+                }
+            }
+
+            Project project = this.readPersister.getProject(projectName);
+
+            //String storagePathProject = projectName.replaceAll(" ", "_"); //project folder
+            //String storagePathSample = (sampleName != null && !sampleName.isEmpty() ? sampleName.replaceAll(" ", "_") : "project"); //sample folder
+
+            String storagePath =  project.getProjectId() + File.separator + CommonTool.currentDateToDefaultFormat();
+
+            File storingDirectory = new File(this.fileStoragePath + File.separator + Constants.DIRECTORY_PROJECT + File.separator + storagePath);
             storingDirectory.mkdirs();
 
             GuidGetter guidGetter = new GuidGetter();
@@ -544,6 +453,7 @@ public class EventLoadHelper {
                     foundAttribute = true;
                 }
             }
+
             if(!foundAttribute) {
                 List<SampleMetaAttribute> smaList = this.readPersister.getSampleMetaAttributes(project.getProjectId());
                 for(SampleMetaAttribute sma : smaList) {
@@ -560,7 +470,7 @@ public class EventLoadHelper {
                     submissionBean.setSampleName(sampleName);
                     loadingList.add(submissionBean);
                 } else {
-                    throw new Exception("'" + attributeName + "' attribute not found.");
+                    throw new Exception(String.format(ErrorMessages.ATTRIBUTE_NOT_FOUND, attributeName));
                 }
             }
         } catch(Exception ex) {

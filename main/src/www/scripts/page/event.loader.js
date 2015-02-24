@@ -10,8 +10,10 @@ var _utils = {
         });
       },
       addGridRows: function(pn,en) {
+        var $gridSize = $('#gridListSize').val();
+        var rowSize = ($gridSize > 0) ? $gridSize : 5;
         //have at least 5 event lines for the grid view
-        for(var _rows=$('#gridBody > tr').length;_rows<5;_rows++) {
+        for(var _rows=$('#gridBody > tr').length;_rows<rowSize;_rows++) {
           button.add_event(pn,en);
         }
       },
