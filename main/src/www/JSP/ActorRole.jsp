@@ -47,6 +47,7 @@
       width:100%;
       min-width: 165px;
     }
+    .datatable_bottom {margin-top: 10px}
     .dataTables_length {
       height: 29px;
       vertical-align: middle;
@@ -98,7 +99,7 @@
             <s:if test="hasActionMessages()">
               <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
                 <div class="alert_info" onclick="$('.alert_info').remove();">
-                  <strong style="color: #ffffff;background-color: #a90329;padding: 3px;border-color: #900323;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
+                  <strong style="color: #31708f;background-color: #d9edf7;padding: 3px;border-color: #bce8f1;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
                 </div>
               </div>
             </s:if>
@@ -300,21 +301,21 @@
   }
 
   function editActor(id){
-    var editActorForm = document.createElement("form");
-    editActorForm.method = "POST";
-    editActorForm.target = "_blank";
-    editActorForm.action = "editActor.action";
-    editActorForm.style.display = "none";
+    var $editActorForm = $('<form>').attr({
+      id: 'editActorForm',
+      method: 'POST',
+      target: '_blank',
+      action: 'editActor.action'
+    }).css('display', 'none');
 
-    var actorId = document.createElement("input");
-    actorId.type = "text";
-    actorId.name = "actorId";
-    actorId.value = id;
-    editActorForm.appendChild(actorId);
+    $('<input>').attr({
+      id: 'actorId',
+      name: 'actorId',
+      value : id
+    }).appendTo($editActorForm);
 
-    document.body.appendChild(editActorForm);
-
-    editActorForm.submit();
+    $('body').append($editActorForm);
+    $editActorForm.submit();
   }
 </script>
 </body>

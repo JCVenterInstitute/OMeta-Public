@@ -77,7 +77,7 @@
                         <s:if test="hasActionMessages()">
                           <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
                             <div class="alert_info" onclick="$('.alert_info').remove();">
-                              <strong style="color: #ffffff;background-color: #a90329;padding: 3px;border-color: #900323;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
+                              <strong style="color: #31708f;background-color: #d9edf7;padding: 3px;border-color: #bce8f1;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
                             </div>
                           </div>
                         </s:if>
@@ -406,27 +406,27 @@
                 attributesValue+=$(this).val()+',';
         });
 
-        var productionForm = document.createElement("form");
-        productionForm.method = "POST";
-        productionForm.target = "_blank";
-        productionForm.action = "productionStatus.action";
-        productionForm.style.display = "none";
+        var $statusForm = $('<form>').attr({
+          id: 'statusForm',
+          method: 'POST',
+          target: '_blank',
+          action: 'productionStatus.action'
+        }).css('display', 'none');
 
-        var projectNames = document.createElement("input");
-        projectNames.type = "text";
-        projectNames.name = "projectNames";
-        projectNames.value = $('#_projectSelect option:selected').text();
-        productionForm.appendChild(projectNames);
+        $('<input>').attr({
+          id: 'projectNames',
+          name: 'projectNames',
+          value : $('#_projectSelect option:selected').text()
+        }).appendTo($statusForm);
 
-        var attributes = document.createElement("input");
-        attributes.type = "text";
-        attributes.name = "attributes";
-        attributes.value = attributesValue;
-        productionForm.appendChild(attributes);
+        $('<input>').attr({
+          id: 'attributes',
+          name: 'attributes',
+          value : attributesValue
+        }).appendTo($statusForm);
 
-        document.body.appendChild(productionForm);
-
-        productionForm.submit();
+        $('body').append($statusForm);
+        $statusForm.submit();
 
         // window.open("productionStatus.action?iss=true&projectNames="+$('#_projectSelect option:selected').text()+"&attributes="+attributes);
     }
