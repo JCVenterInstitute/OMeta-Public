@@ -30,7 +30,7 @@
                     <li id="menu-item-10" class="dropdown">
                         <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Data Submission <span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="eventLoader.action?filter=sr">Submit Data</a></li>
+                            <li><a href="eventLoader.action">Submit Data</a></li>
                             <li><a href="eventDetail.action">Search and Edit Data</a></li>
                             <li><a href="eventHistory.action">Event History</a></li>
                             <li><a href="eventReport.action">Report</a></li>
@@ -43,6 +43,7 @@
                             <li><a href="projectSetup.action">Project Setup</a></li>
                             <li><a href="metadataSetup.action?type=e">Metadata Setup</a></li>
                             <li><a href="actorRole.action">User Management</a></li>
+                            <li><a href="projectManagement.action">Project Management</a></li>
                         </ul>
                     </li>
                     <li id="menu-item-11" class="dropdown">
