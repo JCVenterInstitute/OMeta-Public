@@ -22,34 +22,36 @@
 <!doctype html>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <head>
-    <jsp:include page="header.jsp" />
-    <style>
+  <jsp:include page="header.jsp" />
+  <style>
+    #welcomeMessage{width: 10%; background-color: #d9edf7; border-color: #bce8f1;
+      color: #31708f;margin-bottom: 10px;border: 1px solid transparent;
+      border-radius: 4px;padding: 15px 0 15px 15px;width: 70%;
+      margin-left: auto; margin-right: auto;margin-top: 100px;text-align: center;
+    }
 
-    </style>
+    .page-header{text-align: center;padding-top: 15px}
+  </style>
 </head>
 
 <body class="smart-style-2">
 <div id="container">
-    <jsp:include page="top.jsp" />
+  <jsp:include page="top.jsp" />
 
-    <div id="main" class="">
-        <div id="content" class="container max-container" role="main">
-            <%@ page import = "java.util.Properties" %>
-            <%@ page import = "org.jtc.common.util.property.PropertyHelper" %>
-            <%-- <%
-               Properties props = PropertyHelper.getHostnameProperties("resource/LoadingEngine");
-               String websiteUrl=props.getProperty("ometa.dpcc.website.url");
-               pageContext.setAttribute("websiteUrl", websiteUrl);
-             %>--%>
+  <div id="main" class="">
+    <div id="content" class="container max-container" role="main">
+      <div class="page-header">
+        <h1> O-META: Ontologies based Matadata Tracking Application</h1>
+      </div>
 
-            <%--<c:import url="${websiteUrl}/dpcc/dashboard.php?framed=1&userid=${pageContext.request.remoteUser}" />--%>
-        </div>
+      <div id="mainContent" style="">
+        <div id="welcomeMessage" >Welcome to OMETA!</div>
+      </div>
     </div>
+  </div>
 </div>
 <jsp:include page="../html/footer.html" />
 <script>
 </script>
 </body>
-
-
 </html>
