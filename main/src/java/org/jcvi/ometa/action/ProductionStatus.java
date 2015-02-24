@@ -370,7 +370,7 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
                 List<String> tokenizedAttribute = new ArrayList<String>(Arrays.asList(attributes.split(",")));
                 List<String> existingAttributes = new ArrayList<String>();
                 for (String tempAttribute : tokenizedAttribute) {
-                    if (attributeList.contains(tempAttribute))
+                    if (attributeList.contains(tempAttribute) || tempAttribute.equals("Project Name"))
                         existingAttributes.add(tempAttribute);
                 }
                 attributeList=existingAttributes;
