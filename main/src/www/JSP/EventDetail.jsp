@@ -99,7 +99,7 @@
                         <s:if test="hasActionMessages()">
                             <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
                               <div class="alert_info" onclick="$('.alert_info').remove();">
-                                <strong style="color: #ffffff;background-color: #a90329;padding: 3px;border-color: #900323;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
+                                <strong style="color: #31708f;background-color: #d9edf7;padding: 3px;border-color: #bce8f1;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
                               </div>
                             </div>
                         </s:if>
