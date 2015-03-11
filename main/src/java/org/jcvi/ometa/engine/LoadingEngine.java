@@ -34,6 +34,7 @@ import org.jcvi.ometa.model.EventMetaAttribute;
 import org.jcvi.ometa.model.Project;
 import org.jcvi.ometa.model.Sample;
 import org.jcvi.ometa.utils.*;
+import org.jcvi.ometa.validation.ErrorMessages;
 import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.scratch.ScratchUtils;
 
@@ -356,24 +357,26 @@ public class LoadingEngine {
             batchSizeInt = Integer.parseInt(batchSize);
         }
 
+        String submissionId = Long.toString(CommonTool.getGuid()); //submission Id
+
         File eventFile = new File(eventFileName);
 
-        File logFile = new File(outputPath + File.separator + LoadingEngine.getNameWoExt(eventFile.getName()) + "_summary.txt");
+        File logFile = new File(outputPath + File.separator + submissionId /*LoadingEngine.getNameWoExt(eventFile.getName())*/ + "_summary.txt");
         FileWriter logWriter = new FileWriter(logFile, false);
 
         if(!eventFile.canRead() || !eventFile.isFile()) {
-            throw new Exception("input file does not exist.");
+            throw new Exception(ErrorMessages.CLI_BATCH_INPUT_FILE_MISSING);
         }
         if(!eventFileName.endsWith(".csv")) { // temporary?
-            throw new Exception("only csv files are supported.");
+            throw new Exception(ErrorMessages.CLI_BATCH_CSV_ONLY);
         }
 
         int successCount = 0;
-        File processedFile = new File(outputPath + File.separator + LoadingEngine.getNameWoExt(eventFile.getName()) + "-success.csv");
+        File processedFile = new File(outputPath + File.separator + submissionId /*LoadingEngine.getNameWoExt(eventFile.getName())*/ + "-success.csv");
         FileWriter processedWriter = new FileWriter(processedFile, false);
 
         int failedCount = 0;
-        File failedFile = new File(outputPath + File.separator + LoadingEngine.getNameWoExt(eventFile.getName())  + "-errors.csv");
+        File failedFile = new File(outputPath + File.separator + submissionId /*LoadingEngine.getNameWoExt(eventFile.getName())*/  + "-errors.csv");
         FileWriter failedWriter = new FileWriter(failedFile, false);
 
         // Must break this file up, and deposit it into a temporary output directory.
@@ -384,8 +387,6 @@ public class LoadingEngine {
         int processedLineCount = 0;
         try {
             BeanWriter writer = new BeanWriter(serverUrl, userName, passWord);
-
-            String submissionId = Long.toString(CommonTool.getGuid()); //submission Id
 
             LineIterator lineIterator = FileUtils.lineIterator(eventFile);
             int lineCount = 0;
@@ -399,14 +400,15 @@ public class LoadingEngine {
 
                 if(lineCount == 1) {
                     if(!currLine.startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && currLine.contains(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER)) {
-                        throw new Exception("event type does not exist in the data file.");
+                        throw new Exception("event type is missing in the data file.");
                     }
                     eventNameLine = currLine;
                     String[] eventTypeTokens = eventNameLine.split(":");
                     if(eventTypeTokens.length != 2 || eventTypeTokens[1].isEmpty()) {
                         throw new Exception(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + " must be '" + Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + ":<eventName>'");
                     }
-                    eventName = eventTypeTokens[1];
+                    eventName = eventTypeTokens[1].trim().replaceAll("(,)*$", "");
+
                     processedWriter.write(eventNameLine + "\n");
                     failedWriter.write(eventNameLine + "\n");
                 } else if(lineCount == 2) {
@@ -432,7 +434,7 @@ public class LoadingEngine {
                             successCount++;
                         } catch(java.lang.IllegalAccessError iae) {
                             String exceptionString = iae.getCause() == null ? iae.getMessage() : iae.getCause().getMessage();
-                            logWriter.write(exceptionString);
+                            logWriter.write(exceptionString + "\n");
                             success = 0;
                             throw iae;
                         }catch (Exception ex) {
@@ -443,10 +445,10 @@ public class LoadingEngine {
                             if(ex.getClass() == javax.ejb.EJBException.class) {
                                 String accessError = ex.getMessage();
                                 if(accessError != null && accessError.contains("java.lang.IllegalAccessError")) {
-                                    logWriter.write("You do not have permission to the project or the project does not exist.");
+                                    logWriter.write(ErrorMessages.DENIED_USER_EDIT_MESSAGE + "\n");
                                 }
                             } else {
-                                logWriter.write(ex.getCause() == null ? ex.getMessage() : ex.getCause().getMessage() + "\n");
+                                logWriter.write((ex.getCause() == null ? ex.getMessage() : ex.getCause().getMessage()) + "\n");
                             }
                         }
                         processedLineCount++;
@@ -456,8 +458,8 @@ public class LoadingEngine {
             usage.setTotalCount(processedLineCount);
             usage.setSuccessCount(successCount);
             usage.setFailCount(failedCount);
-            usage.setLogFilePath(logFile.getAbsolutePath());
-            usage.setFailFilePath(failedFile.getAbsolutePath());
+            usage.setLogFileName(logFile.getName());
+            usage.setFailFileName(failedFile.getName());
             if(writer.getSubmitter() != null) {
                 Actor submitter = writer.getSubmitter();
                 usage.setSubmitterEmail(submitter.getEmail());
@@ -469,7 +471,7 @@ public class LoadingEngine {
             success = 0;
         } catch (Exception ex) {
             String exceptionString = ex.getCause() == null ? ex.getMessage() : ex.getCause().getMessage();
-            logWriter.write(exceptionString);
+            logWriter.write(exceptionString + "\n");
             success = 0;
             throw ex;
         }  finally {
@@ -483,8 +485,8 @@ public class LoadingEngine {
                 FileUtils.forceDelete(cleanupDir);
             }
 
-            if(failedCount == 0 && processedLineCount == success) {
-                logWriter.write("All data has been loaded successfully.");
+            if(failedCount == 0 && processedLineCount == successCount) {
+                logWriter.write("All data has been loaded successfully for Submission ID: [" + submissionId + "]. Submission to the OMETA complete!");
             }
 
             logWriter.close();
