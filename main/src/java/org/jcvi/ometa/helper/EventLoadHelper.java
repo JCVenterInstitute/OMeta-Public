@@ -79,7 +79,7 @@ public class EventLoadHelper {
 
         int gridRowIndex = 0;
         for(GridBean gBean : gridList) {
-            if(gBean!=null && gBean.getProjectName() != null && !gBean.getProjectName().equals("")) {
+            if(gBean!=null /*&& gBean.getProjectName() != null && !gBean.getProjectName().equals("")*/) {
                 if(isProjectRegistration && gBean.getProjectName() != null) { // new project
                     loadingProject = new Project();
                     loadingProject.setProjectName(gBean.getProjectName());
@@ -103,13 +103,14 @@ public class EventLoadHelper {
 
                                 String sampleIdentifierValue = this.getAttributeValue(gBean.getBeanList(), Constants.ATTR_SAMPLE_IDENTIFIER);
                                 String sampleIdentifier = (sampleIdentifierValue == null || sampleIdentifierValue.isEmpty() ? "" : sampleIdentifierValue + "_");
-                                loadingSample.setSampleName(sampleIdentifier + CommonTool.getGuid());
+                                //loadingSample.setSampleName(sampleIdentifier + CommonTool.getGuid());
 
-                                //loadingSample.setParentSampleName(gBean.getParentSampleName());
-                                loadingSample.setIsPublic(1); //Integer.valueOf(gBean.getSamplePublic() == null ? "0" : gBean.getSamplePublic())); //default to NO
+                                loadingSample.setParentSampleName(gBean.getParentSampleName());
+                                loadingSample.setIsPublic(Integer.valueOf(gBean.getSamplePublic() == null ? "0" : gBean.getSamplePublic())); //default to NO
                                 loadingSample.setSampleLevel(1);
+                                loadingSample.setSampleName(gBean.getSampleName());
 
-                                gBean.setSampleName(loadingSample.getSampleName()); // set sample name to the grid bean
+                                //gBean.setSampleName(loadingSample.getSampleName()); // set sample name to the grid bean
                             }
                         } else {
                             loadingSample = existingSample;
@@ -344,7 +345,7 @@ public class EventLoadHelper {
                 for(SampleAttribute sa : saList) {
                     if(sa.getMetaAttribute().getLookupValue().getName().equals(Constants.ATTR_SAMPLE_STATUS)) {
                         if(sa.getAttributeStringValue() != null && sa.getAttributeStringValue().equals(Constants.DPCC_STATUS_SUBMITTED) && !isUserDataSupporter) {
-                            throw new Exception(Constants.ERROR_DPCC_NOT_MODIFIABLE);
+                            throw new Exception(Constants.ERROR_OMETA_NOT_MODIFIABLE);
                         }
                     }
                 }
@@ -352,7 +353,7 @@ public class EventLoadHelper {
 
             String strStatus = status.equals(Constants.DPCC_STATUS_SUBMITTED_FORM) ? Constants.DPCC_STATUS_SUBMITTED : Constants.DPCC_STATUS_EDITING;
 
-            this.findAndSetAttributeValue(loadingList, project, sampleName, Constants.ATTR_SAMPLE_STATUS, strStatus, index);
+            //this.findAndSetAttributeValue(loadingList, project, sampleName, Constants.ATTR_SAMPLE_STATUS, strStatus, index);  //Set default Sample_Status value
 
         } catch(Exception ex) {
             ex.printStackTrace();
@@ -469,9 +470,11 @@ public class EventLoadHelper {
                     submissionBean.setProjectName(project.getProjectName());
                     submissionBean.setSampleName(sampleName);
                     loadingList.add(submissionBean);
-                } else {
-                    throw new Exception(String.format(ErrorMessages.ATTRIBUTE_NOT_FOUND, attributeName));
                 }
+                //Not required for OMETA
+                /*else {
+                    throw new Exception(String.format(ErrorMessages.ATTRIBUTE_NOT_FOUND, attributeName));
+                }*/
             }
         } catch(Exception ex) {
             ex.printStackTrace();
