@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
   <link rel="stylesheet" href="style/chosen.css" />
   <style>
+    #addNewProject{float: right;margin-right: 300px;margin-bottom: 20px;}
     td._details {
       text-align:left;
       padding:0 0 0 35px;
@@ -98,6 +99,7 @@
             <div id="statusTableDiv">
               <div id="tableTop">
                 <div class="row">
+                  <input type="button" class="btn btn-success" onclick="window.open('projectSetup.action')" id="addNewProject" value="Project Setup"/>
                   <table id="project-information-table" style="width: 80%">
                     <thead>
                     <tr>

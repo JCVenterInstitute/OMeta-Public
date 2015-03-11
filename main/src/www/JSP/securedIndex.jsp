@@ -41,7 +41,7 @@
   <div id="main" class="">
     <div id="content" class="container max-container" role="main">
       <div class="page-header">
-        <h1> O-META: Ontologies based Matadata Tracking Application</h1>
+        <h1> O-META: Ontologies based Metadata Tracking Application</h1>
       </div>
 
       <div id="mainContent" style="">
