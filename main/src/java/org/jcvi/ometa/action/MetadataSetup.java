@@ -456,6 +456,10 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                         if(name != null && name.trim().length() > 0) {
                             if(name.contains("[") || name.contains("]")) {
                                 throw new Exception("Attribute names cannot contain '[' or ']'.");
+                            } else if(name.contains("Project Name")){
+                                throw new Exception("Attribute name cannot be Project Name!");
+                            } else if(name.contains("Sample Name")){
+                                throw new Exception("Attribute name cannot be Sample Name!");
                             }
 
                             lvList.add(CommonTool.createLookupValue(name.trim(), lvType, lvDataType));
