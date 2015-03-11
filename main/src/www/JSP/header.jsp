@@ -37,9 +37,11 @@
 
 <script src="scripts/jquery/jquery-1.7.2.js"></script>
 <script src="scripts/jquery/jquery-ui.js"></script>
-<script src="scripts/ometa.utils.js"></script>
 
+<!--JS to be replaced by min version-->
+<script src="scripts/ometa.utils.js"></script>
 <script type='text/javascript' src='scripts/bootstrap.js'></script>
+<!--end-->
 <!--[if lt IE 9]>
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.min.js'></script>
 <![endif]-->

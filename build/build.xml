@@ -26,6 +26,8 @@
 
     <property name="tracking.web.context" value="ometa"/>
     <property name="package.name" value="org/jcvi/${tracking.web.context}" />
+    <property name="min.js.name" value="ometa.min.js" />
+    <property name="js.name" value="ometa.js" />
 
     <!--jboss location from user build file -->
     <property file="./user_build_properties/${user.name}-build.properties" />
@@ -69,8 +71,8 @@
     <property name="yuicompressor-jar" value="${yuicompressor.lib.dir}/yuicompressor-2.4.7.jar"/>
 
     <!-- Files names for distribution -->
-    <property name="js" value="${src.js.dir}/ometa.js" />
-    <property name="js.min" value="${src.js.dir}/ometa.min.js" />
+    <property name="js" value="${src.js.dir}/${js.name}" />
+    <property name="js.min" value="${src.js.dir}/${min.js.name}" />
 
     <!-- Combines given JS files in ometa.js and ometa.min.js -->
     <target name="js" description="Concatenate JavaScript source files">
@@ -86,7 +88,7 @@
         <echo message="Building ${js.min}" />
         <apply executable="java" parallel="false" verbose="true" dest="${src.js.dir}">
             <fileset dir="${src.js.dir}">
-                <include name="ometa.js" />
+                <include name="${js.name}" />
             </fileset>
             <arg line="-jar" />
             <arg path="${yuicompressor-jar}" />
@@ -94,7 +96,7 @@
             <arg value="ANSI" />
             <arg value="-o" />
             <targetfile />
-            <mapper type="glob" from="ometa.js" to="ometa.min.js" />
+            <mapper type="glob" from="${js.name}" to="${min.js.name}" />
         </apply>
         <echo message="${js.min} built." />
     </target>
@@ -298,7 +300,20 @@
     </target>
 
     <target name="dist" depends="clean,make-loader-app,make-etl-app,war,ear" description="generate the distribution" />
-    <target name="dist-all" depends="clean,js,js.min,make-loader-app,make-etl-app,war,ear" description="generate the distribution" />
+
+    <!-- Replace <script> with min version
+        Minimized JS files should be included between "JS to be replaced by min version" and "end" comment
+     -->
+    <target name="replace-min">
+        <replaceregexp match="\&lt;!--JS to be replaced by min version--\&gt;(.*?)\&lt;!--end--\&gt;"
+                       replace="\&lt;script src='scripts/${min.js.name}'\&gt;\&lt;/script\&gt;" flags="gs">
+            <fileset dir="${war-tmp-dir}/${tracking.web.context}.war/JSP" >
+                <filename name="header.jsp"/>
+            </fileset>
+        </replaceregexp>
+    </target>
+
+    <target name="dist-min" depends="clean,js,js.min,make-loader-app,make-etl-app,war,replace-min,ear" description="generate the distribution" />
 
     <target name="ear-to-jboss" depends="stopjboss,dist"  description="export to jboss">
         <unzip src="${dist.dir}/${tracking.web.context}.ear" dest="${jboss.deploy.local.dir}/${tracking.web.context}.ear/" />
