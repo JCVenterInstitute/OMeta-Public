@@ -6241,13 +6241,15 @@ button.close {
 /*EVENT LOADER JSP*/
 
 #interactive-submission-table td, #project-information-table td,
-#attributeInputDiv td, #eventTable td, #eventTable th, #addActorTable td, #editActorTable td{
+#attributeInputDiv td, #addActorTable td, #editActorTable td{
     padding : 5px;
 }
 
-td.table-tooltip{ display: inline; position: relative; text-align: center;}
+#eventTable td, #eventTable th{padding:2px}
+
+td.table-tooltip{ /*display: inline;*/ position: relative; text-align: right;}
 td.table-tooltip:hover:after{ background: #333; background: rgba(0,0,0,.8);
-    border-radius: 5px; bottom: 26px; color: #fff; content: attr(title);
-    left: 20%; padding: 5px 15px; position: absolute; z-index: 98; width: auto;}
-td.table-tooltip:hover:before{border: solid; border-color: #333 transparent;border-width: 6px 6px 0 6px;
-    bottom: 20px; content: ""; left: 50%; position: absolute; z-index: 99;}
+    border-radius: 5px; bottom: 0px; color: #fff; content: attr(data-tooltip);
+    left: 103%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
+td.table-tooltip:hover:before{border: solid; border-color: transparent #333;border-width: 6px 6px 6px 0px;
+    bottom: 8px; content: ""; left: 100%; position: absolute; z-index: 99;}
