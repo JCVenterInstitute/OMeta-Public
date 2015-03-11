@@ -42,6 +42,8 @@
     <property name="web.dir" value="${base.dir}/main/src/www"/>
     <property name="hibernate.dir" value="${base.dir}/build/hibernate"/>
 
+    <property name="src.js.dir" value="${web.dir}/scripts" description="JS source folder"/>
+
     <!-- LIBRARY -->
     <property name="common.util.dir" value="${base.dir}/common/CommonUtils/" />
     <property name="thirdparty.lib.dir" value="${base.dir}/common/thirdparty" />
@@ -56,11 +58,47 @@
     <property name="servlet.lib.dir" value="${thirdparty.lib.dir}/Servlet-2.4/"/>
     <property name="ehcache.lib.dir" value="${thirdparty.lib.dir}/ehcache-2.3.1/"/>
     <property name="log4j.lib.dir" value="${thirdparty.lib.dir}/log4j"/>
+    <property name="ldap.lib.dir" value="${thirdparty.lib.dir}/ldap"/>
+    <property name="zip.lib.dir" value="${thirdparty.lib.dir}/zip4j"/>
+    <property name="yuicompressor.lib.dir" value="${thirdparty.lib.dir}/yuicompressor" description="YUICompressor" />
 
     <property name="war-tmp-dir" value="${dist.dir}/tmp-war"/>
     <property name="pre-exploded-war" value="${dist.dir}/${tracking.web.context}-pre-exploded.war"/>
     <property name="exploded-war" value="${war-tmp-dir}/${tracking.web.context}.war"/>
     <property name="persistence-ar" value="${dist.dir}/${tracking.web.context}_db_interface.jar"/>
+    <property name="yuicompressor-jar" value="${yuicompressor.lib.dir}/yuicompressor-2.4.7.jar"/>
+
+    <!-- Files names for distribution -->
+    <property name="js" value="${src.js.dir}/ometa.js" />
+    <property name="js.min" value="${src.js.dir}/ometa.min.js" />
+
+    <!-- Combines given JS files in ometa.js and ometa.min.js -->
+    <target name="js" description="Concatenate JavaScript source files">
+        <echo message="Building ${js}" />
+        <concat destfile="${js}">
+            <fileset dir="${src.js.dir}" includes="ometa.utils.js" />
+            <fileset dir="${src.js.dir}" includes="bootstrap.js" />
+        </concat>
+        <echo message="${js} built." />
+    </target>
+
+    <target name="js.min" depends="js" description="Minimize JavaScript files">
+        <echo message="Building ${js.min}" />
+        <apply executable="java" parallel="false" verbose="true" dest="${src.js.dir}">
+            <fileset dir="${src.js.dir}">
+                <include name="ometa.js" />
+            </fileset>
+            <arg line="-jar" />
+            <arg path="${yuicompressor-jar}" />
+            <arg value="--charset" />
+            <arg value="ANSI" />
+            <arg value="-o" />
+            <targetfile />
+            <mapper type="glob" from="ometa.js" to="ometa.min.js" />
+        </apply>
+        <echo message="${js.min} built." />
+    </target>
+
 
     <target name="init">
         <!-- Create the time stamp -->
@@ -87,6 +125,8 @@
         <fileset dir="${servlet.lib.dir}" includes="*.jar"/>
         <fileset dir="${apachepoi.lib.dir}" includes="*.jar"/>
         <fileset dir="${ebi.lib.dir}" includes="*.jar"/>
+        <fileset dir="${ldap.lib.dir}" includes="*.jar"/>
+        <fileset dir="${zip.lib.dir}" includes="*.jar"/>
         <fileset file="${base.dir}/common/thirdparty/JBoss-5.1.0.GA/server/*.*" />
     </path>
 
@@ -145,6 +185,7 @@
                              excludes="activation.jar, avalon-framework.jar, FastInfoset.jar, getopt.jar, jacorb.jar, jaxb*.jar, jaxws.jar"/>
             <zipgroupfileset dir="${base.dir}/common/thirdparty/Servlet-2.4" includes="javax.servlet.jar"/>
             <zipgroupfileset dir="${base.dir}/common/thirdparty/Struts-2.2.1.1" includes="**/*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/zip4j" includes="**/*.jar"/>
         </jar>
     </target>
 
@@ -211,6 +252,7 @@
                 <exclude name="**/struts.xml" />
             </fileset>
             <lib dir="${struts.lib.dir}" includes="*.jar"/>
+            <lib dir="${ldap.lib.dir}" includes="*.jar"/>
             <lib dir="${displaytag.lib.dir}" includes="*.jar"/>
             <lib dir="${common.util.dir}" includes="**/*.jar"/>
             <lib dir="${apachepoi.lib.dir}" includes="**/*.jar"/>
@@ -256,6 +298,7 @@
     </target>
 
     <target name="dist" depends="clean,make-loader-app,make-etl-app,war,ear" description="generate the distribution" />
+    <target name="dist-all" depends="clean,js,js.min,make-loader-app,make-etl-app,war,ear" description="generate the distribution" />
 
     <target name="ear-to-jboss" depends="stopjboss,dist"  description="export to jboss">
         <unzip src="${dist.dir}/${tracking.web.context}.ear" dest="${jboss.deploy.local.dir}/${tracking.web.context}.ear/" />
