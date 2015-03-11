@@ -239,6 +239,10 @@ public class ReadBeanPersister implements WebDataFacadeI {
         return pseb.getEventByTypeAndSample(sampleId, eventTypeId);
     }
 
+    public List<Event> getEventByLookupValue(Long lookupValueId, String lookupValueStr) throws Exception {
+        return pseb.getEventByLookupValue(lookupValueId, lookupValueStr);
+    }
+
     public Event getLatestEventForSample(Long projectId, Long sampleId, Long eventTypeId) throws Exception {
         return pseb.getLatestEventForSample(projectId, sampleId, eventTypeId);
     }

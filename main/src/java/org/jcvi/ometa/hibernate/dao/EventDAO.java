@@ -24,6 +24,7 @@ package org.jcvi.ometa.hibernate.dao;
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
 import org.jcvi.ometa.model.Event;
+import org.jcvi.ometa.model.EventAttribute;
 import org.jcvi.ometa.model.LookupValue;
 
 import java.util.ArrayList;
@@ -281,6 +282,30 @@ public class EventDAO extends HibernateDAO {
         }
 
         return eventList;
+    }
+
+    public List<Event> getEventByLookupValue(Long lookupValueId, String lookupValueStr, Session session) throws DAOException {
+        List<Event> eventList;
+
+        try {
+            String sql = " select E.* from event E" +
+                    " left join event_attribute EA on E.event_id = EA.eventa_event_id" +
+                    " where EA.eventa_lkuvlu_attribute_id = :lookupValueId " +
+                    " and EA.eventa_attribute_str = :lookupValueStr ";
+
+            SQLQuery query = session.createSQLQuery(sql);
+            query.addEntity("E", Event.class);
+            query.setLong("lookupValueId", lookupValueId);
+            query.setString("lookupValueStr", lookupValueStr);
+
+
+            eventList = query.list();
+        } catch (Exception ex) {
+            throw new DAOException(ex);
+        }
+
+        return eventList;
+
     }
 
     public Event getLatestEventForSample(Long projectId, Long sampleId, Long eventTypeId, Session session) throws DAOException {

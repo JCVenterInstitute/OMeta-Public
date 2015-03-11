@@ -130,6 +130,8 @@ public interface ProjectSampleEventPresentationBusiness {
 
     public List<Event> getEventByTypeAndSample(Long sampleId, Long eventTypeId) throws Exception;
 
+    public List<Event> getEventByLookupValue(Long lookupValueId, String lookupValueStr) throws Exception;
+
     public Event getLatestEventForSample(Long projectId, Long sampleId, Long eventTypeId) throws Exception;
 
     public List<Event> getUniqueEventTypes() throws Exception;

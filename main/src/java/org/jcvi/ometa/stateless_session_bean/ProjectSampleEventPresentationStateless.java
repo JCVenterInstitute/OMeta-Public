@@ -788,6 +788,26 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return evtBeans;
     }
 
+    @WebMethod
+    public List<Event> getEventByLookupValue(Long lookupValueId, String lookupValueStr) throws Exception {
+        Session session = startTransactedSession();
+
+        List<Event> evtBeans = Collections.emptyList();
+
+        try {
+            EventDAO evtDao = daoFactory.getEventDAO();
+            evtBeans = evtDao.getEventByLookupValue(lookupValueId, lookupValueStr, session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+
+        return evtBeans;
+    }
+
     public Event getLatestEventForSample(@JCVI_Project Long projectId, @JCVI_Sample Long sampleId, Long eventTypeId) throws Exception {
         Session session = startTransactedSession();
 
