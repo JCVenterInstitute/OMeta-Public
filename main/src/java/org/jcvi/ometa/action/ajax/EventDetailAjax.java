@@ -98,6 +98,8 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
 
                 List<Sample> filteredList = samples.subList(iDisplayStart, iDisplayStart+iDisplayLength>samples.size()?samples.size():iDisplayLength+iDisplayStart);
 
+                if(filteredList.size() == 0) filteredList = samples;
+
                 Map<Long, List<SampleAttribute>> sampleIdVsAttributes = this.getSampleVsAttributeList(filteredList);
                 Map<Long, String> sampleNameById = new HashMap<Long, String>();
                 Map<Long, String> actors = new HashMap<Long, String>();
@@ -138,6 +140,10 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                             public int compare(SampleAttribute sa1, SampleAttribute sa2) {
                                 Integer sa1Index = orderedEMANames.indexOf(sa1.getMetaAttribute().getLookupValue().getName());
                                 Integer sa2Index = orderedEMANames.indexOf(sa2.getMetaAttribute().getLookupValue().getName());
+
+                                //Sample Attrs on top of list
+                                if(sa1Index == -1) sa1Index = orderedEMANames.size() + 1;
+                                if(sa2Index == -1) sa2Index = orderedEMANames.size() + 1;
                                 return sa1Index.compareTo(sa2Index);
                             }
                         });
