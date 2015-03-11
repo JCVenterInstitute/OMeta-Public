@@ -187,9 +187,8 @@ public class EventLoader extends ActionSupport implements Preparable {
                     }
                     singleGridBean.setSampleName(isSampleRegistration ? this.loadingSample.getSampleName() : this.sampleName);
                     if(isSampleRegistration) {
-                        //singleGridBean.setSamplePublic(Integer.toString(this.loadingSample.getIsPublic()));
-                        singleGridBean.setSamplePublic("1");
-                        //singleGridBean.setParentSampleName(this.loadingSample.getParentSampleName());
+                        singleGridBean.setSamplePublic(Integer.toString(this.loadingSample.getIsPublic()));
+                        singleGridBean.setParentSampleName(this.loadingSample.getParentSampleName());
                     }
                     singleGridBean.setBeanList(this.beanList);
                     singleGridList.add(singleGridBean);
