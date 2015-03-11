@@ -1,7 +1,17 @@
 package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
+import com.sun.tools.jxc.apt.Const;
 import org.apache.log4j.Logger;
+import org.jcvi.ometa.db_interface.ReadBeanPersister;
+import org.jcvi.ometa.model.LookupValue;
+import org.jcvi.ometa.model.ProjectAttribute;
+import org.jcvi.ometa.model.ProjectMetaAttribute;
+import org.jcvi.ometa.utils.Constants;
+import org.jtc.common.util.property.PropertyHelper;
+
+import java.util.List;
+import java.util.Properties;
 
 /**
  * User: hkim
@@ -12,6 +22,8 @@ import org.apache.log4j.Logger;
  */
 public class Popup extends ActionSupport {
     private Logger logger = Logger.getLogger(Popup.class);
+
+    private ReadBeanPersister readPersister;
 
     private String t; //type
 
@@ -25,11 +37,39 @@ public class Popup extends ActionSupport {
 
     private String ids;
 
+    public Popup() {
+        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
+        readPersister = new ReadBeanPersister(props);
+    }
+
     public String run() {
         String rtnVal = SUCCESS;
 
         if(t.equals("sel_t")) {
             rtnVal = "SELECT_TEMPLATE";
+        } else if(t.startsWith("projectDetails")) {
+            //Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
+            //this.ids = props.getProperty(Constants.CONFIG_PROJECT_POPUP_DISPLAY_ATTRS);
+            try {
+                List<ProjectAttribute> projectAttributes = readPersister.getProjectAttributes(projectId);
+                StringBuilder idsBuilder = new StringBuilder();
+                String delim = "";
+                for (ProjectAttribute pa : projectAttributes) {
+                    LookupValue tempLookupValue = pa.getMetaAttribute().getLookupValue();
+                    if (tempLookupValue != null && tempLookupValue.getName() != null) {
+                        String tempLookupValueName = tempLookupValue.getName();
+                        if(idsBuilder.indexOf(tempLookupValueName) < 0 && !tempLookupValueName.equals(Constants.ATTR_PROJECT_NAME)) {
+                            idsBuilder.append(delim).append(tempLookupValueName.replaceAll("_", " "));
+                            delim = ",";
+                        }
+                    }
+                }
+                this.ids = idsBuilder.toString();
+                rtnVal = "PROJECT_DETAIL" + (t.endsWith("_pop") ? "_POP" : "");
+            } catch (Exception ex) {
+                logger.error("Exception in POPUP : " + ex.toString());
+                ex.printStackTrace();
+            }
         }
         return rtnVal;
     }
