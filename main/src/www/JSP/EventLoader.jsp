@@ -146,16 +146,16 @@
                         <td></td>
                       </tr>
                       <tr class="interactiveTableInfo">
-                        <td>Center Project</td>
+                        <td>Project Name</td>
                         <td><div class="col-lg-11 col-md-11 combobox">
                           <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
-                                    list="projectList" name="projectId" headerKey="0" headerValue="Select by Center Project ID"
+                                    list="projectList" name="projectId" headerKey="0" headerValue="Select by Project Name"
                                     listValue="projectName" listKey="projectId" required="true"/>
                         </div></td>
                         <td><button type="button" class="btn btn-xs btn-info" id="projectPopupBtn" onclick="button.projectPopup();">Display Project Details</button></td>
                       </tr>
                       <tr class="interactiveTableInfo">
-                        <td>Data Template</td>
+                        <td>Event</td>
                         <td><div class="col-md-11 combobox">
                           <s:select id="_eventSelect" list="#{0:'Select by Data Type Template'}" name="eventId" required="true" disabled="true"/>
                         </div></td>
@@ -198,10 +198,10 @@
                     <h1 class="csc-firstHeader middle-header">Sample Information</h1>
                   </div>
                   <div id="sampleDetailSubDiv">
-                    <div class="row row_spacer">
+                    <div class="row row_spacer" style="margin-bottom: 3px;">
                       <div class="col-md-1">Sample Name</div>
                       <div class="col-md-11">
-                        <input type="text" id="_sampleName" name="loadingSample.sampleName" size="33px"/>
+                        <input type="text" id="_sampleName" name="loadingSample.sampleName" style="width: 470px;"/>
                       </div>
                     </div>
                     <div class="row row_spacer">
@@ -246,7 +246,7 @@
                 </div>
                 <div id="gridInputDiv" style="margin:25px 10px 0 0 ;overflow-x: auto;display:none;">
                   <table name="eventTable" id="eventTable" class="contenttable">
-                    <thead id="gridHeader"></thead>
+                    <thead id="gridHeader" style="background-color: #B6B6B6"></thead>
                     <tbody id="gridBody"></tbody>
                   </table>
                 </div>
@@ -262,13 +262,14 @@
                 </div>
 
                 <div id="submitDiv" style="margin:15px 10px 5px 0;width:100%;">
-                  <input type="button" class="btn btn-info" onclick="javascript:button.submit('save');" id="saveButton" value="Save Progress" disabled="true" title="Saves the data currently entered in the form to the DPCC database. This does not submit data to the DPCC but allows the user to complete the data submission task at a later time. A temporary submission ID will be generated for later retrieval."/>
-                  <input type="button" class="btn btn-primary" onclick="javascript:button.submit('validate');" id="validateButton" value="Validate Submission" disabled="true" title="Performs validation of the data currently entered in the form and ensures compliance with the CEIRS data standards. Returns a list of validation errors encountered, if any. This does not submit the data to the DPCC."/>
-                  <input type="button" class="btn btn-success" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to OMETA" disabled="true" title="Submits the data entered in the form to the DPCC validation process. If errors are encountered (missing required fields, data format issues, etc), the page will highlights errors on the form and give users an opportunity to correct errors. This is the same process as the one users can run manually from the Validate Submission button. If no error, the data will be submitted to DPCC and a submission receipt sent to the user."/>
+                    <%--<input type="button" class="btn btn-info" onclick="javascript:button.submit('save');" id="saveButton" value="Save Progress" disabled="true" title="Saves the data currently entered in the form to the DPCC database. This does not submit data to the DPCC but allows the user to complete the data submission task at a later time. A temporary submission ID will be generated for later retrieval."/>
+                    <input type="button" class="btn btn-primary" onclick="javascript:button.submit('validate');" id="validateButton" value="Validate Submission" disabled="true" title="Performs validation of the data currently entered in the form and ensures compliance with the CEIRS data standards. Returns a list of validation errors encountered, if any. This does not submit the data to the DPCC."/>--%>
+                  <input type="button" class="btn btn-success" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to OMETA" disabled="true"/>
                   <input type="button" class="btn btn-info" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Row" style="display:none;"/>
-                  <!-- <input type="button" class="btn btn-info" onclick="javascript:button.template();" id="templateButton" value="Download Template"/> -->
+                  <input type="button" class="btn btn-info" onclick="javascript:button.remove_event();" id="gridRemoveLineButton" value="Remove Row" style="display:none;"/>
+                  <input type="button" class="btn btn-info" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
                   <!--<input type="button" class="btn btn-info" onclick="javascript:return;" id="exportButton" value="Export to .csv Template"/>  -->
-                  <!-- <input type="button" onclick="javascript:button.clear_form();" value="Clear Form" /> -->
+                  <input type="button" class="btn btn-primary" onclick="javascript:button.clear_form();" value="Clear" />
                 </div>
               </div>
             </div>
@@ -288,8 +289,11 @@
                   </div>
                   <p>Drag and Drop file in box to upload (Max file size is 2GB) </p>
                   <div id="dropzone" class="well">Drop files here</div>
+                  <div class="row row_spacer fileupload-buttonbar">
+                    <input type="button" class="btn btn-success start" id="uploadFilesBtn" style="margin-left:10px;" value="Submit to OMETA"/>
+                  </div>
                   <div class="row row_spacer">
-                    <div id="progress">
+                    <div id="progress" style="margin: 10px;">
                       <div class="bar" style="width: 0%;"></div>
                     </div>
                   </div>
@@ -297,9 +301,9 @@
                     <div id="files" class="files" style="padding-left:20px;"></div>
                   </div>
                   <p>
-                    Bulk data submissions must use one of the standard DPCC data submission templates available <a href="dpcc_help.action">here</a>. Please select your submission file using the “Choose File” button or drag it directly to the upload area.
+                    Bulk data submissions must use one of the standard OMETA data submission templates available <a href="dpcc_help.action">here</a>. Please select your submission file using the “Choose File” button or drag it directly to the upload area.
                     </br><br>
-                    The data will be processed by the DPCC and upon completion you will receive an email notification containing a submission summary. The email notification may also include a list of data processing errors and instructions for re-submission.
+                    The data will be processed by the OMETA and upon completion you will receive an email notification containing a submission summary. The email notification may also include a list of data processing errors and instructions for re-submission.
                   </p>
                 </div>
               </div>
@@ -353,16 +357,18 @@
 
     //load type radio button change event
     $('input[name="loadType"]').change(function() {
-      $('div[id$="InputDiv"], #gridAddLineButton, #sampleSelectRow, #dropBoxDiv, #toInteractiveP').hide();
+      $('div[id$="InputDiv"], #gridAddLineButton, #gridRemoveLineButton, #sampleSelectRow, #dropBoxDiv, #toInteractiveP').hide();
       if(dataSubmissionDisplay) $('#dataSubmissionScope').show();
       $('.interactiveTableInfo').show();
       utils.preSelect('_sampleSelect', '');
       var _selectedType = $(this).val();
       if(_selectedType === 'grid') {
-        $('#gridInputDiv, #gridAddLineButton').show();
+        $('#gridInputDiv, #gridAddLineButton, #gridRemoveLineButton').show();
+        $("#interactive-submission-table tr:last").hide();
         _utils.addGridRows(utils.getProjectName(), utils.getEventName());
       } else if(_selectedType==='file') {
         $('#fileInputDiv').show();
+        $("#interactive-submission-table tr:last").hide();
       } else if(_selectedType==='bulk') {
         if($('#dataSubmissionScope').css('display') != 'none') dataSubmissionDisplay = true;
         else dataSubmissionDisplay = false;
@@ -370,6 +376,8 @@
         toBulk();
       } else{
         $('#attributeInputDiv, #sampleSelectRow').show();
+        if(utils.checkSR($("#_eventSelect").val())) $("#interactive-submission-table tr:last").hide();
+        else $("#interactive-submission-table tr:last").show();
         _utils.showPS();
       }
     });

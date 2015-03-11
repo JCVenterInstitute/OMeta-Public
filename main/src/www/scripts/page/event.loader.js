@@ -10,9 +10,9 @@ var _utils = {
         });
       },
       addGridRows: function(pn,en) {
+        // If samples are uploaded as CSV, set event lines based on row size, else have at least 5 event lines for the grid view
         var $gridSize = $('#gridListSize').val();
         var rowSize = ($gridSize > 0) ? $gridSize : 5;
-        //have at least 5 event lines for the grid view
         for(var _rows=$('#gridBody > tr').length;_rows<rowSize;_rows++) {
           button.add_event(pn,en);
         }
@@ -20,7 +20,8 @@ var _utils = {
       showPS: function(eventName) {
         $('#sampleSelectRow').hide();
         if(utils.checkSR(eventName)) { // triggers sample loader
-          //$('#sampleDetailInputDiv').show();
+          $('#sampleDetailInputDiv').show();
+          $("#interactive-submission-table tr:last").hide();
         } else if(utils.checkPR(eventName)) {
           $('#projectDetailInputDiv').show();
         } else {
@@ -31,6 +32,7 @@ var _utils = {
       },
       hidePS: function() {
         $('#sampleDetailInputDiv, #projectDetailInputDiv').hide();
+        $("#interactive-submission-table tr:last").hide();
       },
       ontologify: function(desc, $inputNode) {
         var ontologyInfo = desc.substring(desc.lastIndexOf('[')+1, desc.length-1).split(',');
@@ -116,6 +118,7 @@ var _utils = {
       },
       event: function(data) {
         var list = vs.empty;
+        var filterVal = $('#filter').val();
 
         if(data['aaData'] == null && data['err'].indexOf('Forbidden') > 0) {
           utils.error.add(utils.error.message.permission);
@@ -124,7 +127,7 @@ var _utils = {
         $.each(data, function(i1,v1) {
           if(v1 != null) {
             $.each(v1, function(i2,v2) {
-              if(v2 != null && v2.lookupValueId != null && v2.name != null) {
+              if(v2 != null && v2.lookupValueId != null && v2.name != null && (filterVal==='pr' || !utils.checkPR(v2.name))) {
                 list += vs.vnoption.replace('$v$',v2.lookupValueId).replace('$n$',v2.name);
               }
             });
@@ -155,17 +158,16 @@ var _utils = {
           if(!utils.checkSR(en)) {
             $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG').append('Sample<br/>', requireImgHtml));
           } else {
-            // hide sample information
-            // $gridHeaders.append(
-            //   $('<th/>').addClass('tableHeaderNoBG').append('Sample Name<br/>', requireImgHtml),
-            //   $('<th/>').addClass('tableHeaderNoBG').append('Parent Sample'),
-            //   $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
-            // );
+            $gridHeaders.append(
+                $('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Sample Name<br/>', requireImgHtml),
+                $('<th/>').addClass('tableHeaderNoBG').append('Parent Sample'),
+                $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
+            );
           }
         } else {
           if(utils.checkPR(en)) {
             $gridHeaders.append(
-                $('<th/>').addClass('tableHeaderNoBG').append('Project Name<br/>', requireImgHtml)
+                $('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Project Name<br/>', requireImgHtml)
                 // $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
             );
           }
@@ -184,7 +186,7 @@ var _utils = {
 
             $attributeTr.append(//icons and hover over information
                 $('<td align="right"/>').attr('class', (isDesc ? 'table-tooltip' : '')).attr(
-                    'title', (isDesc ? _ma.desc : '')).append(
+                    'data-tooltip', (isDesc ? _ma.desc : '')).append(
                     isRequired ? '<small class="text-danger">*</small>' : '',
                     (_ma.label != null && _ma.label !== '' ?_ma.label:_ma.lookupValue.name),
                     "&nbsp;",
@@ -193,7 +195,7 @@ var _utils = {
                 )
             );
             $gridHeaders.append(
-                $('<th/>').addClass('tableHeaderNoBG').attr('title', (isDesc ? _ma.desc : '')).append(
+                $('<th/>').addClass('tableHeaderNoBG').attr('data-tooltip', (isDesc ? _ma.desc : '')).append(
                     isRequired ? '<small class="text-danger">*</small>' : '',
                     (_ma.label ? _ma.label : _ma.lookupValue.name) + '<br/>',
                     isDesc ? requireImgHtml : ''
@@ -343,7 +345,6 @@ var button = {
     var loadType = $('input[name="loadType"]:radio:checked').val();
 
     if(loadType === 'form') { //check is form is empty
-
       var hasAllReq = true, reqErrorMsg = ""; // require field check
       var $formFields = $('#attributeInputDiv > tr > td');
       $formFields.find('[id^="req_"]:not(:hidden)').each(function(i, v) {
@@ -371,6 +372,124 @@ var button = {
         utils.error.add("Data submission form is empty. Please insert value(s).");
         return;
       }
+    } else if(loadType === "grid"){ // check grid table data
+      if(utils.checkPR($("#_eventSelect option:selected").text())) { // if data temp is Project Registration
+        var hasAllReq = true, allEmpty = true; reqErrorMsg = ""; // require field check
+        var $formFields = $('#gridBody > tr > td').find(':not(:hidden)');
+
+        var rowCheck = [], rowMsg = "", empty = true, rowAllReq = true;
+        $formFields.each(function (i, v) {
+          var $node = $(v);
+
+          if ($node.val() === null || $node.val() === '') {
+            if ($node.attr('id').indexOf("req_") !== -1) {
+              rowAllReq = false;
+              rowMsg += "&nbsp;&nbsp;" + $node.siblings('[name$="attributeName"]').val() + "<br />";
+            } else if($node.attr('id').indexOf("projectName") !== -1){
+              rowAllReq = false;
+              rowMsg += "&nbsp;&nbsp;Project Name<br />";
+            }
+          } else if($node.attr('name').indexOf("projectPublic") === -1){
+            empty = false;
+          }
+
+          if($(this).parent().is(':last-child')){
+            rowCheck.push({"e" : empty, "r" : rowAllReq, "m" : rowMsg});
+            empty = true;
+            rowMsg = "";
+            rowAllReq = true;
+          }
+        });
+
+        for(var i=0; i < rowCheck.length; ++i){
+          var e = rowCheck[i].e;
+
+          if(e === false){
+            allEmpty = false;
+            if(rowCheck[i].r === false){
+              hasAllReq = false;
+              reqErrorMsg += "&nbsp;&nbsp;" + (i+1) + " : " + rowCheck[i].m + "<br>";
+            }
+          }
+        }
+
+        if(allEmpty){
+          utils.error.add("There is no data to submit!");
+          return;
+        } else if (!hasAllReq) {
+          utils.error.add("Required Field(s):<br/>" + reqErrorMsg);
+          return;
+        } else{
+          for(var i=0; i < rowCheck.length; ++i){
+            if(rowCheck[i].e === true){
+              $("#gridBody").find("tr td.gridIndex").each(function (){
+                if($(this).html() == (i+1)){
+                  $(this).parent().remove();
+                }
+              });
+            }
+          }
+        }
+      } else if(utils.checkSR($("#_eventSelect option:selected").text())){
+        var hasAllReq = true, allEmpty = true; reqErrorMsg = ""; // require field check
+        var $formFields = $('#gridBody > tr > td').find(':not(:hidden)');
+
+        var rowCheck = [], rowMsg = "", empty = true, rowAllReq = true;
+        $formFields.each(function (i, v) {
+          var $node = $(v);
+
+          if ($node.val() === null || $node.val() === '') {
+            if ($node.attr('id') && $node.attr('id').indexOf("req_") !== -1) {
+              rowAllReq = false;
+              rowMsg += "&nbsp;&nbsp;" + $node.siblings('[name$="attributeName"]').val() + "<br />";
+            } else if($node.attr('id') && $node.attr('id').indexOf("sampleName") !== -1){
+              rowAllReq = false;
+              rowMsg += "&nbsp;&nbsp;Sample Name<br />";
+            }
+          } else if($node.is('select')){
+            if($node.find('option:eq(0)').val() === '') empty = false;
+          } else {
+            empty = false;
+          }
+
+          if($(this).parents('td').is(':last-child')){
+            rowCheck.push({"e" : empty, "r" : rowAllReq, "m" : rowMsg});
+            empty = true;
+            rowMsg = "";
+            rowAllReq = true;
+          }
+        });
+
+        for(var i=0; i < rowCheck.length; ++i){
+          var e = rowCheck[i].e;
+
+          if(e === false){
+            allEmpty = false;
+            if(rowCheck[i].r === false){
+              hasAllReq = false;
+              reqErrorMsg += "&nbsp;&nbsp;" + (i+1) + " : " + rowCheck[i].m + "<br>";
+            }
+          }
+        }
+
+        if(allEmpty){
+          utils.error.add("There is no data to submit!");
+          return;
+        } else if (!hasAllReq) {
+          utils.error.add("Required Field(s):<br/>" + reqErrorMsg);
+          return;
+        } else{
+          for(var i=0; i < rowCheck.length; ++i){
+            if(rowCheck[i].e === true){
+              $("#gridBody").find("tr td.gridIndex").each(function (){
+                if($(this).html() == (i+1)){
+                  $(this).parent().remove();
+                }
+              });
+            }
+          }
+        }
+      }
     }
 
     this.submit_form(loadType, status);
@@ -389,7 +508,7 @@ var button = {
   },
   submit_form: function(type, status) {
     $("#projectName").val(utils.getProjectName());
-    //$("#sampleName").val(utils.getSampleName());
+    $("#sampleName").val(utils.getSampleName());
     $("#eventName").val(utils.getEventName());
     $("#jobType").val(type);
     $("#status").val(status);
@@ -416,30 +535,29 @@ var button = {
     if(_pn && _en) {
       if(utils.checkNP(_en)){ //not project related
         if(utils.checkSR(_en)) { //add sample information fields for sample registration
-          // hide sample information
-          // $eventLine.append(
-          //   $('<td/>').append($('<input/>').attr({
-          //       'type': 'text',
-          //       'name': 'gridList[' + g_gridLineCount + '].sampleName',
-          //       'id': '_sampleName' + g_gridLineCount
-          //     })
-          //   )
-          // );
-          // $eventLine.append(
-          //   $('<td/>').append(
-          //       $('<select/>').attr({
-          //         'name': 'gridList[' + g_gridLineCount + '].parentSampleName',
-          //         'id': '_parentSelect' + g_gridLineCount
-          //       }).append(sample_options)
-          //     )
-          // );
-          // $eventLine.append(
-          //   $('<td/>').append(
-          //     $('<select/>').attr({
-          //       'name': 'gridList[' + g_gridLineCount + '].samplePublic'
-          //     }).append(vs.nyoption)
-          //   )
-          // );
+          $eventLine.append(
+              $('<td/>').append($('<input/>').attr({
+                    'type': 'text',
+                    'name': 'gridList[' + g_gridLineCount + '].sampleName',
+                    'id': '_sampleName' + g_gridLineCount
+                  })
+              )
+          );
+          $eventLine.append(
+              $('<td/>').append(
+                  $('<select/>').attr({
+                    'name': 'gridList[' + g_gridLineCount + '].parentSampleName',
+                    'id': '_parentSelect' + g_gridLineCount
+                  }).append(sample_options)
+              )
+          );
+          $eventLine.append(
+              $('<td/>').append(
+                  $('<select/>').attr({
+                    'name': 'gridList[' + g_gridLineCount + '].samplePublic'
+                  }).append(vs.nyoption)
+              )
+          );
         } else {
           $eventLine.append(
               $('<td/>').append(
@@ -463,13 +581,13 @@ var button = {
                     'value': '1'
                   }))
           );
-          // $eventLine.append(
-          //   $('<td/>').append(
-          //     $('<select/>').attr({
-          //       'name': 'gridList[' + g_gridLineCount + '].projectPublic'
-          //     }).append(vs.ynoption)
-          //   )
-          // );
+          $eventLine.append(
+              $('<td/>').append(
+                  $('<select/>').attr({
+                    'name': 'gridList[' + g_gridLineCount + '].projectPublic'
+                  }).append(vs.ynoption)
+              )
+          );
         }
       }
       var ltVal, bean, avCnt = 0;
@@ -530,9 +648,21 @@ var button = {
 
       //set minimum width for date and autocomplete TDs
       $('#gridBody .hasDatepicker').parent('td').attr('style', 'min-width:163px !important;');
-      $('#gridBody .ui-autocomplete-input').parent('td').attr('style', 'min-width:172px !important;');
+      $('#gridBody .ui-autocomplete-input').parent('td').attr('style', 'min-width:200px !important;');
+
+      if(g_gridLineCount == 1) $('#gridRemoveLineButton').removeAttr("disabled");
 
       g_gridLineCount++;
+    }
+  },
+  remove_event: function() {
+    var $lastChild = $("#gridBody tr:last-child");
+
+    if(!$lastChild.is("#gridBody tr:first-child")){
+      if($lastChild.is("#gridBody tr:nth-child(2)")) $('#gridRemoveLineButton').attr("disabled", true);
+
+      $lastChild.remove();
+      g_gridLineCount--;
     }
   },
   clear_form: function() {
@@ -541,6 +671,7 @@ var button = {
     changes.project(0);
     $('#_parentProjectSelect, #_parentSampleSelect').combobox();
     this.clear_attr();
+    $('#dataSubmissionScope').hide();
   },
   clear_attr: function() {
     utils.error.remove();
@@ -554,14 +685,14 @@ var button = {
       utils.error.add("Please select a project");
       return;
     } else{
-
+      var selectedProjectId = utils.getProjectId();
       var whs = $(window).width()*3/4;
       whs = whs < 550 ? 550 : whs;
       $.openPopupLayer({
         name: "LPopupProjectDetails",
         width: whs,
         height: 50,
-        url: "popup.action?t=projectDetails_pop&projectName=" + selectedProject
+        url: "popup.action?t=projectDetails_pop&projectName=" + selectedProject +"&projectId="+selectedProjectId
       });
     }
   }
@@ -585,6 +716,11 @@ function comboBoxChanged(option, id) {
     button.clear_attr();
     if(option.value && option.value!=0 && option.text && option.text!='') {
       changes.event(option.text, option.value);
+
+      //Hide Sample dropdown if SampleRegistration is selected
+      var _selectedType = $('input[name="loadType"]:checked').val();
+      if(utils.checkSR(option.text) || _selectedType === 'grid') $("#interactive-submission-table tr:last").hide();
+      else $("#interactive-submission-table tr:last").show();
     }
   } else if(id==='_sampleSelect') {
     /*if(option.value && option.value!=0 && option.text && option.text!='' && $('#_eventSelect').val() != 0) {

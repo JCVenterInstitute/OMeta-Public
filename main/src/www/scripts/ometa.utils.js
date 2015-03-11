@@ -20,122 +20,137 @@
  */
 
 var utils = {
-    getProjectName: function() {
-        var pnode = $("#_projectSelect option:selected");
-        return pnode.val() === '0' ? null : pnode.text();
+  getProjectName: function() {
+    var pnode = $("#_projectSelect option:selected");
+    return pnode.val() === '0' ? null : pnode.text();
+  },
+  getProjectId: function() {
+    var pnode = $("#_projectSelect option:selected");
+    return pnode.val();
+  },
+  getEventName: function(en) {
+    var enode = $("#_eventSelect option:selected");
+    return en || (enode.val() === '0' ? null : enode.text());
+  },
+  getSampleName: function() {
+    return $("#_sampleSelect option:selected").text();
+  },
+  getLoadType: function() {
+    return $('input[name="loadType"]:checked').val();
+  },
+  checkSR: function(en) {
+    en = this.getEventName(en);
+    en = en ? en.toLowerCase() : "";
+    return en.indexOf('sample') >= 0 && en.indexOf('registration') > 0;
+  },
+  checkPR: function(en) {
+    en = this.getEventName(en);
+    en = en ? en.toLowerCase() : "";
+    return en.indexOf('project') >= 0 && en.indexOf('registration') > 0;
+  },
+  checkNP: function(en) {
+    en = this.getEventName(en);
+    en = en ? en.toLowerCase() : "";
+    return en.indexOf('project') < 0;
+  },
+  combonize: function(div, id) {
+    var selector='select';
+    if(div) { selector='#'+div+' '+selector; }
+    if(id) { selector+='[id$="'+id+'"]'; }
+    $(selector).combobox();
+  },
+  preSelect: function(id, val) {
+    var $selNode=$('#'+id);
+    $selNode.change(function() {
+      $(this).next().val($(this).children(':selected').text());
+    });
+    $("#"+id+" option").filter(function() {
+      return $(this).text()==val || $(this).val()==val;
+    }).attr('selected', true);
+    $selNode.change();
+  },
+  preSelect2: function(id, val) {
+    $("#"+id+" option").filter(function() {
+      return $(this).text()==val || $(this).val()==val;
+    }).attr('selected', true);
+  },
+  preSelectWithNode: function($node, val) {
+    var valArr = val.split(';');
+    $($node).find("select option").filter(function() {
+      return valArr.indexOf($(this).text()) >= 0 || valArr.indexOf($(this).val()) >= 0;
+    }).attr('selected', true);
+  },
+  listToOptions: function(l, t, k, k2) {
+    var os='', o=t==='vv'?vs.vvoption:vs.vnoption;
+    $.each(l, function(i1,v1) {
+      if(v1 && v1[k]) {
+        os+=o.replace(/\\$v\\$/g,v1[k]);
+      }
+    });
+    return os;
+  },
+  checkCB: function(id, val) {
+    $('#'+id).prop('checked', val && (val===1||val===true?true:false));
+  },
+  initDatePicker: function() {
+    $('input[id*="Date"], input[id*="date"], input[id*="DOB"]').datepicker({
+      dateFormat: 'yy-mm-dd',showOn: 'button',
+      buttonImageOnly: true, buttonImage: 'images/jqueryUI/icon_cal_21x19.png'
+    });
+  },
+  smartDatePicker: function($node) {
+    $node.find('input[id^="date_"]').datepicker({dateFormat: 'yy-mm-dd'});
+  },
+  error: {
+    check: function() {
+      var _error = $('#error_messages').val();
+      if(typeof _error!='undefined' && _error!='') {
+        this.add(_error);
+      }
     },
-    getEventName: function(en) {
-        var enode = $("#_eventSelect option:selected");
-        return en || (enode.val() === '0' ? null : enode.text());
+    add: function(msg) {
+      this.remove();
+      $('#errorMessagesPanel').append(
+          $('<input type="hidden" id="error_messages">').attr('value',msg),
+          $('<input type="button" class="btn btn-danger" id="error_btn" '
+              + 'onclick="utils.error.show(\'error_messages\');return false;" '
+              + 'value="ERROR: Click Here to See the Error." />'
+          )
+      );
     },
-    getSampleName: function() {
-        return $("#_sampleSelect option:selected").text();
+    remove: function() {
+      if($('#error_messages')) {
+        $('#error_messages, #error_btn, [class^="alert"]').remove();
+      }
     },
-    getLoadType: function() {
-        return $('input[name="loadType"]:checked').val();
+    show: function(objectId) {
+      $.openPopupLayer({
+        name: "erroPopup",
+        width: 450,
+        url: "html/errorPopup.html?msg="+$('#'+objectId).val()
+      });
     },
-    checkSR: function(en) {
-        en = this.getEventName(en);
-        en = en ? en.toLowerCase() : "";
-        return en.indexOf('sample') >= 0 && en.indexOf('registration') > 0;
+    baloon: function(msg) {
+      var $errorNode = $('<div class="alert_error" onclick="$(\'.alert_error\').remove();">').html(
+          "<strong>" + msg + "</strong>"
+      );
+      $('#errorMessagesPanel').append($errorNode);
     },
-    checkPR: function(en) {
-        en = this.getEventName(en);
-        en = en ? en.toLowerCase() : "";
-        return en.indexOf('project') >= 0 && en.indexOf('registration') > 0;
+    alert: function(msg) {
+      var $errorNode = $('<div class="alert alert-danger alert-dismissible" role="alert">').html(
+          '<button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
+          '<strong>Warning!</strong> ' + msg);
+      $('#errorMessagesPanel').append($errorNode);
     },
-    checkNP: function(en) {
-        en = this.getEventName(en);
-        en = en ? en.toLowerCase() : "";
-        return en.indexOf('project') < 0;
-    },
-    combonize: function(div, id) {
-        var selector='select';
-        if(div) { selector='#'+div+' '+selector; }
-        if(id) { selector+='[id$="'+id+'"]'; }
-        $(selector).combobox();
-    },
-    preSelect: function(id, val) {
-        var $selNode=$('#'+id);
-        $selNode.change(function() {
-            $(this).next().val($(this).children(':selected').text());
-        });
-        $("#"+id+" option").filter(function() {
-            return $(this).text()==val || $(this).val()==val;
-        }).attr('selected', true);
-        $selNode.change();
-    },
-    preSelect2: function(id, val) {
-        $("#"+id+" option").filter(function() {
-            return $(this).text()==val || $(this).val()==val;
-        }).attr('selected', true);
-    },
-    preSelectWithNode: function($node, val) {
-        var valArr = val.split(';');
-        $($node).find("select option").filter(function() {
-            return valArr.indexOf($(this).text()) >= 0 || valArr.indexOf($(this).val()) >= 0;
-        }).attr('selected', true);
-    },
-    listToOptions: function(l, t, k, k2) {
-        var os='', o=t==='vv'?vs.vvoption:vs.vnoption;
-        $.each(l, function(i1,v1) {
-            if(v1 && v1[k]) {
-                os+=o.replace(/\\$v\\$/g,v1[k]);
-            }
-        });
-        return os;
-    },
-    checkCB: function(id, val) {
-        $('#'+id).prop('checked', val && (val===1||val===true?true:false));
-    },
-    initDatePicker: function() {
-        $('input[id*="Date"], input[id*="date"], input[id*="DOB"]').datepicker({
-            dateFormat: 'yy-mm-dd',showOn: 'button',
-            buttonImageOnly: true, buttonImage: 'images/jqueryUI/icon_cal_21x19.png'
-        });   
-    },
-    smartDatePicker: function($node) {
-        $node.find('input[id^="date_"]').datepicker({dateFormat: 'yy-mm-dd'});
-    },
-    error: {
-        check: function() {
-            var _error = $('#error_messages').val();
-            if(typeof _error!='undefined' && _error!='') {
-                this.add(_error);
-            }
-        },
-        add: function(msg) {
-            this.remove();
-            $('#errorMessagesPanel').append(
-                $('<input type="hidden" id="error_messages">').attr('value',msg),
-                $('<input type="button" class="btn btn-danger" id="error_btn" '
-                    + 'onclick="utils.error.show(\'error_messages\');return false;" '
-                    + 'value="ERROR: Click Here to See the Error." />'
-                )
-            );
-        },
-        remove: function() {
-            if($('#error_messages')) {
-                $('#error_messages, #error_btn').remove();
-            }    
-        },
-        show: function(objectId) {
-            $.openPopupLayer({
-                name: "erroPopup",
-                width: 450,
-                url: "html/errorPopup.html?msg="+$('#'+objectId).val()
-            });
-        },
-        baloon: function(msg) {
-            var $errorNode = $('<div class="alert_error" onclick="$(\'.alert_error\').remove();">').html(
-                "<strong>" + msg + "</strong>"
-            );
-            $('#errorMessagesPanel').append($errorNode);
-        },
-        message: {
-            permission: "You do not have the permission to access the project"
-        }
+    message: {
+      permission: "You do not have the permission to access the project"
     }
+  },
+  formatFileSize: function (bytes) {
+    if(bytes === 0) { return "0.00 B"; }
+    var e = Math.floor(Math.log(bytes) / Math.log(1024));
+    return (bytes/Math.pow(1024, e)).toFixed(2)+' '+' KMGTP'.charAt(e)+'B';
+  }
 };
 
 var vs = {
@@ -380,7 +395,7 @@ var vs = {
         
         popupElement.css({
             visibility: "hidden",
-            width: popupObject.width == "auto" ? "" : popupObject.width + "px",
+            'min-width': popupObject.width == "auto" ? "" : popupObject.width + "px",
             height: popupObject.height == "auto" ? "" : popupObject.height + "px",
             position: "absolute",
             "z-index": zIndex
