@@ -19,10 +19,13 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<project name="ometa" default="dist" basedir=".">
+<project name="ometa" default="dist" basedir="." >
     <description>
         Builds the Hibernate/Database Distributable(s) for O-META to Load the Project Events Database.
     </description>
+
+    <!-- Add ant-contrib jar file to properties/additional classpath -->
+    <taskdef resource="net/sf/antcontrib/antlib.xml"/>
 
     <property name="tracking.web.context" value="ometa"/>
     <property name="package.name" value="org/jcvi/${tracking.web.context}" />
@@ -45,6 +48,13 @@
     <property name="hibernate.dir" value="${base.dir}/build/hibernate"/>
 
     <property name="src.js.dir" value="${web.dir}/scripts" description="JS source folder"/>
+    <property name="src.js.page.dir" value="${web.dir}/scripts/page" description="JS source folder"/>
+
+    <!-- JS File list to be minimized individually (inside scripts/page folder) -->
+    <property name="js.file.list" value="event.detail.js,event.loader.js,metadata.setup.js"/>
+
+    <!-- JS File list to be minimized in a single file (inside scripts folder) -->
+    <property name="js.single.file.list" value="ometa.utils.js,bootstrap.js"/>
 
     <!-- LIBRARY -->
     <property name="common.util.dir" value="${base.dir}/common/CommonUtils/" />
@@ -78,8 +88,7 @@
     <target name="js" description="Concatenate JavaScript source files">
         <echo message="Building ${js}" />
         <concat destfile="${js}">
-            <fileset dir="${src.js.dir}" includes="ometa.utils.js" />
-            <fileset dir="${src.js.dir}" includes="bootstrap.js" />
+            <filelist dir="${src.js.dir}" files="${js.single.file.list}"/>
         </concat>
         <echo message="${js} built." />
     </target>
@@ -98,9 +107,25 @@
             <targetfile />
             <mapper type="glob" from="${js.name}" to="${min.js.name}" />
         </apply>
+        <for param="file" list="${js.file.list}">
+            <sequential>
+                <propertyregex property="file.min" input="@{file}" regexp=".js" replace=".min.js" override="true"/>
+                <apply executable="java" parallel="false" verbose="true" dest="${src.js.page.dir}">
+                    <fileset dir="${src.js.page.dir}">
+                        <include name="@{file}" />
+                    </fileset>
+                    <arg line="-jar" />
+                    <arg path="${yuicompressor-jar}" />
+                    <arg value="--charset" />
+                    <arg value="ANSI" />
+                    <arg value="-o" />
+                    <targetfile />
+                    <mapper type="glob" from="@{file}" to="${file.min}" />
+                </apply>
+            </sequential>
+        </for>
         <echo message="${js.min} built." />
     </target>
-
 
     <target name="init">
         <!-- Create the time stamp -->
@@ -302,7 +327,7 @@
     <target name="dist" depends="clean,make-loader-app,make-etl-app,war,ear" description="generate the distribution" />
 
     <!-- Replace <script> with min version
-        Minimized JS files should be included between "JS to be replaced by min version" and "end" comment
+        Minimized JS files (single file) should be included between "JS to be replaced by min version" and "end" comment
      -->
     <target name="replace-min">
         <replaceregexp match="\&lt;!--JS to be replaced by min version--\&gt;(.*?)\&lt;!--end--\&gt;"
@@ -311,6 +336,16 @@
                 <filename name="header.jsp"/>
             </fileset>
         </replaceregexp>
+        <for param="file" list="${js.file.list}">
+            <sequential>
+                <propertyregex property="file.min" input="@{file}" regexp=".js" replace=".min.js" override="true"/>
+                <replaceregexp match="@{file}" replace="${file.min}" flags="gs">
+                    <fileset dir="${war-tmp-dir}/${tracking.web.context}.war/JSP" >
+                        <filename name="**.jsp"/>
+                    </fileset>
+                </replaceregexp>
+            </sequential>
+        </for>
     </target>
 
     <target name="dist-min" depends="clean,js,js.min,make-loader-app,make-etl-app,war,replace-min,ear" description="generate the distribution" />
