@@ -259,6 +259,6 @@ public class BulkLoader {
 
 
         EmailSender mailer = new EmailSender();
-        mailer.send("mkuscuog@jcvi.org", "OMETA - bulk data upload", bodyBuilder.toString(), files);
+        mailer.send(userMail, "OMETA - bulk data upload", bodyBuilder.toString(), files);
     }
 }

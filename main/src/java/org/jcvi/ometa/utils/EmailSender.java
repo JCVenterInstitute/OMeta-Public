@@ -53,6 +53,7 @@ public class EmailSender {
     private final String EMAIL_USER;
     private final String EMAIL_PASS;
     private final String EMAIL_FROM;
+    private final String EMAIL_BCC;
 
     public EmailSender() {
         Properties props = PropertyHelper.getHostnameProperties( Constants.PROPERTIES_FILE_NAME );
@@ -60,19 +61,26 @@ public class EmailSender {
         this.EMAIL_USER = props.getProperty(Constants.CONFIG_SMTP_USER);
         this.EMAIL_PASS = props.getProperty(Constants.CONFIG_SMTP_PASSWD);
         this.EMAIL_FROM = props.getProperty(Constants.CONFIG_SMTP_FROM);
+        this.EMAIL_BCC = props.getProperty(Constants.CONFIG_SMTP_BCC);
     }
 
     public void send(String to, String subject, String body, List<String> files) throws Exception {
         Properties mailProps = System.getProperties();
+        mailProps.setProperty(this.EMAIL_HOST, this.EMAIL_HOST);
+        /*mailProps.put("mail.smtp.auth", "true");
+        mailProps.put("mail.smtp.ssl.enable", "true");
+        mailProps.put("mail.smtp.port", 587);
         mailProps.put("mail.transport.protocol", "smtp");
-        mailProps.put("mail.smtp.port", 465);
-        mailProps.put("mail.smtp.auth", "true");
         mailProps.put("mail.smtp.starttls.enable", "true");
-        mailProps.put("mail.smtp.starttls.required", "true");
+        mailProps.put("mail.smtp.starttls.required", "true");*/
 
         Session session = Session.getDefaultInstance(mailProps);
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(this.EMAIL_FROM));
+
+        if(this.EMAIL_BCC != null && this.EMAIL_BCC.length() > 0) {
+            msg.setRecipients(Message.RecipientType.BCC, InternetAddress.parse(this.EMAIL_BCC));
+        }
         msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
         msg.setSubject(subject);
 
@@ -96,17 +104,18 @@ public class EmailSender {
         }
         msg.setContent(multipart);
 
-        Transport transport = session.getTransport();
+        //Transport transport = session.getTransport();
 
         try {
-            transport.connect(this.EMAIL_HOST, this.EMAIL_USER, this.EMAIL_PASS);
+            //transport.connect(this.EMAIL_HOST, 587, this.EMAIL_USER, this.EMAIL_PASS);
+            Transport.send(msg);
 
-            transport.sendMessage(msg, msg.getAllRecipients());
+            //transport.sendMessage(msg, msg.getAllRecipients());
         } catch (Exception ex) {
             System.out.println("Error in sending a message: " + ex.getMessage());
         } finally {
             // Close and terminate the connection.
-            transport.close();
+            //transport.close();
         }
     }
 }
