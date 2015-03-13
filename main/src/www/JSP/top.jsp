@@ -2,30 +2,31 @@
   #userNameDropdown {
     padding: 3px !important;
   }
+  .navbar-default .navbar-nav > li > a{color:#3276b1 !important;}
 </style>
 <!-- top menu starts -->
 
 <header id="header" class="header clearfix" role="banner">
-  <div class="site-title"></div>
-
-  <div class="inner-header container max-container">
-    <div class="top-links clearfix" style="margin-top: 10px;float:left;">
-      <a data-nav="home" href="/ometa/secureIndex.action">
-        <img class="headerImage" src="images/ometa_logo.png" alt="Ontology based Metadata Tracking" />
-      </a>
-    </div>
-
-    <div class="pull-right">
-      <!-- collapse menu button -->
-      <div id="hide-menu" class="btn-header pull-right visible-xs visible-sm">
-        <span> <a href="javascript:void(0);" data-action="toggleMenu" title="Collapse Menu"><i class="fa fa-reorder"></i></a> </span>
+  <div class="navbar navbar-default navbar-inherit-top" role="navigation" style="border-color: transparent">
+    <div class="site-title"></div>
+    <div class="inner-header container max-container">
+      <div class="top-links clearfix" style="float:left;">
+        <a data-nav="home" href="/ometa/secureIndex.action">
+          <img class="headerImage" src="images/ometa_logo.png" alt="Ontology based Metadata Tracking">
+        </a>
       </div>
-      <!-- end collapse menu -->
-
-      <nav class="navbar visible-md visible-lg visible-xl" role="navigation">
-        <ul class="nav navbar-nav" id="menu-the-main-menu" style="display:none;">
-          <li id="menu-item-10" class="dropdown">
-            <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Data Submission <span class="caret"></span></a>
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+      <div class="navbar-collapse collapse" style="height: 0px;">
+        <ul class="nav navbar-nav navbar-right" id="menu-the-main-menu" style="margin-top: 10px;">
+          <li class="dropdown">
+            <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Data Submission <b class="caret"></b></a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="eventLoader.action">Submit Data</a></li>
               <li><a href="eventDetail.action">Search and Edit Data</a></li>
@@ -33,8 +34,8 @@
               <li><a href="eventReport.action">Report</a></li>
             </ul>
           </li>
-          <li id="admin_li" class="dropdown" style="display:none;">
-            <a href="#" data-toggle="dropdown">Admin <span class="caret"></span></a>
+          <li class="dropdown">
+            <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Admin <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="eventLoader.action?filter=pr">Project Registration</a></li>
               <li><a href="metadataSetup.action?type=e">Metadata Setup</a></li>
@@ -42,29 +43,44 @@
               <li><a href="projectManagement.action">Project Management</a></li>
             </ul>
           </li>
-          <li id="menu-item-11" class="dropdown">
-            <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true"><span class="glyphicon glyphicon-user" style="margin-right:5px;background-color:#C2C2C2;padding:3px"></span><div class="HeaderLink" id="currUserName" style="display:inline-block"></div> <span class="caret"></span></span></a>
+          <li class="dropdown">
+            <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true"><span class="glyphicon glyphicon-user" style="margin-right:5px;background-color:#C2C2C2;padding:3px"></span><div class="HeaderLink" id="currUserName" style="display:inline-block"></div><span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
-              <%--<li><a href="accountInformation.action">Account Information</a></li>--%>
               <li><a href="logout.action">Log Out</a></li>
             </ul>
           </li>
         </ul>
-      </nav>
+      </div><!--/.nav-collapse-->
     </div>
+    <div id="header-border"></div>
   </div>
-
-  <div id="header-border"></div>
 </header>
 
 <jsp:include page="include/i_admin.jsp" />
 <script>
   $(document).ready(function() {
-    $('#menu-the-main-menu li').mouseover(function() {
-      $(this).find('ul:first').show();
-    });
-    $('#menu-the-main-menu li, #menu-the-main-menu li ul').mouseleave(function() {
-      $('#menu-the-main-menu li ul').hide();
-    });
+    function toggleNavbarMethod() {
+      if (!isTouchDevice() && $(window).width() > 768) {
+        $('.navbar .dropdown').on('mouseover', function(){
+          $('.dropdown-toggle', this).trigger('click');
+        }).on('mouseout', function(){
+          $('.dropdown-toggle', this).trigger('click').blur();
+        });
+      }
+      else {
+        $('.navbar .dropdown').off('mouseover').off('mouseout');
+      }
+    }
+
+    // toggle navbar hover
+    toggleNavbarMethod();
+
+    // bind resize event
+    $(window).resize(toggleNavbarMethod);
   });
+
+  function isTouchDevice() {
+    return window.ontouchstart !== undefined;
+  }
+
 </script>
