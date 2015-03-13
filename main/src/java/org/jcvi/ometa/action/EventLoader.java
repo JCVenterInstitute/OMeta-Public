@@ -399,7 +399,7 @@ public class EventLoader extends ActionSupport implements Preparable {
     private String getResultMessage() {
         String resultMessage;
         if(this.status.equals(SUBMISSION_STATUS_SUBMIT)) {
-            resultMessage = "Data successfully submitted to the DPCC.";
+            resultMessage = "Data successfully submitted to the OMETA.";
         } else if(this.status.equals(SUBMISSION_STATUS_VALIDATE)) {
             resultMessage = "Data submission is validated.";
         } else {
