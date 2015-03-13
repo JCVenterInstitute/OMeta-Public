@@ -49,6 +49,9 @@
               <a href="/ometa/secureIndex.action">Dashboard</a>
             </li>
             <li>Admin</li>
+            <li>
+              <a href="/ometa/projectManagement.action">Project Management</a>
+            </li>
             <li>Project Setup</li>
           </ol>
         </div>
