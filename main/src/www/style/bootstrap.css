@@ -6230,7 +6230,7 @@ button.close {
 }
 
 #header-border{
-    width: 1540px;
+    max-width: 1540px;
     border-bottom: thick solid #0081b3;
     margin-right: auto;
     margin-left: auto;

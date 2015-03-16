@@ -567,7 +567,9 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
 .ui-datepicker-trigger { vertical-align : middle; }
 .ui-combobox { position: relative; display: inline-block; }
 .ui-button { position: relative; margin-left: -1px; padding: 0; top:0; bottom:0; height:24px; }
-.ui-autocomplete-input { margin: 0; padding: 1px; width: 470px; vertical-align:top; padding-left: 5px;}
+@media (max-width: 767px) {
+    .ui-autocomplete-input { margin: 0; padding: 1px; width: 470px; vertical-align:top; padding-left: 5px;}
+}
 .ui-autocomplete { max-height: 200px; overflow-y: auto; overflow-x: hidden; padding-right: 20px; }
 .ui-icon { width: 16px; height: 16px; background-image: url(images/ui-icons_72a7cf_256x240.png); }
 

@@ -46,7 +46,7 @@
           <li class="dropdown">
             <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true"><span class="glyphicon glyphicon-user" style="margin-right:5px;background-color:#C2C2C2;padding:3px"></span><div class="HeaderLink" id="currUserName" style="display:inline-block"></div><span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
-              <li><a href="logout.action">Log Out</a></li>
+              <li><a href="logout.action"><span class="glyphicon glyphicon-log-out" style="margin-right:5px;padding:3px"></span>Log Out</a></li>
             </ul>
           </li>
         </ul>
