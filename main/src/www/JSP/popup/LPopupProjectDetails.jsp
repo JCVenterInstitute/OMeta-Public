@@ -56,8 +56,8 @@
   }
 
   $(function() {
-    var projectParam = '${projectName}';
-    var displayAttributes = '${ids}';
+    var projectParam = "${projectName}";
+    var displayAttributes = "${ids}";
     displayAttributes = displayAttributes.split(",");
 
     $.each(displayAttributes, function(i,v) {
