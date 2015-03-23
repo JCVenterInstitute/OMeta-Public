@@ -4,6 +4,10 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.sun.tools.jxc.apt.Const;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.struts2.ServletActionContext;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.exception.ForbiddenResourceException;
@@ -25,33 +29,53 @@ public class GCIDMetadata extends ActionSupport {
 
     private ReadBeanPersister readPersister;
     private final Long bioSampleLookupValueId = 9132686064399L;
-    private String filePath;
+    private final Long bioProjectLookupValueId = 9132686064394L;
+    private String attrFilePath;
+    private String attrMappingFilePath;
+    private String bioProjectFilePath;
     private String fileStoragePath;
 
     private String format;
     private String bioSampleId;
+    private String bioProjectId;
     private List<Map> pageElementList;
     private String jObject;
     private InputStream dataTemplateStream;
 
     private List<String> outputAttributes;
+    private Map<String, String> attrNameMapping;
+
+    private final String genbankExcelName = Constants.ATTR_GENBANK_ASSEMBLY_ACESSION;
+    private final String[] genbankDatabaseNames = {Constants.ATTR_GENBANK_XREF_CHROMOSOMES,
+            Constants.ATTR_GENBANK_XREF_PLASMIDS,Constants.ATTR_GENBANK_XREF_WGS};
 
     public GCIDMetadata() {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
         readPersister = new ReadBeanPersister(props);
         this.fileStoragePath = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH); //file storage area
-        this.filePath = props.getProperty(Constants.CONFIG_GCIDMETADATA_OUTPUTATTR_FILEPATH); //csv file area
+        this.attrFilePath = props.getProperty(Constants.CONFIG_GCIDMETADATA_OUTPUTATTR_FILEPATH); //csv file area
+        this.bioProjectFilePath = props.getProperty(Constants.CONFIG_GCIDMETADATA_BIOPROJECTFILE_FILEPATH); // bioproject id file area
+        this.attrMappingFilePath = props.getProperty(Constants.CONFIG_GCIDMETADATA_ATTRMAPPING_FILEPATH); //attribute mapping file area
     }
 
     public String getMetadata(){
         String rtnVal = SUCCESS;
+        boolean bioSample = false;
 
         try {
             String userName = ServletActionContext.getRequest().getRemoteUser();
 
             if(userName == null) throw new LoginRequiredException(Constants.LOGIN_REQUIRED_MESSAGE);
+            if(bioSampleId != null && !bioSampleId.isEmpty() && !bioSampleId.equals("")) bioSample = true;
 
-            List<Event> eventList = readPersister.getEventByLookupValue(bioSampleLookupValueId, bioSampleId);
+            List<Event> eventList ;
+            if(bioSample) {
+                eventList = readPersister.getEventByLookupValue(bioSampleLookupValueId, bioSampleId);
+            } else {
+                eventList = readPersister.getEventByLookupValue(bioProjectLookupValueId, bioProjectId);
+                this.generateAttrMapping();
+            }
+
             List<Long> projectIds = new ArrayList<Long>();
             List<Project> projects = new ArrayList<Project>();
             this.getOutputAttributes();
@@ -115,7 +139,7 @@ public class GCIDMetadata extends ActionSupport {
                     Map<Long, List<Event>> sampleIdVsEventList = getSampleIdVsEventList(sampleIdList);
 
                     for (Sample sample : samples) {
-                        Map<String, Object> sampleAttrMap = new LinkedHashMap<String, Object>();
+                        Map<String, Object> sampleAttrMap = new TreeMap<String, Object>(String.CASE_INSENSITIVE_ORDER);
                         sampleAttrMap.putAll(projectAttrMap);
                         sampleAttrMap.put(Constants.ATTR_SAMPLE_NAME, sample.getSampleName());
                         sampleAttrMap.put("sampleId", sample.getSampleId());
@@ -146,10 +170,12 @@ public class GCIDMetadata extends ActionSupport {
                                 sampleAttrMap.putAll(CommonTool.getAttributeValueMap(eventAttributes, false, new String[]{"Sample Status"}));
                             }
                         }
-                        if(sampleAttrMap.containsKey(Constants.ATTR_BIOSAMPLE_ID)){
+                        if(bioSample && sampleAttrMap.containsKey(Constants.ATTR_BIOSAMPLE_ID)){
                             //Only keep requested attributes
                             if(!this.outputAttributes.isEmpty())
                                 sampleAttrMap.keySet().retainAll(this.outputAttributes);
+                            tempSampleAttrList.add(sampleAttrMap);
+                        } else if(!bioSample && sampleAttrMap.containsKey(Constants.ATTR_BIOPROJECT_ID)){
                             tempSampleAttrList.add(sampleAttrMap);
                         }
                     }
@@ -164,32 +190,14 @@ public class GCIDMetadata extends ActionSupport {
 
             this.setPageElementList(tempSampleAttrList);
 
-            if(format != null && format.toLowerCase().equals(Constants.EXCEL)) {
+            if(!bioSample){
+                this.generateExcelForBioProject();
+
+                rtnVal = "bioproject-excel";
+            } else if(format != null && format.toLowerCase().equals(Constants.EXCEL)) {
                 rtnVal = "excel";
             } else if(format != null && format.toLowerCase().equals(Constants.CSV)){
-                StringBuffer dataBuffer = new StringBuffer();
-
-                //writes column headers
-                if(this.outputAttributes.isEmpty()){
-                    Map<String, Object> map = this.pageElementList.get(0);
-                    for(String attr : map.keySet()){
-                        dataBuffer.append(attr + ",");
-                    }
-                } else{
-                    for(String attr : this.outputAttributes){
-                        dataBuffer.append(attr + ",");
-                    }
-                }
-                dataBuffer.append("\n");
-
-                //write requested attributes
-                for(Map map : this.pageElementList) {
-                    for(String attr : this.outputAttributes){
-                        dataBuffer.append(map.get(attr) + ",");
-                    }
-                    dataBuffer.append("\n");
-                }
-                this.dataTemplateStream = IOUtils.toInputStream(dataBuffer.toString());
+                this.generateCSVForBioSample();
 
                 rtnVal = "csv";
             } else {
@@ -214,7 +222,7 @@ public class GCIDMetadata extends ActionSupport {
         BufferedReader br = null;
 
         try {
-            br =  new BufferedReader(new FileReader(fileStoragePath + filePath));
+            br =  new BufferedReader(new FileReader(fileStoragePath + attrFilePath));
             String inputLine;
             while ((inputLine = br.readLine()) != null) {
                 String[] attributes = inputLine.split(",");
@@ -237,6 +245,173 @@ public class GCIDMetadata extends ActionSupport {
                     br.close();
                 } catch (IOException e) {
                     e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void generateCSVForBioSample(){
+        StringBuffer dataBuffer = new StringBuffer();
+
+        //writes column headers
+        if(this.outputAttributes.isEmpty()){
+            Map<String, Object> map = this.pageElementList.get(0);
+            for(String attr : map.keySet()){
+                dataBuffer.append(attr + ",");
+            }
+        } else{
+            for(String attr : this.outputAttributes){
+                dataBuffer.append(attr + ",");
+            }
+        }
+        dataBuffer.append("\n");
+
+        //write requested attributes
+        for(Map map : this.pageElementList) {
+            for(String attr : this.outputAttributes){
+                dataBuffer.append(map.get(attr) + ",");
+            }
+            dataBuffer.append("\n");
+        }
+        this.dataTemplateStream = IOUtils.toInputStream(dataBuffer.toString());
+    }
+
+    public void generateExcelForBioProject(){
+        ByteArrayOutputStream bos = null;
+        FileInputStream file = null;
+
+        try {
+            file = new FileInputStream(new File(fileStoragePath + bioProjectFilePath));
+
+            //Get the workbook instance for XLSM file
+            XSSFWorkbook workbook = new XSSFWorkbook(file);
+
+            //Get sheets for Project and Sample from the workbook
+            XSSFSheet projectSheet = workbook.getSheetAt(0);
+            XSSFSheet sampleSheet = workbook.getSheetAt(1);
+
+            //Get the project row includes attribute names
+            Row projectAttrRow = projectSheet.getRow(2);
+
+            //Get the sample row includes attribute names
+            Row sampleAttrRow = sampleSheet.getRow(3);
+
+            int rowIndex = 3;
+            //For each row, iterate through each columns
+            for (Map map : this.pageElementList) {
+                Row projectValRow = projectSheet.getRow(rowIndex);
+                Row sampleValRow = sampleSheet.getRow(rowIndex + 1);
+
+                if (projectValRow == null)
+                    projectValRow = projectSheet.createRow(rowIndex);
+
+                if (sampleValRow == null)
+                    sampleValRow = sampleSheet.createRow(rowIndex + 1);
+
+                createAttrValRow(map, projectAttrRow, projectValRow);
+                createAttrValRow(map, sampleAttrRow, sampleValRow);
+
+                //Increase row if there are more data to add
+                rowIndex++;
+            }
+
+            bos = new ByteArrayOutputStream();
+            workbook.write(bos);
+            this.dataTemplateStream = new ByteArrayInputStream(bos.toByteArray());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            logger.error(e.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.error(e.toString());
+        } catch (Exception e){
+            e.printStackTrace();
+            logger.error(e.toString());
+        } finally {
+            try {
+                if(bos != null) bos.close();
+                if(file != null) file.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                logger.error(e.toString());
+            }
+        }
+    }
+
+    private void generateAttrMapping(){
+        this.attrNameMapping = new LinkedHashMap<String, String>();
+        BufferedReader br = null;
+
+        try {
+            br =  new BufferedReader(new FileReader(fileStoragePath + attrMappingFilePath));
+            String inputLine;
+            while ((inputLine = br.readLine()) != null) {
+                String[] attributes = inputLine.split(",");
+
+                this.attrNameMapping.put(attributes[0], attributes[1]);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            logger.error(e.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+            logger.error(e.toString());
+        } catch (Exception e){
+            e.printStackTrace();
+            logger.error(e.toString());
+        }finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void createAttrValRow(Map map, Row attrRow, Row valRow){
+        //Write attribute value to related cell
+        for(int index = 0; index < attrRow.getLastCellNum(); index++){
+            Cell attrCell = attrRow.getCell(index);
+            Cell valCell = valRow.getCell(index);
+
+            if(valCell == null){
+                valCell = valRow.createCell(index);
+                valCell.setCellType(Cell.CELL_TYPE_STRING);
+            }
+
+            String attrName = attrCell.getStringCellValue();
+
+
+            if (map.containsKey(attrName)) {
+                valCell.setCellValue(
+                        (String) map.get(attrName));
+            } else if (attrName.equals(this.genbankExcelName)) { //Check if cell is related to genbank
+                StringBuilder sb = new StringBuilder();
+                String delim = "";
+
+                for (int i = 0; i < this.genbankDatabaseNames.length; i++) {
+                    String genbankDatabaseName = this.genbankDatabaseNames[i];
+
+                    if (map.containsKey(genbankDatabaseName)) {
+                        sb.append(delim).append(
+                                (String) map.get(genbankDatabaseName));
+                        delim = ",";
+                    }
+                }
+
+                valCell.setCellValue(sb.toString());
+            } else {
+                //Check if column name is mapped
+                if (this.attrNameMapping.containsKey(attrName)) {
+                    String attrMapVal = this.attrNameMapping.get(attrName);
+
+                    attrCell.setCellValue(attrMapVal);
+                    if (map.containsKey(attrMapVal)) {
+                        valCell.setCellValue(
+                                (String) map.get(attrMapVal));
+                    }
                 }
             }
         }
@@ -295,7 +470,7 @@ public class GCIDMetadata extends ActionSupport {
             lea.add(ea);
         }
         if (eventIdVsAttributes.size() == 0) {
-            logger.debug("Returning empty results from getEventIdVsAttributeList  for input list of size " + allEventIds.size());
+            logger.debug("Returning empty results from getEventIdVsAttributeList for input list of size " + allEventIds.size());
         }
         return eventIdVsAttributes;
     }
@@ -338,5 +513,13 @@ public class GCIDMetadata extends ActionSupport {
 
     public void setDataTemplateStream(InputStream dataTemplateStream) {
         this.dataTemplateStream = dataTemplateStream;
+    }
+
+    public String getBioProjectId() {
+        return bioProjectId;
+    }
+
+    public void setBioProjectId(String bioProjectId) {
+        this.bioProjectId = bioProjectId;
     }
 }

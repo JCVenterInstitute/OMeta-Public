@@ -60,6 +60,15 @@
 
         <default-interceptor-ref name="defaultStack" />
 
+        <action name="forceLoginForGCIDMetadata" class="org.jcvi.ometa.action.ForceLogin" method="silentRedirect">
+            <result name="success" type="redirectAction">
+                <param name="actionName">gcidMetadata</param>
+                <param name="namespace">/</param>
+                <param name="bioSampleId">${bioSampleId}</param>
+                <param name="isExcel">${isExcel}</param>
+            </result>
+        </action>
+
         <action name="forceLoginForProductionStatus" class="org.jcvi.ometa.action.ForceLogin" method="silentRedirect">
             <result name="success" type="redirectAction">
                 <param name="actionName">productionStatus</param>
@@ -96,7 +105,6 @@
                 <param name="attributes">${attributes}</param>
             </result>
         </action>
-
 
         <action name="productionStatus" class="org.jcvi.ometa.action.ProductionStatus" method="statusPage">
             <result name="success">/JSP/ProductionStatus.jsp</result>
@@ -387,6 +395,31 @@
 
     <!-- AJAX -->
     <package name="json" extends="json-default">
+        <action name="gcidMetadata" class="org.jcvi.ometa.action.GCIDMetadata" method="getMetadata">
+            <result name="success">/JSP/GCIDMetadata.jsp</result>
+            <result name="error">/JSP/GCIDMetadata.jsp</result>
+            <result name="login" type="redirectAction">
+                <param name="actionName">forceLoginForGCIDMetadata</param>
+                <param name="namespace">/</param>
+                <param name="bioSampleId">${bioSampleId}</param>
+                <param name="isExcel">${isExcel}</param>
+            </result>
+            <result name="json" type="json">
+                <param name="root">pageElementList</param>
+            </result>
+            <result name="forbidden">/JSP/GCIDMetadata.jsp</result>
+            <result name="excel">/JSP/GCIDMetadataExcel.jsp</result>
+            <result name="csv" type="stream">
+                <param name="contentType">application/octet-stream</param>
+                <param name="contentDisposition">attachment;filename="GCID-Metadata.csv"</param>
+                <param name="inputName">dataTemplateStream</param>
+            </result>
+            <result name="bioproject-excel" type="stream">
+                <param name="contentType">application/vnd.ms-excel</param>
+                <param name="contentDisposition">attachment;filename="BRC_GSC_Metadata_Collection v1.32 Bacteria.xlsm"</param>
+                <param name="inputName">dataTemplateStream</param>
+            </result>
+        </action>
         <action name="sharedAjax" class="org.jcvi.ometa.action.ajax.SharedAjax" method="runAjax">
             <result name="success" type="json"/>
             <result name="error" type="json"/>
