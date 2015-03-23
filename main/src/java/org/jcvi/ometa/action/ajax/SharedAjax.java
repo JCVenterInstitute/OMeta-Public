@@ -68,14 +68,336 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
 
     private String userName;
 
+    private String projectPopupAttributes;
+
     public SharedAjax() {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
         readPersister = new ReadBeanPersister(props);
+
+        this.projectPopupAttributes = props.getProperty(Constants.CONFIG_PROJECT_POPUP_ATTRS);
     }
 
     public SharedAjax(ReadBeanPersister readPersister) {
         this.readPersister = readPersister;
     }
+
+    public String singleProject() {
+        String returnValue = ERROR;
+
+        try {
+            aaData = new ArrayList<Map>();
+
+            ProjectMap pMap = this.getProjectInformation(this.projectId, true);
+
+            Map<String, Object> projectMap = new LinkedHashMap<String, Object>();
+
+            projectMap.put(Constants.ATTR_PROJECT_NAME, pMap.getProject().getProjectName());
+
+            LookupValue registrationLV = readPersister.getLookupValue(Constants.EVENT_PROJECT_REGISTRATION, Constants.LOOKUP_VALUE_TYPE_EVENT_TYPE);
+            List<EventMetaAttribute> registrationEMAList = readPersister.getEventMetaAttributes(this.projectId, registrationLV.getLookupValueId());
+            final List<String> sortedMetaAttributeNames = new ArrayList<String>(registrationEMAList.size());
+            for(EventMetaAttribute ema : registrationEMAList) {
+                sortedMetaAttributeNames.add(ema.getLookupValue().getName());
+            }
+            //CommonTool.sortEventMetaAttributeByOrder(registrationEMAList);
+
+            List<ProjectAttribute> projectAttributes = readPersister.getProjectAttributes(this.projectId);
+            List<SampleMetaAttribute> allSampleMetaAttributes = readPersister.getSampleMetaAttributes(this.projectId);
+
+            Collections.sort(projectAttributes, new Comparator<ProjectAttribute>() {
+                @Override
+                public int compare(ProjectAttribute pa1, ProjectAttribute pa2) {
+                    Integer pa1Index = sortedMetaAttributeNames.indexOf(pa1.getMetaAttribute().getLookupValue().getName());
+                    Integer pa2Index = sortedMetaAttributeNames.indexOf(pa2.getMetaAttribute().getLookupValue().getName());
+                    return pa1Index.compareTo(pa2Index);
+                }
+            });
+
+            for (ProjectAttribute projAttr : projectAttributes) {
+                ProjectMetaAttribute pma = projAttr.getMetaAttribute();
+                if(!pma.isActive()) { //skip inactive attribute
+                    continue;
+                }
+                LookupValue tempLookupValue = projAttr.getMetaAttribute().getLookupValue();
+                Object attrValue = ModelValidator.getModelValue(tempLookupValue, projAttr);
+                if(tempLookupValue != null && tempLookupValue.getName() != null) {
+                    if(attrValue!=null) {
+                        if (tempLookupValue.getName().toLowerCase().contains("status")
+                                && attrValue.getClass() == java.lang.Integer.class) {
+                            attrValue = (Integer)attrValue == 0 ? "Ongoing" : "Completed";
+                        } else if(attrValue.getClass() == Timestamp.class || attrValue.getClass() == Date.class) {
+                            attrValue = CommonTool.convertTimestampToDate(attrValue);
+                        }
+                    }
+                    projectMap.put(tempLookupValue.getName(), attrValue);
+                }
+            }
+
+            List<String> attributeList = new ArrayList<String>();
+            for (SampleMetaAttribute sma : allSampleMetaAttributes) {
+                String tempMetaName = sma.getLookupValue().getName();
+                if (!attributeList.contains(tempMetaName)) {
+                    attributeList.add(tempMetaName);
+                }
+            }
+
+            projectMap.put("Project Registration", CommonTool.convertTimestampToDate(pMap.getProject().getCreationDate()));
+            projectMap.put("editable", pMap.isEditable()?1:0);
+
+            aaData.add(projectMap);
+            aaData.add(attributeList);
+
+            returnValue = SUCCESS;
+        } catch (Exception ex) {
+            logger.error("Exception in Shared AJAX : " + ex.toString());
+            this.err = ex.toString();
+            ex.printStackTrace();
+        }
+
+        return returnValue;
+    }
+
+    public String projectInfoByUser() {
+        String returnValue = ERROR;
+
+        try {
+            aaData = new ArrayList<Map>();
+
+            this.getCurrentUserName();
+
+            Map<String, String> generalInfo = new HashMap<String, String>(2);
+            generalInfo.put("actor", this.userName);
+            generalInfo.put("attributes", this.projectPopupAttributes);
+            aaData.add(generalInfo);
+
+            List<String> displayFields = Arrays.asList(this.projectPopupAttributes.split(","));
+
+            List<Project> projects = null;
+            if(this.projectName != null && !this.projectName.isEmpty()) {
+                Project requestedProject = this.readPersister.getProject(this.projectName);
+                projects = new ArrayList<Project>(1);
+                projects.add(requestedProject);
+            } else {
+                projects = this.readPersister.getAuthorizedProjects(this.userName, AccessLevel.View);
+            }
+            for(Project project : projects) {
+                Map<String, Object> projectMap = new HashMap<String, Object>();
+                projectMap.put("project", project);
+
+                String projectPIName = "";
+                String projectCoPIName = "";
+
+                List<ProjectAttribute> projectAttributes = readPersister.getProjectAttributes(project.getProjectId());
+                Map<String, Object> attributeMap = new HashMap<String, Object>(projectAttributes.size());
+
+                for (ProjectAttribute pa : projectAttributes) {
+                    ProjectMetaAttribute pma = pa.getMetaAttribute();
+                    if(!pma.isActive()) { //skip inactive attribute
+                        continue;
+                    }
+                    LookupValue tempLookupValue = pa.getMetaAttribute().getLookupValue();
+                    Object attrValue = ModelValidator.getModelValue(tempLookupValue, pa);
+                    if(tempLookupValue != null && tempLookupValue.getName() != null) {
+                        String attributeName = tempLookupValue.getName();
+
+                        if(displayFields.contains(attributeName)) {
+                            if(attrValue != null) {
+                                if(attributeName.toLowerCase().contains("status") && attrValue.getClass() == java.lang.Integer.class) {
+                                    attrValue = (Integer) attrValue == 0 ? "Ongoing" : "Completed";
+                                } else if(attrValue.getClass() == Timestamp.class || attrValue.getClass() == Date.class) {
+                                    attrValue = CommonTool.convertTimestampToDate(attrValue);
+                                } else if(attributeName.equals("Project_PI_1 First_Name")) {
+                                    projectPIName = attrValue + " ";
+                                } else if(attributeName.equals("Project_PI_1 Last_Name")) {
+                                    projectPIName += attrValue;
+                                } else if(attributeName.equals("Project_PI_2 First_Name")) {
+                                    projectCoPIName = attrValue + " ";
+                                } else if(attributeName.equals("Project_PI_2 Last_Name")) {
+                                    projectCoPIName += attrValue;
+                                }
+                            }
+                        }
+                        attributeMap.put(tempLookupValue.getName().replaceAll("_", " "), attrValue);
+                    }
+                }
+
+                attributeMap.put("Project PI", projectPIName.isEmpty() ? "N/A" : projectPIName);
+                attributeMap.put("Project Co-PI", projectCoPIName.isEmpty() ? "N/A" : projectCoPIName);
+
+                projectMap.put("attributes", attributeMap);
+                aaData.add(projectMap);
+            }
+
+            returnValue = SUCCESS;
+        } catch (Exception ex) {
+            logger.error("Exception in Shared AJAX : " + ex.toString());
+            this.err = ex.toString();
+            ex.printStackTrace();
+        }
+
+        return returnValue;
+    }
+
+    public String sample() {
+        String returnValue = ERROR;
+
+        try {
+            aaData = new ArrayList<Map>();
+
+            List<Sample> samples;
+            if (sampleId != null && sampleId != 0) {
+                if(sampleLevel!=null && !sampleLevel.equals("1")) {
+                    samples = readPersister.getChildSamples(sampleId);
+                } else {
+                    samples = new ArrayList<Sample>();
+                    samples.add(readPersister.getSample(sampleId));
+                }
+            } else
+                samples = readPersister.getSamplesForProject(this.projectId);
+
+            sampleLevel = sampleLevel == null ? "0" : sampleLevel;
+            int intSampleLevel = Integer.parseInt(sampleLevel);
+            for (Sample sample : samples) {
+                if (intSampleLevel == 0 || (sample.getSampleLevel() != null && sample.getSampleLevel() == intSampleLevel)) { //filter by sample level
+                    Map<String, String> sampleMap = new HashMap<String, String>();
+                    sampleMap.put("id", ""+sample.getSampleId());
+                    sampleMap.put("name", sample.getSampleName());
+                    aaData.add(sampleMap);
+                }
+            }
+
+            returnValue = SUCCESS;
+        } catch (Exception ex) {
+            logger.error("Exception in Shared AJAX : " + ex.toString());
+            this.err = ex.toString();
+            ex.printStackTrace();
+        }
+
+        return returnValue;
+    }
+
+    public String eventTypeForProject() {
+        String returnValue = ERROR;
+
+        try {
+            List<LookupValue> eventNameList = readPersister.getEventTypesForProject(this.projectId);
+
+            if(filter != null && !filter.isEmpty()) {
+                boolean isSampleRegistration = filter.equals("sr");
+                boolean isProjectRegistration = filter.equals("pr");
+
+                List<LookupValue> filteredList = new ArrayList<LookupValue>();
+                for(LookupValue lv : eventNameList) {
+                    String eventName = lv.getName();
+                    if(isProjectRegistration) {
+                        if(eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)) {
+                            filteredList.add(lv);
+                        }
+                    } else if(isSampleRegistration){
+                        if(eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
+                            filteredList.add(lv);
+                        }
+                    } else {
+                        if(!eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)
+                                && !eventName.contains(Constants.EVENT_PROJECT_UPDATE)
+                                && !eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
+                            filteredList.add(lv);
+                        }
+                    }
+                }
+
+                aaData = filteredList;
+            } else {
+                aaData = eventNameList;
+            }
+
+            returnValue = SUCCESS;
+        } catch (Exception ex) {
+            logger.error("Exception in Shared AJAX : " + ex.toString());
+            this.err = ex.toString();
+            ex.printStackTrace();
+        }
+
+        return returnValue;
+    }
+
+    public String metadataForProject() {
+        String returnValue = ERROR;
+
+        try {
+            aaData = new ArrayList<Map>();
+
+            ProjectMap pMap = this.getProjectInformation(this.projectId, false);
+            if(pMap.isViewable()) { //only if the user has view permission on a project
+                Map<String, Object> containerMap = new HashMap<String, Object>();
+                List<Long> projectIds = new ArrayList<Long>();
+                projectIds.add(this.projectId);
+
+                if (subType == null)
+                    subType = "A";
+                if (subType.equals("P") || subType.equals("A")) {
+                    List<ProjectMetaAttribute> allProjectMetaAttributes = readPersister.getProjectMetaAttributes(projectIds);
+                    List<String> projectMetaList = new ArrayList<String>();
+                    if (subType.equals("A"))
+                        projectMetaList.add("Project Name");
+                    for (ProjectMetaAttribute pma : allProjectMetaAttributes) {
+                        if (!projectMetaList.contains(pma.getLookupValue().getName()) && pma.isActive()) {
+                            projectMetaList.add(pma.getLookupValue().getName());
+                        }
+                    }
+                    containerMap.put("project", projectMetaList);
+                }
+                if (subType.equals("S") || subType.equals("A")) {
+                    List<SampleMetaAttribute> allSampleMetaAttributes = readPersister.getSampleMetaAttributes(projectIds);
+                    List<String> sampleMetaList = new ArrayList<String>();
+                    if (subType.equals("A")) {
+                        sampleMetaList.add("Sample Name");
+                        sampleMetaList.add("Parent Sample");
+                    }
+                    for (SampleMetaAttribute sma : allSampleMetaAttributes) {
+                        if (!sampleMetaList.contains(sma.getLookupValue().getName()) && sma.isActive()) {
+                            sampleMetaList.add(sma.getLookupValue().getName());
+                        }
+                    }
+                    containerMap.put("sample", sampleMetaList);
+                }
+                if (subType.equals("E") || subType.equals("A")) {
+                    List<EventMetaAttribute> allEventMetaAttributes = readPersister.getEventMetaAttributes(projectIds);
+                    Map<String, List<String>> groupedEMA = new HashMap<String, List<String>>();
+                    for (EventMetaAttribute ema : allEventMetaAttributes) {
+                        if(ema.getEventTypeLookupValue() != null && ema.getLookupValue() != null && ema.isActive()) {
+                            String et = ema.getEventTypeLookupValue().getName();
+                            String name = ema.getLookupValue().getName();
+                            if(groupedEMA.containsKey(et)) {
+                                groupedEMA.get(et).add(name);
+                            } else {
+                                List<String> newList = new ArrayList<String>();
+                                newList.add(name);
+                                groupedEMA.put(et, newList);
+                            }
+                        }
+                    }
+                    containerMap.put("event", groupedEMA);
+                }
+                aaData.add(containerMap);
+            } else {
+                Map<String, String> errorMap = new HashMap<String, String>(1);
+                errorMap.put("error", Constants.DENIED_USER_VIEW_MESSAGE);
+                aaData.add(errorMap);
+            }
+
+            returnValue = SUCCESS;
+        } catch (Exception ex) {
+            logger.error("Exception in Shared AJAX : " + ex.toString());
+            this.err = ex.toString();
+            ex.printStackTrace();
+        }
+
+        return returnValue;
+    }
+
+
+
 
     public String runAjax() {
         String returnValue = ERROR;
@@ -272,11 +594,19 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
         return returnValue;
     }
 
+    private void getCurrentUserName() {
+        if(this.userName == null) {
+            this.userName = ServletActionContext.getRequest().getRemoteUser();
+        }
+    }
+
     private ProjectMap getProjectInformation(Long projectId, boolean includeEdit) throws Exception {
         ProjectMap pMap = null;
-        Project project = readPersister.getProject(projectId);
+        Project project = this.readPersister.getProject(projectId);
 
-        if(project!=null) {
+        this.getCurrentUserName();
+
+        if(project != null) {
             pMap = new ProjectMap();
             pMap.setProject(project);
 
@@ -284,7 +614,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
             projectNamesList.add(pMap.getProject().getProjectName());
 
             try { //check view permission
-                readPersister.getAuthorizedProjectNames(
+                this.readPersister.getAuthorizedProjectNames(
                         projectNamesList,
                         userName,
                         ResponseToFailedAuthorization.ThrowException,
@@ -296,7 +626,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
             }
             if(includeEdit) {
                 try { //check edit permission
-                    readPersister.getAuthorizedProjectNames(
+                    this.readPersister.getAuthorizedProjectNames(
                             projectNamesList,
                             userName,
                             ResponseToFailedAuthorization.ThrowException,

@@ -50,6 +50,7 @@
       width:100%;
       min-width: 165px;
     }
+    .datatable_table{width: 1500px;overflow-x: scroll;}
     .dataTables_length {
       height: 29px;
       vertical-align: middle;
@@ -136,7 +137,7 @@
               </div>
 
               <div id="projectTableDiv" style="margin:0 10px 5px 0;">
-                <table name="projectTable" id="projectTable" class="contenttable" style="width:180%;">
+                <table name="projectTable" id="projectTable" class="contenttable" style="width:95%;">
                   <tbody id="projectTableBody">
                   </tbody>
                 </table>
@@ -147,25 +148,22 @@
               <div id="sampleTableDivHeader" style="margin:25px 10px 0 0;">
                 <h2 class="csc-firstHeader middle-header">Sample Details</h2>
               </div>
-              <div id="sampleTableDiv" style="margin:0 10px 5px 0;clear:both">
-                <table name="sampleTable" id="sampleTable" class="contenttable" style="width:95%;">
+              <div id="sampleTableDiv" style="margin:0 10px 5px 0;clear:both;">
+                <table name="sampleTable" id="sampleTable" class="contenttable" style="min-width: 2000px;">
                   <thead id="sampleTableHeader">
-                  </thead>
-                  <tfoot id="sampleTableFoot">
                   <tr>
-                    <th>Sample Name</th>
-                    <th>Parent</th>
-                    <th>User</th>
-                    <th>Date</th>
                   </tr>
-                  </tfoot>
+                  </thead>
                   <tbody id="sampleTableBody"/>
                 </table>
-                <input onclick="_page.edit.sampleEvent();" class="btn btn-primary" disabled="true" type="button" value="Edit Sample" id="editSampleBtn" style="margin-top: 40px;display: block;" />
+                <input onclick="_page.edit.sampleEvent();" class="btn btn-primary" disabled="true" type="button" value="Edit Sample" id="editSampleBtn" style="margin-top: 20px;" />
               </div>
+
             </div>
           </div>
+
         </s:form>
+
       </div>
     </div>
   </div>
@@ -174,8 +172,6 @@
 <jsp:include page="../html/footer.html" />
 
 <script src="scripts/jquery/jquery.dataTables.js"></script>
-<script src="scripts/jquery/jquery.colReorderWithResize.js"></script>
-<script src="scripts/jquery/jquery.dataTables.columnFilter.js"></script>
 <script src="scripts/page/event.detail.js"></script>
 <script>
   $(document).ready(function() {
@@ -201,83 +197,17 @@
     });
     $('#eventToggleImage, #sampleToggleImage, #table_openBtn').attr('src', openBtn);
 
-    <!-- SAMPLE TABLE -->
-    /*sDT = $("#sampleTable").dataTable({
-     "sDom": '<"datatable_top"lf><"datatable_table"rt><"datatable_bottom"ip>',
-     "bProcessing": true,
-     "bServerSide": true,
-     "sPaginationType": "full_numbers",
-     "sAjaxSource": "",
-     "iDeferLoading": 0, // no initial loading flag
-     "fnServerData": function (sSource, aoData, fnCallback) {
-     if(sSource!=='') {
-     $.ajax({
-     dataType: 'json',
-     type: "POST",
-     url: sSource,
-     data: aoData,
-     success: function(json) {
-     if(json && json.aaData) {
-     var rows = [];
-     $.each(json.aaData, function(ri,rowData) {
-     var row = [], attributes;
-     row.push(
-     "<img src='images/dataTables/details_open.png' id='rowDetail_openBtn'/>",
-     rowData.sampleName + "<input type='checkbox' style='margin-left:6px;' id='sampleCB_" + rowData.sample.sampleId + "'/>",
-     rowData.parentSampleName,
-     rowData.actor,
-     rowData.createdOn
-     );
-     if (rowData.attributes) {
-     var headers = '', values = '';
-     $.each(rowData.attributes, function (ai, av) {
-     headers += '<td>' + ai + '</td>';
-     values += '<td>' + av + '</td>';
-     })
-     attributes = '<tr class="even">' + headers + '</tr><tr class="odd">' + values + '</tr>';
-     } else {
-     attributes = '<tr class="odd"><td colspan="6">No Data</td></tr>';
-     }
-     row.push(attributes);
-
-     rows.push(row);
-     })
-     }
-     json.aaData = rows;
-     fnCallback(json);
-
-     $('#projectTableDivHeader').show();
-     $('#projectTableDiv').show();
-     $('#toggleProjectDetails').attr('src', "images/dataTables/details_close.png");
-     $('#sampleTableDivHeader').show();
-     $('#sampleTableDiv').show();
-     $("#loadingImg").hide();
-     }
-     });
-     }
-     },
-     "bAutoWidth" : false,
-     "aoColumnDefs": [
-     {"sWidth": "23px", "bSortable": false, "aTargets": [ 0 ]},
-     {"sWidth": "30%", "aTargets":[1]},
-     {"sWidth": "30%", "aTargets":[2]},
-     {"sWidth": "20%", "aTargets":[3]},
-     {"sWidth": "20%", "aTargets":[4]},
-     {"bSearchable": true, "bVisible": false, "aTargets": [ 5 ]}
-     ]
-     }).fnFilterOnReturn();*/
-
     //add click listener on row expander
     $('tbody td #rowDetail_openBtn').live('click', function () {
       var _row = this.parentNode.parentNode, _is_event=(_row.parentNode.id.indexOf('event')>=0), _table=_is_event?eDT:sDT;
       if(this.src.indexOf('details_close')>=0){
         this.src = openBtn;
         _table.fnClose(_row);
-      }else {
+      } else {
         this.src = closeBtn;
-        _table.fnOpen(_row, subrow_html.replace(/\\$d\\$/, _table.fnGetData(_row)[(_is_event ? 6 : 5)]), '_details');
+        _table.fnOpen(_row, subrow_html.replace(/\\$d\\$/, _table.fnGetData(_row)[(_is_event?6:5)]), '_details');
         $('td._details').attr('colspan', 7); //fix misalignment issue in chrome by incresing colspan by 1
-        $('td._details>div').css('width', $('#projectTableDiv').width() - 90);
+        $('td._details>div').css('width', $('#projectTableDiv').width()-90);
       }
     });
 
@@ -301,11 +231,8 @@
         utils.preSelect('_sampleSelect', sampleId);
       }
     }
-
     utils.error.check();
   });
-
 </script>
 </body>
 </html>
-
