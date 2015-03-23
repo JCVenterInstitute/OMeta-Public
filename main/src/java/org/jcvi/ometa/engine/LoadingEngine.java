@@ -428,7 +428,7 @@ public class LoadingEngine {
                         FileUtils.writeLines(singleEventFile, lines);
 
                         try {
-                            String eventTarget = writer.writeEvent(singleEventFile, eventName, null, false, eventFile.getParent(), submissionId, usage.getSubmitter());
+                            String eventTarget = writer.writeEvent(singleEventFile, eventName, null, false, eventFile.getParent(), submissionId, userName);
                             //logWriter.write(String.format("[%d] loaded event%s.\n", lineCount, (eventTarget == null ? "" : " for '" + eventTarget + "'")));
                             processedWriter.write(currLine + "\n");
                             successCount++;

@@ -40,8 +40,8 @@ public class EventLoadHelper {
             this.readPersister = readPersister;
         }
         this.fileStoragePath = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH);
-
-        this.dataRole = props.getProperty(Constants.CONFIG_DPCC_DATA_ROLE);
+        /*Not necessary for internal OMETA
+        this.dataRole = props.getProperty(Constants.CONFIG_DPCC_DATA_ROLE);*/
         this.dpccHelper = new DPCCHelper();
     }
 
@@ -62,6 +62,8 @@ public class EventLoadHelper {
         // check if the user has data support role
         boolean isUserDataSupporter = false;
         // set containing role names
+
+        /* Not necessary for internal OMETA
         String[] dataRoleArr = this.dataRole.split(",");
         Set<String> dataRoleSet = new HashSet<String>(Arrays.asList(dataRoleArr));
         // check if current user has proper role to update status after data is submitted to DPCC
@@ -72,7 +74,7 @@ public class EventLoadHelper {
                 isUserDataSupporter = true;
                 break;
             }
-        }
+        }*/
 
         Project loadingProject = null;
         Sample loadingSample = null;
