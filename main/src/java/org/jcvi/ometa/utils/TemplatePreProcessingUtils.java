@@ -60,8 +60,8 @@ public class TemplatePreProcessingUtils {
             ));
         }
 
-        //if(isSampleRegistration || sampleRequired) { //remove sample name for sample registration
-        if(!isSampleRegistration && sampleRequired) {
+        //if(!isSampleRegistration && sampleRequired) { //remove sample name for sample registration
+        if(isSampleRegistration || sampleRequired) {
             headers.add(1, new HeaderDetail(Constants.ATTR_SAMPLE_NAME, true, "string", "", null));
         }
 
