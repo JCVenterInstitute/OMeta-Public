@@ -62,12 +62,12 @@
     function toggleNavbarMethod() {
       if (!isTouchDevice() && $(window).width() > 768) {
         $('.navbar .dropdown').on('mouseover', function(){
-          $('.dropdown-toggle', this).trigger('click');
-        }).on('mouseout', function(){
-          $('.dropdown-toggle', this).trigger('click').blur();
+          $(this).find('ul:first').show();
         });
-      }
-      else {
+        $('.navbar .dropdown, .navbar .dropdown ul').on('mouseout', function(){
+          $('.dropdown ul').hide();
+        });
+      } else {
         $('.navbar .dropdown').off('mouseover').off('mouseout');
       }
     }
