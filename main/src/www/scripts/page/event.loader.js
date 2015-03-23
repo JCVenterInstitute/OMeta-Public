@@ -145,11 +145,19 @@ var _utils = {
         var $attributeDiv = $("#attributeInputDiv"); //where attributes are placed
         $attributeDiv.empty(); //empty any existing contents
 
+        var $autofillDiv = $("#autofill-option-button");
+        $autofillDiv.empty();
+        var autofill_no = 2; //to specify which column is going to be autofilled (nth-element)
+
         g_eventAttributes = [];
         g_gridLineCount=0;
         g_avDic={};
 
         var requireImgHtml = '<img class="attributeIcon" src="images/icon/info_r.png"/>';
+        var autofillButtonHtml = '<button type="button" class="btn btn-info btn-xs" id="all-$a$" onClick="dataAutofill(this.id)"><i class="glyphicon glyphicon-arrow-down"></i></button>' +
+            '<button type="button" id="sequence-$b$" onclick="dataAutofill(this.id)" style="border: none;background:none;padding:0; margin:0;"><img src="images/fill_sequence.png"></button>' +
+            '<button type="button" class="btn btn-primary btn-xs" id="clear-$c$" onClick="dataAutofill(this.id)" style="margin-right: $w$px;"><i class="glyphicon glyphicon-remove"></i></button>';
+
 
         // //add table headers for grid view
         var gridHeaders = '', $gridHeaders = $('<tr/>');
@@ -157,12 +165,17 @@ var _utils = {
         if(utils.checkNP(en)) {
           if(!utils.checkSR(en)) {
             $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG').append('Sample<br/>', requireImgHtml));
+            $autofillDiv.append(autofillButtonHtml.replace('$w$', '135').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
+            autofill_no+=1;
           } else {
             $gridHeaders.append(
                 $('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Sample Name<br/>', requireImgHtml),
                 $('<th/>').addClass('tableHeaderNoBG').append('Parent Sample'),
                 $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
             );
+            $autofillDiv.append(autofillButtonHtml.replace('$w$', '95').replace('$a$', 2).replace('$b$', 2).replace('$c$', 2),
+                autofillButtonHtml.replace('$w$', '180').replace('$a$', 3).replace('$b$', 3).replace('$c$', 3));
+            autofill_no = 5; //set to 5 to pass Public column
           }
         } else {
           if(utils.checkPR(en)) {
@@ -170,6 +183,8 @@ var _utils = {
                 $('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Project Name<br/>', requireImgHtml)
                 // $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
             );
+            $autofillDiv.append(autofillButtonHtml.replace('$w$', '95').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
+            autofill_no+=1;
           }
         }
 
@@ -230,6 +245,8 @@ var _utils = {
                 });
               }
               inputElement += '<select id="'  + (isRequired ? 'req_' : '') + 'select_$id$" name="$lt$attributeValue" style="min-width:35px;width:200px;" ' + (isMulti ? 'multiple="multiple"':'') + '>' + options + '</select>';
+
+              $autofillDiv.append(autofillButtonHtml.replace('$w$', '130').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
             } else {
               var maDatatype = _ma.lookupValue.dataType;
               if(maDatatype === 'file') { //file
@@ -240,9 +257,13 @@ var _utils = {
                     '  <input type="text" id="' + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$"/>' +
                     '  <label for="' + maDatatype + '_$id$" class="input-group-addon" style="padding:4px;"><span><i class="fa fa-calendar"></i></span></label>' +
                     '</div>';
+
+                $autofillDiv.append(autofillButtonHtml.replace('$w$', '105').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
               } else { //text input
                 isText = true;
                 inputElement += '<input type="text" id="' + (isRequired ? 'req_' : '') + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$"/>';
+
+                $autofillDiv.append(autofillButtonHtml.replace('$w$', '92').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
               }
             }
             inputElement = inputElement.replace(/\$id\$/g,_ma.lookupValue.name.replace(/ /g,"_") + "_$id$");
@@ -272,6 +293,7 @@ var _utils = {
             count++;
           }
 
+          autofill_no+=1;
           $('#dataSubmissionScope').show();
         });
         //utils.smartDatePicker(); //initialise date fields
@@ -279,6 +301,8 @@ var _utils = {
         //add attribut headers to the grid view and add empty rows
         $('thead#gridHeader').append($gridHeaders);
         _utils.addGridRows(null, en);
+
+        $("#autofill-option").width($('thead#gridHeader').width() + 50);
 
         return;
       },
@@ -328,6 +352,7 @@ var _utils = {
             eventName,
             callbacks.meta
         );
+
         if(utils.checkNP(eventName) && g_sampleIds) {
           _utils.makeAjax(
               'sharedAjax.action',
@@ -581,13 +606,13 @@ var button = {
                     'value': '1'
                   }))
           );
-          $eventLine.append(
-              $('<td/>').append(
-                  $('<select/>').attr({
-                    'name': 'gridList[' + g_gridLineCount + '].projectPublic'
-                  }).append(vs.ynoption)
-              )
-          );
+          /*$eventLine.append(
+           $('<td/>').append(
+           $('<select/>').attr({
+           'name': 'gridList[' + g_gridLineCount + '].projectPublic'
+           }).append(vs.ynoption)
+           )
+           );*/
         }
       }
       var ltVal, bean, avCnt = 0;
@@ -719,8 +744,11 @@ function comboBoxChanged(option, id) {
 
       //Hide Sample dropdown if SampleRegistration is selected
       var _selectedType = $('input[name="loadType"]:checked').val();
-      if(utils.checkSR(option.text) || _selectedType === 'grid') $("#interactive-submission-table tr:last").hide();
-      else $("#interactive-submission-table tr:last").show();
+      if(utils.checkSR(option.text) || _selectedType === 'grid') {
+        $("#interactive-submission-table tr:last").hide();
+      } else{
+        $("#interactive-submission-table tr:last").show();
+      }
     }
   } else if(id==='_sampleSelect') {
     /*if(option.value && option.value!=0 && option.text && option.text!='' && $('#_eventSelect').val() != 0) {
@@ -731,6 +759,35 @@ function comboBoxChanged(option, id) {
      callbacks.meta
      );
      }*/
+  }
+}
+
+function dataAutofill(id){
+  var idArr = id.split("-");
+  if(idArr[0] === "all"){
+    var $sampleFields = $('#gridBody tr td:nth-child(' + idArr[1] +') input');
+    var autofillValue = $("#s-name-autofill").val();
+
+    $sampleFields.each(function (i, v) {
+      $(v).val(autofillValue);
+    });
+  } else if(idArr[0] === "sequence"){
+    var $sampleFields = $('#gridBody tr td:nth-child(' + idArr[1] +') input');
+    var autofillValue = $("#s-name-autofill").val();
+    var index = 1;
+
+    $sampleFields.each(function (i, v) {
+      if(v.id != '' || v.className != ''){
+        $(v).val(autofillValue + index);
+        index+=1;
+      }
+    });
+  } else{
+    var $sampleFields = $('#gridBody tr td:nth-child(' + idArr[1] +') input');
+
+    $sampleFields.each(function (i, v) {
+      $(v).val("");
+    });
   }
 }
 

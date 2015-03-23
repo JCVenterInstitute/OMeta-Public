@@ -245,6 +245,10 @@
                   </s:if>
                 </div>
                 <div id="gridInputDiv" style="margin:25px 10px 0 0 ;overflow-x: auto;display:none;">
+                  <input class="input-sm" id="s-name-autofill" placeholder="Type autofill value..." style="position: absolute"/>
+                  <div id="autofill-option" style="margin-bottom: 10px;margin-top: 35px">
+                    <div id="autofill-option-button" style="margin-top: 10px;margin-left: 15px;display: none"></div>
+                  </div>
                   <table name="eventTable" id="eventTable" class="contenttable">
                     <thead id="gridHeader" style="background-color: #B6B6B6"></thead>
                     <tbody id="gridBody"></tbody>
@@ -301,7 +305,7 @@
                     <div id="files" class="files" style="padding-left:20px;"></div>
                   </div>
                   <p>
-                    Bulk data submissions must use one of the standard OMETA data submission templates available <a href="dpcc_help.action">here</a>. Please select your submission file using the “Choose File” button or drag it directly to the upload area.
+                    <%--Bulk data submissions must use one of the standard OMETA data submission templates available <a href="dpcc_help.action">here</a>. --%>Please select your submission file using the “Choose File” button or drag it directly to the upload area.
                     </br><br>
                     The data will be processed by the OMETA and upon completion you will receive an email notification containing a submission summary. The email notification may also include a list of data processing errors and instructions for re-submission.
                   </p>
@@ -366,6 +370,7 @@
         $('#gridInputDiv, #gridAddLineButton, #gridRemoveLineButton').show();
         $("#interactive-submission-table tr:last").hide();
         _utils.addGridRows(utils.getProjectName(), utils.getEventName());
+        $("#autofill-option").width($('thead#gridHeader').width() + 50);
       } else if(_selectedType==='file') {
         $('#fileInputDiv').show();
         $("#interactive-submission-table tr:last").hide();
@@ -381,7 +386,6 @@
         _utils.showPS();
       }
     });
-
     //preselect load type radio button
     var rtnJobType = (oldJobType===''||oldJobType==='form'||oldJobType==='template'?'form':oldJobType);
     $('input[name="loadType"][value='+rtnJobType+']').attr('checked', true);
@@ -399,7 +403,6 @@
     //preload project and event type
     if(oldProjectId) {
       changes.project(oldProjectId);
-
       var oldSampleName = '${sampleName}';
       var oldEventName = '${eventName}';
       var ids = '${ids}';
@@ -488,6 +491,11 @@
       $('#pageTitle').html('Edit Data');
       $('#eventTitle').html('Edit Data For');
     }
+
+    $('#s-name-autofill').on("keyup keypress change", function () {
+      if ($(this).val() == "") $("#autofill-option-button").hide();
+      else $("#autofill-option-button").show();
+    });
 
     $('#loadingImg').hide();
   });

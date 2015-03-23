@@ -31,7 +31,7 @@ body {
     width: 100%;
 } /* end #main_block #main_content_3c */
 #content_header { width: 523px; }
-#content { width:auto; }
+/*#content { width:auto; }*/
 #content {
     background: #ffffff;
     padding-left: 0;
