@@ -118,9 +118,9 @@ public class Constants {
     public static final String EVENT_SAMPLE_UPDATE = "SampleUpdate";
     public static final String EVENT_SEQUENCE_SUBMISSION = "Sequence Submission";
 
-    public static final String ATTR_PROJECT_NAME = "Project Name";
-    public static final String ATTR_SAMPLE_NAME = "Sample Name";
-    public static final String ATTR_PARENT_SAMPLE_NAME = "Parent Sample";
+    public static final String ATTR_PROJECT_NAME = "ProjectName";
+    public static final String ATTR_SAMPLE_NAME = "SampleName";
+    public static final String ATTR_PARENT_SAMPLE_NAME = "ParentSample";
     public static final String ATTR_PROJECT_STATUS = "Project Status";
     public static final String ATTR_SAMPLE_STATUS = "Sample_Status";
     public static final String ATTR_PUBLIC_FLAG = "Public";

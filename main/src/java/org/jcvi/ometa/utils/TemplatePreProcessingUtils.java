@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.jcvi.ometa.model.EventMetaAttribute;
 import org.jcvi.ometa.model.FileReadAttributeBean;
 import org.jcvi.ometa.model.GridBean;
+import org.jcvi.ometa.validation.ErrorMessages;
 import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.scratch.ScratchUtils;
 
@@ -39,8 +40,7 @@ public class TemplatePreProcessingUtils {
 
         headers.add(new HeaderDetail(Constants.ATTR_PROJECT_NAME, true, "string", "", null));
 
-        /*
-         remove sample information and public flag
+
         if (isSampleRegistration) { // parent sample name for sample registration
             headers.add(new HeaderDetail(Constants.ATTR_PARENT_SAMPLE_NAME, false, "string", "", null));
         }
@@ -48,7 +48,6 @@ public class TemplatePreProcessingUtils {
         if (isProjectRegistration || isSampleRegistration) { //public flag
             headers.add(new HeaderDetail(Constants.ATTR_PUBLIC_FLAG, true, "int", "", null));
         }
-        */
 
         boolean sampleRequired = false;
         for (EventMetaAttribute ema : emas) {
@@ -96,8 +95,8 @@ public class TemplatePreProcessingUtils {
         // csvContents.append("\n" + comments.toString());
 
         csvContents.append("\n" +
-                (!isProjectRegistration ? projectName : "") +
-                (sampleName != null && !sampleName.trim().isEmpty() ? "," + sampleName : "")
+                        (!isProjectRegistration ? projectName : "") +
+                        (sampleName != null && !sampleName.trim().isEmpty() ? "," + sampleName : "")
         );
         return IOUtils.toInputStream(csvContents.toString());
     }
@@ -165,7 +164,7 @@ public class TemplatePreProcessingUtils {
     }
 
     private String getComment(HeaderDetail detail) {
-        return String.format(this.mutatedComment, detail.getDataType(), detail.isRequired()?"*Required":"optional");
+        return String.format(this.mutatedComment, detail.getDataType(), detail.isRequired() ? "*Required" : "optional");
     }
 
     private void addValidations(int headerIndex, HeaderDetail detail, Sheet sheet) {
@@ -219,8 +218,12 @@ public class TemplatePreProcessingUtils {
         String fileType = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
 
         List<String> columns = new ArrayList<String>();
+
         String currProjectName = null;
+
         boolean hasSampleName = false;
+        boolean hasParentSampleName = false;
+        boolean hasPublicFlag = false;
 
         //Excel or CSV
         if(fileType.startsWith("xls")) {
@@ -236,6 +239,8 @@ public class TemplatePreProcessingUtils {
                         columns.add(this.extractRealAttributeName(attributeNames.getCell(i).getStringCellValue()));
                     }
                     hasSampleName = columns.indexOf(Constants.ATTR_SAMPLE_NAME) >= 0;
+                    hasParentSampleName = columns.indexOf(Constants.ATTR_PARENT_SAMPLE_NAME) >= 0;
+                    hasPublicFlag = columns.indexOf(Constants.ATTR_PUBLIC_FLAG) >= 0;
 
                     int startingRow = 1;
                     Row metaRow = sheet.getRow(startingRow);
@@ -251,7 +256,7 @@ public class TemplatePreProcessingUtils {
 
                         currProjectName = row.getCell(colIndex++).getStringCellValue();
                         if(!isProjectRegistration && !currProjectName.equals(projectName)) {
-                            throw new Exception("Multiple projects are found in the file");
+                            throw new Exception(ErrorMessages.TEMPLATE_MULTIPLE_PROJECT);
                         }
 
                         GridBean gBean = new GridBean();
@@ -263,10 +268,18 @@ public class TemplatePreProcessingUtils {
 
                         if(isProjectRegistration) {
                             gBean.setProjectName(currProjectName);
-                            gBean.setProjectPublic(this.getExcelCellValue(row.getCell(colIndex++)));
+                            if(hasPublicFlag) {
+                                gBean.setProjectPublic(this.getExcelCellValue(row.getCell(colIndex++)));
+                            }
                         } else if(isSampleRegistration) {
-                            gBean.setParentSampleName(this.getExcelCellValue(row.getCell(colIndex++)));
-                            gBean.setSamplePublic(this.getExcelCellValue(row.getCell(colIndex++)));
+                            if(hasSampleName){
+                                if(hasParentSampleName) {
+                                    gBean.setParentSampleName(this.getExcelCellValue(row.getCell(colIndex++)));
+                                }
+                                if(hasPublicFlag) {
+                                    gBean.setSamplePublic(this.getExcelCellValue(row.getCell(colIndex++)));
+                                }
+                            }
                         }
 
                         gBean.setBeanList(new ArrayList<FileReadAttributeBean>());
@@ -290,24 +303,28 @@ public class TemplatePreProcessingUtils {
             while ((line = reader.readNext()) != null) {
                 ++lineCount;
 
-                if(lineCount == 1) { //headers
+                if(lineCount == 1) { // event name header
                     if(line[0].startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && line[0].contains(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER)) { //skip event type line
                         continue;
                     } else {
-                        throw new Exception("missing event name in the first row.");
+                        throw new Exception(ErrorMessages.TEMPLATE_MISSING_HEADER_EVENT);
                     }
-                } else if(lineCount == 2) {
+
+                } else if(lineCount == 2) { // attribute headers
                     Collections.addAll(columns, line);
                     hasSampleName = columns.indexOf(Constants.ATTR_SAMPLE_NAME) >= 0;
-                } else {
+                    hasParentSampleName = columns.indexOf(Constants.ATTR_PARENT_SAMPLE_NAME) >= 0;
+                    hasPublicFlag = columns.indexOf(Constants.ATTR_PUBLIC_FLAG) >= 0;
+
+                } else { // data lines
                     int colIndex = 0;
 
-                    if (line.length < 1 ) {
-                            continue;
+                    if (line.length < 1 ) { // skip empty line
+                        continue;
                     }
 
-                    if(lineCount > Constants.TEMPLATE_MAX_ROW_LIMIT) {
-                        throw new Exception("Please use the Bulk Submission to load a large set of data.");
+                    if(lineCount > Constants.TEMPLATE_MAX_ROW_LIMIT) { // oversize template check
+                        throw new Exception(ErrorMessages.TEMPLATE_OVERSIZE);
                     }
 
                     if(line[0].startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) || line[0].startsWith("\"" + Constants.TEMPLATE_COMMENT_INDICATOR)) { //skip comment line
@@ -323,17 +340,21 @@ public class TemplatePreProcessingUtils {
                     }
 
                     if(line.length != columns.size()) {
-                        throw new Exception("number of columns of a data row does not match the number of header columns. check for missing or extra commas.");
+                        throw new Exception(ErrorMessages.TEMPLATE_COLUMN_COUNT_MISMATCH);
                     }
 
                     currProjectName = line[colIndex++];
+                    if(currProjectName == null || currProjectName.isEmpty()) {
+                        throw new Exception(ErrorMessages.TEMPLATE_PROJECT_MISSING);
+                    }
+
                     if(projectName == null) { //assign the first project
                         projectName = currProjectName;
                     }
 
                     if(!currProjectName.isEmpty()) {
                         if(!isProjectRegistration && !currProjectName.equals(projectName)) {
-                            throw new Exception("Multiple projects are found in the file");
+                            throw new Exception(ErrorMessages.TEMPLATE_MULTIPLE_PROJECT);
                         }
 
                         GridBean gBean = new GridBean();
@@ -345,10 +366,18 @@ public class TemplatePreProcessingUtils {
 
                         if(isProjectRegistration) {
                             gBean.setProjectName(currProjectName);
-                            gBean.setProjectPublic(line[(colIndex++)]);
+                            if(hasPublicFlag) {
+                                gBean.setProjectPublic(line[(colIndex++)]);
+                            }
                         } else if(isSampleRegistration) {
-                            gBean.setParentSampleName(line[(colIndex++)]);
-                            gBean.setSamplePublic(line[(colIndex++)]);
+                            if(hasSampleName){
+                                if(hasParentSampleName) {
+                                    gBean.setParentSampleName(line[(colIndex++)]);
+                                }
+                                if(hasPublicFlag) {
+                                    gBean.setSamplePublic(line[(colIndex++)]);
+                                }
+                            }
                         }
 
                         gBean.setBeanList(new ArrayList<FileReadAttributeBean>());
@@ -360,6 +389,9 @@ public class TemplatePreProcessingUtils {
                             fBean.setAttributeValue(line[colIndex]);
                             gBean.getBeanList().add(fBean);
                         }
+
+                        gBean.setParsedRowData(line);
+
                         gridBeans.add(gBean);
                     }
                 }
@@ -495,7 +527,7 @@ public class TemplatePreProcessingUtils {
     }
 
     private String extractRealAttributeName(String attributeHeader) {
-        String realAttributeName = attributeHeader;
+        String realAttributeName = attributeHeader.trim();
         if(attributeHeader.contains("[") && attributeHeader.endsWith("]")) {
             realAttributeName = attributeHeader.substring(attributeHeader.indexOf("[") + 1, attributeHeader.indexOf("]"));
         }
@@ -541,10 +573,10 @@ public class TemplatePreProcessingUtils {
 
         public String getDisplayHeader() { //append square brackets wrapped attribute name with a label
             String displayHeader = this.getName();
-//            Following lines commented for DPCC
-//            if(this.getLabel() != null && !this.getLabel().isEmpty()) {
-//                displayHeader = this.getLabel() + "[" + displayHeader + "]";
-//            }
+            //            Following lines commented for DPCC
+            //            if(this.getLabel() != null && !this.getLabel().isEmpty()) {
+            //                displayHeader = this.getLabel() + "[" + displayHeader + "]";
+            //            }
             return displayHeader;
         }
     }
