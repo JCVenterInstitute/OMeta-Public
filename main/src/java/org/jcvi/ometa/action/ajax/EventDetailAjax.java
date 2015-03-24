@@ -137,35 +137,37 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                         Map<String, Object> attributeMap = new LinkedHashMap<String, Object>();
 
                         List<Event> sampleEvents = this.readPersister.getEventsForSample(sample.getSampleId());
-                        Event registrationEvent = sampleEvents.get(0);
-                        List<EventMetaAttribute> registrationEMA = this.readPersister.getEventMetaAttributes(sample.getProjectId(), registrationEvent.getEventTypeLookupValue().getLookupValueId());
-                        final List<String> orderedEMANames = new ArrayList<String>(registrationEMA.size());
-                        for(EventMetaAttribute ema : registrationEMA) {
-                            orderedEMANames.add(ema.getLookupValue().getName());
-                        }
-
-                        List<SampleAttribute> sampleAttributes = sampleIdVsAttributes.get(sample.getSampleId());
-                        Collections.sort(sampleAttributes, new Comparator<SampleAttribute>() {
-                            @Override
-                            public int compare(SampleAttribute sa1, SampleAttribute sa2) {
-                                Integer sa1Index = orderedEMANames.indexOf(sa1.getMetaAttribute().getLookupValue().getName());
-                                Integer sa2Index = orderedEMANames.indexOf(sa2.getMetaAttribute().getLookupValue().getName());
-
-                                //Sample Attrs on top of list
-                                if(sa1Index == -1) sa1Index = orderedEMANames.size() + 1;
-                                if(sa2Index == -1) sa2Index = orderedEMANames.size() + 1;
-                                return sa1Index.compareTo(sa2Index);
+                        if(!sampleEvents.isEmpty()) {
+                            Event registrationEvent = sampleEvents.get(0);
+                            List<EventMetaAttribute> registrationEMA = this.readPersister.getEventMetaAttributes(sample.getProjectId(), registrationEvent.getEventTypeLookupValue().getLookupValueId());
+                            final List<String> orderedEMANames = new ArrayList<String>(registrationEMA.size());
+                            for (EventMetaAttribute ema : registrationEMA) {
+                                orderedEMANames.add(ema.getLookupValue().getName());
                             }
-                        });
-                        for (SampleAttribute sa : sampleIdVsAttributes.get(sample.getSampleId())) {
-                            if(sa.getMetaAttribute() != null) {
-                                LookupValue tempLookupValue = sa.getMetaAttribute().getLookupValue();
-                                Object attrValue = ModelValidator.getModelValue(tempLookupValue, sa);
-                                attributeMap.put(tempLookupValue.getName(), attributeDecorator(tempLookupValue, attrValue));
+
+                            List<SampleAttribute> sampleAttributes = sampleIdVsAttributes.get(sample.getSampleId());
+                            Collections.sort(sampleAttributes, new Comparator<SampleAttribute>() {
+                                @Override
+                                public int compare(SampleAttribute sa1, SampleAttribute sa2) {
+                                    Integer sa1Index = orderedEMANames.indexOf(sa1.getMetaAttribute().getLookupValue().getName());
+                                    Integer sa2Index = orderedEMANames.indexOf(sa2.getMetaAttribute().getLookupValue().getName());
+
+                                    //Sample Attrs on top of list
+                                    if (sa1Index == -1) sa1Index = orderedEMANames.size() + 1;
+                                    if (sa2Index == -1) sa2Index = orderedEMANames.size() + 1;
+                                    return sa1Index.compareTo(sa2Index);
+                                }
+                            });
+                            for (SampleAttribute sa : sampleIdVsAttributes.get(sample.getSampleId())) {
+                                if (sa.getMetaAttribute() != null) {
+                                    LookupValue tempLookupValue = sa.getMetaAttribute().getLookupValue();
+                                    Object attrValue = ModelValidator.getModelValue(tempLookupValue, sa);
+                                    attributeMap.put(tempLookupValue.getName(), attributeDecorator(tempLookupValue, attrValue));
+                                }
                             }
+                            sampleMap.put("attributes", attributeMap);
+                            sampleMap.put("event", registrationEvent.getEventTypeLookupValue().getName());
                         }
-                        sampleMap.put("attributes", attributeMap);
-                        sampleMap.put("event", registrationEvent.getEventTypeLookupValue().getName());
                     }
                     aaData.add(sampleMap);
 
