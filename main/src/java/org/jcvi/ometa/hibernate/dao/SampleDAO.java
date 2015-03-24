@@ -280,10 +280,14 @@ public class SampleDAO extends HibernateDAO {
         try {
             List results = null;
 
-            String sql = " select S1.*, S2.sample_name parent, CONCAT(A.actor_last_name,',',A.actor_first_name) user " +
+            String sql = " select S1.*, S2.sample_name parent, CONCAT(A.actor_last_name,',',A.actor_first_name) user," +
+                    " SA2.sampla_attribute_float attribute_value_float, SA2.sampla_attribute_str attribute_value_str, SA2.sampla_attribute_int attribute_value_int " +
                     " from sample S1 " +
                     " left join sample S2 on S1.sample_sample_parent_id=S2.sample_id " +
-                    " left join actor A on S1.sample_created_by=A.actor_id where ";
+                    " left join actor A on S1.sample_created_by=A.actor_id " +
+                    " left join (select SA1.* from sample_attribute SA1, lookup_value LV " +
+                    " where SA1.sampla_lkuvlu_attribute_id = LV.lkuvlu_id and LV.lkuvlu_name = '"+ sortCol +
+                    "') SA2 on S1.sample_id = SA2.sampla_sample_id where ";
 
             if("sample".equals(type))
                 sql += "S1.sample_id=";
@@ -309,6 +313,8 @@ public class SampleDAO extends HibernateDAO {
                     sql += " user ";
                 else if(sortCol.equals("date"))
                     sql += " sample_create_date ";
+                else
+                    sql += " COALESCE(attribute_value_float, attribute_value_str, attribute_value_int) ";
                 sql += sortDir;
             }
 

@@ -281,6 +281,7 @@ function createSampleDataTable(){
         });
       }
     },
+    "aaSorting": [[3,'asc']],
     "bAutoWidth" : false,
     "aoColumnDefs": aoColumns()
   }).fnFilterOnReturn();

@@ -91,12 +91,22 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
 
             if("sdt".equals(type)) {
                 List<Sample> samples;
-                Long flexId = (sampleId!=null && sampleId!=0)?sampleId:projectId;
-                String flexType = (sampleId!=null && sampleId!=0)?"sample":"project";
-                String sortCol = iSortCol_0.equals("1")?"sample":iSortCol_0.equals("2")?"parent":iSortCol_0.equals("3")?"user":iSortCol_0.equals("4")?"date":null;
+                Long flexId = (sampleId!=null && sampleId!=0) ? sampleId : projectId;
+                String flexType = (sampleId!=null && sampleId!=0) ? "sample" : "project";
+                String sortCol = iSortCol_0.equals("0") ? "sample"
+                        : iSortCol_0.equals("1") ? "parent"
+                        : iSortCol_0.equals("2") ? "user"
+                        : iSortCol_0.equals("3") ? "date" : null;
+                if(sortCol == null){
+                    List<SampleMetaAttribute> allSampleMetaAttributes = readPersister.getSampleMetaAttributes(this.projectId);
+
+                    sortCol = allSampleMetaAttributes.get(Integer.parseInt(iSortCol_0) - 4)
+                            .getLookupValue().getName();;
+                }
+
                 samples = readPersister.getAllSamples(flexId, flexType,sSearch, sortCol, sSortDir_0);
 
-                List<Sample> filteredList = samples.subList(iDisplayStart, iDisplayStart+iDisplayLength>samples.size()?samples.size():iDisplayLength+iDisplayStart);
+                List<Sample> filteredList = samples.subList(iDisplayStart, iDisplayStart+iDisplayLength>samples.size() ? samples.size() : iDisplayLength+iDisplayStart);
 
                 if(filteredList.size() == 0) filteredList = samples;
 
@@ -163,7 +173,12 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                 }
 
             } else if ("edt".equals(type)) {
-                String sortCol = iSortCol_0.equals("1")?"event":iSortCol_0.equals("2")?"sample":iSortCol_0.equals("3")?"date":iSortCol_0.equals("4")?"user":null;
+                String sortCol = iSortCol_0.equals("1") ? "event"
+                        :iSortCol_0.equals("2") ? "sample"
+                                :iSortCol_0.equals("3") ? "date"
+                                :iSortCol_0.equals("4") ? "user"
+                                :null;
+
                 List<Event> eventList;
                 if (sampleId != 0) {
                     eventList = readPersister.getAllEvents(sampleId, "Sample", sSearch, sortCol, sSortDir_0, -1, -1, fd, td);
@@ -195,6 +210,7 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
 
                     String eventStatus = event.getEventStatusLookupValue().getName();
 
+                    // core data
                     eventMap.put("event", event);
                     eventMap.put("eventId", event.getEventId());
                     eventMap.put("eventName", event.getEventTypeLookupValue().getName());
@@ -205,9 +221,13 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                     eventMap.put("canEdit", canEdit);
 
                     if(eventIdVsAttributes.containsKey(event.getEventId())) {
-                        Map<String, Object> attributeMap = new HashMap<String, Object>();
-                        for (EventAttribute ea : eventIdVsAttributes.get(event.getEventId())) {
-                            if(ea.getMetaAttribute()!=null) {
+                        Map<String, Object> attributeMap = new LinkedHashMap<String, Object>();
+
+                        List<EventAttribute> eventAttributes = eventIdVsAttributes.get(event.getEventId());
+                        CommonTool.sortEventAttributeByOrder(eventAttributes); // sort event attribute by meta attribute order
+
+                        for (EventAttribute ea : eventAttributes) {
+                            if(ea.getMetaAttribute() != null) {
                                 LookupValue tempLookupValue = ea.getMetaAttribute().getLookupValue();
                                 Object attrValue = ModelValidator.getModelValue(tempLookupValue, ea);
                                 attributeMap.put(tempLookupValue.getName(), attributeDecorator(tempLookupValue, attrValue));
@@ -257,7 +277,7 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
             } else if(lookupValue.getDataType().equals(ModelValidator.FILE_DATA_TYPE)) {
                 String justFileName = (String)attrVal;
                 justFileName = justFileName.substring(justFileName.lastIndexOf(File.separator)+1);
-                attrVal = "<a href=\"getFile.action?fn="+attrVal+"\">"+justFileName+"</a>";
+                attrVal = "<a href=\"download.action?fp=" + attrVal + "\">" + justFileName + "</a>";
             }
         }
         return attrVal;
@@ -272,7 +292,7 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
         List<SampleAttribute> allSampleAttributes = readPersister.getSampleAttributes(allSampleIds);
         Map<Long, List<SampleAttribute>> sampleIdVsAttributeList = new HashMap<Long, List<SampleAttribute>>();
         for (SampleAttribute att : allSampleAttributes) {
-            if(att.getMetaAttribute().isActive()) {
+            if(att.getMetaAttribute() != null && att.getMetaAttribute().isActive()) {
                 List<SampleAttribute> attributeList = sampleIdVsAttributeList.get(att.getSampleId());
                 if (attributeList == null) {
                     attributeList = new ArrayList<SampleAttribute>();
