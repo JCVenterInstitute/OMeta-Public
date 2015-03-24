@@ -71,25 +71,25 @@
             <div id="tableTop">
               <div class="row">
                 <table id="project-information-table" style="width: 70%">
-                  <tr>
+                  <tr class="even">
                     <td>Project Name</td>
                     <td><div class="col-md-11">
                       <s:label name="project.projectName"/>
                     </div></td>
                   </tr>
-                  <tr class="projectSelection">
+                  <tr class="projectSelection even">
                     <td>Public</td>
                     <td><div class="col-md-11">
                       <s:select id="_isPublic" list="#{0:'No', 1:'Yes'}" name="project.isPublic" required="true" />
                     </div></td>
               </tr>
-              <tr class="projectSelection">
+              <tr class="projectSelection even">
                 <td>Secure</td>
                 <td><div class="col-md-11">
                   <s:select id="_isSecure" list="#{0:'No', 1:'Yes'}" name="project.isSecure" required="true" />
                 </div></td>
               </tr>
-              <tr class="projectSelection">
+              <tr class="projectSelection even">
                 <td>Edit Group</td>
                 <td><div class="col-md-11">
                   <s:select id="_editGroupSelect"
@@ -98,7 +98,7 @@
                             name="project.editGroup" required="true" disabled="false" />
                 </div></td>
               </tr>
-              <tr class="projectSelection">
+              <tr class="projectSelection even">
                 <td>View Group</td>
                 <td><div class="col-md-11">
                   <s:select id="_viewGroupSelect"

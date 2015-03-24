@@ -67,7 +67,7 @@
                 <table id="editActorTable">
                   <tr class="gappedTr">
                     <td align="left"><img class="attributeIcon" src="images/icon/info_r.png" style="float: right;"/>User ID </td>
-                    <td style="padding-left:7px;"><s:textfield id="_usertName" name="actor.username" size="35px" readonly="true"/></td>
+                    <td style="padding-left:7px;"><s:label name="actor.username"/></td>
                   </tr>
                   <tr class="gappedTr">
                     <td align="left">First Name </td>

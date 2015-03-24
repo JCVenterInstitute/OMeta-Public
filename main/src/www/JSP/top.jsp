@@ -10,7 +10,7 @@
   <div class="navbar navbar-default navbar-inherit-top" role="navigation" style="border-color: transparent">
     <div class="site-title"></div>
     <div class="inner-header container max-container">
-      <div class="top-links clearfix" style="float:left;">
+      <div class="top-links clearfix" style="float:left;margin-bottom:12px;">
         <a data-nav="home" href="/ometa/secureIndex.action">
           <img class="headerImage" src="images/ometa_logo.png" alt="Ontology based Metadata Tracking">
         </a>
