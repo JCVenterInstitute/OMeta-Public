@@ -116,13 +116,13 @@
                               listValue="projectName" listKey="projectId" required="true"/>
                   </div>
                 </div>
-                <div class="row row_spacer">
+                <%--<div class="row row_spacer">
                   <div class="col-lg-1 col-md-2">Sample</div>
                   <div class="col-lg-11 col-md-10 combobox">
                     <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':'Select by Sample'}"
                               name="selectedSampleId" required="true"/>
                   </div>
-                </div>
+                </div>--%>
               </div>
 
               <!-- event -->
