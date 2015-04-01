@@ -135,6 +135,20 @@ var _page = {
             this.toggleSample();
           }
         }
+      },
+      select: {
+        all: function() {
+          $('#sampleTableBody > tr ').each(function() {
+            $(this).find("td:first > input").attr('checked', true);
+          });
+        }
+      },
+      deselect: {
+        all: function() {
+          $('#sampleTableBody > tr ').each(function() {
+            $(this).find("td:first > input").attr('checked', false);
+          });
+        }
       }
     },
     buttonSwitch = function(node, name) {
@@ -190,6 +204,8 @@ function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
             } else if(v1 && i1 == 1){  //create dynamic table header based on sample meta attributes
               var $header = $("#sampleTableHeader tr");
               $header.empty();
+              /* var $footer = $("#sampleTableFooter tr");
+               $footer.empty();*/
               headerList = [];
 
               $header.append("<th class='tableHeaderStyle'>Sample Name</th>")
@@ -197,9 +213,16 @@ function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
                   .append("<th class='tableHeaderStyle'>User</th>")
                   .append("<th class='tableHeaderStyle'>Date</th>");
 
+              /*$footer.append("<th class='tableHeaderStyle'>Sample Name</th>")
+               .append("<th class='tableHeaderStyle'>Parent</th>")
+               .append("<th class='tableHeaderStyle'>User</th>")
+               .append("<th class='tableHeaderStyle'>Date</th>");*/
+
               $.each(v1, function(i2,v2) {
-                if(v2)
+                if(v2) {
                   $header.append("<th class='tableHeaderStyle'>" + v2 + "</th>");
+                  /*$footer.append("<th>" + v2 + "</th>");*/
+                }
                 headerList.push(v2);
               });
             }
@@ -285,11 +308,53 @@ function createSampleDataTable(){
     "bAutoWidth" : false,
     "aoColumnDefs": aoColumns()
   }).fnFilterOnReturn();
+  /*}).fnFilterOnReturn().columnFilter();*/
+
+  $(".datatable_top").append(
+      $('<span/>').attr({
+        'class': 'input-group-btn'
+      }).append(
+          $('<button/>').attr({
+            'type': 'button',
+            'class': 'btn btn-default btn-xs',
+            'id': 'triggerSearchBtn',
+            'onclick': 'triggerSearch();',
+            'style': 'height: 24px;'
+          }).append(
+              $('<span/>').attr({
+                'class': 'glyphicon glyphicon-search',
+                'aria-hidden': 'true'
+              })
+          )
+      ).append(
+          $('<button/>').attr({
+            'type': 'button',
+            'class': 'btn btn-default btn-xs',
+            'id': 'selectAllBtn',
+            'onclick': '_page.select.all();',
+            'style': 'margin-left:10px;height: 24px;'
+          }).text("Select All")
+      ).append(
+          $('<button/>').attr({
+            'type': 'button',
+            'class': 'btn btn-default btn-xs',
+            'id': 'deSelectAllBtn',
+            'onclick': '_page.deselect.all();',
+            'style': 'margin-left:10px;height: 24px;'
+          }).text("Deselect All")
+      )
+  );
+}
+
+function triggerSearch(){
+  var searchVal = $("#sampleTable_filter > label > input").val();
+  sDT.fnFilter(searchVal);
 }
 
 function aoColumns() {
   var ao = [];
-  ao.push({"sWidth": "100px", "aTargets":[0]},
+  var totalWidth = 410;
+  ao.push({"sWidth": "110px", "aTargets":[0]},
       {"sWidth": "100px", "aTargets":[1]},
       {"sWidth": "100px", "aTargets":[2]},
       {"sWidth": "100px", "aTargets":[3]}
@@ -297,14 +362,24 @@ function aoColumns() {
   for(var i=0; i<headerList.length; i++){
     var index = i+4;
 
-    if(headerList[i].length < 15) {
+    if(headerList[i].length < 10) {
       ao.push({"sWidth": "100px", "aTargets":[index]});
-    } else if(headerList[i].length < 30){
+      totalWidth+=100;
+    } else if(headerList[i].length < 15){
+      ao.push({"sWidth": "120px", "aTargets":[index]});
+      totalWidth+=120;
+    } else if(headerList[i].length < 20){
       ao.push({"sWidth": "150px", "aTargets":[index]});
+      totalWidth+=150;
+    } else if(headerList[i].length < 25){
+      ao.push({"sWidth": "170px", "aTargets":[index]});
+      totalWidth+=170;
     } else{
       ao.push({"sWidth": "200px", "aTargets":[index]});
+      totalWidth+=200;
     }
   }
 
+  $("#sampleTable").css('width', totalWidth);
   return ao;
 }

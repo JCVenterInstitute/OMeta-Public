@@ -122,13 +122,13 @@
                               listValue="projectName" listKey="projectId" required="true"/>
                   </div>
                 </div>
-                <div class="row row_spacer">
-                  <div class="col-md-2">Sample</div>
-                  <div class="col-md-10 combobox">
-                    <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':'Select by Sample'}"
-                              name="selectedSampleId" required="true"/>
-                  </div>
-                </div>
+                  <%--<div class="row row_spacer">
+                    <div class="col-md-2">Sample</div>
+                    <div class="col-md-10 combobox">
+                      <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':'Select by Sample'}"
+                                name="selectedSampleId" required="true"/>
+                    </div>
+                  </div>--%>
               </div>
 
               <!-- project -->
@@ -154,6 +154,10 @@
                   <tr>
                   </tr>
                   </thead>
+                    <%--<tfoot id="sampleTableFooter">
+                    <tr>
+                    </tr>
+                    </tfoot>--%>
                   <tbody id="sampleTableBody"/>
                 </table>
                 <input onclick="_page.edit.sampleEvent();" class="btn btn-primary" disabled="true" type="button" value="Edit Sample" id="editSampleBtn" style="margin-top: 20px;" />
@@ -172,6 +176,7 @@
 <jsp:include page="../html/footer.html" />
 
 <script src="scripts/jquery/jquery.dataTables.js"></script>
+<%--<script src="scripts/jquery/jquery.dataTables.columnFilter.js"></script>--%>
 <script src="scripts/page/event.detail.js"></script>
 <script>
   $(document).ready(function() {
