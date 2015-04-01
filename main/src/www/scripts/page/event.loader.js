@@ -340,11 +340,13 @@ var _utils = {
         /*_utils.makeAjax('sharedAjax.action', 'type=sample&projectId='+projectId, null, callbacks.sample);*/
         //$('#_sampleSelect').empty();
         clearSampleAutoComplete();
+        $("#confirmDiv").empty(); // Clean autofill confirmation dialogs
         $('#_sampleSelect+.ui-autocomplete-input, #_eventSelect+.ui-autocomplete-input').val('');
       },
       sample: function(){ /*nothing to do when sample changes*/ },
       event: function(eventName, eventId) {
         _utils.hidePS();
+        $("#confirmDiv").empty(); // Clean autofill confirmation dialogs
 
         $("#saveButton, #validateButton, #submitButton").attr("disabled", false);
         if(utils.getLoadType()==='form') {

@@ -177,7 +177,7 @@
                       <tr class="interactiveTableInfo">
                         <td>Sample</td>
                         <td><div class="col-md-5" style="width: 530px;"><div class="input-group">
-                          <s:textfield id="sampleSelect" placeholder="Select by Sample Name"  name="sampleName"  required="true" cssClass="form-control search-box"/>
+                          <s:textfield id="sampleSelect"  name="sampleName"  required="true" cssClass="form-control search-box"/>
                           <span class="input-group-btn" id="basic-addon2"><button type="button" class="btn btn-default btn-xs search-button" id="searchSample" onclick="searchSamples(this.id);">
                             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                           </button></span>
@@ -281,8 +281,8 @@
                     <thead id="gridHeader" style="background-color: #B6B6B6"></thead>
                     <tbody id="gridBody"></tbody>
                   </table>
-                  <div id="confirmDiv"></div>
                 </div>
+                <div id="confirmDiv"></div>
                 <div id="fileInputDiv" style="margin:25px 10px 0 0 ;display:none;">
                   <table>
                     <tr>
@@ -389,13 +389,13 @@
 
     //load type radio button change event
     $('input[name="loadType"]').change(function() {
-      $('div[id$="InputDiv"], #gridAddLineButton, #gridRemoveLineButton, #sampleSelectRow, #dropBoxDiv, #toInteractiveP').hide();
+      $('div[id$="InputDiv"], #gridAddLineButton, #gridRemoveLineButton, #sampleSelectRow, #dropBoxDiv, #toInteractiveP, #confirmDiv').hide();
       if(dataSubmissionDisplay) $('#dataSubmissionScope').show();
       $('.interactiveTableInfo').show();
       utils.preSelect('_sampleSelect', '');
       var _selectedType = $(this).val();
       if(_selectedType === 'grid') {
-        $('#gridInputDiv, #gridAddLineButton, #gridRemoveLineButton').show();
+        $('#gridInputDiv, #gridAddLineButton, #gridRemoveLineButton, #confirmDiv').show();
         $("#interactive-submission-table tr:last").hide();
         _utils.addGridRows(utils.getProjectName(), utils.getEventName());
         $("#autofill-option").width($('thead#gridHeader').width() + 50);
