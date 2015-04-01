@@ -378,6 +378,10 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
             attributeList.addAll(Arrays.asList(defaultAttributes));
             attributeList.removeAll(Arrays.asList(forbiddenAttributes));
 
+            //Add Sample Name as an attribute if constants one is SampleName
+            if(!Constants.ATTR_SAMPLE_NAME.equals("Sample Name")) attributeList.add("Sample Name");
+            if(!Constants.ATTR_PARENT_SAMPLE_NAME.equals("Parent Sample")) attributeList.add("Parent Sample");
+
             if(!attributesGiven) {
                 attributes = "";
                 for(String attribute:attributeList) {
@@ -431,6 +435,9 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
                 sampleAttrMap.putAll(projectAttributes.get(currProject.getProjectId()));
 
                 sampleAttrMap.put(Constants.ATTR_SAMPLE_NAME, sample.getSampleName());
+                if(!sampleAttrMap.containsKey("Sample Name")){ // Constants value may be 'SampleName'
+                    sampleAttrMap.put("Sample Name", sample.getSampleName());
+                }
                 sampleAttrMap.put("sampleId", sample.getSampleId());
 
                 if (sample.getParentSampleId() != null) { //get parent sample information and cache it
