@@ -92,7 +92,7 @@ public class EventLoader extends ActionSupport implements Preparable {
     private ArrayList<String> loadedFiles;
 
     private String ids;
-    private Long defaultProjectId;
+    /*private Long defaultProjectId;*/
 
     /* final string values from the form*/
     private final String SUBMISSION_TYPE_GRID = "grid";
@@ -121,7 +121,7 @@ public class EventLoader extends ActionSupport implements Preparable {
         readPersister = new ReadBeanPersister(props);
 
         fileStoragePath = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH); //file storage area
-        defaultProjectId = Long.parseLong(props.getProperty(Constants.CONFIG_DEFAULT_PROJECT_ID));
+        //defaultProjectId = Long.parseLong(props.getProperty(Constants.CONFIG_DEFAULT_PROJECT_ID));
 
         UploadActionDelegate udelegate = new UploadActionDelegate();
         psewt = udelegate.initializeBusinessObject(logger, psewt);
@@ -159,7 +159,7 @@ public class EventLoader extends ActionSupport implements Preparable {
             this.sampleName = (this.sampleName == null || this.sampleName.isEmpty() || this.sampleName.equals("0") ? null : this.sampleName);
 
             if(this.filter != null && this.filter.equals("pr")) {
-                this.projectId = this.defaultProjectId;
+                //this.projectId = this.defaultProjectId;
                 this.eventName = Constants.EVENT_PROJECT_REGISTRATION;
             }
 
@@ -381,9 +381,10 @@ public class EventLoader extends ActionSupport implements Preparable {
         }
 
         if(resetIdsAndNames) {
+            /* Filter is not necessary for internal usage
             if((isSampleRegistration || this.eventName.contains(Constants.EVENT_SAMPLE_UPDATE)) && status.equals(SUBMISSION_STATUS_SUBMIT)) {
                 this.filter = "sr";
-            }
+            }*/
 
             projectId = null;
             projectName = null;
