@@ -170,9 +170,7 @@ public class Constants {
     public static final String TEMPLATE_EVENT_TYPE_IDENTIFIER = "DataTemplate";
     public static final Integer TEMPLATE_MAX_ROW_LIMIT = 50;
 
-    public static final String DPCC_MAIL_SIGNATURE_HELP =
-            "For technical support, submit a support request <a href=\"https://dpcc.niaidceirs.org/ometa/support.action\">online</a><br/>" +
-                    "Or contact us:<br/>&nbsp;&nbsp;&nbsp;&nbsp;By Phone: 1-855-846-2697<br/>&nbsp;&nbsp;&nbsp;&nbsp;By Email: support@niaidceirs.org<br/><br/>";
+    public static final String DPCC_MAIL_SIGNATURE_HELP = "";
 
 
     //variables for creating external links
