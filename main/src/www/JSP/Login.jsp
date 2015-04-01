@@ -57,14 +57,14 @@
                                 <button id="loginButton" type="submit" class="btn btn-block btn-lg btn-primary">Sign in</button>
                                 <!-- <button type="submit" disabled="disabled" class="btn btn-sm btn-default">Sign in</button> -->
                                 <hr>
-                                <div class="row">
+                                <%--<div class="row">
                                     <div class="col-sm-12">
                                         <p><strong>Don't have an account?</strong> <a href="access.action">Request Access</a></p>
                                     </div>
                                     <div class="col-sm-12">
                                         <p><strong>Need help?</strong> <a href="support.action">Send a support request</a> or email <a href="mailto:support@niaidceirs.org">support@niaidceirs.org</a></p>
                                     </div>
-                                </div>
+                                </div>--%>
                             </form>
                         </div>
                     </div>
