@@ -441,6 +441,43 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return sBeans;
     }
 
+    public List<Sample> getSamplesForProjectBySearch( @JCVI_Project Long projectId, String sampleVal, int firstResult, int maxResult ) throws Exception {
+        Session session = startTransactedSession();
+
+        List<Sample> sBeans = Collections.emptyList();
+        try {
+            SampleDAO sDao = daoFactory.getSampleDAO();
+            sBeans = sDao.getAllSamplesBySearch(projectId, sampleVal, firstResult, maxResult, session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+
+        return sBeans;
+    }
+
+    public Integer getSampleCountForProjectBySearch( @JCVI_Project Long projectId, String sampleVal) throws Exception {
+        Session session = startTransactedSession();
+
+        Integer totalSampleCount = 0;
+        try {
+            SampleDAO sDao = daoFactory.getSampleDAO();
+            totalSampleCount = sDao.getSampleCountForProjectBySearch(projectId, sampleVal, session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+
+        return totalSampleCount;
+
+    }
+
     @WebMethod
     public List<Sample> getSamplesForProjects( @JCVI_Project List<Long> projectIds ) throws Exception {
         Session session = startTransactedSession();

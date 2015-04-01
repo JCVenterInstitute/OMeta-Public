@@ -24,6 +24,9 @@ package org.jcvi.ometa.hibernate.dao;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.jcvi.ometa.model.Sample;
 import org.jcvi.ometa.utils.Constants;
@@ -237,6 +240,39 @@ public class SampleDAO extends HibernateDAO {
         }
 
         return sampleList;
+    }
+
+    public List<Sample> getAllSamplesBySearch(Long projectId, String sampleVal, int firstResult, int maxResult, Session session) throws DAOException {
+        List<Sample> sampleList = new ArrayList<Sample>();
+        try {
+            Criteria crit = session.createCriteria( Sample.class );
+            crit.add( Restrictions.eq( "projectId", projectId ) );
+            crit.add( Restrictions.ilike("sampleName", sampleVal, MatchMode.ANYWHERE));
+            crit.addOrder(Order.asc("sampleName"));
+            crit.setFirstResult(firstResult);
+            crit.setMaxResults(maxResult);
+            List<Sample> results = crit.list();
+            sampleList.addAll( results );
+        } catch (Exception ex) {
+            throw new DAOException(ex);
+        }
+
+        return sampleList;
+    }
+
+    public Integer getSampleCountForProjectBySearch(Long projectId, String sampleVal, Session session) throws DAOException {
+        Integer totalSampleCount = 0;
+        try {
+            Criteria crit = session.createCriteria( Sample.class );
+            crit.add(Restrictions.eq("projectId", projectId));
+            crit.add( Restrictions.ilike("sampleName", sampleVal, MatchMode.ANYWHERE));
+            crit.setProjection(Projections.rowCount());
+            totalSampleCount = (Integer) crit.uniqueResult();
+        } catch (Exception ex) {
+            throw new DAOException(ex);
+        }
+
+        return totalSampleCount;
     }
 
     public List<Sample> getAllSamples(List<Long> projectIds, Session session) throws DAOException {

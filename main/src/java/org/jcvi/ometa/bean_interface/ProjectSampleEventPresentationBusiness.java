@@ -99,6 +99,10 @@ public interface ProjectSampleEventPresentationBusiness {
 
     public List<Sample> getSamplesForProject(Long projectId) throws Exception;
 
+    public List<Sample> getSamplesForProjectBySearch(Long projectId, String sampleVal,int firstResult, int maxResult) throws Exception;
+
+    public Integer getSampleCountForProjectBySearch(Long projectId, String sampleVal) throws Exception;
+
     public List<Sample> getSamplesForProjects(List<Long> projectIds) throws Exception;
 
     public List<Sample> getSamplesForProjectByPublicFlag(Long projectId, boolean isPublic) throws Exception;
