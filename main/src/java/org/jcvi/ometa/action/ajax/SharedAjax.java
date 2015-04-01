@@ -65,6 +65,10 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
     private String eventName;
     private String filter;
     private String err;
+    private String sampleVal;
+    private int totalSampleCount;
+    private int firstResult;
+    private int maxResult;
 
     private String userName;
 
@@ -450,7 +454,10 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                         samples.add(readPersister.getSample(sampleId));
                     }
                 } else
-                    samples = readPersister.getSamplesForProject(this.projectId);
+                    //samples = readPersister.getSamplesForProject(this.projectId);
+                    samples = readPersister.getSamplesForProjectBySearch(this.projectId, (this.sampleVal != null ? this.sampleVal : ""), firstResult, maxResult);
+
+                if(firstResult == 0) totalSampleCount = readPersister.getSampleCountForProjectBySearch(this.projectId, (this.sampleVal != null ? this.sampleVal : ""));
 
                 sampleLevel = sampleLevel == null ? "0" : sampleLevel;
                 int intSampleLevel = Integer.parseInt(sampleLevel);
@@ -483,7 +490,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                         } else {
                             if(!eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)
                                     && !eventName.contains(Constants.EVENT_PROJECT_UPDATE)
-                                    && !eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
+                                    /*&& !eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)*/) {
                                 filteredList.add(lv);
                             }
                         }
@@ -751,5 +758,37 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
 
     public void setFilter(String filter) {
         this.filter = filter;
+    }
+
+    public String getSampleVal() {
+        return sampleVal;
+    }
+
+    public void setSampleVal(String sampleVal) {
+        this.sampleVal = sampleVal;
+    }
+
+    public int getMaxResult() {
+        return maxResult;
+    }
+
+    public void setMaxResult(int maxResult) {
+        this.maxResult = maxResult;
+    }
+
+    public int getFirstResult() {
+        return firstResult;
+    }
+
+    public void setFirstResult(int firstResult) {
+        this.firstResult = firstResult;
+    }
+
+    public int getTotalSampleCount() {
+        return totalSampleCount;
+    }
+
+    public void setTotalSampleCount(int totalSampleCount) {
+        this.totalSampleCount = totalSampleCount;
     }
 }

@@ -12,6 +12,7 @@ var _utils = {
       addGridRows: function(pn,en) {
         // If samples are uploaded as CSV, set event lines based on row size, else have at least 5 event lines for the grid view
         var $gridSize = $('#gridListSize').val();
+        if($gridSize === '' && g_sampleIds) $gridSize = g_sampleIds.split(',').length;
         var rowSize = ($gridSize > 0) ? $gridSize : 5;
         for(var _rows=$('#gridBody > tr').length;_rows<rowSize;_rows++) {
           button.add_event(pn,en);
@@ -164,7 +165,7 @@ var _utils = {
         $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG gridIndex').append('#')); //grid row index
         if(utils.checkNP(en)) {
           if(!utils.checkSR(en)) {
-            $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG').append('Sample<br/>', requireImgHtml));
+            $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Sample Name<br/>', requireImgHtml));
             $autofillDiv.append(autofillButtonHtml.replace('$w$', '135').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
             autofill_no+=1;
           } else {
@@ -251,6 +252,7 @@ var _utils = {
               var maDatatype = _ma.lookupValue.dataType;
               if(maDatatype === 'file') { //file
                 inputElement += '<input type="file" id="' + maDatatype + '_$id$" name="$lt$upload"/>';
+                $autofillDiv.append('<label style="width: 253px;"></label>');
               } else if(maDatatype ==='date') {
                 inputElement +=
                     '<div class="input-group col-sm-12">'+
@@ -258,7 +260,7 @@ var _utils = {
                     '  <label for="' + maDatatype + '_$id$" class="input-group-addon" style="padding:4px;"><span><i class="fa fa-calendar"></i></span></label>' +
                     '</div>';
 
-                $autofillDiv.append(autofillButtonHtml.replace('$w$', '105').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
+                $autofillDiv.append(autofillButtonHtml.replace('$w$', '110').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
               } else { //text input
                 isText = true;
                 inputElement += '<input type="text" id="' + (isRequired ? 'req_' : '') + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$"/>';
@@ -335,7 +337,9 @@ var _utils = {
         $("#_sampleSelect").attr("disabled", false);
         $("#_eventSelect").attr("disabled", false);
         _utils.makeAjax('sharedAjax.action', 'type=event&projectId='+projectId+'&filter=' + $('#filter').val(), null, callbacks.event);
-        _utils.makeAjax('sharedAjax.action', 'type=sample&projectId='+projectId, null, callbacks.sample);
+        /*_utils.makeAjax('sharedAjax.action', 'type=sample&projectId='+projectId, null, callbacks.sample);*/
+        //$('#_sampleSelect').empty();
+        clearSampleAutoComplete();
         $('#_sampleSelect+.ui-autocomplete-input, #_eventSelect+.ui-autocomplete-input').val('');
       },
       sample: function(){ /*nothing to do when sample changes*/ },
@@ -398,11 +402,12 @@ var button = {
         return;
       }
     } else if(loadType === "grid"){ // check grid table data
-      if(utils.checkPR($("#_eventSelect option:selected").text())) { // if data temp is Project Registration
-        var hasAllReq = true, allEmpty = true; reqErrorMsg = ""; // require field check
-        var $formFields = $('#gridBody > tr > td').find(':not(:hidden)');
+      var hasAllReq = true, allEmpty = true; reqErrorMsg = ""; // require field check
+      var $formFields = $('#gridBody > tr > td').find(':not(:hidden)');
 
-        var rowCheck = [], rowMsg = "", empty = true, rowAllReq = true;
+      var rowCheck = [], rowMsg = "", empty = true, rowAllReq = true;
+
+      if(utils.checkPR($("#_eventSelect option:selected").text())) { // if data temp is Project Registration
         $formFields.each(function (i, v) {
           var $node = $(v);
 
@@ -410,56 +415,22 @@ var button = {
             if ($node.attr('id').indexOf("req_") !== -1) {
               rowAllReq = false;
               rowMsg += "&nbsp;&nbsp;" + $node.siblings('[name$="attributeName"]').val() + "<br />";
-            } else if($node.attr('id').indexOf("projectName") !== -1){
+            } else if ($node.attr('id').indexOf("projectName") !== -1) {
               rowAllReq = false;
               rowMsg += "&nbsp;&nbsp;Project Name<br />";
             }
-          } else if($node.attr('name').indexOf("projectPublic") === -1){
+          } else if ($node.attr('name').indexOf("projectPublic") === -1) {
             empty = false;
           }
 
-          if($(this).parent().is(':last-child')){
-            rowCheck.push({"e" : empty, "r" : rowAllReq, "m" : rowMsg});
+          if ($(this).parent().is(':last-child')) {
+            rowCheck.push({"e": empty, "r": rowAllReq, "m": rowMsg});
             empty = true;
             rowMsg = "";
             rowAllReq = true;
           }
         });
-
-        for(var i=0; i < rowCheck.length; ++i){
-          var e = rowCheck[i].e;
-
-          if(e === false){
-            allEmpty = false;
-            if(rowCheck[i].r === false){
-              hasAllReq = false;
-              reqErrorMsg += "&nbsp;&nbsp;" + (i+1) + " : " + rowCheck[i].m + "<br>";
-            }
-          }
-        }
-
-        if(allEmpty){
-          utils.error.add("There is no data to submit!");
-          return;
-        } else if (!hasAllReq) {
-          utils.error.add("Required Field(s):<br/>" + reqErrorMsg);
-          return;
-        } else{
-          for(var i=0; i < rowCheck.length; ++i){
-            if(rowCheck[i].e === true){
-              $("#gridBody").find("tr td.gridIndex").each(function (){
-                if($(this).html() == (i+1)){
-                  $(this).parent().remove();
-                }
-              });
-            }
-          }
-        }
-      } else if(utils.checkSR($("#_eventSelect option:selected").text())){
-        var hasAllReq = true, allEmpty = true; reqErrorMsg = ""; // require field check
-        var $formFields = $('#gridBody > tr > td').find(':not(:hidden)');
-
-        var rowCheck = [], rowMsg = "", empty = true, rowAllReq = true;
+      } else if(utils.checkSR($("#_eventSelect option:selected").text())) {
         $formFields.each(function (i, v) {
           var $node = $(v);
 
@@ -484,34 +455,59 @@ var button = {
             rowAllReq = true;
           }
         });
+      } else {
+        $formFields.each(function (i, v) {
+          var $node = $(v);
 
-        for(var i=0; i < rowCheck.length; ++i){
-          var e = rowCheck[i].e;
-
-          if(e === false){
-            allEmpty = false;
-            if(rowCheck[i].r === false){
-              hasAllReq = false;
-              reqErrorMsg += "&nbsp;&nbsp;" + (i+1) + " : " + rowCheck[i].m + "<br>";
+          if ($node.val() === null || $node.val() === '') {
+            if ($node.attr('id') && $node.attr('id').indexOf("req_") !== -1) {
+              rowAllReq = false;
+              rowMsg += "&nbsp;&nbsp;" + $node.siblings('[name$="attributeName"]').val() + "<br />";
+            } else if($node.attr('id') && $node.attr('id').indexOf("sampleSelect") !== -1){
+              rowAllReq = false;
+              rowMsg += "&nbsp;&nbsp;Sample Name<br />";
             }
+          } else if($node.is('select')){
+            if($node.find('option:eq(0)').val() === '') empty = false;
+          } else {
+            empty = false;
+          }
+
+          if($(this).parents('td').is(':last-child')){
+            rowCheck.push({"e" : empty, "r" : rowAllReq, "m" : rowMsg});
+            empty = true;
+            rowMsg = "";
+            rowAllReq = true;
+          }
+        });
+      }
+
+      for(var i=0; i < rowCheck.length; ++i){
+        var e = rowCheck[i].e;
+
+        if(e === false){
+          allEmpty = false;
+          if(rowCheck[i].r === false){
+            hasAllReq = false;
+            reqErrorMsg += "&nbsp;&nbsp;" + (i+1) + " : " + rowCheck[i].m + "<br>";
           }
         }
+      }
 
-        if(allEmpty){
-          utils.error.add("There is no data to submit!");
-          return;
-        } else if (!hasAllReq) {
-          utils.error.add("Required Field(s):<br/>" + reqErrorMsg);
-          return;
-        } else{
-          for(var i=0; i < rowCheck.length; ++i){
-            if(rowCheck[i].e === true){
-              $("#gridBody").find("tr td.gridIndex").each(function (){
-                if($(this).html() == (i+1)){
-                  $(this).parent().remove();
-                }
-              });
-            }
+      if(allEmpty){
+        utils.error.add("There is no data to submit!");
+        return;
+      } else if (!hasAllReq) {
+        utils.error.add("Required Field(s):<br/>" + reqErrorMsg);
+        return;
+      } else{
+        for(var i=0; i < rowCheck.length; ++i){
+          if(rowCheck[i].e === true){
+            $("#gridBody").find("tr td.gridIndex").each(function (){
+              if($(this).html() == (i+1)){
+                $(this).parent().remove();
+              }
+            });
           }
         }
       }
@@ -533,8 +529,18 @@ var button = {
   },
   submit_form: function(type, status) {
     $("#projectName").val(utils.getProjectName());
-    $("#sampleName").val(utils.getSampleName());
-    $("#eventName").val(utils.getEventName());
+    var eventName = utils.getEventName();
+    $("#eventName").val(eventName);
+    var sampleName = $("#sampleSelect").val();
+
+    if(sampleName != null) $("#sampleName").remove();
+    else sampleName = $("#sampleName").val();
+
+    if(type === 'form' && (!utils.checkPR(eventName) && !utils.checkSR(eventName) && sampleName === '')){
+      utils.error.add("Data cannot be submitted without sample. Please select a sample! If the project does not have any sample, create a new one first!");
+      return;
+    }
+
     $("#jobType").val(type);
     $("#status").val(status);
 
@@ -570,10 +576,32 @@ var button = {
           );
           $eventLine.append(
               $('<td/>').append(
-                  $('<select/>').attr({
-                    'name': 'gridList[' + g_gridLineCount + '].parentSampleName',
-                    'id': '_parentSelect' + g_gridLineCount
-                  }).append(sample_options)
+                  $('<div/>').attr({
+                    'class': 'input-group'
+                  }).append(
+                      $('<input/>').attr({
+                        'name': 'gridList[' + g_gridLineCount + '].parentSampleName',
+                        'id': '_parentSelect' + g_gridLineCount,
+                        'class': 'form-control search-box',
+                        'style': 'width: 168px;'
+                      })
+                  ).append(
+                      $('<span/>').attr({
+                        'class': 'input-group-btn'
+                      }).append(
+                          $('<button/>').attr({
+                            'type': 'button',
+                            'class': 'btn btn-default btn-xs search-button',
+                            'id': '_searchParentSample' + g_gridLineCount,
+                            'onclick': 'searchSamples(this.id);'
+                          }).append(
+                              $('<span/>').attr({
+                                'class': 'glyphicon glyphicon-search',
+                                'aria-hidden': 'true'
+                              })
+                          )
+                      )
+                  )
               )
           );
           $eventLine.append(
@@ -585,11 +613,34 @@ var button = {
           );
         } else {
           $eventLine.append(
-              $('<td/>').append(
-                  $('<select/>').attr({
-                    'name': 'gridList[' + g_gridLineCount + '].sampleName',
-                    'id': '_sampleSelect' + g_gridLineCount
-                  }).append(sample_options)
+              $('<td/>').attr({'style': 'width: 205px;'}).append(
+                  $('<div/>').attr({
+                    'class': 'input-group'
+                  }).append(
+                      $('<input/>').attr({
+                        'type': 'text',
+                        'name': 'gridList[' + g_gridLineCount + '].sampleName',
+                        'id': '_sampleSelect' + g_gridLineCount,
+                        'class': 'form-control search-box',
+                        'style': 'width: 168px;'
+                      })
+                  ).append(
+                      $('<span/>').attr({
+                        'class': 'input-group-btn'
+                      }).append(
+                          $('<button/>').attr({
+                            'type': 'button',
+                            'class': 'btn btn-default btn-xs search-button',
+                            'id': '_searchSample' + g_gridLineCount,
+                            'onclick': 'searchSamples(this.id);'
+                          }).append(
+                              $('<span/>').attr({
+                                'class': 'glyphicon glyphicon-search',
+                                'aria-hidden': 'true'
+                              })
+                          )
+                      )
+                  )
               )
           );
         }
@@ -659,13 +710,15 @@ var button = {
         //load existing data if any
         if(utils.checkSR(_en)) {
           $('input:text#_sampleName' + g_gridLineCount).val(dict['sn']);
-          utils.preSelect('_parentSelect' + g_gridLineCount, dict['psn']);
+          $('input[name="gridList[' + g_gridLineCount + '].parentSampleName').val(dict['psn']);
+          //utils.preSelect('_parentSelect' + g_gridLineCount, dict['psn']);
           $('select[name="gridList[' + g_gridLineCount + '].samplePublic"]').val(dict['sp']);
         } else if(utils.checkPR(_en)) {
           $('#_projectName' + g_gridLineCount).val(dict['pn']);
           $('select[name="gridList[' + g_gridLineCount + '].projectPublic"]').val(dict['pp']);
         } else {
-          utils.preSelect('_sampleSelect' + g_gridLineCount, dict['sn']);
+          $('input[name="gridList[' + g_gridLineCount + '].sampleName').val(dict['sn']);
+          //utils.preSelect('_sampleSelect' + g_gridLineCount, dict['sn']);
         }
       }
 
@@ -747,7 +800,7 @@ function comboBoxChanged(option, id) {
       if(utils.checkSR(option.text) || _selectedType === 'grid') {
         $("#interactive-submission-table tr:last").hide();
       } else{
-        $("#interactive-submission-table tr:last").show();
+        if(!utils.checkPR(option.text)) $("#interactive-submission-table tr:last").show();
       }
     }
   } else if(id==='_sampleSelect') {
@@ -764,31 +817,72 @@ function comboBoxChanged(option, id) {
 
 function dataAutofill(id){
   var idArr = id.split("-");
+  var $sampleFields = $('#gridBody tr td:nth-child(' + idArr[1] +') input');
+
   if(idArr[0] === "all"){
-    var $sampleFields = $('#gridBody tr td:nth-child(' + idArr[1] +') input');
     var autofillValue = $("#s-name-autofill").val();
+    var index = 1;
 
     $sampleFields.each(function (i, v) {
-      $(v).val(autofillValue);
+      if(v.id != '' || v.className != '') {
+        if ($(v).val() != '') {
+          var columnName = $("#gridHeader tr th:nth-child("+idArr[1]+")").text().replace('*','');
+          confirmBox(i, "Are you sure to overwrite [" + index + ":"+columnName+"] ?", function () {
+            $(v).val(autofillValue);
+          });
+        } else {
+          $(v).val(autofillValue);
+        }
+        index += 1;
+      }
     });
   } else if(idArr[0] === "sequence"){
-    var $sampleFields = $('#gridBody tr td:nth-child(' + idArr[1] +') input');
     var autofillValue = $("#s-name-autofill").val();
     var index = 1;
 
     $sampleFields.each(function (i, v) {
       if(v.id != '' || v.className != ''){
-        $(v).val(autofillValue + index);
+        var value = autofillValue + index;
+        if($(v).val() != ''){
+          var columnName = $("#gridHeader tr th:nth-child("+idArr[1]+")").text().replace('*','');
+          confirmBox(i,"Are you sure to overwrite ["+index+":"+columnName+"] in order?",  function () {
+            $(v).val(value);
+          });
+        } else{
+          $(v).val(value);
+        }
         index+=1;
       }
     });
   } else{
-    var $sampleFields = $('#gridBody tr td:nth-child(' + idArr[1] +') input');
-
-    $sampleFields.each(function (i, v) {
-      $(v).val("");
+    var columnName = $("#gridHeader tr th:nth-child("+idArr[1]+")").text().replace('*','');
+    confirmBox("Remove","Are you sure to delete contents in "+columnName+" ?",  function () {
+      $sampleFields.each(function (i, v) {
+        $(v).val("");
+      });
     });
   }
+}
+
+function confirmBox(index,text,func) {
+  var html = '<div style="margin-top: 10px;" id="confirm'+index+'">' +
+      '<label class="confirm-text" style="margin-right: 5px;color:#a90329;">'+text+'</label>' +
+      '<button class="yes btn btn-success btn-xs" type="button" style="margin-right:2px">Yes</button><button class="no btn btn-primary btn-xs" type="button">No</button>' +
+      '</div>';
+
+  $('#confirm'+index).remove(); //remove if exists
+  $("#confirmDiv").append(html);
+  var $confirmBox = $('#confirm'+index);
+  $confirmBox.show();
+  $('#confirm'+index+' > .yes').click(function () {
+    func();
+    $confirmBox.remove();
+    func = function () {};
+  });
+  $('#confirm'+index+' > .no').click(function () {
+    $confirmBox.remove();
+    func = function () {};
+  });
 }
 
 function toBulk() {
@@ -843,7 +937,8 @@ function toBulk() {
 
         if($node.text().indexOf(data.files[0].name) >= 0) {
           if($node.find('span.label').length < 1) {
-            $node.prepend($('<span class="label label-info" style="margin-right: 10px;"/>').text("Uploaded Sucessfully"));
+            $node.prepend($('<span class="label label-info" style="margin-right: 10px;"/>').text("Uploaded Successfully"));
+            $node.find('button').hide();  // remove cancel button after successful upload
           }
         }
       });
@@ -894,4 +989,94 @@ function toInteractive() {
   utils.error.remove();
   $('#dropBoxDiv, #toInteractiveP').hide();
   $('#interactiveDiv, #toBulkP').slideDown(400);
+}
+
+function searchSamples(id) {
+  var arrResult = [];
+  var inputId = (id.indexOf("Parent") > -1) ? id.replace("searchParentSample", "parentSelect") : id.replace("searchSample", "sampleSelect");
+  var $sampleSelect = $("#" + inputId);
+  var sampleVal = $sampleSelect.val();
+  var searchIndex = 0;
+  var maxResult = 25;
+
+  fetchSample(arrResult, sampleVal, searchIndex*25, maxResult);
+
+  $sampleSelect.autocomplete({
+    source: function (request, response) {
+      response(arrResult);
+    },
+    select: function (a, b) {
+      if(b.item.value === 'loadMoreData'){
+        ++searchIndex;
+        arrResult.pop(); //Remove Load More Data option
+
+        fetchSample(arrResult, this.value, searchIndex*25, maxResult);
+        $sampleSelect.blur();
+        return false;
+      }
+    },
+    search: function(oEvent, oUi) {
+      // get current input value
+      var sValue = $(oEvent.target).val();
+      // init new search array
+      var aSearch = [];
+      // for each element in the main array ...
+      $.each(arrResult,function(iIndex, sElement) {
+        // ... if element starts with input value ...
+        if (sElement.value.toLowerCase().indexOf(sValue.toLowerCase()) > -1) {
+          aSearch.push(sElement);
+        } else if(sElement.value === 'loadMoreData'){
+          aSearch.push(sElement);
+        }
+      });
+      // change search array
+      $(this).autocomplete('option', 'source', aSearch);
+    },
+    minLength: 0,
+    delay: 0
+  }).focus(function () {
+    //reset result list's pageindex when focus on
+    window.pageIndex = 0;
+    $(this).autocomplete("search");
+  });
+}
+
+function fetchSample(arrResult, sampleVal, firstResult, maxResult){
+  var $sampleLoadingImg = $("#sampleLoadingImg");
+  var projectId = utils.getProjectId();
+
+  if(projectId != 0){
+    $.ajax({
+      url: 'sharedAjax.action',
+      data: 'type=sample&projectId=' + utils.getProjectId() + '&sampleVal=' + sampleVal + "&firstResult=" + firstResult + "&maxResult=" + maxResult,
+      cache: false,
+      async: false,
+      beforeSend: function (){
+        $sampleLoadingImg.show();
+      },
+      success: function (data) {
+        $.each(data.aaData, function (i1, v1) {
+          if (i1 != null && v1 != null) {
+            arrResult.push({label: v1.name, value: v1.name});
+          }
+        });
+
+        if(data.aaData.length == 25){
+          arrResult.push({label: "Load More Sample...",value: "loadMoreData"});
+        }
+        $sampleLoadingImg.hide();
+      }
+    });
+  }
+}
+
+function clearSampleAutoComplete(){
+  //Not call autocomplete("destroy") as it causes conflict between jquery-ui.js and jquery.ui.widget.js
+  var $sampleSelect = $('#sampleSelect'), $parentSelect = $('#parentSelect');
+  $sampleSelect.val("         ");
+  $parentSelect.val("         ");
+  $("#searchSample").trigger("click");
+  $("#searchParentSample").trigger("click");
+  $sampleSelect.val("");
+  $parentSelect.val("");
 }

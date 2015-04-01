@@ -63,6 +63,13 @@
       height: 18px;
       background: green;
     }
+    .search-button{
+      border: 1px solid #aed0ea;background: #d7ebf9;font-weight: bold;color: #2779aa;height: 24px; width: 34px;
+    }
+    .search-box{
+      position:initial !important;height: 24px;color: #362b36;border-top-left-radius:6px;border-bottom-left-radius:6px;
+      font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;font-size: 1.1em;margin: 0;padding: 1px;vertical-align: top;padding-left: 5px;
+    }
   </style>
 </head>
 
@@ -132,17 +139,23 @@
                   <div class="row col-md-12">
                     <table id="interactive-submission-table" style="min-width: 80%">
                       <tr>
-                        <td>Submit Data For</td>
-                        <td><div class="col-lg-11 col-md-10">
-                          <input type="radio" name="loadType" class="loadRadio" value="form" id="r_sw" />
-                          <label for="r_sw">Single Sample</label>
-                          <input type="radio" name="loadType" class="loadRadio" value="grid" id="r_mw" style="margin-left:15px;"/>
-                          <label for="r_mw">Multiple Samples (Web Form)</label>
-                          <input type="radio" name="loadType" class="loadRadio" value="file" id="r_mf" style="margin-left:15px;"/>
-                          <label for="r_mf">Multiple Samples (Excel Template)</label>
-                          <input type="radio" name="loadType" class="loadRadio" value="bulk" id="r_bs" style="margin-left:15px;"/>
-                          <label for="r_bs">Bulk Submission</label>
-                        </div></td>
+                        <td style="width: 136px;">Submit Data For</td>
+                        <td>
+                          <div class="btn-group" data-toggle="buttons" style="margin-left: 15px">
+                            <label class="btn btn-default active">
+                              <input type="radio" name="loadType" class="loadRadio" value="form" id="r_sw"> Single Sample
+                            </label>
+                            <label class="btn btn-default">
+                              <input type="radio" name="loadType" class="loadRadio" value="grid" id="r_mw" > Multiple Samples (Web Form)
+                            </label>
+                            <label class="btn btn-default">
+                              <input type="radio" name="loadType" class="loadRadio" value="file" id="r_mf"> Multiple Samples (Excel Template)
+                            </label>
+                            <label class="btn btn-default">
+                              <input type="radio" name="loadType" class="loadRadio" value="bulk" id="r_bs"> Bulk Submission
+                            </label>
+                          </div>
+                        </td>
                         <td></td>
                       </tr>
                       <tr class="interactiveTableInfo">
@@ -163,9 +176,13 @@
                       </tr>
                       <tr class="interactiveTableInfo">
                         <td>Sample</td>
-                        <td><div class="col-md-11 combobox">
-                          <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{0:'Select by Sample'}" name="sampleName"  required="true"/>
-                        </div></td>
+                        <td><div class="col-md-5" style="width: 530px;"><div class="input-group">
+                          <s:textfield id="sampleSelect"  name="sampleName"  required="true" cssClass="form-control search-box"/>
+                          <span class="input-group-btn" id="basic-addon2"><button type="button" class="btn btn-default btn-xs search-button" id="searchSample" onclick="searchSamples(this.id);">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                          </button></span>
+                        </div></div><img src="images/loading.gif" id="sampleLoadingImg" style="height: 23px;display: none" >
+                        </td>
                         <td></td>
                       </tr>
                     </table>
@@ -177,19 +194,18 @@
                     <h4>Project Information</h4>
                   </div>
                   <div id="projectDetailSubDiv">
-                    <div class="row row_spacer">
+                    <div class="row row_spacer" style="margin-bottom: 3px;">
                       <div class="col-md-1">Project Name</div>
                       <div class="col-md-11">
-                        <input type="text" id="_projectName" name="loadingProject.projectName" size="33px"/>
-                        <hidden name="loadingProject.isPublic" value="1" />
+                        <input type="text" id="_projectName" name="loadingProject.projectName" style="width: 470px;"/>
                       </div>
                     </div>
-                    <!-- <div class="row row_spacer">
-                          <div class="col-md-1">Public</div>
-                          <div class="col-md-11">
-                            <s:select id="_isProjectPublic" list="#{0:'No', 1:'Yes'}" name="loadingProject.isPublic" required="true" />
-                          </div>
-                        </div> -->
+                    <div class="row row_spacer">
+                      <div class="col-md-1">Public</div>
+                      <div class="col-md-11">
+                        <s:select id="_isProjectPublic" list="#{0:'No', 1:'Yes'}" name="loadingProject.isPublic" required="true" />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -204,11 +220,14 @@
                         <input type="text" id="_sampleName" name="loadingSample.sampleName" style="width: 470px;"/>
                       </div>
                     </div>
-                    <div class="row row_spacer">
+                    <div class="row row_spacer" style="margin-bottom: 3px;">
                       <div class="col-md-1">Parent Sample</div>
-                      <div class="col-md-11 combobox">
-                        <s:select id="_parentSampleSelect" list="#{'0':''}" name="loadingSample.parentSampleName" required="true"/>
-                      </div>
+                      <div class="col-md-5" style="width: 530px;"><div class="input-group">
+                        <s:textfield id="parentSelect"  name="loadingSample.parentSampleName"  required="true" cssClass="form-control search-box"/>
+                          <span class="input-group-btn" id="basic-addon2"><button type="button" class="btn btn-default btn-xs search-button" id="searchParentSample" onclick="searchSamples(this.id);">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                          </button></span>
+                      </div></div>
                     </div>
                     <div class="row row_spacer">
                       <div class="col-md-1">Public</div>
@@ -245,7 +264,16 @@
                   </s:if>
                 </div>
                 <div id="gridInputDiv" style="margin:25px 10px 0 0 ;overflow-x: auto;display:none;">
-                  <input class="input-sm" id="s-name-autofill" placeholder="Type autofill value..." style="position: absolute"/>
+                  <div class="col-lg-1" style="position: absolute;">
+                    <div class="input-group">
+                      <input class="input-sm" id="s-name-autofill" placeholder="Type autofill value...">
+                      <span class="input-group-btn">
+                        <button type="button" class="btn btn-primary btn-sm" id="autofill-clear">
+                          <i class="glyphicon glyphicon-remove"></i>
+                        </button>
+                      </span>
+                    </div><!-- /input-group -->
+                  </div>
                   <div id="autofill-option" style="margin-bottom: 10px;margin-top: 35px">
                     <div id="autofill-option-button" style="margin-top: 10px;margin-left: 15px;display: none"></div>
                   </div>
@@ -253,6 +281,7 @@
                     <thead id="gridHeader" style="background-color: #B6B6B6"></thead>
                     <tbody id="gridBody"></tbody>
                   </table>
+                  <div id="confirmDiv"></div>
                 </div>
                 <div id="fileInputDiv" style="margin:25px 10px 0 0 ;display:none;">
                   <table>
@@ -265,7 +294,7 @@
                   </table>
                 </div>
 
-                <div id="submitDiv" style="margin:15px 10px 5px 0;width:100%;">
+                <div id="submitDiv" style="margin:15px 10px 5px 0;width:100%;padding-top: 15px;border-top: 1px solid #eeeeee;">
                     <%--<input type="button" class="btn btn-info" onclick="javascript:button.submit('save');" id="saveButton" value="Save Progress" disabled="true" title="Saves the data currently entered in the form to the DPCC database. This does not submit data to the DPCC but allows the user to complete the data submission task at a later time. A temporary submission ID will be generated for later retrieval."/>
                     <input type="button" class="btn btn-primary" onclick="javascript:button.submit('validate');" id="validateButton" value="Validate Submission" disabled="true" title="Performs validation of the data currently entered in the form and ensures compliance with the CEIRS data standards. Returns a list of validation errors encountered, if any. This does not submit the data to the DPCC."/>--%>
                   <input type="button" class="btn btn-success" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to OMETA" disabled="true"/>
@@ -279,7 +308,7 @@
             </div>
           </s:form>
           <!-- file drop box -->
-          <div id="dropBoxDiv" style="display:none;float:left;width:100%;">
+          <div id="dropBoxDiv" style="display:none;float:left;margin-top: 30px;">
             <div id="tableTop">
               <div class="row row_spacer">
                 <div class="panel-body">
@@ -326,7 +355,6 @@
 <script src="scripts/jquery/jquery.ui.widget.js"></script>
 <script src="scripts/jquery/jquery.iframe-transport.js"></script>
 <script src="scripts/jquery/jquery.fileupload.js"></script>
-
 <script>
   var g_eventAttributes = [];
   var g_gridLineCount=0;
@@ -389,6 +417,7 @@
     //preselect load type radio button
     var rtnJobType = (oldJobType===''||oldJobType==='form'||oldJobType==='template'?'form':oldJobType);
     $('input[name="loadType"][value='+rtnJobType+']').attr('checked', true);
+    $('input[name="loadType"][value='+rtnJobType+']').parent().click();
     $('input[name="loadType"]:checked').change();
 
     //empty project select box
@@ -478,28 +507,40 @@
     //handle Create Project
     var filter = '${filter}';
     if(filter === 'pr') { //project registration
-      $('#projectSelectRow').hide();
+      /*$('#projectSelectRow').hide();*/
       $('#_eventSelect').prop('disabled', true);
-      $('#pageTitle').html('Project Registration');
+      $('.page-header h1').html('Project Registration');
       $('#saveButton, #validateButton').hide(); //hide buttons
       $('input:radio[id^="r_"]').each(function(i,v) { //change view types to include project
-        var $labelNode = $('label[for="' + $(v).attr('id') + '"]');
-        $labelNode.html($labelNode.html().replace('Sample', 'Project'));
+        var $label = $(this).parent().contents().last()[0];
+        $label.textContent = $label.textContent.replace('Sample', 'Project');
       })
       $('#breadcrumb2').text('Admin');
+      $('#interactive-submission-table tbody tr:last').hide(); //Hide sample select for project registration
+      $('#interactive-submission-table tbody tr:first td:nth-child(2) label:not(:first)').hide(); //Hide multiple data submit for project registration
     } else if(filter === 'su') { //edit data redirected from search and edit page
-      $('#pageTitle').html('Edit Data');
-      $('#eventTitle').html('Edit Data For');
+      $('.page-header h1').html('Edit Data');
+      $('#interactive-submission-table tbody tr td:first').html('Edit Data For');
     }
+
+    $('#sampleSelect').keypress(function (e) {
+      var key = e.which;
+      if(key == 13) { // the enter key code
+        $('#searchSample').click();
+        this.blur();
+        return false;
+      }
+    });
 
     $('#s-name-autofill').on("keyup keypress change", function () {
       if ($(this).val() == "") $("#autofill-option-button").hide();
       else $("#autofill-option-button").show();
     });
 
+    $('#autofill-clear').on("click", function(){
+      $('#s-name-autofill').val("");
+      $("#autofill-option-button").hide();
+    });
+
     $('#loadingImg').hide();
-  });
-</script>
-<script src="scripts/page/event.loader.js"></script>
-</body>
-</html>
+  });</script><script src="scripts/page/event.loader.js"></script></body></html>
