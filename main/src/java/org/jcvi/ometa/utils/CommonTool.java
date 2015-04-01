@@ -93,7 +93,7 @@ public class CommonTool {
                             Constants.SAMPLE_DETAIL_URL +
                                     "projectName=" + project.getProjectName().replaceAll(" ", "%20") +
                                     "&projectId=" + project.getProjectId() +
-                                    "&sampleName=" + ((String)attributeMap.get("Sample Name")).replaceAll(" ", "%20") +
+                                    "&sampleName=" + ((String)attributeMap.get(Constants.ATTR_SAMPLE_NAME)).replaceAll(" ", "%20") +
                                     "&sampleId=" + attributeMap.get("sampleId"),
                             decoratedValue
                     );

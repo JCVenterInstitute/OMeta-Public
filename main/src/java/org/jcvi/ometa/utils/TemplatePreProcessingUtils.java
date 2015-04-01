@@ -91,8 +91,7 @@ public class TemplatePreProcessingUtils {
             i++;
         }
 
-        // remove hint line
-        // csvContents.append("\n" + comments.toString());
+        csvContents.append("\n" + comments.toString());
 
         csvContents.append("\n" +
                         (!isProjectRegistration ? projectName : "") +
