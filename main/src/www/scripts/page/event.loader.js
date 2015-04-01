@@ -817,7 +817,7 @@ function comboBoxChanged(option, id) {
 
 function dataAutofill(id){
   var idArr = id.split("-");
-  var $sampleFields = $('#gridBody tr td:nth-child(' + idArr[1] +') input');
+  var $sampleFields = $('#gridBody tr td:nth-child(' + idArr[1] +') input, #gridBody tr td:nth-child(' + idArr[1] +') select');
 
   if(idArr[0] === "all"){
     var autofillValue = $("#s-name-autofill").val();
@@ -1048,7 +1048,7 @@ function fetchSample(arrResult, sampleVal, firstResult, maxResult){
   if(projectId != 0){
     $.ajax({
       url: 'sharedAjax.action',
-      data: 'type=sample&projectId=' + utils.getProjectId() + '&sampleVal=' + sampleVal + "&firstResult=" + firstResult + "&maxResult=" + maxResult,
+      data: 'type=sample&projectId=' + projectId + '&sampleVal=' + sampleVal + "&firstResult=" + firstResult + "&maxResult=" + maxResult,
       cache: false,
       async: false,
       beforeSend: function (){
