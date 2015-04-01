@@ -177,7 +177,7 @@
                       <tr class="interactiveTableInfo">
                         <td>Sample</td>
                         <td><div class="col-md-5" style="width: 530px;"><div class="input-group">
-                          <s:textfield id="sampleSelect"  name="sampleName"  required="true" cssClass="form-control search-box"/>
+                          <s:textfield id="sampleSelect" placeholder="Select by Sample Name"  name="sampleName"  required="true" cssClass="form-control search-box"/>
                           <span class="input-group-btn" id="basic-addon2"><button type="button" class="btn btn-default btn-xs search-button" id="searchSample" onclick="searchSamples(this.id);">
                             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                           </button></span>
