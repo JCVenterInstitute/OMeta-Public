@@ -538,15 +538,28 @@ var button = {
     if(sampleName != null) $("#sampleName").remove();
     else sampleName = $("#sampleName").val();
 
-    if(type === 'form' && (!utils.checkPR(eventName) && !utils.checkSR(eventName) && sampleName === '')){
-      utils.error.add("Data cannot be submitted without sample. Please select a sample! If the project does not have any sample, create a new one first!");
-      return;
-    }
-
     $("#jobType").val(type);
     $("#status").val(status);
 
-    if(type === 'file') {
+    //Project & Sample name validation
+    if(type === 'form'){
+      if(utils.checkPR(eventName)){
+        var projectRegName = $("#_projectName").val();
+        if(projectRegName == null || projectRegName === ''){
+          utils.error.add("Project Name is empty!");
+          return;
+        }
+      } else if(utils.checkSR(eventName)) {
+        var sampleRegName = $("#_sampleName").val();
+        if(sampleRegName == null || sampleRegName === ''){
+          utils.error.add("Sample Name is empty!");
+          return;
+        }
+      } else if(sampleName === ''){
+        utils.error.add("Data cannot be submitted without sample. Please select a sample! If the project does not have any sample, create a new one first!");
+        return;
+      }
+    } else if(type === 'file') {
       var $fileNode = $('#dataTemplate');
       if($fileNode.val() == null || $fileNode.val().length === 0) { //check if file is there
         utils.error.add("Please select a data template file.");
