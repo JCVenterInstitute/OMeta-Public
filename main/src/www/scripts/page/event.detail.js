@@ -173,6 +173,10 @@ function comboBoxChanged(option, id) {
   }
 }
 
+function refreshData(){
+  _page.change.project($("#_projectSelect").val(), 0);
+}
+
 var headerList = [];
 
 <!-- Generate html content using Ajax by type -->
@@ -299,6 +303,7 @@ function createSampleDataTable(){
             $('#projectTableDivHeader').show();
             $('#sampleTableDivHeader').show();
             $('#sampleTableDiv').show();
+            $('#refreshDataBtn').show();
             $("#loadingImg").hide();
           }
         });
