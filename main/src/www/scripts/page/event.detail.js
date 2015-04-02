@@ -174,7 +174,9 @@ function comboBoxChanged(option, id) {
 }
 
 function refreshData(){
-  _page.change.project($("#_projectSelect").val(), 0);
+  var selectedProjectId = $("#_projectSelect").val()
+  if(selectedProjectId != '0') _page.change.project(selectedProjectId, 0);
+  else utils.error.add("Please select a project!");
 }
 
 var headerList = [];
@@ -305,6 +307,7 @@ function createSampleDataTable(){
             $('#sampleTableDiv').show();
             $('#refreshDataBtn').show();
             $("#loadingImg").hide();
+            utils.error.remove();
           }
         });
       }
