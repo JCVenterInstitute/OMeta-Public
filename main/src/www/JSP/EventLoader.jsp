@@ -457,54 +457,54 @@
     <s:set name="oldBeanList" value="beanList" />
 
     <s:if test="%{#oldGridList != null && #oldGridList.size() > 0}">
-      //remove any existing dom elements
-      g_gridLineCount = 0;
-      $('#gridBody').html('');
-      $('[name^="gridList"]').remove();
+    //remove any existing dom elements
+    g_gridLineCount = 0;
+    $('#gridBody').html('');
+    $('[name^="gridList"]').remove();
 
-      <s:iterator value="#oldGridList" var="gbean" status="gstat">
-        var gridLine={}, beans=[];
+    <s:iterator value="#oldGridList" var="gbean" status="gstat">
+    var gridLine={}, beans=[];
 
-        <s:iterator value="beanList" var="fbean" status="fstat">
-          beans.push(["${fbean.attributeName}", "${attributeValue}"]);
-        </s:iterator>
+    <s:iterator value="beanList" var="fbean" status="fstat">
+    beans.push(["${fbean.attributeName}", "${attributeValue}"]);
+    </s:iterator>
 
-        gridLine['pn']="${gbean.projectName}";
-        gridLine['pp']="${gbean.projectPublic}";
-        gridLine['sn']="${gbean.sampleName}";
-        gridLine['psn']="${gbean.parentSampleName}";
-        gridLine['sp']="${gbean.samplePublic}";
-        gridLine['beans']=beans;
+    gridLine['pn']="${gbean.projectName}";
+    gridLine['pp']="${gbean.projectPublic}";
+    gridLine['sn']="${gbean.sampleName}";
+    gridLine['psn']="${gbean.parentSampleName}";
+    gridLine['sp']="${gbean.samplePublic}";
+    gridLine['beans']=beans;
 
-        button.add_event(null,null,gridLine);
-      </s:iterator>
+    button.add_event(null,null,gridLine);
+    </s:iterator>
 
-       _utils.addGridRows(null,oldEventName);
+    _utils.addGridRows(null,oldEventName);
     </s:if>
     <s:elseif test="%{#oldBeanList != null && #oldBeanList.size() >0}">
-      //preload form view
+    //preload form view
 
-      //remove any existing dom elements
-      //$('[name^="beanList"]').remove();
-      <s:iterator value="#oldBeanList" var="bean" status="bstat">
-        var currAttributeName = '${bean.attributeName}'.replace(/ /g,"_");
-        var currAttributeValue = "${bean.attributeValue}";
-        $("[id*='_" + currAttributeName + "_f']:not(:file)").val(currAttributeValue);
-        $("[id*='file_" + currAttributeName + "_f']").after("<strong>" + currAttributeValue.substring(currAttributeValue.indexOf("_") + 1) + "</strong>");
-      </s:iterator>
-      <s:set name="oldLoadingSample" value="loadingSample" />
-      <s:if test="%{#oldLoadingSample != null && #oldLoadingSample.getSampleName() != null}">
-        //$('#_sampleName').val('<s:property value="#oldLoadingSample.sampleName"/>');
-        // utils.preSelect('_parentSampleSelect', '<s:property value="#oldLoadingSample.parentSampleName"/>');
-        // utils.preSelect('_isSamplePublic', '<s:property value="#oldLoadingSample.isPublic"/>');
-      </s:if>
-      <s:else>
-        <s:set name="oldLoadingProject" value="loadingProject" />
-        <s:if test="%{#oldLoadingProject != null && #oldLoadingProject.getProjectName() != null}">
-          $('#_projectName').val('<s:property value="#oldLoadingProject.projectName"/>');
-          //utils.preSelect('_isProjectPublic', '<s:property value="#oldLoadingProject.isPublic"/>');
-        </s:if>
-      </s:else>
+    //remove any existing dom elements
+    //$('[name^="beanList"]').remove();
+    <s:iterator value="#oldBeanList" var="bean" status="bstat">
+    var currAttributeName = '${bean.attributeName}'.replace(/ /g,"_");
+    var currAttributeValue = "${bean.attributeValue}";
+    $("[id*='_" + currAttributeName + "_f']:not(:file)").val(currAttributeValue);
+    $("[id*='file_" + currAttributeName + "_f']").after("<strong>" + currAttributeValue.substring(currAttributeValue.indexOf("_") + 1) + "</strong>");
+    </s:iterator>
+    <s:set name="oldLoadingSample" value="loadingSample" />
+    <s:if test="%{#oldLoadingSample != null && #oldLoadingSample.getSampleName() != null}">
+    //$('#_sampleName').val('<s:property value="#oldLoadingSample.sampleName"/>');
+    // utils.preSelect('_parentSampleSelect', '<s:property value="#oldLoadingSample.parentSampleName"/>');
+    // utils.preSelect('_isSamplePublic', '<s:property value="#oldLoadingSample.isPublic"/>');
+    </s:if>
+    <s:else>
+    <s:set name="oldLoadingProject" value="loadingProject" />
+    <s:if test="%{#oldLoadingProject != null && #oldLoadingProject.getProjectName() != null}">
+    $('#_projectName').val('<s:property value="#oldLoadingProject.projectName"/>');
+    //utils.preSelect('_isProjectPublic', '<s:property value="#oldLoadingProject.isPublic"/>');
+    </s:if>
+    </s:else>
     </s:elseif>
 
     utils.error.check();
@@ -526,6 +526,7 @@
     } else if(filter === 'su') { //edit data redirected from search and edit page
       $('.page-header h1').html('Edit Data');
       $('#interactive-submission-table tbody tr td:first').html('Edit Data For');
+      $('#interactive-submission-table tbody tr:first td:nth-child(2) label:not(:nth-child(2))').addClass('disabled'); //Disable data submits except web form
     }
 
     $('#sampleSelect').keypress(function (e) {
