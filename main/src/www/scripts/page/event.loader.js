@@ -181,11 +181,11 @@ var _utils = {
         } else {
           if(utils.checkPR(en)) {
             $gridHeaders.append(
-                $('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Project Name<br/>', requireImgHtml)
-                // $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
+                $('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Project Name<br/>', requireImgHtml),
+                $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
             );
-            $autofillDiv.append(autofillButtonHtml.replace('$w$', '95').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
-            autofill_no+=1;
+            $autofillDiv.append(autofillButtonHtml.replace('$w$', '145').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
+            autofill_no+=2;
           }
         }
 
@@ -667,18 +667,18 @@ var button = {
                     'name': 'gridList[' + g_gridLineCount + '].projectName',
                     'id': '_projectName' + g_gridLineCount
                   })
-              ).append($('<hidden/>').attr({
-                    'name': 'gridList[' + g_gridLineCount + '].projectPublic',
-                    'value': '1'
-                  }))
+              )/*.append($('<hidden/>').attr({
+               'name': 'gridList[' + g_gridLineCount + '].projectPublic',
+               'value': '1'
+               }))*/
           );
-          /*$eventLine.append(
-           $('<td/>').append(
-           $('<select/>').attr({
-           'name': 'gridList[' + g_gridLineCount + '].projectPublic'
-           }).append(vs.ynoption)
-           )
-           );*/
+          $eventLine.append(
+              $('<td/>').append(
+                  $('<select/>').attr({
+                    'name': 'gridList[' + g_gridLineCount + '].projectPublic'
+                  }).append(vs.nyoption)
+              )
+          );
         }
       }
       var ltVal, bean, avCnt = 0;
