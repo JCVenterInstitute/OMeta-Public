@@ -845,13 +845,21 @@ function dataAutofill(id){
 
     $sampleFields.each(function (i, v) {
       if(v.id != '' || v.className != '') {
-        if ($(v).val() != '') {
-          var columnName = $("#gridHeader tr th:nth-child("+idArr[1]+")").text().replace('*','');
-          confirmBox(i, "Are you sure to overwrite [" + index + ":"+columnName+"] ?", function () {
-            $(v).val(autofillValue);
-          });
-        } else {
-          $(v).val(autofillValue);
+        var $v = $(v), multi = false;
+        if(typeof $v.attr("multiple") !== 'undefined') multi = true;
+
+        if(!multi) {
+          if ($(v).val() != '') {
+            var columnName = $("#gridHeader tr th:nth-child(" + idArr[1] + ")").text().replace('*', '');
+            confirmBox(i, "Are you sure to overwrite [" + index + ":" + columnName + "] ?", function () {
+              $v.val(autofillValue);
+            });
+          } else {
+            $v.val(autofillValue);
+          }
+        } else{
+          $v.find("option[value='"+autofillValue+"']").prop('selected', true);
+          $v.multipleSelect("refresh");
         }
         index += 1;
       }
@@ -862,14 +870,22 @@ function dataAutofill(id){
 
     $sampleFields.each(function (i, v) {
       if(v.id != '' || v.className != ''){
+        var $v = $(v), multi = false;
+        if(typeof $v.attr("multiple") !== 'undefined') multi = true;
+
         var value = autofillValue + index;
-        if($(v).val() != ''){
-          var columnName = $("#gridHeader tr th:nth-child("+idArr[1]+")").text().replace('*','');
-          confirmBox(i,"Are you sure to overwrite ["+index+":"+columnName+"] in order?",  function () {
-            $(v).val(value);
-          });
+        if(!multi) {
+          if ($(v).val() != '') {
+            var columnName = $("#gridHeader tr th:nth-child(" + idArr[1] + ")").text().replace('*', '');
+            confirmBox(i, "Are you sure to overwrite [" + index + ":" + columnName + "] ?", function () {
+              $v.val(value);
+            });
+          } else {
+            $v.val(value);
+          }
         } else{
-          $(v).val(value);
+          $v.find("option[value='"+value+"']").prop('selected', true);
+          $v.multipleSelect("refresh");
         }
         index+=1;
       }
@@ -878,7 +894,15 @@ function dataAutofill(id){
     var columnName = $("#gridHeader tr th:nth-child("+idArr[1]+")").text().replace('*','');
     confirmBox("Remove","Are you sure to delete contents in "+columnName+" ?",  function () {
       $sampleFields.each(function (i, v) {
-        $(v).val("");
+        var $v = $(v);
+        if(typeof $v.attr("multiple") === 'undefined'){
+          $v.val("");
+        } else{
+          $v.find("option").each(function(i, v){
+            $(this).prop('selected', false);
+          });
+          $v.multipleSelect("refresh");
+        }
       });
     });
   }
