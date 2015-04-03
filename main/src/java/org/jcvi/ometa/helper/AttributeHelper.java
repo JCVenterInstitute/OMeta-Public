@@ -44,6 +44,12 @@ public class AttributeHelper {
                 Sample currSample = null;
                 if(!isProject) {
                     currSample = (Sample)currCoreObject;
+
+                    //Add Parent Sample Name if exist
+                    if (currSample.getParentSampleId() != null) {
+                        Sample parentSample = readPersister.getSample(currSample.getParentSampleId());
+                        currSample.setParentSampleName(parentSample.getSampleName());
+                    }
                 }
 
                 if(currCoreObject != null) {

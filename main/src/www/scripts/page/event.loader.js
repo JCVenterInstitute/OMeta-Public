@@ -320,6 +320,7 @@ var _utils = {
                 beans.push([at.attributeName, at.attributeValue]);
               });
               gridLine['pn']= data.projectName;
+              gridLine['psn']= v.object.parentSampleName;
               gridLine['sn']= v.object.sampleName;
               gridLine['beans']=beans;
               button.add_event(null,eventName,gridLine);
