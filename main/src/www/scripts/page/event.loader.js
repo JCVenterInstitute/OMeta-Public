@@ -332,6 +332,7 @@ var _utils = {
     },
     changes = {
       project: function(projectId) {
+        $('#loadingImg').show();
         _utils.hidePS();
         g_sampleIds = null;
         $("#_sampleSelect").attr("disabled", false);
@@ -342,9 +343,11 @@ var _utils = {
         clearSampleAutoComplete();
         $("#confirmDiv").empty(); // Clean autofill confirmation dialogs
         $('#_sampleSelect+.ui-autocomplete-input, #_eventSelect+.ui-autocomplete-input').val('');
+        $('#loadingImg').hide();
       },
       sample: function(){ /*nothing to do when sample changes*/ },
       event: function(eventName, eventId) {
+        $('#loadingImg').show();
         _utils.hidePS();
         $("#confirmDiv").empty(); // Clean autofill confirmation dialogs
 
@@ -367,6 +370,7 @@ var _utils = {
               callbacks.eventAttribute
           );
         }
+        $('#loadingImg').hide();
       }
     };
 // end _utils
@@ -1011,28 +1015,18 @@ function searchSamples(id) {
   var inputId = (id.indexOf("Parent") > -1) ? id.replace("searchParentSample", "parentSelect") : id.replace("searchSample", "sampleSelect");
   var $sampleSelect = $("#" + inputId);
   var sampleVal = $sampleSelect.val();
+  var $sampleSelectAutocomplete;
   var searchIndex = 0;
   var maxResult = 25;
+  var closeDropdown = true;
 
   fetchSample(arrResult, sampleVal, searchIndex*25, maxResult);
 
   $sampleSelect.autocomplete({
     source: function (request, response) {
-      response(arrResult);
-    },
-    select: function (a, b) {
-      if(b.item.value === 'loadMoreData'){
-        ++searchIndex;
-        arrResult.pop(); //Remove Load More Data option
-
-        fetchSample(arrResult, this.value, searchIndex*25, maxResult);
-        $sampleSelect.blur();
-        return false;
-      }
-    },
-    search: function(oEvent, oUi) {
+      if(!$sampleSelectAutocomplete) $sampleSelectAutocomplete = $(this.menu.element);
       // get current input value
-      var sValue = $(oEvent.target).val();
+      var sValue = request.term;
       // init new search array
       var aSearch = [];
       // for each element in the main array ...
@@ -1044,8 +1038,23 @@ function searchSamples(id) {
           aSearch.push(sElement);
         }
       });
-      // change search array
-      $(this).autocomplete('option', 'source', aSearch);
+
+      response(aSearch);
+    },
+    select: function (a, b) {
+      if(b.item.value === 'loadMoreData'){
+        ++searchIndex;
+        arrResult.pop(); //Remove Load More Data option
+
+        fetchSample(arrResult, sampleVal, searchIndex*25, maxResult);
+        $sampleSelect.blur();
+        $(this).autocomplete("search");
+
+        closeDropdown = false;
+        return false;
+      } else{
+        closeDropdown = true;
+      }
     },
     minLength: 0,
     delay: 0
@@ -1053,6 +1062,18 @@ function searchSamples(id) {
     //reset result list's pageindex when focus on
     window.pageIndex = 0;
     $(this).autocomplete("search");
+  }).data("autocomplete").close = function(e){
+    if(closeDropdown)
+      clearTimeout(this.closing), this.menu.element.is(":visible") && (this.menu.element.hide(), this.menu.deactivate(), this._trigger("close", e));
+    else
+      return false;
+  };
+
+  $(document).mouseup(function (e){
+    if ( (!$sampleSelect.is(e.target) && $sampleSelect.has(e.target).length === 0) &&
+        ($sampleSelectAutocomplete && !$sampleSelectAutocomplete.is(e.target) && $sampleSelectAutocomplete.has(e.target).length === 0)){
+      $sampleSelectAutocomplete.hide();
+    }
   });
 }
 
