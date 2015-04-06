@@ -67,7 +67,7 @@
       border: 1px solid #aed0ea;background: #d7ebf9;font-weight: bold;color: #2779aa;height: 24px; width: 34px;
     }
     .search-box{
-      position:initial !important;height: 24px;color: #362b36;border-top-left-radius:6px;border-bottom-left-radius:6px;
+      position:initial !important;position: static\0 !important;height: 24px;color: #362b36;border-top-left-radius:6px;border-bottom-left-radius:6px;
       font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;font-size: 1.1em;margin: 0;padding: 1px;vertical-align: top;padding-left: 5px;
     }
   </style>

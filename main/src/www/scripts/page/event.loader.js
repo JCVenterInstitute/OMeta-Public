@@ -175,7 +175,7 @@ var _utils = {
                 $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
             );
             $autofillDiv.append(autofillButtonHtml.replace('$w$', '95').replace('$a$', 2).replace('$b$', 2).replace('$c$', 2),
-                autofillButtonHtml.replace('$w$', '180').replace('$a$', 3).replace('$b$', 3).replace('$c$', 3));
+                autofillButtonHtml.replace('$w$', '190').replace('$a$', 3).replace('$b$', 3).replace('$c$', 3));
             autofill_no = 5; //set to 5 to pass Public column
           }
         } else {
