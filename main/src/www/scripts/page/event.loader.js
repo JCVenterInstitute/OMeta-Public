@@ -409,10 +409,10 @@ var button = {
         return;
       }
     } else if(loadType === "grid"){ // check grid table data
-      var hasAllReq = true, allEmpty = true; reqErrorMsg = ""; // require field check
-      var $formFields = $('#gridBody > tr > td').find(':not(:hidden)');
+      var listHasData = true, hasAllReq = true, allEmpty = true; reqErrorMsg = ""; // require field check
+      var $formFields = $('#gridBody > tr > td').find(':not(:hidden):not(option)');  //:not(option) added for firefox
 
-      var rowCheck = [], rowMsg = "", empty = true, rowAllReq = true;
+      var rowCheck = [], rowMsg = "", empty = true, rowAllReq = true, rowHasData = false;
 
       if(utils.checkPR($("#_eventSelect option:selected").text())) { // if data temp is Project Registration
         $formFields.each(function (i, v) {
@@ -422,19 +422,22 @@ var button = {
             if ($node.attr('id').indexOf("req_") !== -1) {
               rowAllReq = false;
               rowMsg += "&nbsp;&nbsp;" + $node.siblings('[name$="attributeName"]').val() + "<br />";
-            } else if ($node.attr('id').indexOf("projectName") !== -1) {
+            } else if ($node.attr('id') && $node.attr('id').indexOf("projectName") !== -1) {
               rowAllReq = false;
               rowMsg += "&nbsp;&nbsp;Project Name<br />";
             }
           } else if ($node.attr('name').indexOf("projectPublic") === -1) {
             empty = false;
+
+            if($node.attr('id') && $node.attr('id').indexOf("projectName") === -1) rowHasData = true;
           }
 
-          if ($(this).parent().is(':last-child')) {
-            rowCheck.push({"e": empty, "r": rowAllReq, "m": rowMsg});
+          if ($(this).attr('id') && $(this).parent().is(':last-child')) {
+            rowCheck.push({"e": empty, "r": rowAllReq, "m": rowMsg, "h" : rowHasData});
             empty = true;
             rowMsg = "";
             rowAllReq = true;
+            rowHasData = false;
           }
         });
       } else if(utils.checkSR($("#_eventSelect option:selected").text())) {
@@ -450,16 +453,22 @@ var button = {
               rowMsg += "&nbsp;&nbsp;Sample Name<br />";
             }
           } else if($node.is('select')){
-            if($node.find('option:eq(0)').val() === '') empty = false;
+            if($node.find('option:eq(0)').val() === '') {
+              empty = false;
+              rowHasData = true;
+            }
           } else {
             empty = false;
+
+            if($node.attr('id') && $node.attr('id').indexOf("sampleName") === -1) rowHasData = true;
           }
 
-          if($(this).parents('td').is(':last-child')){
-            rowCheck.push({"e" : empty, "r" : rowAllReq, "m" : rowMsg});
+          if($(this).attr('id') && $(this).parents('td').is(':last-child')){
+            rowCheck.push({"e" : empty, "r" : rowAllReq, "m" : rowMsg, "h" : rowHasData});
             empty = true;
             rowMsg = "";
             rowAllReq = true;
+            rowHasData = false;
           }
         });
       } else {
@@ -475,16 +484,22 @@ var button = {
               rowMsg += "&nbsp;&nbsp;Sample Name<br />";
             }
           } else if($node.is('select')){
-            if($node.find('option:eq(0)').val() === '') empty = false;
+            if($node.find('option:eq(0)').val() === '') {
+              empty = false;
+              rowHasData = true;
+            }
           } else {
             empty = false;
+
+            if($node.attr('id') && $node.attr('id').indexOf("sampleSelect") === -1) rowHasData = true;
           }
 
-          if($(this).parents('td').is(':last-child')){
-            rowCheck.push({"e" : empty, "r" : rowAllReq, "m" : rowMsg});
+          if($(this).attr('id') && $(this).parents('td').is(':last-child')){
+            rowCheck.push({"e" : empty, "r" : rowAllReq, "m" : rowMsg, "h" : rowHasData});
             empty = true;
             rowMsg = "";
             rowAllReq = true;
+            rowHasData = false;
           }
         });
       }
@@ -497,6 +512,9 @@ var button = {
           if(rowCheck[i].r === false){
             hasAllReq = false;
             reqErrorMsg += "&nbsp;&nbsp;" + (i+1) + " : " + rowCheck[i].m + "<br>";
+          } else if(rowCheck[i].h === false){
+            listHasData = false;
+            reqErrorMsg += "&nbsp;&nbsp;" + (i+1) + " :  Data submission is empty. Please insert value(s). <br>";
           }
         }
       }
@@ -506,6 +524,9 @@ var button = {
         return;
       } else if (!hasAllReq) {
         utils.error.add("Required Field(s):<br/>" + reqErrorMsg);
+        return;
+      } else if(!listHasData) {
+        utils.error.add("Error(s):<br/>" + reqErrorMsg);
         return;
       } else{
         for(var i=0; i < rowCheck.length; ++i){
@@ -730,14 +751,14 @@ var button = {
         //load existing data if any
         if(utils.checkSR(_en)) {
           $('input:text#_sampleName' + g_gridLineCount).val(dict['sn']);
-          $('input[name="gridList[' + g_gridLineCount + '].parentSampleName').val(dict['psn']);
+          $('input[name="gridList[' + g_gridLineCount + '].parentSampleName"]').val(dict['psn']);
           //utils.preSelect('_parentSelect' + g_gridLineCount, dict['psn']);
           $('select[name="gridList[' + g_gridLineCount + '].samplePublic"]').val(dict['sp']);
         } else if(utils.checkPR(_en)) {
           $('#_projectName' + g_gridLineCount).val(dict['pn']);
           $('select[name="gridList[' + g_gridLineCount + '].projectPublic"]').val(dict['pp']);
         } else {
-          $('input[name="gridList[' + g_gridLineCount + '].sampleName').val(dict['sn']);
+          $('input[name="gridList[' + g_gridLineCount + '].sampleName"]').val(dict['sn']);
           //utils.preSelect('_sampleSelect' + g_gridLineCount, dict['sn']);
         }
       }
