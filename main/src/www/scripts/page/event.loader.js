@@ -251,19 +251,19 @@ var _utils = {
             } else {
               var maDatatype = _ma.lookupValue.dataType;
               if(maDatatype === 'file') { //file
-                inputElement += '<input type="file" id="' + maDatatype + '_$id$" name="$lt$upload"/>';
+                inputElement += '<input type="file" id="' + maDatatype + '_$id$" name="$lt$upload" style="width:253px;"/>';
                 $autofillDiv.append('<label style="width: 253px;"></label>');
               } else if(maDatatype ==='date') {
                 inputElement +=
                     '<div class="input-group col-sm-12">'+
-                    '  <input type="text" id="' + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$"/>' +
+                    '  <input type="text" id="' + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" style="width:160px;"/>' +
                     '  <label for="' + maDatatype + '_$id$" class="input-group-addon" style="padding:4px;"><span><i class="fa fa-calendar"></i></span></label>' +
                     '</div>';
 
                 $autofillDiv.append(autofillButtonHtml.replace('$w$', '110').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
               } else { //text input
                 isText = true;
-                inputElement += '<input type="text" id="' + (isRequired ? 'req_' : '') + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$"/>';
+                inputElement += '<input type="text" id="' + (isRequired ? 'req_' : '') + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" style="width:160px;"/> ';
 
                 $autofillDiv.append(autofillButtonHtml.replace('$w$', '92').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
               }
@@ -611,7 +611,8 @@ var button = {
               $('<td/>').append($('<input/>').attr({
                     'type': 'text',
                     'name': 'gridList[' + g_gridLineCount + '].sampleName',
-                    'id': '_sampleName' + g_gridLineCount
+                    'id': '_sampleName' + g_gridLineCount,
+                    'style' : 'width:160px'
                   })
               )
           );
@@ -648,7 +649,8 @@ var button = {
           $eventLine.append(
               $('<td/>').append(
                   $('<select/>').attr({
-                    'name': 'gridList[' + g_gridLineCount + '].samplePublic'
+                    'name': 'gridList[' + g_gridLineCount + '].samplePublic',
+                    'style': 'width:52px'
                   }).append(vs.nyoption)
               )
           );
@@ -691,7 +693,8 @@ var button = {
               $('<td/>').append($('<input/>').attr({
                     'type': 'text',
                     'name': 'gridList[' + g_gridLineCount + '].projectName',
-                    'id': '_projectName' + g_gridLineCount
+                    'id': '_projectName' + g_gridLineCount,
+                    'style' : 'width:160px'
                   })
               )/*.append($('<hidden/>').attr({
                'name': 'gridList[' + g_gridLineCount + '].projectPublic',
@@ -701,7 +704,8 @@ var button = {
           $eventLine.append(
               $('<td/>').append(
                   $('<select/>').attr({
-                    'name': 'gridList[' + g_gridLineCount + '].projectPublic'
+                    'name': 'gridList[' + g_gridLineCount + '].projectPublic',
+                    'style': 'width:52px'
                   }).append(vs.nyoption)
               )
           );

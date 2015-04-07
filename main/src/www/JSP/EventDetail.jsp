@@ -67,12 +67,12 @@
       float: left !important;
     }
 
-    #refreshDataBtn {margin-top:-15px;height:24px;width:34px;margin-left:10px;border:1px solid #aed0ea;background:#d7ebf9;font-weight:bold;color:#2779aa;}
+    #refreshDataBtn {position:absolute;height:24px;width:34px;margin-left:10px;border:1px solid #aed0ea;background:#d7ebf9;font-weight:bold;color:#2779aa;}
     #refreshDataBtn:hover:after{ background: #333; background: rgba(0,0,0,.8);
       border-radius: 5px; bottom: 0px; color: #fff; content: attr(data-tooltip);
-      left: 89.9%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
+      left: 140%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
     #refreshDataBtn:hover:before{border: solid; border-color: transparent #333;border-width: 6px 6px 6px 0px;
-      bottom: 8px; content: ""; left: 89%; position: absolute; z-index: 99;}
+      bottom: 8px; content: ""; left: 125%; position: absolute; z-index: 99;}
   </style>
 </head>
 
@@ -123,7 +123,7 @@
               <div id="tableTop">
                 <div class="row">
                   <div class="col-md-2">Project Name</div>
-                  <div class="col-md-6 combobox">
+                  <div class="col-md-6 combobox" style="display: inline-flex;">
                     <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
                               list="projectList" name="projectId" headerKey="0" headerValue="Select by Project Name"
                               listValue="projectName" listKey="projectId" required="true"/>
