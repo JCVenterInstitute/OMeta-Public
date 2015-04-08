@@ -383,13 +383,13 @@ public class SampleDAO extends HibernateDAO {
             String sql = null;
             String sub_sql = null;
             String sql_s_default =
-                    "select #selector# "+
+                    "select distinct #selector# "+
                             "  from project p left join project p_1 on p.projet_projet_parent_id=p_1.projet_id " +
                             "    left join sample s on p.projet_id=s.sample_projet_id left join sample s_1 on s.sample_id=s_1.sample_id"+
                             "  where p.projet_id in (#projectIds#) #opt# ";
 
             String sql_p =
-                    "select #selector# #p_attr#"+
+                    "select distinct #selector# #p_attr#"+
                             "  from sample s left join project p on s.sample_projet_id=p.projet_id " +
                             "    left join project p_1 on p.projet_projet_parent_id=p_1.projet_id "+
                             "    left join project_attribute pa on p.projet_id=pa.projea_projet_id " +
@@ -405,7 +405,7 @@ public class SampleDAO extends HibernateDAO {
                             "  ) ";
 
             String sql_s =
-                    "select #selector# #s_attr# "+
+                    "select distinct #selector# #s_attr# "+
                             "  from sample s left join sample s_1 on s.sample_sample_parent_id=s_1.sample_id "+
                             "    left join project p on s.sample_projet_id=p.projet_id "+
                             "    left join sample_attribute sa on s.sample_id=sa.sampla_sample_id "+
@@ -422,7 +422,7 @@ public class SampleDAO extends HibernateDAO {
                             " ) ";
 
             String sql_e =
-                    "select #selector# #e_attr# "+
+                    "select distinct #selector# #e_attr# "+
                             "  from "+
                             "    (select e1.* from event e1 "+
                             "       where e1.event_projet_id in (#projectIds#) "+
