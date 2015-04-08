@@ -395,7 +395,6 @@ public class SampleDAO extends HibernateDAO {
                             "    left join project_attribute pa on p.projet_id=pa.projea_projet_id " +
                             "    left join lookup_value lv on pa.projea_lkuvlu_attribute_id=lv.lkuvlu_id "+
                             "  where p.projet_id in (#projectIds#) and #p_opt# ";
-            String sql_p_attr = " ,CONCAT(IFNULL(pa.projea_attribute_str''),',',IFNULL(pa.projea_attribute_date,''),',',IFNULL(pa.projea_attribute_int,'')) attr ";
             String sql_p_wsearch =
                     " ( "+
                             "    p.projet_name like #sSearch# or p_1.projet_name like #sSearch# or ( "+
@@ -412,7 +411,6 @@ public class SampleDAO extends HibernateDAO {
                             "    left join sample_attribute sa on s.sample_id=sa.sampla_sample_id "+
                             "    left join lookup_value lv on sa.sampla_lkuvlu_attribute_id=lv.lkuvlu_id "+
                             "  where p.projet_id in (#projectIds#) and #s_opt# ";
-            String sql_s_attr = " , CONCAT(IFNULL(sa.sampla_attribute_str,''),',',IFNULL(sa.sampla_attribute_date,''),',',IFNULL(sa.sampla_attribute_int,'')) attr ";
             String sql_s_wsearch =
                     " ( "+
                             "   s.sample_name like #sSearch# or s_1.sample_name like #sSearch# or ( "+
@@ -436,11 +434,10 @@ public class SampleDAO extends HibernateDAO {
                             "    left join event_attribute ea on e.event_id=ea.eventa_event_id "+
                             "    left join lookup_value lv on ea.eventa_lkuvlu_attribute_id=lv.lkuvlu_id "+
                             "  where #e_opt# ";
-            String sql_e_attr = " , CONCAT(IFNULL(ea.eventa_attribute_str,''),',',IFNULL(ea.eventa_attribute_date,''),',',IFNULL(ea.eventa_attribute_int,'')) attr ";
             String sql_e_wsearch = " (ea.eventa_attribute_str like #sSearch# or date(ea.eventa_attribute_date) like #sSearch# " +
-                    (isInt?" or ea.eventa_attribute_int=#i_sSearch# ":"") + ") and lv.lkuvlu_name in (#attributes#) ";
+                    (isInt ? " or ea.eventa_attribute_int=#i_sSearch# " : "") + ") and lv.lkuvlu_name in (#attributes#) ";
 
-            String sql_wsort = " #sortOpt# and lv.lkuvlu_name in (#sortCol#) order by attr #sortDir# ";
+            String sql_wsort = " #sortOpt# and (lv.lkuvlu_name is null or lv.lkuvlu_name in (#sortCol#)) order by attr #sortDir# ";
             String sql_wsort_s = " s.sample_id in (#sampleIds#) ";
             String sql_wsort_p = " s.sample_projet_id in (#projectIds#)";
 
@@ -455,43 +452,38 @@ public class SampleDAO extends HibernateDAO {
             if(isSort) {
                 String optSelector = "";
                 List<String> defaults = Arrays.asList(defaultAttributes);
-                if(defaults.contains(sortCol)) {
+                if(defaults.contains(sortCol) || sortCol.equals("Sample Name") || sortCol.equals("Project Name") || sortCol.equals("Parent Sample")) {
                     String temp_sql = "";
                     if(isSearch)
                         temp_sql = " and "+sql_wsort_s.replaceFirst("#sampleIds#", sub_sql.replaceAll("#selector#", "s.sample_id"));
                     temp_sql += " order by ";
-                    if(sortCol.equals(Constants.ATTR_PROJECT_NAME))
+                    if(sortCol.equals(Constants.ATTR_PROJECT_NAME) || sortCol.equals("Project Name"))
                         temp_sql += "p.projet_name ";
-                    else if(sortCol.equals(Constants.ATTR_SAMPLE_NAME))
+                    else if(sortCol.equals(Constants.ATTR_SAMPLE_NAME) || sortCol.equals("Sample Name"))
                         temp_sql += "s.sample_name ";
                     else if(sortCol.equals("Parent Project"))
                         temp_sql += "p_1.project_name ";
-                    else if(sortCol.equals(Constants.ATTR_PARENT_SAMPLE_NAME))
+                    else if(sortCol.equals(Constants.ATTR_PARENT_SAMPLE_NAME) || sortCol.equals("Parent Sample"))
                         temp_sql += "s_1.sample_name ";
                     sql = sql_s_default.replace("#opt#", temp_sql + " #sortDir# ");
                 } else {
                     if(sortType!=null) {
-                        if(sortType.equals("p")) {
-                            sql = sql_p.replaceFirst("#p_attr#", sql_p_attr);
-                            optSelector = "#p_opt#";
-                        } else if(sortType.equals("s")) {
-                            sql = sql_s.replaceFirst("#s_attr#", sql_s_attr);
-                            optSelector = "#s_opt#";
-                        } else if(sortType.equals("e")) {
-                            sql = sql_e.replaceFirst("#e_attr#", sql_e_attr);
-                            optSelector = "#e_opt#";
-                        }
+                        // ea.eventa, sa.sampla, pa.projea
+                        String sql_attr = " ,CONCAT(IFNULL(#field#_attribute_str, ''),',',IFNULL(#field#_attribute_date, ''),',',IFNULL(#field#_attribute_int, '')) attr ";
+                        sql = sortType.equals("p") ? sql_p.replaceFirst("#p_attr#", sql_attr.replaceAll("#field#", "pa.projea"))
+                                : sortType.equals("s") ? sql_s.replaceFirst("#s_attr#", sql_attr.replaceAll("#field#", "sa.sampla"))
+                                : sql_e.replaceFirst("#e_attr#", sql_attr.replaceAll("#field#", "ea.eventa"));
+                        optSelector = "#" + sortType + "_opt#";
                     }
-                    sql = sql.replaceAll(
-                            optSelector, sql_wsort.replaceFirst(
-                            "#sortOpt#", isSearch?sql_wsort_s.replaceFirst("#sampleIds#", sub_sql.replaceAll("#selector#", "s.sample_id")):sql_wsort_p
-                    ).replaceFirst("#sortCol#", "'"+sortCol+"'")
-                    );
+
+                    String sortOptionSql = (isSearch ? sql_wsort_s.replaceFirst("#sampleIds#", sub_sql.replaceAll("#selector#", "s.sample_id")) : sql_wsort_p);
+                    String sortWhereSql = sql_wsort.replaceFirst("#sortOpt#", sortOptionSql);
+                    sql = sql.replaceAll(optSelector, sortWhereSql.replaceFirst("#sortCol#", "'"+sortCol+"'"));
                 }
 
                 sql = sql.replaceFirst("#sortDir#", sortDir);
             }
-            sql=sql==null?sub_sql:sql;
+            sql = (sql == null ? sub_sql : sql);
             sql = sql.replaceAll("#projectIds#", projectIds).replaceAll("#selector#", "s.*");
 
             SQLQuery query = session.createSQLQuery(sql);
