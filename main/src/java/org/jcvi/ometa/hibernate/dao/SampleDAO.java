@@ -393,8 +393,9 @@ public class SampleDAO extends HibernateDAO {
                             "  from sample s left join project p on s.sample_projet_id=p.projet_id " +
                             "    left join project p_1 on p.projet_projet_parent_id=p_1.projet_id "+
                             "    left join project_attribute pa on p.projet_id=pa.projea_projet_id " +
-                            "    left join lookup_value lv on pa.projea_lkuvlu_attribute_id=lv.lkuvlu_id "+
+                            "    #lookup# "+
                             "  where p.projet_id in (#projectIds#) and #p_opt# ";
+
             String sql_p_wsearch =
                     " ( "+
                             "    p.projet_name like #sSearch# or p_1.projet_name like #sSearch# or ( "+
@@ -409,7 +410,7 @@ public class SampleDAO extends HibernateDAO {
                             "  from sample s left join sample s_1 on s.sample_sample_parent_id=s_1.sample_id "+
                             "    left join project p on s.sample_projet_id=p.projet_id "+
                             "    left join sample_attribute sa on s.sample_id=sa.sampla_sample_id "+
-                            "    left join lookup_value lv on sa.sampla_lkuvlu_attribute_id=lv.lkuvlu_id "+
+                            "    #lookup# "+
                             "  where p.projet_id in (#projectIds#) and #s_opt# ";
             String sql_s_wsearch =
                     " ( "+
@@ -432,19 +433,24 @@ public class SampleDAO extends HibernateDAO {
                             "             group by e2.event_type_lkuvl_id) "+
                             "    ) as e left join sample s on e.event_sampl_id=s.sample_id "+
                             "    left join event_attribute ea on e.event_id=ea.eventa_event_id "+
-                            "    left join lookup_value lv on ea.eventa_lkuvlu_attribute_id=lv.lkuvlu_id "+
+                            "    #lookup# "+
                             "  where #e_opt# ";
+
             String sql_e_wsearch = " (ea.eventa_attribute_str like #sSearch# or date(ea.eventa_attribute_date) like #sSearch# " +
                     (isInt ? " or ea.eventa_attribute_int=#i_sSearch# " : "") + ") and lv.lkuvlu_name in (#attributes#) ";
 
-            String sql_wsort = " #sortOpt# and (lv.lkuvlu_name is null or lv.lkuvlu_name in (#sortCol#)) order by attr #sortDir# ";
+            String sql_wsort = " #sortOpt# order by attr #sortDir# ";
             String sql_wsort_s = " s.sample_id in (#sampleIds#) ";
             String sql_wsort_p = " s.sample_projet_id in (#projectIds#)";
+            String project_field = "pa.projea";
+            String sample_field = "sa.sampla";
+            String event_field = "ea.eventa";
 
             if(isSearch) {
-                sub_sql = sql_p.replaceFirst("#p_attr#", "").replaceFirst("#p_opt#", sql_p_wsearch);
-                sub_sql += " union " + sql_s.replaceFirst("#s_attr#", "").replaceFirst("#s_opt#", sql_s_wsearch);
-                sub_sql += " union " + sql_e.replaceFirst("#e_attr#", "").replaceFirst("#e_opt#", sql_e_wsearch);
+                String lookup = " left join lookup_value lv on #field#_lkuvlu_attribute_id=lv.lkuvlu_id ";
+                sub_sql = sql_p.replaceFirst("#p_attr#", "").replaceFirst("#p_opt#", sql_p_wsearch).replaceFirst("#lookup#", lookup.replaceAll("#field#", project_field));
+                sub_sql += " union " + sql_s.replaceFirst("#s_attr#", "").replaceFirst("#s_opt#", sql_s_wsearch).replaceFirst("#lookup#", lookup.replaceAll("#field#", sample_field));
+                sub_sql += " union " + sql_e.replaceFirst("#e_attr#", "").replaceFirst("#e_opt#", sql_e_wsearch).replaceFirst("#lookup#", lookup.replaceAll("#field#", event_field));
                 sub_sql = sub_sql.replaceAll("#sSearch#", "'%"+sSearch.toLowerCase().replaceAll("'", "''")+"%'")
                         .replaceAll("#i_sSearch#", sSearch)
                         .replaceAll("#attributes#", "'"+attributeNames.replaceAll("'", "''").replaceAll(",", "','")+"'");
@@ -470,15 +476,16 @@ public class SampleDAO extends HibernateDAO {
                     if(sortType!=null) {
                         // ea.eventa, sa.sampla, pa.projea
                         String sql_attr = " ,CONCAT(IFNULL(#field#_attribute_str, ''),',',IFNULL(#field#_attribute_date, ''),',',IFNULL(#field#_attribute_int, '')) attr ";
-                        sql = sortType.equals("p") ? sql_p.replaceFirst("#p_attr#", sql_attr.replaceAll("#field#", "pa.projea"))
-                                : sortType.equals("s") ? sql_s.replaceFirst("#s_attr#", sql_attr.replaceAll("#field#", "sa.sampla"))
-                                : sql_e.replaceFirst("#e_attr#", sql_attr.replaceAll("#field#", "ea.eventa"));
+                        String lookup = "and #field#_lkuvlu_attribute_id = (select lv.lkuvlu_id from lookup_value lv where lv.lkuvlu_name in ('"+sortCol+"'))";
+                        sql = sortType.equals("p") ? sql_p.replaceFirst("#p_attr#", sql_attr.replaceAll("#field#", project_field)).replaceAll("#lookup#", lookup.replaceAll("#field#", project_field))
+                                : sortType.equals("s") ? sql_s.replaceFirst("#s_attr#", sql_attr.replaceAll("#field#", sample_field)).replaceAll("#lookup#", lookup.replaceAll("#field#", sample_field))
+                                : sql_e.replaceFirst("#e_attr#", sql_attr.replaceAll("#field#", event_field)).replaceAll("#lookup#", lookup.replaceAll("#field#", event_field));
                         optSelector = "#" + sortType + "_opt#";
                     }
 
                     String sortOptionSql = (isSearch ? sql_wsort_s.replaceFirst("#sampleIds#", sub_sql.replaceAll("#selector#", "s.sample_id")) : sql_wsort_p);
                     String sortWhereSql = sql_wsort.replaceFirst("#sortOpt#", sortOptionSql);
-                    sql = sql.replaceAll(optSelector, sortWhereSql.replaceFirst("#sortCol#", "'"+sortCol+"'"));
+                    sql = sql.replaceAll(optSelector, sortWhereSql);
                 }
 
                 sql = sql.replaceFirst("#sortDir#", sortDir);
