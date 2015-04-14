@@ -98,8 +98,11 @@
                             <div id="tableTop">
                                 <div class="row row_spacer">
                                     <div class="col-md-1">Project Name</div>
-                                    <div class="col-md-11 combobox">
+                                    <div class="col-md-5 combobox">
                                         <s:select id="_projectSelect" list="projectList" name="projectId" headerKey="0" headerValue="" listValue="projectName" listKey="projectId" required="true" />
+                                    </div>
+                                    <div id="loadingImg" style="display:none;">
+                                      <img src="images/loading.gif" style="width:24px"/>
                                     </div>
                                 </div>
                                 <div class="row row_spacer">
@@ -108,9 +111,6 @@
                                         <s:select id="_eventSelect" list="#{'0':''}" required="true" disabled="true" />
                                     </div>
                                 </div>
-                            </div>
-                            <div id="loadingImg" style="padding-left:5px;display:none;">
-                                <img src="images/loading.gif" />
                             </div>
                             <div id="PMADiv" style="display:none;">
                                 <div style="margin:10px 10px 0 0;">

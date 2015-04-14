@@ -111,11 +111,6 @@
                 </div>
               </div>
             </s:if>
-            <div class="row" id="loadingImg" style="display: none;">
-              <div class="container" style="padding-left:5px;">
-                <img src="images/loading.gif" />
-              </div>
-            </div>
           </div>
           <div id="mainContent">
             <!--<div id="columnsTable"></div>  for column listing-->
@@ -123,13 +118,18 @@
               <div id="tableTop">
                 <div class="row">
                   <div class="col-md-2">Project Name</div>
-                  <div class="col-md-6 combobox" style="display: inline-flex;">
+                  <div class="col-md-5 combobox" style="display: inline-flex;">
                     <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
                               list="projectList" name="projectId" headerKey="0" headerValue="Select by Project Name"
                               listValue="projectName" listKey="projectId" required="true"/>
                     <button type="button" class="btn btn-default btn-xs" id="refreshDataBtn" onclick="refreshData();" data-tooltip="Refresh Data">
                       <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
                     </button>
+                  </div>
+                  <div id="loadingImg" style="display: none;">
+                    <div class="container">
+                      <img src="images/loading.gif" style="width: 24px;"/>
+                    </div>
                   </div>
                 </div>
                   <%--<div class="row row_spacer">
