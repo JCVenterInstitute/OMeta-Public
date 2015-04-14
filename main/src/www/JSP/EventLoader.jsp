@@ -170,7 +170,7 @@
                       <tr class="interactiveTableInfo">
                         <td>Event</td>
                         <td><div class="col-md-11 combobox">
-                          <s:select id="_eventSelect" list="#{0:'Select by Data Type Template'}" name="eventId" required="true" disabled="true"/>
+                          <s:select id="_eventSelect" list="#{0:'Select by Event Name'}" name="eventId" required="true" disabled="true"/>
                         </div></td>
                         <td></td>
                       </tr>
