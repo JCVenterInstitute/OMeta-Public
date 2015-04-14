@@ -186,7 +186,8 @@
 <jsp:include page="../html/footer.html" />
 
 <script src="scripts/jquery/jquery.dataTables.js"></script>
-<%--<script src="scripts/jquery/jquery.dataTables.columnFilter.js"></script>--%>
+<%--<script src="scripts/jquery/jquery.tableTools.js"></script>--%>
+<script src="scripts/jquery/jquery.colReorderWithResize.js"></script>
 <script src="scripts/page/event.detail.js"></script>
 <script>
   $(document).ready(function() {

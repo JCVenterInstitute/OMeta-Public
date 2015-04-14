@@ -262,7 +262,7 @@ function createSampleDataTable(){
 
   <!-- SAMPLE TABLE -->
   sDT = $("#sampleTable").dataTable({
-    "sDom": '<"datatable_top"lf><"datatable_table"rt><"datatable_bottom"ip>',
+    "sDom": '<"datatable_top"Tlf><"datatable_table"rt><"datatable_bottom"ip>R',
     "bProcessing": true,
     "bServerSide": true,
     "bDestroy": true,
@@ -282,7 +282,7 @@ function createSampleDataTable(){
               $.each(json.aaData, function(ri,rowData) {
                 var row = [], attributes;
                 row.push(
-                    rowData.sampleName + "<input type='checkbox' style='margin-left:6px;' id='sampleCB_" + rowData.sample.sampleId + "'/>",
+                    "<input type='checkbox' style='margin-right:6px;' id='sampleCB_" + rowData.sample.sampleId + "'/>" + rowData.sampleName,
                     rowData.parentSampleName,
                     rowData.actor,
                     rowData.createdOn
@@ -362,7 +362,7 @@ function triggerSearch(){
 function aoColumns() {
   var ao = [];
   var totalWidth = 410;
-  ao.push({"sWidth": "110px", "aTargets":[0]},
+  ao.push({"sWidth": "160px", "aTargets":[0]},
       {"sWidth": "100px", "aTargets":[1]},
       {"sWidth": "100px", "aTargets":[2]},
       {"sWidth": "100px", "aTargets":[3]}
