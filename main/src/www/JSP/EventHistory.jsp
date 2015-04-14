@@ -135,7 +135,7 @@
                     <div class="col-sm-1" style="padding-top:7px;">Date Range:</div>
                     <div class="col-sm-2">
                       <div class="input-group col-sm-12">
-                        <input id="fromDate" type="text" class="form-control" />
+                        <input id="fromDate" type="text" class="form-control"  style="position: initial"/>
                         <label for="fromDate" class="input-group-addon">
                           <span class=""><i class="fa fa-calendar"></i></span>
                         </label>
@@ -144,7 +144,7 @@
                     <div class="col-sm-1" style="width:auto;padding-top:7px;">~</div>
                     <div class="col-sm-2">
                       <div class="input-group col-sm-11">
-                        <input id="toDate" type="text" class="form-control" />
+                        <input id="toDate" type="text" class="form-control"  style="position: initial"/>
                         <label for="toDate" class="input-group-addon">
                           <span class=""><i class="fa fa-calendar"></i></span>
                         </label>
