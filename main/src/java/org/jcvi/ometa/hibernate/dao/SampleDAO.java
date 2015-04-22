@@ -31,10 +31,8 @@ import org.hibernate.criterion.Restrictions;
 import org.jcvi.ometa.model.Sample;
 import org.jcvi.ometa.utils.Constants;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import javax.jws.WebMethod;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -311,7 +309,7 @@ public class SampleDAO extends HibernateDAO {
         return sampleList;
     }
 
-    public List<Sample> getAllSamples(Long flexId, String type, String sSearch, String sortCol, String sortDir, Session session) throws DAOException {
+    public List<Sample> getAllSamples(Long flexId, String type, String sSearch, String sortCol, String sortDir, Map<String, String> columnSearchMap, Session session) throws DAOException {
         List<Sample> sampleList = new ArrayList<Sample>();
         try {
             List results = null;
@@ -339,19 +337,45 @@ public class SampleDAO extends HibernateDAO {
                         " or LOWER(S2.sample_name) like '"+sSearch+"' or ((LOWER(A.actor_first_name) like '"+sSearch+"' or LOWER(A.actor_last_name) like '"+sSearch+"'))))";
             }
 
+            if(columnSearchMap!=null && !columnSearchMap.isEmpty()){
+                String columnSearchSql = " and (S1.sample_id in (select SA.sampla_sample_id from sample_attribute SA, lookup_value LV where SA.sampla_lkuvlu_attribute_id = LV.lkuvlu_id and " +
+                        "LV.lkuvlu_name = '#columnName#' and COALESCE(LOWER(SA.sampla_attribute_float),LOWER(SA.sampla_attribute_str),LOWER(SA.sampla_attribute_int)) like '%#columnSearchVal#%'))";
+
+                for(Map.Entry<String, String> entry : columnSearchMap.entrySet()){
+                    String key = entry.getKey();
+                    String value = entry.getValue();
+
+                    if(key.equals("sample")){
+                        sql += " and LOWER(S1.sample_name) like '%"+value+"%' ";
+                    } else if(key.equals("parent")){
+                        sql += " and LOWER(S2.sample_name) like '%"+value+"%' ";
+                    } else if(key.equals("user")){
+                        sql += " and (LOWER(A.actor_first_name) like '%"+value+"%' or LOWER(A.actor_last_name) like '%"+value+"%') ";
+                    } else if(key.equals("date")){
+                       //No filter for date yet
+                    } else {
+                        sql += columnSearchSql.replace("#columnName#", key).replace("#columnSearchVal#", entry.getValue());
+                    }
+                }
+            }
+
             if(sortCol!=null && !sortCol.isEmpty() && sortDir!=null && !sortDir.isEmpty()) {
                 sql += " order by";
+                boolean isDateSort = false;
                 if(sortCol.equals("sample"))
                     sql += " sample_name ";
                 else if(sortCol.equals("parent"))
                     sql += " parent ";
                 else if(sortCol.equals("user"))
                     sql += " user ";
-                else if(sortCol.equals("date"))
+                else if(sortCol.equals("date")) {
                     sql += " sample_create_date ";
-                else
+                    isDateSort = true;
+                }else
                     sql += " COALESCE(attribute_value_float, attribute_value_str, attribute_value_int) ";
                 sql += sortDir;
+
+                if(isDateSort) sql += ", sample_name asc";
             }
 
             SQLQuery query = session.createSQLQuery( sql );

@@ -210,8 +210,8 @@ function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
             } else if(v1 && i1 == 1){  //create dynamic table header based on sample meta attributes
               var $header = $("#sampleTableHeader tr");
               $header.empty();
-              /* var $footer = $("#sampleTableFooter tr");
-               $footer.empty();*/
+              var $footer = $("#sampleTableFooter tr");
+              $footer.empty();
               headerList = [];
 
               $header.append("<th class='tableHeaderStyle'>Sample Name</th>")
@@ -219,15 +219,15 @@ function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
                   .append("<th class='tableHeaderStyle'>User</th>")
                   .append("<th class='tableHeaderStyle'>Date</th>");
 
-              /*$footer.append("<th class='tableHeaderStyle'>Sample Name</th>")
-               .append("<th class='tableHeaderStyle'>Parent</th>")
-               .append("<th class='tableHeaderStyle'>User</th>")
-               .append("<th class='tableHeaderStyle'>Date</th>");*/
+              $footer.append("<th class='tableHeaderStyle'>Sample Name</th>")
+                  .append("<th class='tableHeaderStyle'>Parent</th>")
+                  .append("<th class='tableHeaderStyle'>User</th>")
+                  .append("<th class='tableHeaderStyle'>Date</th>");
 
               $.each(v1, function(i2,v2) {
                 if(v2) {
                   $header.append("<th class='tableHeaderStyle'>" + v2 + "</th>");
-                  /*$footer.append("<th>" + v2 + "</th>");*/
+                  $footer.append("<th>" + v2 + "</th>");
                 }
                 headerList.push(v2);
               });
@@ -315,8 +315,7 @@ function createSampleDataTable(){
     "aaSorting": [[3,'asc']],
     "bAutoWidth" : false,
     "aoColumnDefs": aoColumns()
-  }).fnFilterOnReturn();
-  /*}).fnFilterOnReturn().columnFilter();*/
+  }).fnFilterOnReturn().columnFilter();
 
   $(".datatable_top").append(
       $('<span/>').attr({

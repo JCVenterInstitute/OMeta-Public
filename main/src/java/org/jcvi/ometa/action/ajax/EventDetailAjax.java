@@ -34,6 +34,7 @@ import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.property.PropertyHelper;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.*;
@@ -97,14 +98,34 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                         : iSortCol_0.equals("1") ? "parent"
                         : iSortCol_0.equals("2") ? "user"
                         : iSortCol_0.equals("3") ? "date" : null;
-                if(sortCol == null){
-                    List<SampleMetaAttribute> allSampleMetaAttributes = readPersister.getSampleMetaAttributes(this.projectId);
 
+                List<SampleMetaAttribute> allSampleMetaAttributes = readPersister.getSampleMetaAttributes(this.projectId);
+
+                if(sortCol == null){
                     sortCol = allSampleMetaAttributes.get(Integer.parseInt(iSortCol_0) - 4)
-                            .getLookupValue().getName();;
+                            .getLookupValue().getName();
                 }
 
-                samples = readPersister.getAllSamples(flexId, flexType,sSearch, sortCol, sSortDir_0);
+                HttpServletRequest request = ServletActionContext.getRequest();
+                Map<String, String> columnSearchMap = new HashMap<String, String>(0);
+
+                for(int i = 0; i < iColumns; i++){
+                    String colSearchVal = request.getParameter("sSearch_" + i);
+                    String column;
+
+                    if(i == 0) column = "sample";
+                    else if(i== 1) column = "parent";
+                    else if(i == 2) column = "user";
+                    else if(i == 3) column = "date";
+                    else column = allSampleMetaAttributes.get(i - 4)
+                                .getLookupValue().getName();
+
+                    if(colSearchVal != null && !colSearchVal.isEmpty()){
+                        columnSearchMap.put(column, colSearchVal);
+                    }
+                }
+
+                samples = readPersister.getAllSamples(flexId, flexType,sSearch, sortCol, sSortDir_0, columnSearchMap);
 
                 List<Sample> filteredList = samples.subList(iDisplayStart, iDisplayStart+iDisplayLength>samples.size() ? samples.size() : iDisplayLength+iDisplayStart);
 

@@ -164,10 +164,10 @@
                   <tr>
                   </tr>
                   </thead>
-                    <%--<tfoot id="sampleTableFooter">
-                    <tr>
-                    </tr>
-                    </tfoot>--%>
+                  <tfoot id="sampleTableFooter">
+                  <tr>
+                  </tr>
+                  </tfoot>
                   <tbody id="sampleTableBody"/>
                 </table>
                 <input onclick="_page.edit.sampleEvent();" class="btn btn-primary" disabled="true" type="button" value="Edit Sample" id="editSampleBtn" style="margin-top: 20px;" />
@@ -186,6 +186,7 @@
 <jsp:include page="../html/footer.html" />
 
 <script src="scripts/jquery/jquery.dataTables.js"></script>
+<script src="scripts/jquery/jquery.dataTables.columnFilter.js"></script>
 <%--<script src="scripts/jquery/jquery.tableTools.js"></script>--%>
 <script src="scripts/jquery/jquery.colReorderWithResize.js"></script>
 <script src="scripts/page/event.detail.js"></script>

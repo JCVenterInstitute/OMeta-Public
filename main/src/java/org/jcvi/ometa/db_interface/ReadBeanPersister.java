@@ -33,6 +33,7 @@ import org.jcvi.ometa.stateless_session_bean.ProjectSampleEventPresentationState
 import org.jcvi.ometa.utils.PresentationActionDelegate;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -192,8 +193,8 @@ public class ReadBeanPersister implements WebDataFacadeI {
         return pseb.getSamplesForProjects(projectIds);
     }
 
-    public List<Sample> getAllSamples(Long flexId, String type, String sSearch, String sortCol, String sortDir) throws Exception {
-        return pseb.getAllSamples(flexId, type, sSearch, sortCol, sortDir);
+    public List<Sample> getAllSamples(Long flexId, String type, String sSearch, String sortCol, String sortDir, Map<String, String> columnSearchMap) throws Exception {
+        return pseb.getAllSamples(flexId, type, sSearch, sortCol, sortDir, columnSearchMap);
     }
 
     public List<Sample> getAllSamples(String projectIds, String attributeNames, String sSearch, String sortType, String sortCol, String sortDir) throws Exception {
