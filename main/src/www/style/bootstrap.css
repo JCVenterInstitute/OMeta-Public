@@ -6254,3 +6254,7 @@ td.table-tooltip:hover:after{ background: #333; background: rgba(0,0,0,.8);
     left: 103%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
 td.table-tooltip:hover:before{border: solid; border-color: transparent #333;border-width: 6px 6px 6px 0px;
     bottom: 8px; content: ""; left: 100%; position: absolute; z-index: 99;}
+
+.show_processing{z-index: 1000;top: 50%;left: 50%;width: 400px;height: 100px;margin-left: -125px;
+    margin-top: -15px;padding: 40px 0 2px 0;text-align: center;font-size: 14px;background-color: white;position: absolute;
+    border: 1px solid #aed0ea;background: #d7ebf9;font-weight: bold;color: #2779aa;}
