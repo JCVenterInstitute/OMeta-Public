@@ -315,7 +315,7 @@ public class SampleDAO extends HibernateDAO {
             List results = null;
 
             String sql = " select S1.*, S2.sample_name parent, CONCAT(A.actor_last_name,',',A.actor_first_name) user," +
-                    " SA2.sampla_attribute_float attribute_value_float, SA2.sampla_attribute_str attribute_value_str, SA2.sampla_attribute_int attribute_value_int " +
+                    " SA2.sampla_attribute_date attribute_value_date, SA2.sampla_attribute_float attribute_value_float, SA2.sampla_attribute_str attribute_value_str, SA2.sampla_attribute_int attribute_value_int " +
                     " from sample S1 " +
                     " left join sample S2 on S1.sample_sample_parent_id=S2.sample_id " +
                     " left join actor A on S1.sample_created_by=A.actor_id " +
@@ -331,15 +331,16 @@ public class SampleDAO extends HibernateDAO {
 
             if(sSearch!=null && !sSearch.isEmpty()) {
                 sSearch = "%"+sSearch+"%";
-                sql+=" and (LOWER(S1.sample_name) like '"+sSearch+"' " +
+                sql+=" and (LOWER(S1.sample_name) like '"+sSearch+"' or S1.sample_create_date like '"+sSearch+"' " +
                         " or (S1.sample_id in (select SA.sampla_sample_id from sample_attribute SA, lookup_value LV " +
-                        "   where LOWER(SA.sampla_attribute_str) like '"+sSearch+"' or (SA.sampla_lkuvlu_attribute_id=LV.lkuvlu_id and LOWER(LV.lkuvlu_name) like '"+sSearch+"')) " +
+                        "   where COALESCE(SA.sampla_attribute_date,LOWER(SA.sampla_attribute_float),LOWER(SA.sampla_attribute_str),LOWER(SA.sampla_attribute_int)) like '"+sSearch+"'" +
+                        " or (SA.sampla_lkuvlu_attribute_id=LV.lkuvlu_id and LOWER(LV.lkuvlu_name) like '"+sSearch+"')) " +
                         " or LOWER(S2.sample_name) like '"+sSearch+"' or ((LOWER(A.actor_first_name) like '"+sSearch+"' or LOWER(A.actor_last_name) like '"+sSearch+"'))))";
             }
 
             if(columnSearchMap!=null && !columnSearchMap.isEmpty()){
                 String columnSearchSql = " and (S1.sample_id in (select SA.sampla_sample_id from sample_attribute SA, lookup_value LV where SA.sampla_lkuvlu_attribute_id = LV.lkuvlu_id and " +
-                        "LV.lkuvlu_name = '#columnName#' and COALESCE(LOWER(SA.sampla_attribute_float),LOWER(SA.sampla_attribute_str),LOWER(SA.sampla_attribute_int)) like '%#columnSearchVal#%'))";
+                        "LV.lkuvlu_name = '#columnName#' and COALESCE(SA.sampla_attribute_date,LOWER(SA.sampla_attribute_float),LOWER(SA.sampla_attribute_str),LOWER(SA.sampla_attribute_int)) like '%#columnSearchVal#%'))";
 
                 for(Map.Entry<String, String> entry : columnSearchMap.entrySet()){
                     String key = entry.getKey();
@@ -352,7 +353,7 @@ public class SampleDAO extends HibernateDAO {
                     } else if(key.equals("user")){
                         sql += " and (LOWER(A.actor_first_name) like '%"+value+"%' or LOWER(A.actor_last_name) like '%"+value+"%') ";
                     } else if(key.equals("date")){
-                       //No filter for date yet
+                        sql += " and S1.sample_create_date like '%"+value+"%' ";
                     } else {
                         sql += columnSearchSql.replace("#columnName#", key).replace("#columnSearchVal#", entry.getValue());
                     }
@@ -372,7 +373,7 @@ public class SampleDAO extends HibernateDAO {
                     sql += " sample_create_date ";
                     isDateSort = true;
                 }else
-                    sql += " COALESCE(attribute_value_float, attribute_value_str, attribute_value_int) ";
+                    sql += " COALESCE(attribute_value_date, attribute_value_float, attribute_value_str, attribute_value_int) ";
                 sql += sortDir;
 
                 if(isDateSort) sql += ", sample_name asc";
