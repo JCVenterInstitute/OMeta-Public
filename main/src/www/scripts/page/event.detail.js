@@ -149,6 +149,19 @@ var _page = {
             $(this).find("td:first > input").attr('checked', false);
           });
         }
+      },
+      toggle: {
+        columnfilter: function(btn) {
+          var $btn = $(btn);
+          var $columnFilter = $("#sampleTableFooter");
+          if($btn.attr("name").indexOf("show") > -1 ){
+            $columnFilter.css("display", "table-header-group");
+            $btn.attr("name", "hideColumnFilter");
+          } else {
+            $columnFilter.hide();
+            $btn.attr("name", "showColumnFilter");
+          }
+        }
       }
     },
     buttonSwitch = function(node, name) {
@@ -317,6 +330,8 @@ function createSampleDataTable(){
     "aoColumnDefs": aoColumns()
   }).fnFilterOnReturn().columnFilter();
 
+  $("#sampleTableFooter").hide();
+
   $(".datatable_top").append(
       $('<span/>').attr({
         'class': 'input-group-btn'
@@ -349,6 +364,21 @@ function createSampleDataTable(){
             'onclick': '_page.deselect.all();',
             'style': 'margin-left:10px;height: 24px;'
           }).text("Deselect All")
+      ).append(
+          $('<button/>').attr({
+            'type': 'button',
+            'class': 'btn btn-default btn-xs',
+            'id': 'columnFilterBtn',
+            'data-tooltip': 'Column Filter',
+            'name':'showColumnFilter',
+            'onclick': '_page.toggle.columnfilter(this);',
+            'style': 'margin-left:10px;height: 24px;'
+          }).append(
+              $('<span/>').attr({
+                'class': 'glyphicon glyphicon-filter',
+                'aria-hidden': 'true'
+              })
+          )
       )
   );
 }

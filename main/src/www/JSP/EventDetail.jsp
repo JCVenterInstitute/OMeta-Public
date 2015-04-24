@@ -68,10 +68,10 @@
     }
 
     #refreshDataBtn {position:absolute;height:24px;width:34px;margin-left:10px;border:1px solid #aed0ea;background:#d7ebf9;font-weight:bold;color:#2779aa;}
-    #refreshDataBtn:hover:after{ background: #333; background: rgba(0,0,0,.8);
+    #columnFilterBtn:hover:after, #refreshDataBtn:hover:after{ background: #333; background: rgba(0,0,0,.8);
       border-radius: 5px; bottom: 0px; color: #fff; content: attr(data-tooltip);
       left: 140%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
-    #refreshDataBtn:hover:before{border: solid; border-color: transparent #333;border-width: 6px 6px 6px 0px;
+    #columnFilterBtn:hover:before, #refreshDataBtn:hover:before{border: solid; border-color: transparent #333;border-width: 6px 6px 6px 0px;
       bottom: 8px; content: ""; left: 125%; position: absolute; z-index: 99;}
   </style>
 </head>
@@ -164,7 +164,7 @@
                   <tr>
                   </tr>
                   </thead>
-                  <tfoot id="sampleTableFooter">
+                  <tfoot id="sampleTableFooter" style="display: none;">
                   <tr>
                   </tr>
                   </tfoot>
