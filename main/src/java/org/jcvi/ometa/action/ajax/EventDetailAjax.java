@@ -111,16 +111,17 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
 
                 for(int i = 0; i < iColumns; i++){
                     String colSearchVal = request.getParameter("sSearch_" + i);
-                    String column;
-
-                    if(i == 0) column = "sample";
-                    else if(i== 1) column = "parent";
-                    else if(i == 2) column = "user";
-                    else if(i == 3) column = "date";
-                    else column = allSampleMetaAttributes.get(i - 4)
-                                .getLookupValue().getName();
 
                     if(colSearchVal != null && !colSearchVal.isEmpty()){
+                        String column;
+
+                        if(i == 0) column = "sample";
+                        else if(i== 1) column = "parent";
+                        else if(i == 2) column = "user";
+                        else if(i == 3) column = "date";
+                        else column = allSampleMetaAttributes.get(i - 4)
+                                    .getLookupValue().getName();
+
                         columnSearchMap.put(column, colSearchVal);
                     }
                 }
