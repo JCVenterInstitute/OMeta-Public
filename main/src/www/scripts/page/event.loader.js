@@ -255,7 +255,7 @@ var _utils = {
                 $autofillDiv.append('<label style="width: 253px;"></label>');
               } else if(maDatatype ==='date') {
                 inputElement +=
-                    '<div class="input-group col-sm-12">'+
+                    '<div class="input-group col-sm-11">'+
                     '  <input type="text" id="' + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" style="width:160px;"/>' +
                     '  <label for="' + maDatatype + '_$id$" class="input-group-addon" style="padding:4px;"><span><i class="fa fa-calendar"></i></span></label>' +
                     '</div>';

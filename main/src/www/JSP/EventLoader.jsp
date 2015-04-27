@@ -121,6 +121,8 @@
           </div>
         </div>
 
+        <div id="processingDiv" class="show_processing" style="display: none;">Processing your request. Please wait...</div>
+
         <div id="mainContent" style="">
           <!-- regular interactive event loader -->
           <s:form id="eventLoaderPage" name="eventLoaderPage" namespace="/" action="eventLoader" method="post" theme="simple" enctype="multipart/form-data">
