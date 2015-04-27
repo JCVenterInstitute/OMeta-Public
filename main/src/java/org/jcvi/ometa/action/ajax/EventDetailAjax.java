@@ -70,6 +70,12 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
     private String iSortCol_0;
     private String sSortDir_0;
 
+    //Column Filter Values
+    private List<String> columnName;
+    private List<String> operation;
+    private List<String> columnFilterVal;
+    private List<String> logicGate;
+
     //date
     private String fd;
     private String td;
@@ -474,5 +480,37 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
 
     public void setTd(String td) {
         this.td = td;
+    }
+
+    public List<String> getColumnFilterVal() {
+        return columnFilterVal;
+    }
+
+    public void setColumnFilterVal(List<String> columnFilterVal) {
+        this.columnFilterVal = columnFilterVal;
+    }
+
+    public List<String> getOperation() {
+        return operation;
+    }
+
+    public void setOperation(List<String> operation) {
+        this.operation = operation;
+    }
+
+    public List<String> getColumnName() {
+        return columnName;
+    }
+
+    public void setColumnName(List<String> columnName) {
+        this.columnName = columnName;
+    }
+
+    public List<String> getLogicGate() {
+        return logicGate;
+    }
+
+    public void setLogicGate(List<String> logicGate) {
+        this.logicGate = logicGate;
     }
 }

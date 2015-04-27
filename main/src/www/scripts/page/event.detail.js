@@ -197,6 +197,7 @@ var headerList = [];
 <!-- Generate html content using Ajax by type -->
 function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
   $("#loadingImg").show();
+
   var content = '', rtnVal = false;
   $.ajax({
     url: ajaxType === 'project' ? 'getproject.action' : 'sharedAjax.action',
@@ -247,6 +248,8 @@ function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
             }
           });
           $("tbody#projectTableBody").html(content);
+
+
         } else if(ajaxType === "sample") {
           var list = vs.alloption;
           $(html.aaData).each(function(i1,v1) {
@@ -283,6 +286,13 @@ function createSampleDataTable(){
     "sAjaxSource": "",
     "iDeferLoading": 0, // no initial loading flag
     "fnServerData": function (sSource, aoData, fnCallback) {
+      $('.column_filter_box').each(function(i,elem) {
+        aoData.push({"name": "columnName["+i+"]", "value" : $("#select_column_"+i).val()});
+        aoData.push({"name": "operation["+i+"]", "value" : $("#select_operation_"+i).val()});
+        aoData.push({"name": "columnFilterVal["+i+"]", "value" : $("#filter_text_"+i).val()});
+        aoData.push({"name": "logicGate["+i+"]", "value" : $("#select_logicgate_"+i).val()});
+      });
+
       if(sSource!=='') {
         $.ajax({
           dataType: 'json',
@@ -329,6 +339,8 @@ function createSampleDataTable(){
     "bAutoWidth" : false,
     "aoColumnDefs": aoColumns()
   }).fnFilterOnReturn().columnFilter();
+
+  generateColumnFilter();
 
   $("#sampleTableFooter").hide();
 
@@ -381,6 +393,135 @@ function createSampleDataTable(){
           )
       )
   );
+}
+
+function generateColumnFilter(){
+  var $columnFilterDiv = $("<div>", {id: "column_filter"});
+  $columnFilterDiv.insertAfter($(".datatable_top"));
+  $columnFilterDiv.append($("<img>").attr({'src':'images/dataTables/details_open.png', 'id':'addMoreColumnFilter'}));
+  $columnFilterDiv.append($("<button>").attr({'type':'button', 'class':'btn btn-default btn-xs', 'id':'columnSearchBtn', 'name':'columnSearchBtn'}).html('Apply'));
+
+  var i = 0;
+
+  addNewFilter(i);
+
+  $('#addMoreColumnFilter').click(function() {
+    addNewFilter(++i);
+  });
+
+  $('#columnSearchBtn').click(function() {
+    sDT.fnReloadAjax(sDT.oSettings);
+  });
+}
+
+jQuery.fn.dataTableExt.oApi.fnReloadAjax = function ( oSettings, sNewSource, fnCallback, bStandingRedraw )
+{
+  // DataTables 1.10 compatibility - if 1.10 then `versionCheck` exists.
+  // 1.10's API has ajax reloading built in, so we use those abilities
+  // directly.
+  if ( jQuery.fn.dataTable.versionCheck ) {
+    var api = new jQuery.fn.dataTable.Api( oSettings );
+
+    if ( sNewSource ) {
+      api.ajax.url( sNewSource ).load( fnCallback, !bStandingRedraw );
+    }
+    else {
+      api.ajax.reload( fnCallback, !bStandingRedraw );
+    }
+    return;
+  }
+
+  if ( sNewSource !== undefined && sNewSource !== null ) {
+    oSettings.sAjaxSource = sNewSource;
+  }
+
+  // Server-side processing should just call fnDraw
+  if ( oSettings.oFeatures.bServerSide ) {
+    this.fnDraw();
+    return;
+  }
+
+  this.oApi._fnProcessingDisplay( oSettings, true );
+  var that = this;
+  var iStart = oSettings._iDisplayStart;
+  var aData = [];
+
+  this.oApi._fnServerParams( oSettings, aData );
+
+  oSettings.fnServerData.call( oSettings.oInstance, oSettings.sAjaxSource, aData, function(json) {
+    /* Clear the old information from the table */
+    that.oApi._fnClearTable( oSettings );
+
+    /* Got the data - add it to the table */
+    var aData =  (oSettings.sAjaxDataProp !== "") ?
+        that.oApi._fnGetObjectDataFn( oSettings.sAjaxDataProp )( json ) : json;
+
+    for ( var i=0 ; i<aData.length ; i++ )
+    {
+      that.oApi._fnAddData( oSettings, aData[i] );
+    }
+
+    oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
+
+    that.fnDraw();
+
+    if ( bStandingRedraw === true )
+    {
+      oSettings._iDisplayStart = iStart;
+      that.oApi._fnCalculateEnd( oSettings );
+      that.fnDraw( false );
+    }
+
+    that.oApi._fnProcessingDisplay( oSettings, false );
+
+    /* Callback user function - for event handlers etc */
+    if ( typeof fnCallback == 'function' && fnCallback !== null )
+    {
+      fnCallback( oSettings );
+    }
+  }, oSettings );
+};
+
+function addNewFilter(i){
+  var $columnFilterBox = $("<div>", {'class': 'column_filter_box', 'style':'width: 450px;float: left;'});
+  var $columnFilterSelect = $("<select>", {class:"select_column", id: "select_column_"+i, name:"column_name"});
+  var $columnFilterOperation = $("<select>", {class:"select_operation", id: "select_operation_"+i, name:"operation"});
+
+  $columnFilterSelect.append($("<option></option>").attr("value", "Sample Name").text("Sample Name"));
+  $columnFilterSelect.append($("<option></option>").attr("value", "Parent").text("Parent"));
+  $columnFilterSelect.append($("<option></option>").attr("value", "User").text("User"));
+  $columnFilterSelect.append($("<option></option>").attr("value", "Date").text("Date"));
+
+  $.each(headerList, function(i2,v2) {
+    $columnFilterSelect.append($("<option></option>").attr("value", v2).text(v2));
+  });
+
+  $columnFilterOperation.append($("<option></option>").attr("value", "less").text("<"));
+  $columnFilterOperation.append($("<option></option>").attr("value", "equals").text("="));
+  $columnFilterOperation.append($("<option></option>").attr("value", "greater").text(">"));
+  $columnFilterOperation.append($("<option></option>").attr("value", "in").text("IN"));
+
+  //Automatically add "AND" gate to first column filter
+  if(i == 0){
+    $columnFilterBox.append($("<input>").attr({'type':'hidden', class: "select_logicgate", id: "select_logicgate_0", name: "logicgate", value:"and"}));
+  } else {
+    var $columnFilterLogicGate = $("<select>", {
+      class: "select_logicgate",
+      id: "select_logicgate_" + i,
+      name: "logicgate"
+    });
+    $columnFilterLogicGate.append($("<option></option>").attr("value", "and").text("AND"));
+    $columnFilterLogicGate.append($("<option></option>").attr("value", "or").text("OR"));
+
+    $columnFilterBox.append($columnFilterLogicGate)
+  }
+
+  $columnFilterBox.append($columnFilterSelect);
+  $columnFilterBox.append($columnFilterOperation);
+  $columnFilterBox.append($("<input>").attr({'type':'text', 'class':'filter_text', 'id':'filter_text_'+i, 'name':'filter_text'}));
+  if(i != 0) $columnFilterBox.append($("<img>").attr({'src':'images/dataTables/details_close.png', 'class':'removeColumnFilter'}).click(function(){$(this).parent().remove();}));
+
+  $columnFilterBox.insertBefore($('#addMoreColumnFilter'));
 }
 
 function triggerSearch(){
