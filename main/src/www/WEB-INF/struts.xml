@@ -298,7 +298,7 @@
         <action name="addActor" class="org.jcvi.ometa.action.AddActor" method="process">
             <result name="input">/JSP/AddActor.jsp</result>
             <result name="success" type="redirectAction">
-                <param name="actionName">secureIndex</param>
+                <param name="actionName">actorRole</param>
                 <param name="namespace">/</param>
             </result>
             <result name="error">/JSP/AddActor.jsp</result>

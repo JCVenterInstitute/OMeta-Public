@@ -106,33 +106,33 @@ public class AddActor extends ActionSupport {
                         throw new Exception(errors.toString());
                     }
 
+                    /* To create LDAP User
+
                     LDAPHelper ldapHelper = new LDAPHelper();
 
                     StringBuffer actorLdapDesc = new StringBuffer();
-                    /*actorLdapDesc.append("CEIRS Center Name:").append(this.actor.getCenterName()).append(", ");
+                    actorLdapDesc.append("CEIRS Center Name:").append(this.actor.getCenterName()).append(", ");
                     actorLdapDesc.append("CEIRS Center Role:").append(this.actor.getRole()).append(", ");
                     actorLdapDesc.append("Lab PI Name:").append(this.actor.getPiName()).append(", ");
-                    actorLdapDesc.append("Lab PI Email:").append(this.actor.getPiName());*/
+                    actorLdapDesc.append("Lab PI Email:").append(this.actor.getPiName());
 
                     boolean actorCreated = ldapHelper.createNewUser(
                             this.actor.getUsername(), this.actor.getFirstName(),
                             this.actor.getLastName(), this.actor.getPassword(),
-                            this.actor.getEmail(), "6666666666"/*this.actor.getPhone()*/,
+                            this.actor.getEmail(), "6666666666"/*this.actor.getPhone(),
                             actorLdapDesc.toString()
-                    );
+                    );*/
 
-                    if(actorCreated) {
-                        tx = (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
-                        tx.begin();
 
-                        UploadActionDelegate udelegate = new UploadActionDelegate();
-                        this.psewt = udelegate.initializeBusinessObject(logger, this.psewt);
+                    tx = (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
+                    tx.begin();
 
-                        this.psewt.loadActor(actor);
-                        rtnVal = SUCCESS;
-                    } else {
-                        throw new Exception(ErrorMessages.LDAP_USER_CREATE_FAILED);
-                    }
+                    UploadActionDelegate udelegate = new UploadActionDelegate();
+                    this.psewt = udelegate.initializeBusinessObject(logger, this.psewt);
+
+                    this.psewt.loadActor(actor);
+                    rtnVal = SUCCESS;
+
                 }
             }
         } catch (Exception ex) {

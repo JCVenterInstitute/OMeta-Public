@@ -83,16 +83,6 @@
                     <!-- <td style="padding-left:7px;"><strong>User ID must match your UNIX ID.</strong></td> -->
                   </tr>
                   <tr class="gappedTr">
-                    <td align="left"><small class="text-danger">*</small>Password </td>
-                    <td style="padding-left:7px;"><s:password id="_password" name="actor.password" size="35px"/></td>
-                    <!-- <td style="padding-left:7px;"><strong>User ID must match your UNIX ID.</strong></td> -->
-                  </tr>
-                  <tr class="gappedTr">
-                    <td align="left"><small class="text-danger">*</small>Confirm Password </td>
-                    <td style="padding-left:7px;"><s:password id="_passVerify" name="passVerify" size="35px"/></td>
-                    <!-- <td style="padding-left:7px;"><strong>User ID must match your UNIX ID.</strong></td> -->
-                  </tr>
-                  <tr class="gappedTr">
                     <td align="left"><small class="text-danger">*</small>First Name </td>
                     <td style="padding-left:7px;"><s:textfield id="_firstName" name="actor.firstName" size="35px"/></td>
                   </tr>
@@ -108,46 +98,12 @@
                     <td align="left"><small class="text-danger">*</small>Email </td>
                     <td style="padding-left:7px;"><s:textfield id="_email" name="actor.email" size="35px"/></td>
                   </tr>
-                    <%--<tr class="gappedTr">
-                      <td align="right">Phone Number </td>
-                      <td style="padding-left:7px;"><s:textfield id="_phone" name="actor.phone" size="35px"/></td>
-                    </tr>
-                    <tr class="gappedTr">
-                      <td align="right"><small class="text-danger">*</small>Ceirs Center Name </td>
-                      <td style="padding-left:7px;">
-                        <s:select label="Project" id="_center" name="actor.centerName" cssStyle=""
-                                    headerKey="" headerValue="" required="true"
-                                    list="#{'CRIP':'CRIP', 'Emory-UGA CEIRS':'Emory-UGA CEIRS',
-                                    'Johns Hopkins CEIRS':'Johns Hopkins CEIRS', 'NYICE':'NYICE',
-                                    'St. Jude CEIRS':'St. Jude CEIRS', 'Other':'Other'}"/>
-                      </td>
-                    </tr>
-                    <tr class="gappedTr">
-                      <td align="right"><small class="text-danger">*</small>Role </td>
-                      <td style="padding-left:7px;">
-                        <s:select label="Project" id="_role" name="actor.role" cssStyle=""
-                                    headerKey="" headerValue="" required="true"
-                                    list="#{'CEIRS Center PI':'CEIRS Center PI', 'CEIRS Center Coordinator':'CEIRS Center Coordinator',
-                                    'CEIRS Center Data Manager':'CEIRS Center Data Manager', 'Clinician':'Clinician',
-                                    'Laboratory PI':'Laboratory PI', 'Researcher':'Researcher',
-                                    'Physician':'Physician', 'Other':'Other'}"/>
-                        </select>
-                      </td>
-                    </tr>
-                    <tr class="gappedTr">
-                      <td align="right">Lab PI Name</td>
-                      <td style="padding-left:7px;"><s:textfield id="_piName" name="actor.piName" size="35px"/></td>
-                    </tr>
-                    <tr class="gappedTr">
-                      <td align="right">Lab PI Email </td>
-                      <td style="padding-left:7px;"><s:textfield id="_piEmail" name="actor.piEmail" size="35px"/></td>
-                    </tr>--%>
                 </table>
               </div>
               <s:div id="submitDiv" cssStyle="margin:15px 10px 5px 200px;width:100%;">
                 <input type="button" class="btn btn-primary" onclick="javascript:loadActor();" id="loadButton" value="Register"/>
                 <input type="button" class="btn btn-info" tyle="margin-left:15px;" onclick="javascript:doClear();" value="Clear" />
-                <input type="button" class="btn" tyle="margin-left:15px;" onclick="self.close()" value="Cancel" />
+                <input type="button" class="btn" tyle="margin-left:15px;" onclick="backToManagement()" value="Cancel" />
               </s:div>
             </div>
           </div>
@@ -178,6 +134,17 @@
 
   function doClear() {
     $("#_usertName, #_firstName, #_lastName, #_middleName, #_email").val('');
+  }
+
+  function backToManagement(){
+    var $backForm = $('<form>').attr({
+      id: 'addActorForm',
+      method: 'GET',
+      action: 'actorRole.action'
+    }).css('display', 'none');
+
+    $('body').append($backForm);
+    $backForm.submit();
   }
 
   utils.error.check();

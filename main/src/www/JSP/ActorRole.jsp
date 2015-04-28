@@ -107,7 +107,7 @@
           <div id="mainContent">
             <div id="mainDiv">
               <input type="button" class="btn btn-info" onclick="popup();" id="addRole" value="Add Actor Role"/>
-              <input type="button" class="btn btn-success" onclick="window.open('addActor.action')" id="addNewActor" value="Add New Actor"/>
+              <input type="button" class="btn btn-success" onclick="addActor()" id="addNewActor" value="Add New Actor"/>
               <table id="userManagementTable">
                 <thead>
                 <tr>
@@ -300,11 +300,21 @@
     }
   }
 
+  function addActor(){
+    var $addActorForm = $('<form>').attr({
+      id: 'addActorForm',
+      method: 'GET',
+      action: 'addActor.action'
+    }).css('display', 'none');
+
+    $('body').append($addActorForm);
+    $addActorForm.submit();
+  }
+
   function editActor(id){
     var $editActorForm = $('<form>').attr({
       id: 'editActorForm',
       method: 'POST',
-      target: '_blank',
       action: 'editActor.action'
     }).css('display', 'none');
 
