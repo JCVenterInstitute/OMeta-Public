@@ -26,7 +26,7 @@
     response.setContentType("application/vnd.ms-excel");
 
     //String fileName = request.getParameter("projectNames").length()>30?"sample":request.getParameter("projectNames");
-    response.setHeader("Content-Disposition", "attachment;filename="+new String( "DPCC-CEIRS-status.xls" ) );
+    response.setHeader("Content-Disposition", "attachment;filename="+new String( "OMETA-status.xls" ) );
 %>
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
