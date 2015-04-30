@@ -145,9 +145,9 @@ public class CommonTool {
         ).replaceAll("\\\"", "\\\\\"");
     }
 
-    public static String convertIntoFileLink(String fileName, Long attributeId) {
-        String justFileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
-        return "<a href=\"getFile.action?fn="+fileName+"\">"+justFileName+"</a>";
+    public static String convertIntoFileLink(String filePath, Long attributeId) {
+        String justFileName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
+        return "<a href=\"download.action?fp=" + filePath + "\">" + justFileName + "</a>";
     }
 
     public static <M extends AttributeModelBean> Map<String, Object> getAttributeValueMap(List<M> attributeList, boolean decorate, String[] skipArr) throws Exception {
@@ -218,6 +218,21 @@ public class CommonTool {
         return filtered;
     }
 
+    public static void sortEventAttributeByOrder(List<EventAttribute> eaList) {
+        Collections.sort(eaList, new Comparator<EventAttribute>() {
+            @Override
+            public int compare(EventAttribute o1, EventAttribute o2) {
+                return o1.getMetaAttribute() == null && o2.getMetaAttribute() == null ? 0
+                        : o1.getMetaAttribute() == null ? -1
+                        : o2.getMetaAttribute() == null ? 1
+                        : o1.getMetaAttribute().getOrder() == null && o2.getMetaAttribute().getOrder() == null ? 0
+                        : o1.getMetaAttribute().getOrder() == null ? -1
+                        : o2.getMetaAttribute().getOrder() == null ? 1
+                        : o1.getMetaAttribute().getOrder().compareTo(o2.getMetaAttribute().getOrder());
+            }
+        });
+    }
+
     public static void sortEventMetaAttributeByOrder(List<EventMetaAttribute> emaList) {
         Collections.sort(emaList, new Comparator<EventMetaAttribute>() {
             @Override
@@ -262,5 +277,9 @@ public class CommonTool {
     public static Long getGuid() throws Exception {
         GuidGetter guidGetter = new GuidGetter();
         return guidGetter.getGuid();
+    }
+
+    public static String currentDateToDefaultFormat() {
+        return new SimpleDateFormat(Constants.DATE_DEFAULT_FORMAT).format(Calendar.getInstance().getTime());
     }
 }

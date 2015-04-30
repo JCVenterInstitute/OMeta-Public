@@ -62,7 +62,8 @@ public class AttributeHelper {
                         //get the latest event attributes
                         List<EventAttribute> eaList = readPersister.getEventAttributes(currEvent.getEventId(), projectId);
                         for(EventAttribute ea : eaList) {
-                            eaMap.put(ea.getMetaAttribute().getLookupValue().getLookupValueId(), ea);
+                            if(ea.getMetaAttribute() != null)
+                                eaMap.put(ea.getMetaAttribute().getLookupValue().getLookupValueId(), ea);
                         }
                     }
 
@@ -75,13 +76,15 @@ public class AttributeHelper {
                         paList = readPersister.getProjectAttributes(projectId);
                         paMap = new HashMap<Long, ProjectAttribute>(paList.size());
                         for(ProjectAttribute pa : paList) {
-                            paMap.put(pa.getMetaAttribute().getLookupValue().getLookupValueId(), pa);
+                            if(pa.getMetaAttribute() != null)
+                                paMap.put(pa.getMetaAttribute().getLookupValue().getLookupValueId(), pa);
                         }
                     } else {
                         saList = readPersister.getSampleAttributes(currSample.getSampleId());
                         saMap = new HashMap<Long, SampleAttribute>(saList.size());
                         for(SampleAttribute sa : saList) {
-                            saMap.put(sa.getMetaAttribute().getLookupValue().getLookupValueId(), sa);
+                            if(sa.getMetaAttribute() != null)
+                                saMap.put(sa.getMetaAttribute().getLookupValue().getLookupValueId(), sa);
                         }
                     }
 
