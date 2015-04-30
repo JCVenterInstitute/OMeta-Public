@@ -231,6 +231,8 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
 
                 if (!projectAttrMap.containsKey(Constants.ATTR_PROJECT_NAME)) {
                     projectAttrMap.put(Constants.ATTR_PROJECT_NAME, project.getProjectName());
+                    if(!Constants.ATTR_PROJECT_NAME.equals("Project Name"))
+                        projectAttrMap.put("Project Name", project.getProjectName());
                 }
 
                 List<Sample> samples = projectIdVsSampleList.get(project.getProjectId());
@@ -247,6 +249,8 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
                         Map<String, Object> sampleAttrMap = new HashMap<String, Object>();
                         sampleAttrMap.putAll(projectAttrMap);
                         sampleAttrMap.put(Constants.ATTR_SAMPLE_NAME, sample.getSampleName());
+                        if(!Constants.ATTR_SAMPLE_NAME.equals("Sample Name"))
+                            sampleAttrMap.put("Sample Name", sample.getSampleName());
                         sampleAttrMap.put("sampleId", sample.getSampleId());
                         if (sample.getParentSampleId() != null) {
                             Sample parentSample = readPersister.getSample(sample.getParentSampleId());
