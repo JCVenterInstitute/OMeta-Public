@@ -142,7 +142,7 @@ public class EventDAO extends HibernateDAO {
     public List<Event> getAllEvents(
             Long flexId, String identifier, String sSearch,
             String sortCol, String sortDir, int start, int count,
-            String fromd, String tod, Session session) throws DAOException {
+            String fromd, String tod, List<String> columnName, List<String> columnSearchArguments, Session session) throws DAOException {
         List<Event> eventList = new ArrayList<Event>();
         try {
             List results = null;
@@ -167,6 +167,39 @@ public class EventDAO extends HibernateDAO {
                 sSearch = "%"+sSearch+"%";
                 sql+=" and (LOWER(LV.lkuvlu_name) like '"+sSearch+"' or LOWER(S.sample_name) like '"+sSearch+"' " +
                         " or ((LOWER(A.actor_first_name) like '"+sSearch+"' or LOWER(A.actor_last_name) like '"+sSearch+"')))";
+            }
+
+            if(columnName!=null && !columnName.isEmpty()){
+                sql += " and (";
+
+                for(int i = 0; i<columnName.size(); i++) {
+                    String key = columnName.get(i);
+                    String[] valueArr = columnSearchArguments.get(i).split(";");
+                    String searchVal = valueArr[0];
+                    String operation = valueArr[1];
+                    String logicGate = i == 0 ? "" : valueArr[2].equals("not") ? "and not" : valueArr[2];
+
+                    if (key.equals("Sample Name")) {
+                        sql += operation.equals("like") ? " " + logicGate + " LOWER(S.sample_name) like '%" + searchVal + "%' "
+                                : operation.equals("in") ? " " + logicGate + " LOWER(S.sample_name) in ('" + searchVal.replaceAll(",", "','") + "') "
+                                : " " + logicGate + " LOWER(S.sample_name) = '" + searchVal + "' ";
+                    } else if (key.equals("Event Type")) {
+                        sql += operation.equals("like") ? " " + logicGate + " LOWER(LV.lkuvlu_name) like '%" + searchVal + "%' "
+                                : operation.equals("in") ? " " + logicGate + " LOWER(LV.lkuvlu_name) in ('" + searchVal.replaceAll(",", "','") + "') "
+                                : " " + logicGate + " LOWER(LV.lkuvlu_name) = '" + searchVal + "' ";
+                    } else if (key.equals("User")) {
+                        sql += operation.equals("like") ? " " + logicGate + " (LOWER(A.actor_first_name) like '%" + searchVal + "%' or LOWER(A.actor_last_name) like '%" + searchVal + "%') "
+                                : operation.equals("in") ? " " + logicGate + " (LOWER(A.actor_first_name) in ('" + searchVal.replaceAll(",", "','") + "') or LOWER(A.actor_last_name) in ('" + searchVal.replaceAll(",", "','") + "')) "
+                                : " " + logicGate + " (LOWER(A.actor_first_name) = '" + searchVal + "' or LOWER(A.actor_last_name) = '" + searchVal + "') ";
+                    } else if (key.equals("Date")) {
+                        sql += operation.equals("like") ? " " + logicGate + " E.event_create_date like '%" + searchVal + "%' "
+                                : operation.equals("in") ? " " + logicGate + " E.event_create_date in ('" + searchVal.replaceAll(",", "','") + "') "
+                                : operation.equals("equals") ? " " + logicGate + " E.event_create_date = '" + searchVal + "' "
+                                : " " + logicGate + " E.event_create_date " + (operation.equals("less")?"<":">") + " '" + searchVal + "' ";
+                    }
+                }
+
+                sql += ")";
             }
 
             if(fromd!=null && !fromd.isEmpty())

@@ -125,7 +125,8 @@ public interface ProjectSampleEventPresentationBusiness {
 
     public List<Event> getEventsForProjects(List<Long> projectIds) throws Exception;
 
-    public List<Event> getAllEvents(Long flexId, String type, String sSearch, String sortCol, String sortDir, int start, int count, String fromd, String tod) throws Exception;
+    public List<Event> getAllEvents(Long flexId, String type, String sSearch, String sortCol, String sortDir, int start, int count,
+                                    String fromd, String tod, List<String> columnName, List<String> columnSearchArguments) throws Exception;
 
     public List<Event> getEventsForSample(Long sampleId) throws Exception;
 

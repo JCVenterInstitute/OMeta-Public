@@ -228,8 +228,9 @@ public class ReadBeanPersister implements WebDataFacadeI {
         return pseb.getEventsForProjects(projectIds);
     }
 
-    public List<Event> getAllEvents(Long flexId, String type, String sSearch, String sortCol, String sortDir, int start, int count, String fromd, String tod) throws Exception {
-        return pseb.getAllEvents(flexId, type, sSearch, sortCol, sortDir, start, count, fromd, tod);
+    public List<Event> getAllEvents(Long flexId, String type, String sSearch, String sortCol, String sortDir, int start, int count,
+                                    String fromd, String tod, List<String> columnName, List<String> columnSearchArguments) throws Exception {
+        return pseb.getAllEvents(flexId, type, sSearch, sortCol, sortDir, start, count, fromd, tod, columnName, columnSearchArguments);
     }
 
     public List<Event> getEventsForSample(Long sampleId) throws Exception {

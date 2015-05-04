@@ -66,6 +66,14 @@
     .dataTables_paginate {
       float: left !important;
     }
+
+    #column_filter{padding-bottom: 8px;margin: 10px 0 18px;}
+    #col_filter_border_l{border-left: 2px solid #333333;position: absolute;margin-left: 5px;left: 0;top: 45px;bottom: 0;}
+    #col_filter_border_b{border-bottom: 2px solid #333333;position: absolute;right: 95.1%;margin-left: 5px;left: 0;bottom: 0;}
+    .column_filter_box{margin: 5px 0 5px 15px;}
+    #columnSearchBtn{margin:10px 0 0 15px;width: 59px;}
+    .select_column, .select_operation, .filter_text, .removeColumnFilter{margin-left: 4px;}
+    .select_logicgate{width: 59px;}
   </style>
 </head>
 
@@ -116,13 +124,13 @@
                               listValue="projectName" listKey="projectId" required="true"/>
                   </div>
                 </div>
-                <%--<div class="row row_spacer">
-                  <div class="col-lg-1 col-md-2">Sample</div>
-                  <div class="col-lg-11 col-md-10 combobox">
-                    <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':'Select by Sample'}"
-                              name="selectedSampleId" required="true"/>
-                  </div>
-                </div>--%>
+                  <%--<div class="row row_spacer">
+                    <div class="col-lg-1 col-md-2">Sample</div>
+                    <div class="col-lg-11 col-md-10 combobox">
+                      <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':'Select by Sample'}"
+                                name="selectedSampleId" required="true"/>
+                    </div>
+                  </div>--%>
               </div>
 
               <!-- event -->
@@ -191,7 +199,7 @@
     $('#eventDetailsSection').hide();
   });
 
-    //dataTables functions
+  //dataTables functions
   $.fn.dataTableExt.afnFiltering.push(
           function( oSettings, aData, iDataIndex ) {
             var fromDate = $('#fromDate').val(), toDate = $('#toDate').val();
@@ -288,7 +296,23 @@
                 $('#eventDetailPage').attr('action', 'eventLoader.action?filter=su').submit();
               }
             },
-            button: {}
+            button: {},
+            columnfilter: {
+              toggle: function (btn) {
+                var $btn = $(btn);
+                var $columnFilter = $("#column_filter");
+                if ($btn.attr("name").indexOf("show") > -1) {
+                  $columnFilter.show();
+                  $btn.attr("name", "hideColumnFilter");
+                } else {
+                  $columnFilter.hide();
+                  $btn.attr("name", "showColumnFilter");
+                }
+              },
+              isActive: function () {
+                return $("#columnFilterBtn").attr("name").indexOf("hide") > -1;
+              }
+            }
           },
           changeEventStatus = function(eventId) {
             _page.change.eventStatus(eventId);
@@ -356,6 +380,93 @@
     return rtnVal;
   }
 
+  function triggerSearch(){
+    var searchVal = $("#eventTable_filter > label > input").val();
+    eDT.fnFilter(searchVal);
+  }
+
+  var attributeTypeMap = {"Event Type": "string", "Sample Name": "string", "Date": "date", "User": "string"};
+
+  function generateColumnFilter(){
+    var $columnFilterDiv = $("<div>", {id: "column_filter", style:"display:none;"}).append(
+            $('<span/>').attr({'class': 'glyphicon glyphicon-filter','aria-hidden': 'true'})).append(
+            $("<div>", {id: "col_filter_border_l"})).append($("<div>", {id: "col_filter_border_b"}));
+    $columnFilterDiv.insertAfter($(".datatable_top"));
+    $columnFilterDiv.append($("<button>")
+            .attr({'type':'button', 'class':'btn btn-default btn-xs', 'id':'columnSearchBtn', 'name':'columnSearchBtn', 'onclick':'triggerSearch()'})
+            .html('Apply'));
+
+    addNewFilter(-1);
+  }
+
+  function addNewFilter(i){
+    var $addMoreBtn = $("<img>").attr({'src':'images/dataTables/details_open.png', 'id':'addMoreColumnFilter', 'onclick':'addNewFilter('+ ++i +');'});
+    var $columnFilterBox = $("<div>", {'class': 'column_filter_box'});
+    var $columnFilterSelect = $("<select>", {class:"select_column", id: "select_column_"+i, name:"column_name", 'onchange':'updateOperation(this.value,'+ i + ')'});
+    var $columnFilterOperation = $("<select>", {class:"select_operation", id: "select_operation_"+i, name:"operation"});
+
+    $columnFilterSelect.append($("<option></option>").attr("value", "Event Type").text("Event Type"));
+    $columnFilterSelect.append($("<option></option>").attr("value", "Sample Name").text("Sample Name"));
+    $columnFilterSelect.append($("<option></option>").attr("value", "Date").text("Date"));
+    $columnFilterSelect.append($("<option></option>").attr("value", "User").text("User"));
+
+    $columnFilterOperation.append($("<option></option>").attr("value", "equals").text("="));
+    $columnFilterOperation.append($("<option></option>").attr("value", "like").text("LIKE"));
+    $columnFilterOperation.append($("<option></option>").attr("value", "in").text("IN"));
+
+    //Automatically add "AND" gate to first column filter
+    if(i == 0){
+      $columnFilterBox.append($("<input>").attr({'type':'hidden', class: "select_logicgate", id: "select_logicgate_0", name: "logicgate", value:"and"}))
+              .append($("<label>").attr({'id':'first_filter_label','style':'width: 59px;text-align: center;'}).text('AND'));
+    } else {
+      var $columnFilterLogicGate = $("<select>", {
+        class: "select_logicgate",
+        id: "select_logicgate_" + i,
+        name: "logicgate"
+      });
+      $columnFilterLogicGate.append($("<option></option>").attr("value", "and").text("AND"));
+      $columnFilterLogicGate.append($("<option></option>").attr("value", "or").text("OR"));
+      $columnFilterLogicGate.append($("<option></option>").attr("value", "not").text("NOT"));
+
+      $columnFilterBox.append($columnFilterLogicGate)
+    }
+
+    $columnFilterBox.append($columnFilterSelect);
+    $columnFilterBox.append($columnFilterOperation);
+    $columnFilterBox.append($("<input>").attr({'type':'text', 'class':'filter_text', 'id':'filter_text_'+i, 'name':'filter_text', 'style':'height: 22px;'}));
+    if(i != 0) {
+      $columnFilterBox.append($("<img>").attr({'src':'images/dataTables/details_close.png', 'class':'removeColumnFilter'})
+              .click(function(){
+                var $columnFilterBox = $(this).parent();
+
+                if($columnFilterBox.get(0) === $(".column_filter_box:last").get(0)){
+                  $(".column_filter_box").eq(-2).append($addMoreBtn);
+                }
+                $columnFilterBox.remove();
+              }));
+    }
+
+    if($("#addMoreColumnFilter")) $("#addMoreColumnFilter").remove();
+    $columnFilterBox.append($addMoreBtn);
+    $columnFilterBox.insertBefore($('#columnSearchBtn'));
+  }
+
+  function updateOperation(val,i){
+    var $lessOption = $("<option></option>").attr("value", "less").text("<");
+    var $equalsOption = $("<option></option>").attr("value", "equals").text("=")
+    var $greaterOption = $("<option></option>").attr("value", "greater").text(">");
+    var $likeOption = $("<option></option>").attr("value", "like").text("LIKE");
+    var $inOption = $("<option></option>").attr("value", "in").text("IN");
+    var $select = $("#select_operation_" + i);
+    $select.empty().append($equalsOption).append($likeOption).append($inOption);
+
+    var type = attributeTypeMap[val];
+
+    if(type !== 'string'){
+      $select.append($lessOption).append($greaterOption);
+    }
+  }
+
   $(function() {
     utils.combonize('statusTableDiv');
     $('#fromDate, #toDate').datepicker({ dateFormat: 'yy-mm-dd' });
@@ -382,6 +493,24 @@
       "iDeferLoading": 0,
       "sAjaxSource": "",
       "fnServerData": function ( sSource, aoData, fnCallback ) {
+        if(_page.columnfilter.isActive()) {
+          var index = 0;  // keep count to have an accurate list size in case of empty filter values
+          $('.column_filter_box').each(function (i, elem) {
+            var $filterText = $(this).children('input:text[class="filter_text"]');
+            var filterTextVal = $filterText.val();
+
+            if (index == 0 || (filterTextVal && filterTextVal != '')) {
+              var nth = $filterText.attr('id').split("_")[2];
+              aoData.push({"name": "columnName[" + index + "]", "value": $("#select_column_" + nth).val()});
+              aoData.push({
+                "name": "columnSearchArguments[" + index + "]",
+                "value": filterTextVal + ";" + $("#select_operation_" + nth).val() + ";" + $("#select_logicgate_" + nth).val()
+              });
+
+              index++;
+            }
+          });
+        }
         if(sSource!=='') {
           $.ajax({
             dataType: 'json',
@@ -437,6 +566,42 @@
         // {"bSearchable": true, "bVisible": false, "aTargets": [ 6 ]}
       ]
     }).fnFilterOnReturn();
+
+    generateColumnFilter();
+
+    $(".datatable_top").append(
+            $('<span/>').attr({
+              'class': 'input-group-btn'
+            }).append(
+                    $('<button/>').attr({
+                      'type': 'button',
+                      'class': 'btn btn-default btn-xs',
+                      'id': 'triggerSearchBtn',
+                      'onclick': 'triggerSearch();',
+                      'style': 'height: 24px;'
+                    }).append(
+                            $('<span/>').attr({
+                              'class': 'glyphicon glyphicon-search',
+                              'aria-hidden': 'true'
+                            })
+                    )
+            ).append(
+                    $('<button/>').attr({
+                      'type': 'button',
+                      'class': 'btn btn-default btn-xs',
+                      'id': 'columnFilterBtn',
+                      'data-tooltip': 'Column Filter',
+                      'name': 'showColumnFilter',
+                      'onclick': '_page.columnfilter.toggle(this);',
+                      'style': 'margin-left:10px;height: 24px;'
+                    }).append(
+                            $('<span/>').attr({
+                              'class': 'glyphicon glyphicon-filter',
+                              'aria-hidden': 'true'
+                            })
+                    )
+            )
+    );
 
     //add click listener on row expander
     $('tbody td #rowDetail_openBtn').live('click', function () {

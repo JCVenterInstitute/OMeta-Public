@@ -187,9 +187,9 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
 
                 List<Event> eventList;
                 if (sampleId != 0) {
-                    eventList = readPersister.getAllEvents(sampleId, "Sample", sSearch, sortCol, sSortDir_0, -1, -1, fd, td);
+                    eventList = readPersister.getAllEvents(sampleId, "Sample", sSearch, sortCol, sSortDir_0, -1, -1, fd, td, columnName, columnSearchArguments);
                 } else {
-                    eventList = readPersister.getAllEvents(projectId, "Eventlist", sSearch, sortCol, sSortDir_0, -1, -1, fd, td);
+                    eventList = readPersister.getAllEvents(projectId, "Eventlist", sSearch, sortCol, sSortDir_0, -1, -1, fd, td, columnName, columnSearchArguments);
                 }
 
                 List<Event> filteredList = eventList.subList(iDisplayStart, iDisplayStart+iDisplayLength>eventList.size()?eventList.size():iDisplayLength+iDisplayStart);

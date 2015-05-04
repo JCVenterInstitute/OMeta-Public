@@ -698,7 +698,7 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         List<Event> evtBeans = Collections.emptyList();
         try {
             EventDAO evtDao = daoFactory.getEventDAO();
-            evtBeans = evtDao.getAllEvents(projectId, "Project", null, null, null, -1, -1, null, null, session);
+            evtBeans = evtDao.getAllEvents(projectId, "Project", null, null, null, -1, -1, null, null, null, null, session);
             sessionAndTransactionManager.commitTransaction();
         } catch (Exception ex) {
             sessionAndTransactionManager.rollBackTransaction();
@@ -731,13 +731,14 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
     }
 
     @WebMethod
-    public List<Event> getAllEvents(Long flexId, String type, String sSearch, String sortCol, String sortDir, int start, int count, String fromd, String tod) throws Exception {
+    public List<Event> getAllEvents(Long flexId, String type, String sSearch, String sortCol, String sortDir, int start, int count,
+                                    String fromd, String tod, List<String> columnName, List<String> columnSearchArguments) throws Exception {
         Session session = startTransactedSession();
 
         List<Event> evtBeans = Collections.emptyList();
         try {
             EventDAO evtDao = daoFactory.getEventDAO();
-            evtBeans = evtDao.getAllEvents(flexId, type, sSearch, sortCol, sortDir, start, count, fromd, tod, session);
+            evtBeans = evtDao.getAllEvents(flexId, type, sSearch, sortCol, sortDir, start, count, fromd, tod, columnName, columnSearchArguments, session);
             sessionAndTransactionManager.commitTransaction();
         } catch (Exception ex) {
             sessionAndTransactionManager.rollBackTransaction();
@@ -756,7 +757,7 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         List<Event> evtBeans = Collections.emptyList();
         try {
             EventDAO evtDao = daoFactory.getEventDAO();
-            evtBeans = evtDao.getAllEvents(sampleId, "Sample", null, "date", "asc", -1, -1, null, null, session);
+            evtBeans = evtDao.getAllEvents(sampleId, "Sample", null, "date", "asc", -1, -1, null, null, null, null, session);
             sessionAndTransactionManager.commitTransaction();
         } catch (Exception ex) {
             sessionAndTransactionManager.rollBackTransaction();
@@ -1060,7 +1061,7 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         try {
             EventDAO eventDao = daoFactory.getEventDAO();
             Session session = this.startTransactedSession();
-            List<Event> events = eventDao.getAllEvents( eventId, "Event", null, null, null, -1, -1, null, null, session);
+            List<Event> events = eventDao.getAllEvents( eventId, "Event", null, null, null, -1, -1, null, null, null, null, session);
 
             if( events.size() > 1 )
                 throw new Exception( "EventDAO - There is more than one event under eventId: "+ eventId );
