@@ -338,7 +338,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
 
                 }*/
 
-                projectId = null;
+               // projectId = null;
                 beanList = null;
 
                 addActionMessage("Metadata has been loaded successfully.");
