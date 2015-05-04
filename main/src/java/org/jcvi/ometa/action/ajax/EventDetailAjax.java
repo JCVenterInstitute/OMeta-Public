@@ -34,7 +34,6 @@ import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.property.PropertyHelper;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.*;
@@ -72,10 +71,7 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
 
     //Column Filter Values
     private List<String> columnName;
-    private List<String> operation;
-    private List<String> columnFilterVal;
-    private List<String> logicGate;
-
+    private List<String> columnSearchArguments;
     //date
     private String fd;
     private String td;
@@ -105,34 +101,14 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                         : iSortCol_0.equals("2") ? "user"
                         : iSortCol_0.equals("3") ? "date" : null;
 
-                List<SampleMetaAttribute> allSampleMetaAttributes = readPersister.getSampleMetaAttributes(this.projectId);
-
                 if(sortCol == null){
+                    List<SampleMetaAttribute> allSampleMetaAttributes = readPersister.getSampleMetaAttributes(this.projectId);
+
                     sortCol = allSampleMetaAttributes.get(Integer.parseInt(iSortCol_0) - 4)
                             .getLookupValue().getName();
                 }
 
-                HttpServletRequest request = ServletActionContext.getRequest();
-                Map<String, String> columnSearchMap = new HashMap<String, String>(0);
-
-                for(int i = 0; i < iColumns; i++){
-                    String colSearchVal = request.getParameter("sSearch_" + i);
-
-                    if(colSearchVal != null && !colSearchVal.isEmpty()){
-                        String column;
-
-                        if(i == 0) column = "sample";
-                        else if(i== 1) column = "parent";
-                        else if(i == 2) column = "user";
-                        else if(i == 3) column = "date";
-                        else column = allSampleMetaAttributes.get(i - 4)
-                                    .getLookupValue().getName();
-
-                        columnSearchMap.put(column, colSearchVal);
-                    }
-                }
-
-                samples = readPersister.getAllSamples(flexId, flexType,sSearch, sortCol, sSortDir_0, columnSearchMap);
+                samples = readPersister.getAllSamples(flexId, flexType,sSearch, sortCol, sSortDir_0, columnName, columnSearchArguments);
 
                 List<Sample> filteredList = samples.subList(iDisplayStart, iDisplayStart+iDisplayLength>samples.size() ? samples.size() : iDisplayLength+iDisplayStart);
 
@@ -482,21 +458,6 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
         this.td = td;
     }
 
-    public List<String> getColumnFilterVal() {
-        return columnFilterVal;
-    }
-
-    public void setColumnFilterVal(List<String> columnFilterVal) {
-        this.columnFilterVal = columnFilterVal;
-    }
-
-    public List<String> getOperation() {
-        return operation;
-    }
-
-    public void setOperation(List<String> operation) {
-        this.operation = operation;
-    }
 
     public List<String> getColumnName() {
         return columnName;
@@ -506,11 +467,11 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
         this.columnName = columnName;
     }
 
-    public List<String> getLogicGate() {
-        return logicGate;
+    public List<String> getColumnSearchArguments() {
+        return columnSearchArguments;
     }
 
-    public void setLogicGate(List<String> logicGate) {
-        this.logicGate = logicGate;
+    public void setColumnSearchArguments(List<String> columnSearchArguments) {
+        this.columnSearchArguments = columnSearchArguments;
     }
 }

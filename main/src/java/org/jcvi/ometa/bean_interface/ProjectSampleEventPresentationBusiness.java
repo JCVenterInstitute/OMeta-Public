@@ -108,7 +108,7 @@ public interface ProjectSampleEventPresentationBusiness {
 
     public List<Sample> getSamplesForProjectByPublicFlag(Long projectId, boolean isPublic) throws Exception;
 
-    public List<Sample> getAllSamples(Long flexId, String type, String sSearch, String sortCol, String sortDir, Map<String, String> columnSearchMap) throws Exception;
+    public List<Sample> getAllSamples(Long flexId, String type, String sSearch, String sortCol, String sortDir, List<String> columnName, List<String> columnSearchArguments) throws Exception;
 
     public List<Sample> getAllSamplesBySearch(String projectIds, String attributeNames, String sSearch, String sortType, String sortCol, String sortDir) throws Exception;
 

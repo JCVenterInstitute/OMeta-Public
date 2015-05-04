@@ -73,6 +73,14 @@
       left: 140%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
     #columnFilterBtn:hover:before, #refreshDataBtn:hover:before{border: solid; border-color: transparent #333;border-width: 6px 6px 6px 0px;
       bottom: 8px; content: ""; left: 125%; position: absolute; z-index: 99;}
+
+    #column_filter{padding-bottom: 8px;margin: 10px 0 18px;}
+    #col_filter_border_l{border-left: 2px solid #333333;position: absolute;margin-left: 5px;left: 0;top: 45px;bottom: 0;}
+    #col_filter_border_b{border-bottom: 2px solid #333333;position: absolute;right: 95.1%;margin-left: 5px;left: 0;bottom: 0;}
+    .column_filter_box{margin: 5px 0 5px 15px;}
+    #columnSearchBtn{margin:10px 0 0 15px;width: 59px;}
+    .select_column, .select_operation, .filter_text, .removeColumnFilter{margin-left: 4px;}
+    .select_logicgate{width: 59px;}
   </style>
 </head>
 

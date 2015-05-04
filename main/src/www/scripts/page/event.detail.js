@@ -150,17 +150,20 @@ var _page = {
           });
         }
       },
-      toggle: {
-        columnfilter: function(btn) {
+      columnfilter: {
+        toggle: function (btn) {
           var $btn = $(btn);
-          var $columnFilter = $("#sampleTableFooter");
-          if($btn.attr("name").indexOf("show") > -1 ){
-            $columnFilter.css("display", "table-header-group");
+          var $columnFilter = $("#column_filter");
+          if ($btn.attr("name").indexOf("show") > -1) {
+            $columnFilter.show();
             $btn.attr("name", "hideColumnFilter");
           } else {
             $columnFilter.hide();
             $btn.attr("name", "showColumnFilter");
           }
+        },
+        isActive: function () {
+          return $("#columnFilterBtn").attr("name").indexOf("hide") > -1;
         }
       }
     },
@@ -193,6 +196,7 @@ function refreshData(){
 }
 
 var headerList = [];
+var attributeTypeMap = [];
 
 <!-- Generate html content using Ajax by type -->
 function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
@@ -245,6 +249,8 @@ function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
                 }
                 headerList.push(v2);
               });
+            } else if(v1 && i1 == 2){  //Assign lookup value/type to global var
+              attributeTypeMap = v1;
             }
           });
           $("tbody#projectTableBody").html(content);
@@ -286,13 +292,24 @@ function createSampleDataTable(){
     "sAjaxSource": "",
     "iDeferLoading": 0, // no initial loading flag
     "fnServerData": function (sSource, aoData, fnCallback) {
-      $('.column_filter_box').each(function(i,elem) {
-        aoData.push({"name": "columnName["+i+"]", "value" : $("#select_column_"+i).val()});
-        aoData.push({"name": "operation["+i+"]", "value" : $("#select_operation_"+i).val()});
-        aoData.push({"name": "columnFilterVal["+i+"]", "value" : $("#filter_text_"+i).val()});
-        aoData.push({"name": "logicGate["+i+"]", "value" : $("#select_logicgate_"+i).val()});
-      });
+      if(_page.columnfilter.isActive()) {
+        var index = 0;  // keep count to have an accurate list size in case of empty filter values
+        $('.column_filter_box').each(function (i, elem) {
+          var $filterText = $(this).children('input:text[class="filter_text"]');
+          var filterTextVal = $filterText.val();
 
+          if (index == 0 || (filterTextVal && filterTextVal != '')) {
+            var nth = $filterText.attr('id').split("_")[2];
+            aoData.push({"name": "columnName[" + index + "]", "value": $("#select_column_" + nth).val()});
+            aoData.push({
+              "name": "columnSearchArguments[" + index + "]",
+              "value": filterTextVal + ";" + $("#select_operation_" + nth).val() + ";" + $("#select_logicgate_" + nth).val()
+            });
+
+            index++;
+          }
+        });
+      }
       if(sSource!=='') {
         $.ajax({
           dataType: 'json',
@@ -383,7 +400,7 @@ function createSampleDataTable(){
             'id': 'columnFilterBtn',
             'data-tooltip': 'Column Filter',
             'name':'showColumnFilter',
-            'onclick': '_page.toggle.columnfilter(this);',
+            'onclick': '_page.columnfilter.toggle(this);',
             'style': 'margin-left:10px;height: 24px;'
           }).append(
               $('<span/>').attr({
@@ -396,95 +413,21 @@ function createSampleDataTable(){
 }
 
 function generateColumnFilter(){
-  var $columnFilterDiv = $("<div>", {id: "column_filter"});
+  var $columnFilterDiv = $("<div>", {id: "column_filter", style:"display:none;"}).append(
+      $('<span/>').attr({'class': 'glyphicon glyphicon-filter','aria-hidden': 'true'})).append(
+      $("<div>", {id: "col_filter_border_l"})).append($("<div>", {id: "col_filter_border_b"}));
   $columnFilterDiv.insertAfter($(".datatable_top"));
-  $columnFilterDiv.append($("<img>").attr({'src':'images/dataTables/details_open.png', 'id':'addMoreColumnFilter'}));
-  $columnFilterDiv.append($("<button>").attr({'type':'button', 'class':'btn btn-default btn-xs', 'id':'columnSearchBtn', 'name':'columnSearchBtn'}).html('Apply'));
+  $columnFilterDiv.append($("<button>")
+      .attr({'type':'button', 'class':'btn btn-default btn-xs', 'id':'columnSearchBtn', 'name':'columnSearchBtn', 'onclick':'triggerSearch()'})
+      .html('Apply'));
 
-  var i = 0;
-
-  addNewFilter(i);
-
-  $('#addMoreColumnFilter').click(function() {
-    addNewFilter(++i);
-  });
-
-  $('#columnSearchBtn').click(function() {
-    sDT.fnReloadAjax(sDT.oSettings);
-  });
+  addNewFilter(-1);
 }
 
-jQuery.fn.dataTableExt.oApi.fnReloadAjax = function ( oSettings, sNewSource, fnCallback, bStandingRedraw )
-{
-  // DataTables 1.10 compatibility - if 1.10 then `versionCheck` exists.
-  // 1.10's API has ajax reloading built in, so we use those abilities
-  // directly.
-  if ( jQuery.fn.dataTable.versionCheck ) {
-    var api = new jQuery.fn.dataTable.Api( oSettings );
-
-    if ( sNewSource ) {
-      api.ajax.url( sNewSource ).load( fnCallback, !bStandingRedraw );
-    }
-    else {
-      api.ajax.reload( fnCallback, !bStandingRedraw );
-    }
-    return;
-  }
-
-  if ( sNewSource !== undefined && sNewSource !== null ) {
-    oSettings.sAjaxSource = sNewSource;
-  }
-
-  // Server-side processing should just call fnDraw
-  if ( oSettings.oFeatures.bServerSide ) {
-    this.fnDraw();
-    return;
-  }
-
-  this.oApi._fnProcessingDisplay( oSettings, true );
-  var that = this;
-  var iStart = oSettings._iDisplayStart;
-  var aData = [];
-
-  this.oApi._fnServerParams( oSettings, aData );
-
-  oSettings.fnServerData.call( oSettings.oInstance, oSettings.sAjaxSource, aData, function(json) {
-    /* Clear the old information from the table */
-    that.oApi._fnClearTable( oSettings );
-
-    /* Got the data - add it to the table */
-    var aData =  (oSettings.sAjaxDataProp !== "") ?
-        that.oApi._fnGetObjectDataFn( oSettings.sAjaxDataProp )( json ) : json;
-
-    for ( var i=0 ; i<aData.length ; i++ )
-    {
-      that.oApi._fnAddData( oSettings, aData[i] );
-    }
-
-    oSettings.aiDisplay = oSettings.aiDisplayMaster.slice();
-
-    that.fnDraw();
-
-    if ( bStandingRedraw === true )
-    {
-      oSettings._iDisplayStart = iStart;
-      that.oApi._fnCalculateEnd( oSettings );
-      that.fnDraw( false );
-    }
-
-    that.oApi._fnProcessingDisplay( oSettings, false );
-
-    /* Callback user function - for event handlers etc */
-    if ( typeof fnCallback == 'function' && fnCallback !== null )
-    {
-      fnCallback( oSettings );
-    }
-  }, oSettings );
-};
-
 function addNewFilter(i){
-  var $columnFilterBox = $("<div>", {'class': 'column_filter_box', 'style':'width: 450px;float: left;'});
-  var $columnFilterSelect = $("<select>", {class:"select_column", id: "select_column_"+i, name:"column_name"});
+  var $addMoreBtn = $("<img>").attr({'src':'images/dataTables/details_open.png', 'id':'addMoreColumnFilter', 'onclick':'addNewFilter('+ ++i +');'});
+  var $columnFilterBox = $("<div>", {'class': 'column_filter_box'});
+  var $columnFilterSelect = $("<select>", {class:"select_column", id: "select_column_"+i, name:"column_name", 'onchange':'updateOperation(this.value,'+ i + ')'});
   var $columnFilterOperation = $("<select>", {class:"select_operation", id: "select_operation_"+i, name:"operation"});
 
   $columnFilterSelect.append($("<option></option>").attr("value", "Sample Name").text("Sample Name"));
@@ -496,14 +439,14 @@ function addNewFilter(i){
     $columnFilterSelect.append($("<option></option>").attr("value", v2).text(v2));
   });
 
-  $columnFilterOperation.append($("<option></option>").attr("value", "less").text("<"));
   $columnFilterOperation.append($("<option></option>").attr("value", "equals").text("="));
-  $columnFilterOperation.append($("<option></option>").attr("value", "greater").text(">"));
+  $columnFilterOperation.append($("<option></option>").attr("value", "like").text("LIKE"));
   $columnFilterOperation.append($("<option></option>").attr("value", "in").text("IN"));
 
   //Automatically add "AND" gate to first column filter
   if(i == 0){
-    $columnFilterBox.append($("<input>").attr({'type':'hidden', class: "select_logicgate", id: "select_logicgate_0", name: "logicgate", value:"and"}));
+    $columnFilterBox.append($("<input>").attr({'type':'hidden', class: "select_logicgate", id: "select_logicgate_0", name: "logicgate", value:"and"}))
+        .append($("<label>").attr({'id':'first_filter_label','style':'width: 59px;text-align: center;'}).text('AND'));
   } else {
     var $columnFilterLogicGate = $("<select>", {
       class: "select_logicgate",
@@ -512,16 +455,45 @@ function addNewFilter(i){
     });
     $columnFilterLogicGate.append($("<option></option>").attr("value", "and").text("AND"));
     $columnFilterLogicGate.append($("<option></option>").attr("value", "or").text("OR"));
+    $columnFilterLogicGate.append($("<option></option>").attr("value", "not").text("NOT"));
 
     $columnFilterBox.append($columnFilterLogicGate)
   }
 
   $columnFilterBox.append($columnFilterSelect);
   $columnFilterBox.append($columnFilterOperation);
-  $columnFilterBox.append($("<input>").attr({'type':'text', 'class':'filter_text', 'id':'filter_text_'+i, 'name':'filter_text'}));
-  if(i != 0) $columnFilterBox.append($("<img>").attr({'src':'images/dataTables/details_close.png', 'class':'removeColumnFilter'}).click(function(){$(this).parent().remove();}));
+  $columnFilterBox.append($("<input>").attr({'type':'text', 'class':'filter_text', 'id':'filter_text_'+i, 'name':'filter_text', 'style':'height: 22px;'}));
+  if(i != 0) {
+    $columnFilterBox.append($("<img>").attr({'src':'images/dataTables/details_close.png', 'class':'removeColumnFilter'})
+        .click(function(){
+          var $columnFilterBox = $(this).parent();
 
-  $columnFilterBox.insertBefore($('#addMoreColumnFilter'));
+          if($columnFilterBox.get(0) === $(".column_filter_box:last").get(0)){
+            $(".column_filter_box").eq(-2).append($addMoreBtn);
+          }
+          $columnFilterBox.remove();
+        }));
+  }
+
+  if($("#addMoreColumnFilter")) $("#addMoreColumnFilter").remove();
+  $columnFilterBox.append($addMoreBtn);
+  $columnFilterBox.insertBefore($('#columnSearchBtn'));
+}
+
+function updateOperation(val,i){
+  var $lessOption = $("<option></option>").attr("value", "less").text("<");
+  var $equalsOption = $("<option></option>").attr("value", "equals").text("=")
+  var $greaterOption = $("<option></option>").attr("value", "greater").text(">");
+  var $likeOption = $("<option></option>").attr("value", "like").text("LIKE");
+  var $inOption = $("<option></option>").attr("value", "in").text("IN");
+  var $select = $("#select_operation_" + i);
+  $select.empty().append($equalsOption).append($likeOption).append($inOption);
+
+  var type = attributeTypeMap[val];
+
+  if(type !== 'string'){
+    $select.append($lessOption).append($greaterOption);
+  }
 }
 
 function triggerSearch(){

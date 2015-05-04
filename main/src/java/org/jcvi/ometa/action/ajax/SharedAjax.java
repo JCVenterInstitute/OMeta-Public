@@ -138,18 +138,26 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
             }
 
             List<String> attributeList = new ArrayList<String>();
+            Map<String, String> attributeType = new HashMap<String, String>(0);
             for (SampleMetaAttribute sma : allSampleMetaAttributes) {
                 String tempMetaName = sma.getLookupValue().getName();
                 if (!attributeList.contains(tempMetaName)) {
                     attributeList.add(tempMetaName);
+                    attributeType.put(tempMetaName, sma.getLookupValue().getDataType());
                 }
             }
+
+            attributeType.put("Sample Name", "string");
+            attributeType.put("Parent", "string");
+            attributeType.put("User", "string");
+            attributeType.put("Date", "date");
 
             projectMap.put("Project Registration", CommonTool.convertTimestampToDate(pMap.getProject().getCreationDate()));
             projectMap.put("editable", pMap.isEditable()?1:0);
 
             aaData.add(projectMap);
             aaData.add(attributeList);
+            aaData.add(attributeType);
 
             returnValue = SUCCESS;
         } catch (Exception ex) {

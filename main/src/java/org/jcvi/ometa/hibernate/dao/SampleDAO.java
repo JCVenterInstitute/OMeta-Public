@@ -309,7 +309,7 @@ public class SampleDAO extends HibernateDAO {
         return sampleList;
     }
 
-    public List<Sample> getAllSamples(Long flexId, String type, String sSearch, String sortCol, String sortDir, Map<String, String> columnSearchMap, Session session) throws DAOException {
+    public List<Sample> getAllSamples(Long flexId, String type, String sSearch, String sortCol, String sortDir, List<String> columnName, List<String> columnSearchArguments, Session session) throws DAOException {
         List<Sample> sampleList = new ArrayList<Sample>();
         try {
             List results = null;
@@ -338,26 +338,46 @@ public class SampleDAO extends HibernateDAO {
                         " or LOWER(S2.sample_name) like '"+sSearch+"' or ((LOWER(A.actor_first_name) like '"+sSearch+"' or LOWER(A.actor_last_name) like '"+sSearch+"'))))";
             }
 
-            if(columnSearchMap!=null && !columnSearchMap.isEmpty()){
-                String columnSearchSql = " and (S1.sample_id in (select SA.sampla_sample_id from sample_attribute SA, lookup_value LV where SA.sampla_lkuvlu_attribute_id = LV.lkuvlu_id and " +
-                        "LV.lkuvlu_name = '#columnName#' and COALESCE(SA.sampla_attribute_date,LOWER(SA.sampla_attribute_float),LOWER(SA.sampla_attribute_str),LOWER(SA.sampla_attribute_int)) like '%#columnSearchVal#%'))";
+            if(columnName!=null && !columnName.isEmpty()){
+                String columnSearchSql = " #logicGate# (S1.sample_id in (select SA.sampla_sample_id from sample_attribute SA, lookup_value LV where SA.sampla_lkuvlu_attribute_id = LV.lkuvlu_id and " +
+                        "LV.lkuvlu_name = '#columnName#' and COALESCE(SA.sampla_attribute_date,LOWER(SA.sampla_attribute_float),LOWER(SA.sampla_attribute_str),LOWER(SA.sampla_attribute_int)) #columnSearch#))";
 
-                for(Map.Entry<String, String> entry : columnSearchMap.entrySet()){
-                    String key = entry.getKey();
-                    String value = entry.getValue();
 
-                    if(key.equals("sample")){
-                        sql += " and LOWER(S1.sample_name) like '%"+value+"%' ";
-                    } else if(key.equals("parent")){
-                        sql += " and LOWER(S2.sample_name) like '%"+value+"%' ";
-                    } else if(key.equals("user")){
-                        sql += " and (LOWER(A.actor_first_name) like '%"+value+"%' or LOWER(A.actor_last_name) like '%"+value+"%') ";
-                    } else if(key.equals("date")){
-                        sql += " and S1.sample_create_date like '%"+value+"%' ";
+                sql += " and (";
+
+                for(int i = 0; i<columnName.size(); i++){
+                    String key = columnName.get(i);
+                    String[] valueArr = columnSearchArguments.get(i).split(";");
+                    String searchVal = valueArr[0];
+                    String operation = valueArr[1];
+                    String logicGate = i == 0 ? "" : valueArr[2].equals("not") ? "and not" : valueArr[2];
+
+                    if (key.equals("Sample Name")) {
+                        sql += operation.equals("like") ? " " + logicGate + " LOWER(S1.sample_name) like '%" + searchVal + "%' "
+                                : operation.equals("in") ? " " + logicGate + " LOWER(S1.sample_name) in ('" + searchVal.replaceAll(",", "','") + "') "
+                                : " " + logicGate + " LOWER(S1.sample_name) = '" + searchVal + "' ";
+                    } else if (key.equals("Parent")) {
+                        sql += operation.equals("like") ? " " + logicGate + " LOWER(S2.sample_name) like '%" + searchVal + "%' "
+                                : operation.equals("in") ? " " + logicGate + " LOWER(S2.sample_name) in ('" + searchVal.replaceAll(",", "','") + "') "
+                                : " " + logicGate + " LOWER(S2.sample_name) = '" + searchVal + "' ";
+                    } else if (key.equals("User")) {
+                        sql += operation.equals("like") ? " " + logicGate + " (LOWER(A.actor_first_name) like '%" + searchVal + "%' or LOWER(A.actor_last_name) like '%" + searchVal + "%') "
+                                : operation.equals("in") ? " " + logicGate + " (LOWER(A.actor_first_name) in ('" + searchVal.replaceAll(",", "','") + "') or LOWER(A.actor_last_name) in ('" + searchVal.replaceAll(",", "','") + "')) "
+                                : " " + logicGate + " (LOWER(A.actor_first_name) = '" + searchVal + "' or LOWER(A.actor_last_name) = '" + searchVal + "') ";
+                    } else if (key.equals("Date")) {
+                        sql += operation.equals("like") ? " " + logicGate + " S1.sample_create_date like '%" + searchVal + "%' "
+                                : operation.equals("in") ? " " + logicGate + " S1.sample_create_date in ('" + searchVal.replaceAll(",", "','") + "') "
+                                : operation.equals("equals") ? " " + logicGate + " S1.sample_create_date = '" + searchVal + "' "
+                                : " " + logicGate + " S1.sample_create_date " + (operation.equals("less")?"<":">") + " '" + searchVal + "' ";
                     } else {
-                        sql += columnSearchSql.replace("#columnName#", key).replace("#columnSearchVal#", entry.getValue());
+                        sql += operation.equals("like") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "like '%" + searchVal + "%'")
+                                : operation.equals("in") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "in ('" + searchVal.replaceAll(",", "','") + "')")
+                                : operation.equals("equals") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "= '" + searchVal + "'")
+                                : columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", (operation.equals("less")?"<":">") + " '" + searchVal + "'");
                     }
                 }
+
+                sql += ")";
             }
 
             if(sortCol!=null && !sortCol.isEmpty() && sortDir!=null && !sortDir.isEmpty()) {
