@@ -429,6 +429,20 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                 projectMap.put(Constants.ATTR_PROJECT_NAME, pMap.getProject().getProjectName());
                 projectMap.put("Project Registration", CommonTool.convertTimestampToDate(pMap.getProject().getCreationDate()));
 
+                List<EventMetaAttribute> registrationEMAList = readPersister.getEventMetaAttributes(this.projectId);
+                Map<String, String> attributeType = new LinkedHashMap<String, String>(0);
+
+                attributeType.put("Event Type", "string");
+                attributeType.put("Sample Name", "string");
+                attributeType.put("Date", "date");
+                attributeType.put("User", "string");
+                for (EventMetaAttribute ema : registrationEMAList) {
+                    String tempMetaName = ema.getLookupValue().getName();
+                    if (!attributeType.containsKey(tempMetaName)) {
+                        attributeType.put(tempMetaName, ema.getLookupValue().getDataType());
+                    }
+                }
+
                 List<ProjectAttribute> projectAttributes = readPersister.getProjectAttributes(this.projectId);
                 for (ProjectAttribute projAttr : projectAttributes) {
                     ProjectMetaAttribute pma = projAttr.getMetaAttribute();
@@ -450,6 +464,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                     }
                 }
                 aaData.add(projectMap);
+                aaData.add(attributeType);
             } else if ("sample".equals(type)) { //get samples for a project
                 aaData = new ArrayList<Map>();
 

@@ -170,6 +170,8 @@ public class EventDAO extends HibernateDAO {
             }
 
             if(columnName!=null && !columnName.isEmpty()){
+                String columnSearchSql = " #logicGate# (E.event_id in (select EA.eventa_event_id from event_attribute EA, lookup_value LV1 where EA.eventa_lkuvlu_attribute_id = LV1.lkuvlu_id and " +
+                        "LV1.lkuvlu_name = '#columnName#' and COALESCE(EA.eventa_attribute_date,LOWER(EA.eventa_attribute_float),LOWER(EA.eventa_attribute_str),LOWER(EA.eventa_attribute_int)) #columnSearch#))";
                 sql += " and (";
 
                 for(int i = 0; i<columnName.size(); i++) {
@@ -196,6 +198,11 @@ public class EventDAO extends HibernateDAO {
                                 : operation.equals("in") ? " " + logicGate + " E.event_create_date in ('" + searchVal.replaceAll(",", "','") + "') "
                                 : operation.equals("equals") ? " " + logicGate + " E.event_create_date = '" + searchVal + "' "
                                 : " " + logicGate + " E.event_create_date " + (operation.equals("less")?"<":">") + " '" + searchVal + "' ";
+                    }  else {
+                        sql += operation.equals("like") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "like '%" + searchVal + "%'")
+                                : operation.equals("in") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "in ('" + searchVal.replaceAll(",", "','") + "')")
+                                : operation.equals("equals") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "= '" + searchVal + "'")
+                                : columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", (operation.equals("less")?"<":">") + " '" + searchVal + "'");
                     }
                 }
 

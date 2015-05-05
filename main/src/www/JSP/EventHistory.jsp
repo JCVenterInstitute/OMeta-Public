@@ -339,8 +339,15 @@
     }
   }
 
+  var attributeTypeMap = [];
+  var headerList = [];
+
   <!-- Generate html content using Ajax by type -->
   function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
+    //Reset filter operations
+    if($("#column_filter")) $("#column_filter").remove();
+    $("#columnFilterBtn").attr("name", "showColumnFilter");
+
     var content = '', rtnVal = false;
     $.ajax({
       url:"sharedAjax.action",
@@ -351,7 +358,7 @@
         if(html.aaData) {
           if(ajaxType == "project") {
             $(html.aaData).each(function(i1,v1) {
-              if(v1) {
+              if(v1 && i1 == 0) {
                 $.each(v1, function(i2,v2) {
                   if(v2) {
                     if(i2==="editable") { $("#editable").val(v2); }
@@ -359,6 +366,12 @@
                   }
                 });
                 rtnVal = true;
+              } else if(v1 && i1 == 1){  //Assign lookup value/type to global var
+                headerList = [];
+                attributeTypeMap = v1;
+                for (var key in v1){
+                  headerList.push(key);
+                }
               }
             });
             $("tbody#projectTableBody").html(content);
@@ -377,6 +390,8 @@
         }
       }
     });
+
+    generateColumnFilter();
     return rtnVal;
   }
 
@@ -384,8 +399,6 @@
     var searchVal = $("#eventTable_filter > label > input").val();
     eDT.fnFilter(searchVal);
   }
-
-  var attributeTypeMap = {"Event Type": "string", "Sample Name": "string", "Date": "date", "User": "string"};
 
   function generateColumnFilter(){
     var $columnFilterDiv = $("<div>", {id: "column_filter", style:"display:none;"}).append(
@@ -405,10 +418,9 @@
     var $columnFilterSelect = $("<select>", {class:"select_column", id: "select_column_"+i, name:"column_name", 'onchange':'updateOperation(this.value,'+ i + ')'});
     var $columnFilterOperation = $("<select>", {class:"select_operation", id: "select_operation_"+i, name:"operation"});
 
-    $columnFilterSelect.append($("<option></option>").attr("value", "Event Type").text("Event Type"));
-    $columnFilterSelect.append($("<option></option>").attr("value", "Sample Name").text("Sample Name"));
-    $columnFilterSelect.append($("<option></option>").attr("value", "Date").text("Date"));
-    $columnFilterSelect.append($("<option></option>").attr("value", "User").text("User"));
+    $.each(headerList, function(i2,v2) {
+      $columnFilterSelect.append($("<option></option>").attr("value", v2).text(v2));
+    });
 
     $columnFilterOperation.append($("<option></option>").attr("value", "equals").text("="));
     $columnFilterOperation.append($("<option></option>").attr("value", "like").text("LIKE"));
@@ -449,6 +461,17 @@
     if($("#addMoreColumnFilter")) $("#addMoreColumnFilter").remove();
     $columnFilterBox.append($addMoreBtn);
     $columnFilterBox.insertBefore($('#columnSearchBtn'));
+
+    var $currentSelectInput = $('#select_column_'+i);
+    $currentSelectInput.combobox({
+      selected: function (event, ui) {
+        $currentSelectInput.trigger("onchange");
+      }
+    });
+    var $autocompleteInput = $currentSelectInput.next();
+    $autocompleteInput.removeClass();
+    $autocompleteInput.css("width", "200px").css("margin-left", "4px");
+    $autocompleteInput.next().css("top", "6px");
   }
 
   function updateOperation(val,i){
@@ -566,8 +589,6 @@
         // {"bSearchable": true, "bVisible": false, "aTargets": [ 6 ]}
       ]
     }).fnFilterOnReturn();
-
-    generateColumnFilter();
 
     $(".datatable_top").append(
             $('<span/>').attr({
