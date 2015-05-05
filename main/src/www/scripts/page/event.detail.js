@@ -478,6 +478,17 @@ function addNewFilter(i){
   if($("#addMoreColumnFilter")) $("#addMoreColumnFilter").remove();
   $columnFilterBox.append($addMoreBtn);
   $columnFilterBox.insertBefore($('#columnSearchBtn'));
+
+  var $currentSelectInput = $('#select_column_'+i);
+  $currentSelectInput.combobox({
+    selected: function (event, ui) {
+      $currentSelectInput.trigger("onchange");
+    }
+  });
+  var $autocompleteInput = $currentSelectInput.next();
+  $autocompleteInput.removeClass();
+  $autocompleteInput.css("width", "200px").css("margin-left", "4px");
+  $autocompleteInput.next().css("top", "6px");
 }
 
 function updateOperation(val,i){
