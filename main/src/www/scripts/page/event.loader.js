@@ -581,7 +581,7 @@ var button = {
           utils.error.add("Sample Name is empty!");
           return;
         }
-      } else if(sampleName === ''){
+      } else if(sampleName && sampleName === '' && sampleName.toLowerCase().indexOf('project') < 0){
         utils.error.add("Data cannot be submitted without sample. Please select a sample! If the project does not have any sample, create a new one first!");
         return;
       }
@@ -845,7 +845,7 @@ function comboBoxChanged(option, id) {
       if(utils.checkSR(option.text) || _selectedType === 'grid') {
         $("#interactive-submission-table tr:last").hide();
       } else{
-        if(!utils.checkPR(option.text)) $("#interactive-submission-table tr:last").show();
+        if(!utils.checkPR(option.text) && utils.getEventName(option.text).toLowerCase().indexOf('project') < 0) $("#interactive-submission-table tr:last").show();
       }
     }
   } else if(id==='_sampleSelect') {
