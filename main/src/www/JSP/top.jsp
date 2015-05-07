@@ -34,7 +34,7 @@
               <li><a href="eventReport.action">Report</a></li>
             </ul>
           </li>
-          <li class="dropdown">
+          <li class="dropdown" id="admin_li">
             <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Admin <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="eventLoader.action?filter=pr">Project Registration</a></li>
