@@ -378,7 +378,7 @@ function comboBoxChanged(option, id) {
     //loads data from ema dictionary for changing attribute, so it doesn't need to ask server for data
     if(id!=null && id.indexOf('ma')!=-1) {
       var currInd = id.substring(2), currEma;
-      if((currEma=emaDict[option.value])!=null) {
+      if(emaDict && ((currEma=emaDict[option.value])!=null)) {
         utils.checkCB('active'+currInd, currEma.a);
         utils.checkCB('required'+currInd, currEma.r);
         $('#options'+currInd).val(currEma.o);
