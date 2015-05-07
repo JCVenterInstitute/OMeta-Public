@@ -537,13 +537,14 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
     }
 
     @WebMethod
-    public List<Sample> getAllSamplesBySearch(String projectIds, String attributeNames, String sSearch, String sortType, String sortCol, String sortDir) throws Exception {
+    public List<Sample> getAllSamplesBySearch(String projectIds, String attributeNames, String sSearch, String sortType,
+                                              String sortCol, String sortDir, List<String> columnName, List<String> columnSearchArguments) throws Exception {
         Session session = startTransactedSession();
 
         List<Sample> sBeans = Collections.emptyList();
         try {
             SampleDAO sDao = daoFactory.getSampleDAO();
-            sBeans = sDao.getAllSamples(projectIds, attributeNames, sSearch, sortType, sortCol, sortDir, session);
+            sBeans = sDao.getAllSamples(projectIds, attributeNames, sSearch, sortType, sortCol, sortDir, columnName, columnSearchArguments, session);
             sessionAndTransactionManager.commitTransaction();
         } catch (Exception ex) {
             sessionAndTransactionManager.rollBackTransaction();

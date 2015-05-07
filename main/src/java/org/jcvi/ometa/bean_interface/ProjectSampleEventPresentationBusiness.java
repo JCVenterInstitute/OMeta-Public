@@ -110,7 +110,8 @@ public interface ProjectSampleEventPresentationBusiness {
 
     public List<Sample> getAllSamples(Long flexId, String type, String sSearch, String sortCol, String sortDir, List<String> columnName, List<String> columnSearchArguments) throws Exception;
 
-    public List<Sample> getAllSamplesBySearch(String projectIds, String attributeNames, String sSearch, String sortType, String sortCol, String sortDir) throws Exception;
+    public List<Sample> getAllSamplesBySearch(String projectIds, String attributeNames, String sSearch, String sortType,
+                                              String sortCol, String sortDir, List<String> columnName, List<String> columnSearchArguments) throws Exception;
 
     public List<SampleAttribute> getSampleAttributes(String sampleName) throws Exception;
 

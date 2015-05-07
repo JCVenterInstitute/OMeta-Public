@@ -76,6 +76,11 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
     private String iSortCol_0;
     private String sSortDir_0;
 
+    //Column Filter Values
+    Map<String, String> attributeTypeMap;
+    private List<String> columnName;
+    private List<String> columnSearchArguments;
+
     public ProductionStatus() {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
         readPersister = new ReadBeanPersister(props);
@@ -120,22 +125,37 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
 
             //attributes
             List<String> availableAttributes = new ArrayList<String>();
+            attributeTypeMap = new LinkedHashMap<String, String>(0);
+            attributeTypeMap.put("Project Name", "string");
+            attributeTypeMap.put("Sample Name", "string");
+            attributeTypeMap.put("Parent Sample", "string");
+            attributeTypeMap.put("Date", "date");
+            attributeTypeMap.put("User", "string");
             availableAttributes.addAll(Arrays.asList(defaultAttributes));
 
             List<ProjectMetaAttribute> allProjectMetaAttributes = readPersister.getProjectMetaAttributes(projectIds);
             for (ProjectMetaAttribute pma : allProjectMetaAttributes) {
-                if (!availableAttributes.contains(pma.getLookupValue().getName()))
-                    availableAttributes.add(pma.getLookupValue().getName());
+                String lookupValueName = pma.getLookupValue().getName();
+                if (!availableAttributes.contains(lookupValueName)) {
+                    availableAttributes.add(lookupValueName);
+                    attributeTypeMap.put(lookupValueName, pma.getLookupValue().getDataType());
+                }
             }
             List<SampleMetaAttribute> allSampleMetaAttributes = readPersister.getSampleMetaAttributes(projectIds);
             for (SampleMetaAttribute sma : allSampleMetaAttributes) {
-                if (!availableAttributes.contains(sma.getLookupValue().getName()))
-                    availableAttributes.add(sma.getLookupValue().getName());
+                String lookupValueName = sma.getLookupValue().getName();
+                if (!availableAttributes.contains(lookupValueName)) {
+                    availableAttributes.add(lookupValueName);
+                    attributeTypeMap.put(lookupValueName, sma.getLookupValue().getDataType());
+                }
             }
             List<EventMetaAttribute> allEventMetaAttributes = readPersister.getEventMetaAttributes(projectIds);
             for (EventMetaAttribute ema : allEventMetaAttributes) {
-                if (!availableAttributes.contains(ema.getLookupValue().getName()))
-                    availableAttributes.add(ema.getLookupValue().getName());
+                String lookupValueName = ema.getLookupValue().getName();
+                if (!availableAttributes.contains(lookupValueName)) {
+                    availableAttributes.add(lookupValueName);
+                    attributeTypeMap.put(lookupValueName, ema.getLookupValue().getDataType());
+                }
             }
 
             StringBuilder attributeBuilder = new StringBuilder();
@@ -395,8 +415,8 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
             }
 
             List<Sample> samples = null;
-            if((sSearch!=null && !sSearch.isEmpty()) || (iSortCol_0!=null && !iSortCol_0.isEmpty())) {
-                samples = readPersister.getAllSamples(projectIds_str, attributes, sSearch, attributeType, sortCol, sSortDir_0);
+            if((sSearch!=null && !sSearch.isEmpty()) || (iSortCol_0!=null && !iSortCol_0.isEmpty()) || (columnName != null && !columnName.isEmpty())) {
+                samples = readPersister.getAllSamples(projectIds_str, attributes, sSearch, attributeType, sortCol, sSortDir_0, columnName, columnSearchArguments);
             } else {
                 //get all samples for given project IDs
                 samples = readPersister.getSamplesForProjects(projectIds);
@@ -685,5 +705,29 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
 
     public void setSSortDir_0(String sSortDir_0) {
         this.sSortDir_0 = sSortDir_0;
+    }
+
+    public List<String> getColumnSearchArguments() {
+        return columnSearchArguments;
+    }
+
+    public void setColumnSearchArguments(List<String> columnSearchArguments) {
+        this.columnSearchArguments = columnSearchArguments;
+    }
+
+    public List<String> getColumnName() {
+        return columnName;
+    }
+
+    public void setColumnName(List<String> columnName) {
+        this.columnName = columnName;
+    }
+
+    public Map<String, String> getAttributeTypeMap() {
+        return attributeTypeMap;
+    }
+
+    public void setAttributeTypeMap(Map<String, String> attributeTypeMap) {
+        this.attributeTypeMap = attributeTypeMap;
     }
 }

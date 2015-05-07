@@ -197,8 +197,9 @@ public class ReadBeanPersister implements WebDataFacadeI {
         return pseb.getAllSamples(flexId, type, sSearch, sortCol, sortDir, columnName, columnSearchArguments);
     }
 
-    public List<Sample> getAllSamples(String projectIds, String attributeNames, String sSearch, String sortType, String sortCol, String sortDir) throws Exception {
-        return pseb.getAllSamplesBySearch(projectIds, attributeNames, sSearch, sortType, sortCol, sortDir);
+    public List<Sample> getAllSamples(String projectIds, String attributeNames, String sSearch, String sortType, String sortCol, String sortDir,
+                                      List<String> columnName, List<String> columnSearchArguments) throws Exception {
+        return pseb.getAllSamplesBySearch(projectIds, attributeNames, sSearch, sortType, sortCol, sortDir, columnName, columnSearchArguments);
     }
 
     @Override

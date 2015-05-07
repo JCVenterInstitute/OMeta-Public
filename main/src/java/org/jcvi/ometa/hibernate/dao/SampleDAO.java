@@ -415,7 +415,8 @@ public class SampleDAO extends HibernateDAO {
         return sampleList;
     }
 
-    public List<Sample> getAllSamples(String projectIds, String attributeNames, String sSearch, String sortType, String sortCol, String sortDir, Session session) throws DAOException {
+    public List<Sample> getAllSamples(String projectIds, String attributeNames, String sSearch, String sortType,
+                                      String sortCol, String sortDir, List<String> columnName, List<String> columnSearchArguments, Session session) throws DAOException {
         List<Sample> sampleList = new ArrayList<Sample>();
         String defaultAttributes[] = {Constants.ATTR_PROJECT_NAME, Constants.ATTR_SAMPLE_NAME, Constants.ATTR_PARENT_SAMPLE_NAME};
 
@@ -424,9 +425,11 @@ public class SampleDAO extends HibernateDAO {
             boolean isInt = (sSearch!=null && Pattern.compile("\\d+").matcher(sSearch).matches());
             boolean isSearch = (sSearch!=null && !sSearch.isEmpty());
             boolean isSort = (sortCol!=null && !sortCol.isEmpty() && sortDir!=null && !sortDir.isEmpty());
+            boolean isColumnSearch = (columnName!=null && !columnName.isEmpty());
 
             String sql = null;
             String sub_sql = null;
+            String col_s_sql = null;
             String sql_s_default =
                     "select distinct #selector# "+
                             "  from project p left join project p_1 on p.projet_projet_parent_id=p_1.projet_id " +
@@ -439,7 +442,7 @@ public class SampleDAO extends HibernateDAO {
                             "    left join project p_1 on p.projet_projet_parent_id=p_1.projet_id "+
                             "    left join project_attribute pa on p.projet_id=pa.projea_projet_id " +
                             "    #lookup# "+
-                            "  where p.projet_id in (#projectIds#) and #p_opt# ";
+                            "  where p.projet_id in (#projectIds#) #col_s# and #p_opt# ";
 
             String sql_p_wsearch =
                     " ( "+
@@ -456,7 +459,7 @@ public class SampleDAO extends HibernateDAO {
                             "    left join project p on s.sample_projet_id=p.projet_id "+
                             "    left join sample_attribute sa on s.sample_id=sa.sampla_sample_id "+
                             "    #lookup# "+
-                            "  where p.projet_id in (#projectIds#) and #s_opt# ";
+                            "  where p.projet_id in (#projectIds#) #col_s# and #s_opt# ";
             String sql_s_wsearch =
                     " ( "+
                             "   s.sample_name like #sSearch# or s_1.sample_name like #sSearch# or ( "+
@@ -491,22 +494,72 @@ public class SampleDAO extends HibernateDAO {
             String sample_field = "sa.sampla";
             String event_field = "ea.eventa";
 
+            if(isColumnSearch){
+                String columnSearchSql = " #logicGate# (s.sample_id in (select SA.sampla_sample_id from sample_attribute SA, lookup_value LV where SA.sampla_lkuvlu_attribute_id = LV.lkuvlu_id and " +
+                        "LV.lkuvlu_name = '#columnName#' and COALESCE(SA.sampla_attribute_date,LOWER(SA.sampla_attribute_float),LOWER(SA.sampla_attribute_str),LOWER(SA.sampla_attribute_int)) #columnSearch#)";
+
+                String columnSearchSqlProject = " #logicGate# p.projet_id in (select PA.projea_projet_id from project_attribute PA, lookup_value LV where PA.projea_lkuvlu_attribute_id = LV.lkuvlu_id and " +
+                        "LV.lkuvlu_name = '#columnName#' and COALESCE(PA.projea_attribute_date,LOWER(PA.projea_attribute_float),LOWER(PA.projea_attribute_str),LOWER(PA.projea_attribute_int)) #columnSearch#))";
+
+                col_s_sql = " and (";
+
+                for(int i = 0; i<columnName.size(); i++){
+                    String key = columnName.get(i);
+                    String[] valueArr = columnSearchArguments.get(i).split(";");
+                    String searchVal = valueArr[0];
+                    String operation = valueArr[1];
+                    String logicGate = i == 0 ? "" : valueArr[2].equals("not") ? "and not" : valueArr[2];
+
+                    if (key.equals("Project Name")) {
+                        col_s_sql += operation.equals("like") ? " " + logicGate + " LOWER(p.projet_name) like '%" + searchVal + "%' "
+                                : operation.equals("in") ? " " + logicGate + " LOWER(p.projet_name) in ('" + searchVal.replaceAll(",", "','") + "') "
+                                : " " + logicGate + " LOWER(p.projet_name) = '" + searchVal + "' ";
+                    } else if (key.equals("Sample Name")) {
+                        col_s_sql += operation.equals("like") ? " " + logicGate + " LOWER(s.sample_name) like '%" + searchVal + "%' "
+                                : operation.equals("in") ? " " + logicGate + " LOWER(s.sample_name) in ('" + searchVal.replaceAll(",", "','") + "') "
+                                : " " + logicGate + " LOWER(s.sample_name) = '" + searchVal + "' ";
+                    } else {
+                        col_s_sql += operation.equals("like") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "like '%" + searchVal + "%'")
+                                : operation.equals("in") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "in ('" + searchVal.replaceAll(",", "','") + "')")
+                                : operation.equals("equals") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "= '" + searchVal + "'")
+                                : columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", (operation.equals("less")?"<":">") + " '" + searchVal + "'");
+
+                        logicGate = "or";
+
+                        col_s_sql += operation.equals("like") ? columnSearchSqlProject.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "like '%" + searchVal + "%'")
+                                : operation.equals("in") ? columnSearchSqlProject.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "in ('" + searchVal.replaceAll(",", "','") + "')")
+                                : operation.equals("equals") ? columnSearchSqlProject.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "= '" + searchVal + "'")
+                                : columnSearchSqlProject.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", (operation.equals("less")?"<":">") + " '" + searchVal + "'");
+
+
+                    }
+                }
+
+                col_s_sql += ")";
+            }
+
             if(isSearch) {
                 String lookup = " left join lookup_value lv on #field#_lkuvlu_attribute_id=lv.lkuvlu_id ";
                 sub_sql = sql_p.replaceFirst("#p_attr#", "").replaceFirst("#p_opt#", sql_p_wsearch).replaceFirst("#lookup#", lookup.replaceAll("#field#", project_field));
+
                 sub_sql += " union " + sql_s.replaceFirst("#s_attr#", "").replaceFirst("#s_opt#", sql_s_wsearch).replaceFirst("#lookup#", lookup.replaceAll("#field#", sample_field));
                 sub_sql += " union " + sql_e.replaceFirst("#e_attr#", "").replaceFirst("#e_opt#", sql_e_wsearch).replaceFirst("#lookup#", lookup.replaceAll("#field#", event_field));
                 sub_sql = sub_sql.replaceAll("#sSearch#", "'%"+sSearch.toLowerCase().replaceAll("'", "''")+"%'")
                         .replaceAll("#i_sSearch#", sSearch)
                         .replaceAll("#attributes#", "'"+attributeNames.replaceAll("'", "''").replaceAll(",", "','")+"'");
+
+                sub_sql = sub_sql.replaceAll("#col_s#", "");
             }
+
             if(isSort) {
                 String optSelector = "";
                 List<String> defaults = Arrays.asList(defaultAttributes);
                 if(defaults.contains(sortCol) || sortCol.equals("Sample Name") || sortCol.equals("Project Name") || sortCol.equals("Parent Sample")) {
                     String temp_sql = "";
+                    if(isColumnSearch)
+                        temp_sql += col_s_sql;
                     if(isSearch)
-                        temp_sql = " and "+sql_wsort_s.replaceFirst("#sampleIds#", sub_sql.replaceAll("#selector#", "s.sample_id"));
+                        temp_sql += " and "+sql_wsort_s.replaceFirst("#sampleIds#", sub_sql.replaceAll("#selector#", "s.sample_id"));
                     temp_sql += " order by ";
                     if(sortCol.equals(Constants.ATTR_PROJECT_NAME) || sortCol.equals("Project Name"))
                         temp_sql += "p.projet_name ";
@@ -531,11 +584,17 @@ public class SampleDAO extends HibernateDAO {
                     String sortOptionSql = (isSearch ? sql_wsort_s.replaceFirst("#sampleIds#", sub_sql.replaceAll("#selector#", "s.sample_id")) : sql_wsort_p);
                     String sortWhereSql = sql_wsort.replaceFirst("#sortOpt#", sortOptionSql);
                     sql = sql.replaceAll(optSelector, sortWhereSql);
+
+                    sql = isColumnSearch ? sql.replaceAll("#col_s#", col_s_sql) : sql.replaceAll("#col_s#", "");
                 }
 
                 sql = sql.replaceFirst("#sortDir#", sortDir);
             }
-            sql = (sql == null ? sub_sql : sql);
+
+            sql = (!isSearch && !isSort) ? sql_s_default.replace("#opt#", col_s_sql)
+                    : sql == null && isColumnSearch ? sql_s_default.replace("#opt#", col_s_sql) + " and  s.sample_id in (" + sub_sql.replaceAll("#selector#", "s.sample_id") +" )"
+                    : sql == null ? sub_sql
+                    : sql;
             sql = sql.replaceAll("#projectIds#", projectIds).replaceAll("#selector#", "s.*");
 
             SQLQuery query = session.createSQLQuery(sql);
