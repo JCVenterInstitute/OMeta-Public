@@ -24,11 +24,11 @@ package org.jcvi.ometa.hibernate.dao;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.jcvi.ometa.model.Event;
 import org.jcvi.ometa.model.EventAttribute;
 import org.jcvi.ometa.model.EventMetaAttribute;
 import org.jcvi.ometa.model.ModelBean;
 
-import java.util.Date;
 import java.util.*;
 
 /**
@@ -73,7 +73,7 @@ public class EventAttributeDAO extends HibernateDAO {
                 }
                 crit = session.createCriteria(EventMetaAttribute.class);
                 crit.add(Restrictions.in( "nameLookupId", nameLookupIds ) )
-                    .add(Restrictions.eq( "projectId", projectId ) );
+                        .add(Restrictions.eq( "projectId", projectId ) );
 
                 List<EventMetaAttribute> metaResults = crit.list();
                 if ( metaResults != null ) {
@@ -134,25 +134,47 @@ public class EventAttributeDAO extends HibernateDAO {
                 Criteria crit = session.createCriteria( EventAttribute.class );
                 crit.add( Restrictions.in("eventId", eventIds) );
                 List<EventAttribute> results = crit.list();
-                List<Long> nameLookupIds = new ArrayList<Long>();
-                if ( results != null && results.size() > 0 ) {
+
+                crit = session.createCriteria(Event.class);
+                crit.add(Restrictions.in("eventId", eventIds));
+                List<Event> events = crit.list();
+                Map<Long, Long> eventVsEventType = new HashMap<Long, Long>();
+                for(Event event : events) {
+                    if(!eventVsEventType.containsKey(event.getEventId())) {
+                        eventVsEventType.put(event.getEventId(), event.getEventType());
+                    }
+                }
+
+                if(results != null && results.size() > 0) {
+
+                    List<Long> nameLookupIds = new ArrayList<Long>();
                     for ( EventAttribute ea: results ) {
                         nameLookupIds.add( ea.getNameLookupValueId() );
                     }
                     crit = session.createCriteria(EventMetaAttribute.class);
-                    crit.add(Restrictions.in( "nameLookupId", nameLookupIds ) )
-                        .add(Restrictions.eq( "projectId", projectId ) );
-
+                    crit.add(Restrictions.in("nameLookupId", nameLookupIds))
+                            .add(Restrictions.eq("projectId", projectId));
                     List<EventMetaAttribute> metaResults = crit.list();
-                    if ( metaResults != null ) {
-                        Map<Long,EventMetaAttribute> nameIdVsMetaAttribute = new HashMap<Long,EventMetaAttribute>();
-                        for ( EventMetaAttribute ema: metaResults ) {
-                            nameIdVsMetaAttribute.put( ema.getNameLookupId(), ema );
+
+                    if(metaResults != null) {
+                        Map<Long, Map<Long, EventMetaAttribute>> eventTypeToNameMap = new HashMap<Long, Map<Long, EventMetaAttribute>>();
+                        for(EventMetaAttribute ema: metaResults) {
+                            if(eventTypeToNameMap.containsKey(ema.getEventTypeLookupId())) {
+                                eventTypeToNameMap.get(ema.getEventTypeLookupId()).put(ema.getNameLookupId(), ema);
+                            } else {
+                                Map<Long, EventMetaAttribute> nameVsEma = new TreeMap<Long, EventMetaAttribute>();
+                                nameVsEma.put(ema.getNameLookupId(), ema);
+                                eventTypeToNameMap.put(ema.getEventTypeLookupId(), nameVsEma);
+                            }
                         }
-                        for ( EventAttribute ea: results ) {
-                            EventMetaAttribute ema = nameIdVsMetaAttribute.get( ea.getNameLookupValueId() );
-                            if ( ema != null )
-                                ea.setMetaAttribute( ema );
+
+                        for(EventAttribute ea: results) {
+                            Long type = eventVsEventType.get(ea.getEventId());
+                            Map<Long, EventMetaAttribute> name = type == null ? null : eventTypeToNameMap.get(type);
+                            EventMetaAttribute ema = name == null ? null : name.get(ea.getNameLookupValueId());
+                            if(ema != null) {
+                                ea.setMetaAttribute(ema);
+                            }
                         }
 
                     }
