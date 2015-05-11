@@ -97,16 +97,39 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
 
             projectMap.put(Constants.ATTR_PROJECT_NAME, pMap.getProject().getProjectName());
 
-            LookupValue registrationLV = readPersister.getLookupValue(Constants.EVENT_PROJECT_REGISTRATION, Constants.LOOKUP_VALUE_TYPE_EVENT_TYPE);
-            List<EventMetaAttribute> registrationEMAList = readPersister.getEventMetaAttributes(this.projectId, registrationLV.getLookupValueId());
-            final List<String> sortedMetaAttributeNames = new ArrayList<String>(registrationEMAList.size());
-            for(EventMetaAttribute ema : registrationEMAList) {
-                sortedMetaAttributeNames.add(ema.getLookupValue().getName());
+            List<LookupValue> allLV = readPersister.getEventTypesForProject(projectId);
+            List<String> attributeList = new ArrayList<String>(0);
+            Map<String, String> attributeType = new HashMap<String, String>(0);
+            final List<String> sortedMetaAttributeNames = new ArrayList<String>(0);
+
+            attributeType.put("Sample Name", "string");
+            attributeType.put("Parent", "string");
+            attributeType.put("User", "string");
+            attributeType.put("Date", "date");
+
+            for(LookupValue lv : allLV){
+                String lv_name = lv.getName();
+
+                if(lv_name.equals(Constants.EVENT_PROJECT_REGISTRATION)){
+                    List<EventMetaAttribute> registrationEMAList = readPersister.getEventMetaAttributes(this.projectId, lv.getLookupValueId());
+                    for(EventMetaAttribute ema : registrationEMAList) {
+                        sortedMetaAttributeNames.add(ema.getLookupValue().getName());
+                    }
+                } else if(!lv_name.toLowerCase().contains("project")){
+                    List<EventMetaAttribute> EMAList = readPersister.getEventMetaAttributes(this.projectId, lv.getLookupValueId());
+
+                    for(EventMetaAttribute ema : EMAList) {
+                        String tempMetaName = ema.getLookupValue().getName();
+                        if (!attributeList.contains(tempMetaName)) {
+                            attributeList.add(tempMetaName);
+                            attributeType.put(tempMetaName, ema.getLookupValue().getDataType());
+                        }
+                    }
+                }
             }
             //CommonTool.sortEventMetaAttributeByOrder(registrationEMAList);
 
             List<ProjectAttribute> projectAttributes = readPersister.getProjectAttributes(this.projectId);
-            List<SampleMetaAttribute> allSampleMetaAttributes = readPersister.getSampleMetaAttributes(this.projectId);
 
             Collections.sort(projectAttributes, new Comparator<ProjectAttribute>() {
                 @Override
@@ -136,21 +159,6 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                     projectMap.put(tempLookupValue.getName(), attrValue);
                 }
             }
-
-            List<String> attributeList = new ArrayList<String>();
-            Map<String, String> attributeType = new HashMap<String, String>(0);
-            for (SampleMetaAttribute sma : allSampleMetaAttributes) {
-                String tempMetaName = sma.getLookupValue().getName();
-                if (!attributeList.contains(tempMetaName)) {
-                    attributeList.add(tempMetaName);
-                    attributeType.put(tempMetaName, sma.getLookupValue().getDataType());
-                }
-            }
-
-            attributeType.put("Sample Name", "string");
-            attributeType.put("Parent", "string");
-            attributeType.put("User", "string");
-            attributeType.put("Date", "date");
 
             projectMap.put("Project Registration", CommonTool.convertTimestampToDate(pMap.getProject().getCreationDate()));
             projectMap.put("editable", pMap.isEditable()?1:0);
@@ -256,25 +264,49 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
         try {
             aaData = new ArrayList<Map>();
 
-            List<Sample> samples;
-            if (sampleId != null && sampleId != 0) {
-                if(sampleLevel!=null && !sampleLevel.equals("1")) {
-                    samples = readPersister.getChildSamples(sampleId);
-                } else {
-                    samples = new ArrayList<Sample>();
-                    samples.add(readPersister.getSample(sampleId));
-                }
-            } else
-                samples = readPersister.getSamplesForProject(this.projectId);
+            if(type != null && type.equals("single")){
+                List<SampleAttribute> sampleAttributes = null;
 
-            sampleLevel = sampleLevel == null ? "0" : sampleLevel;
-            int intSampleLevel = Integer.parseInt(sampleLevel);
-            for (Sample sample : samples) {
-                if (intSampleLevel == 0 || (sample.getSampleLevel() != null && sample.getSampleLevel() == intSampleLevel)) { //filter by sample level
-                    Map<String, String> sampleMap = new HashMap<String, String>();
-                    sampleMap.put("id", ""+sample.getSampleId());
-                    sampleMap.put("name", sample.getSampleName());
-                    aaData.add(sampleMap);
+                Sample sample = readPersister.getSample(this.projectId, this.sampleVal);
+                sampleAttributes = readPersister.getSampleAttributes(sample.getSampleId());
+
+                Map<String, Object> attributeMap = new HashMap<String, Object>(sampleAttributes.size());
+                if(sampleAttributes != null) {
+                    for (SampleAttribute sa : sampleAttributes) {
+                        SampleMetaAttribute sma = sa.getMetaAttribute();
+                        if (!sma.isActive()) { //skip inactive attribute
+                            continue;
+                        }
+                        LookupValue tempLookupValue = sma.getLookupValue();
+                        Object attrValue = ModelValidator.getModelValue(tempLookupValue, sa);
+                        if (tempLookupValue != null && tempLookupValue.getName() != null) {
+                            attributeMap.put(tempLookupValue.getName().replaceAll("_", " "), attrValue);
+                        }
+                    }
+                }
+
+                aaData.add(attributeMap);
+            } else {
+                List<Sample> samples;
+                if (sampleId != null && sampleId != 0) {
+                    if (sampleLevel != null && !sampleLevel.equals("1")) {
+                        samples = readPersister.getChildSamples(sampleId);
+                    } else {
+                        samples = new ArrayList<Sample>();
+                        samples.add(readPersister.getSample(sampleId));
+                    }
+                } else
+                    samples = readPersister.getSamplesForProject(this.projectId);
+
+                sampleLevel = sampleLevel == null ? "0" : sampleLevel;
+                int intSampleLevel = Integer.parseInt(sampleLevel);
+                for (Sample sample : samples) {
+                    if (intSampleLevel == 0 || (sample.getSampleLevel() != null && sample.getSampleLevel() == intSampleLevel)) { //filter by sample level
+                        Map<String, String> sampleMap = new HashMap<String, String>();
+                        sampleMap.put("id", "" + sample.getSampleId());
+                        sampleMap.put("name", sample.getSampleName());
+                        aaData.add(sampleMap);
+                    }
                 }
             }
 
@@ -407,9 +439,6 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
 
         return returnValue;
     }
-
-
-
 
     public String runAjax() {
         String returnValue = ERROR;

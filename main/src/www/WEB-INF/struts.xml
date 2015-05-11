@@ -432,6 +432,10 @@
             <result name="success" type="json"/>
             <result name="error" type="json"/>
         </action>
+        <action name="getsample" class="org.jcvi.ometa.action.ajax.SharedAjax" method="sample">
+            <result name="success" type="json"/>
+            <result name="error" type="json"/>
+        </action>
         <action name="metadataSetupAjax" class="org.jcvi.ometa.action.MetadataSetup" method="runAjax">
             <result name="success" type="json"/>
             <result name="error" type="json"/>

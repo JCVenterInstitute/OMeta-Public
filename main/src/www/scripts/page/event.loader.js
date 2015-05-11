@@ -13,7 +13,7 @@ var _utils = {
         // If samples are uploaded as CSV, set event lines based on row size, else have at least 5 event lines for the grid view
         var $gridSize = $('#gridListSize').val();
         if($gridSize === '' && g_sampleIds) $gridSize = g_sampleIds.split(',').length;
-        var rowSize = ($gridSize > 0) ? $gridSize : 5;
+        var rowSize = utils.checkPU(en) ? 1 : ($gridSize > 0) ? $gridSize : 5;
         for(var _rows=$('#gridBody > tr').length;_rows<rowSize;_rows++) {
           button.add_event(pn,en);
         }
@@ -265,7 +265,7 @@ var _utils = {
                 isText = true;
                 inputElement += '<input type="text" id="' + (isRequired ? 'req_' : '') + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" style="width:160px;"/> ';
 
-                $autofillDiv.append(autofillButtonHtml.replace('$w$', '92').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
+                $autofillDiv.append(autofillButtonHtml.replace('$w$', '94').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
               }
             }
             inputElement = inputElement.replace(/\$id\$/g,_ma.lookupValue.name.replace(/ /g,"_") + "_$id$");
@@ -304,7 +304,17 @@ var _utils = {
         $('thead#gridHeader').append($gridHeaders);
         _utils.addGridRows(null, en);
 
-        $("#autofill-option").width($('thead#gridHeader').width() + 50);
+        $("#autofill-option").width($('thead#gridHeader').width() + 70);
+
+        // Populate current project data for Project Update
+        if(utils.checkPU(en)){
+          _utils.makeAjax(
+              'getprojectbyuser.action',
+              'projectName=' + utils.getProjectName(),
+              "",
+              callbacks.populateProjectInfo
+          );
+        }
 
         return;
       },
@@ -329,6 +339,65 @@ var _utils = {
         }
 
         _utils.addGridRows(null,eventName);
+      },
+      populateProjectInfo: function(data, eventName) {
+        if(data && data.aaData) {
+          var projAttrMap = data.aaData[1].attributes;
+
+          for(var i in projAttrMap){
+            var key = i;
+            var value  = projAttrMap[i];
+
+            while(key.indexOf(" ") > -1) key = key.replace(" ", "_");
+
+            var $input = $("input[id*='"+key+"']");
+
+            if($input.length > 0) $input.val(value);
+            else $("select[id*='"+key+"']").val(value);
+          }
+        }
+      },
+      populateSampleInfo: function(data, selectName) {
+        if(data && data.aaData) {
+          if(selectName === 'sampleName'){
+            //Clear existing data
+            $('#attributeInputDiv input[type="text"],#attributeInputDiv input[type="select"]').val('');
+
+            var sampleAttrMap = data.aaData[0];
+
+            for(var i in sampleAttrMap){
+              var key = i;
+              var value  = sampleAttrMap[i];
+
+              while(key.indexOf(" ") > -1) key = key.replace(" ", "_");
+
+              var $input = $("input[id*='"+key+"_f']");
+
+              if($input.length > 0) $input.val(value);
+              else $("select[id*='"+key+"_f']").val(value);
+            }
+          } else{
+            var index = selectName.charAt(9) //grid row number
+
+            //Clear existing data
+            $('#gridBody tr:nth-child('+(index+1)+') input[type="text"],#gridBody tr:nth-child('+(index+1)+') input[type="select"]').val('');
+
+            var sampleAttrMap = data.aaData[0];
+
+            for(var i in sampleAttrMap){
+              var key = i;
+              var value  = sampleAttrMap[i];
+
+              while(key.indexOf(" ") > -1) key = key.replace(" ", "_");
+
+              var $input = $("input[id*='"+key+"_g_"+index+"']");
+
+              if($input.length > 0) $input.val(value);
+              else $("select[id*='"+key+"_g_"+index+"']").val(value);
+            }
+
+          }
+        }
       }
     },
     changes = {
@@ -371,6 +440,7 @@ var _utils = {
               callbacks.eventAttribute
           );
         }
+
         $('#loadingImg').hide();
       }
     };
@@ -842,10 +912,30 @@ function comboBoxChanged(option, id) {
 
       //Hide Sample dropdown if SampleRegistration is selected
       var _selectedType = $('input[name="loadType"]:checked').val();
-      if(utils.checkSR(option.text) || _selectedType === 'grid') {
+      var _eventName = option.text;
+      if(utils.checkSR(_eventName) || _selectedType === 'grid') {
         $("#interactive-submission-table tr:last").hide();
       } else{
-        if(!utils.checkPR(option.text) && utils.getEventName(option.text).toLowerCase().indexOf('project') < 0) $("#interactive-submission-table tr:last").show();
+        if(!utils.checkPR(_eventName) && utils.getEventName(_eventName).toLowerCase().indexOf('project') < 0) $("#interactive-submission-table tr:last").show();
+      }
+
+      if(utils.checkPU(_eventName)){
+        $('#gridAddLineButton').prop('disabled', true);
+        $('#gridRemoveLineButton').prop('disabled', true);
+      } else{
+        $('#gridAddLineButton').removeAttr('disabled');
+        $('#gridRemoveLineButton').removeAttr('disabled');
+      }
+
+      var sampleName = $("#sampleSelect").val();
+
+      if(sampleName && sampleName != "" && !utils.checkPU(_eventName)) {
+        _utils.makeAjax(
+            'getsample.action',
+            'type=single&projectId=' + utils.getProjectId() + '&sampleVal=' + sampleName,
+            "sampleName",
+            callbacks.populateSampleInfo
+        );
       }
     }
   } else if(id==='_sampleSelect') {
@@ -1104,6 +1194,13 @@ function searchSamples(id) {
         return false;
       } else{
         closeDropdown = true;
+
+        _utils.makeAjax(
+            'getsample.action',
+            'type=single&subType=sample&projectId=' + utils.getProjectId() + '&sampleVal=' + b.item.value,
+            this.name,
+            callbacks.populateSampleInfo
+        );
       }
     },
     minLength: 0,

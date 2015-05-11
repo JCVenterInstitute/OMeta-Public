@@ -400,7 +400,7 @@
         $('#gridInputDiv, #gridAddLineButton, #gridRemoveLineButton, #confirmDiv').show();
         $("#interactive-submission-table tr:last").hide();
         _utils.addGridRows(utils.getProjectName(), utils.getEventName());
-        $("#autofill-option").width($('thead#gridHeader').width() + 50);
+        $("#autofill-option").width($('thead#gridHeader').width() + 70);
       } else if(_selectedType==='file') {
         $('#fileInputDiv').show();
         $("#interactive-submission-table tr:last").hide();
@@ -411,7 +411,8 @@
         toBulk();
       } else{
         $('#attributeInputDiv, #sampleSelectRow').show();
-        if(utils.checkSR($("#_eventSelect").val())) $("#interactive-submission-table tr:last").hide();
+        if(utils.checkSR($("#_eventSelect").val()) || $("#_eventSelect option:selected").text().toLowerCase().indexOf('project') > -1)
+          $("#interactive-submission-table tr:last").hide();
         else $("#interactive-submission-table tr:last").show();
         _utils.showPS();
       }
