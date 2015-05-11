@@ -310,6 +310,11 @@ function createSampleDataTable(){
           }
         });
       }
+      if(headerList){
+        for(var i=0; i < headerList.length; i++){
+          aoData.push({"name":"attributeList[" + i + "]", "value":headerList[i]});
+        }
+      }
       if(sSource!=='') {
         $.ajax({
           dataType: 'json',

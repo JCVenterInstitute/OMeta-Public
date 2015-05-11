@@ -72,6 +72,9 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
     //Column Filter Values
     private List<String> columnName;
     private List<String> columnSearchArguments;
+
+    private List<String> attributeList;
+
     //date
     private String fd;
     private String td;
@@ -99,14 +102,9 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                 String sortCol = iSortCol_0.equals("0") ? "sample"
                         : iSortCol_0.equals("1") ? "parent"
                         : iSortCol_0.equals("2") ? "user"
-                        : iSortCol_0.equals("3") ? "date" : null;
-
-                if(sortCol == null){
-                    List<SampleMetaAttribute> allSampleMetaAttributes = readPersister.getSampleMetaAttributes(this.projectId);
-
-                    sortCol = allSampleMetaAttributes.get(Integer.parseInt(iSortCol_0) - 4)
-                            .getLookupValue().getName();
-                }
+                        : iSortCol_0.equals("3") ? "date"
+                        : attributeList != null && !attributeList.isEmpty() ? attributeList.get(Integer.parseInt(iSortCol_0) - 4)
+                        : null;
 
                 samples = readPersister.getAllSamples(flexId, flexType,sSearch, sortCol, sSortDir_0, columnName, columnSearchArguments);
 
@@ -473,5 +471,13 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
 
     public void setColumnSearchArguments(List<String> columnSearchArguments) {
         this.columnSearchArguments = columnSearchArguments;
+    }
+
+    public List<String> getAttributeList() {
+        return attributeList;
+    }
+
+    public void setAttributeList(List<String> attributeList) {
+        this.attributeList = attributeList;
     }
 }
