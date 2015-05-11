@@ -32,6 +32,10 @@ var utils = {
     var enode = $("#_eventSelect option:selected");
     return en || (enode.val() === '0' ? null : enode.text());
   },
+  getEventId: function() {
+    var enode = $("#_eventSelect option:selected");
+    return enode.val();
+  },
   getSampleName: function() {
     return $("#_sampleSelect option:selected").text();
   },
@@ -47,6 +51,16 @@ var utils = {
     en = this.getEventName(en);
     en = en ? en.toLowerCase() : "";
     return en.indexOf('project') >= 0 && en.indexOf('registration') > 0;
+  },
+  checkPU: function(en) {
+    en = this.getEventName(en);
+    en = en ? en.toLowerCase() : "";
+    return en.indexOf('project') >= 0 && en.indexOf('update') > 0;
+  },
+  checkSU: function(en) {
+    en = this.getEventName(en);
+    en = en ? en.toLowerCase() : "";
+    return en.indexOf('sample') >= 0 && en.indexOf('update') > 0;
   },
   checkNP: function(en) {
     en = this.getEventName(en);
