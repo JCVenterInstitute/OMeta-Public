@@ -165,14 +165,14 @@ var _utils = {
         $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG gridIndex').append('#')); //grid row index
         if(utils.checkNP(en)) {
           if(!utils.checkSR(en)) {
-            $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Sample Name<br/>', requireImgHtml));
+            $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Sample Name<br/>'));
             $autofillDiv.append(autofillButtonHtml.replace('$w$', '135').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
             autofill_no+=1;
           } else {
             $gridHeaders.append(
-                $('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Sample Name<br/>', requireImgHtml),
+                $('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Sample Name<br/>'),
                 $('<th/>').addClass('tableHeaderNoBG').append('Parent Sample'),
-                $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
+                $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>')
             );
             $autofillDiv.append(autofillButtonHtml.replace('$w$', '95').replace('$a$', 2).replace('$b$', 2).replace('$c$', 2),
                 autofillButtonHtml.replace('$w$', '190').replace('$a$', 3).replace('$b$', 3).replace('$c$', 3));
@@ -255,7 +255,7 @@ var _utils = {
                 $autofillDiv.append('<label style="width: 253px;"></label>');
               } else if(maDatatype ==='date') {
                 inputElement +=
-                    '<div class="input-group col-sm-11">'+
+                    '<div class="input-group col-sm-5">'+
                     '  <input type="text" id="' + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" style="width:160px;"/>' +
                     '  <label for="' + maDatatype + '_$id$" class="input-group-addon" style="padding:4px;"><span><i class="fa fa-calendar"></i></span></label>' +
                     '</div>';
@@ -353,49 +353,77 @@ var _utils = {
             var $input = $("input[id*='"+key+"']");
 
             if($input.length > 0) $input.val(value);
-            else $("select[id*='"+key+"']").val(value);
+            else {
+              var $select =  $("select[id*='"+key+"']");
+
+              if($select.get(0)){
+                if($select.get(0).getAttribute('multiple') == null) $select.val(value)
+                else {
+                  var valueArr = value.split(",");
+
+                  for(var j in valueArr){
+                    if(valueArr[j].charAt(0) == ' ') valueArr[j] = valueArr[j].replace(" ", "");
+                    $select.multipleSelect('setSelects', valueArr);
+                  }
+                }
+              } else{
+                $select.val(value);
+              }
+            }
           }
         }
       },
       populateSampleInfo: function(data, selectName) {
         if(data && data.aaData) {
-          if(selectName === 'sampleName'){
-            //Clear existing data
-            $('#attributeInputDiv input[type="text"],#attributeInputDiv input[type="select"]').val('');
+          var index; //grid row number
 
-            var sampleAttrMap = data.aaData[0];
+          //Clear existing data
+          if (selectName === 'sampleName') {  //single sample view
+            $('#attributeInputDiv input[type="text"]').val('');
+            $('select[id^="select_"]').each(function(){
+              var $this = $(this);
+              if($this.get(0).getAttribute('name').indexOf("gridList") < 0) {
+                if ($this.get(0).getAttribute('multiple') == null) $this.val('');
+                else $this.multipleSelect('uncheckAll');
+              }
+            });
+          } else {  // multiple samples view
+            index = selectName.charAt(9);
+            $('#gridBody .borderBottom:eq(' + index+ ') input[type="text"]').val('');
+            $('select[id^="select_"]').each(function(){
+              var $this = $(this);
+              var name = $this.get(0).getAttribute('name');
+              if(name.indexOf("gridList") > -1 && name.charAt(9) === index) {
+                if ($this.get(0).getAttribute('multiple') == null) $this.val('');
+                else $this.multipleSelect('uncheckAll');
+              }
+            });
+          }
 
-            for(var i in sampleAttrMap){
-              var key = i;
-              var value  = sampleAttrMap[i];
+          var sampleAttrMap = data.aaData[0];
 
-              while(key.indexOf(" ") > -1) key = key.replace(" ", "_");
+          for (var i in sampleAttrMap) {
+            var key = i;
+            var value = sampleAttrMap[i];
 
-              var $input = $("input[id*='"+key+"_f']");
+            var $input = (selectName === 'sampleName') ? $('input[name^="beanList"][value="' + key + '"]').next()
+                : $('input[name^="gridList[' + index + '"][value="' + key + '"]').next();
 
-              if($input.length > 0) $input.val(value);
-              else $("select[id*='"+key+"_f']").val(value);
+            if($input.is("div")) $input = $input.children(":first");
+
+            if ($input.get(0)) {
+              if ($input.get(0).getAttribute('multiple') == null) $input.val(value)
+              else {
+                var valueArr = value.split(",");
+
+                for (var j in valueArr) {
+                  if (valueArr[j].charAt(0) == ' ') valueArr[j] = valueArr[j].replace(" ", "");
+                  $input.multipleSelect('setSelects', valueArr);
+                }
+              }
+            } else {
+              $input.val(value);
             }
-          } else{
-            var index = selectName.charAt(9) //grid row number
-
-            //Clear existing data
-            $('#gridBody tr:nth-child('+(index+1)+') input[type="text"],#gridBody tr:nth-child('+(index+1)+') input[type="select"]').val('');
-
-            var sampleAttrMap = data.aaData[0];
-
-            for(var i in sampleAttrMap){
-              var key = i;
-              var value  = sampleAttrMap[i];
-
-              while(key.indexOf(" ") > -1) key = key.replace(" ", "_");
-
-              var $input = $("input[id*='"+key+"_g_"+index+"']");
-
-              if($input.length > 0) $input.val(value);
-              else $("select[id*='"+key+"_g_"+index+"']").val(value);
-            }
-
           }
         }
       }

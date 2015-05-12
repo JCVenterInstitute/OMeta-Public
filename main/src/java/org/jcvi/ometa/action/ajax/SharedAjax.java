@@ -280,7 +280,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                         LookupValue tempLookupValue = sma.getLookupValue();
                         Object attrValue = ModelValidator.getModelValue(tempLookupValue, sa);
                         if (tempLookupValue != null && tempLookupValue.getName() != null) {
-                            attributeMap.put(tempLookupValue.getName().replaceAll("_", " "), attrValue);
+                            attributeMap.put(tempLookupValue.getName(), attrValue);
                         }
                     }
                 }
