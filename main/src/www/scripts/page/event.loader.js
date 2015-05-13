@@ -387,6 +387,12 @@ var _utils = {
                 else $this.multipleSelect('uncheckAll');
               }
             });
+            $('input[type="file"][id^="file_"]').each(function(){
+              var $this = $(this);
+              if($this.get(0).getAttribute('name').indexOf("gridList") < 0) {
+                $this.prev('strong').remove();
+              }
+            });
           } else {  // multiple samples view
             index = selectName.charAt(9);
             $('#gridBody .borderBottom:eq(' + index+ ') input[type="text"]').val('');
@@ -396,6 +402,13 @@ var _utils = {
               if(name.indexOf("gridList") > -1 && name.charAt(9) === index) {
                 if ($this.get(0).getAttribute('multiple') == null) $this.val('');
                 else $this.multipleSelect('uncheckAll');
+              }
+            });
+            $('input[type="file"][id^="file_"]').each(function(){
+              var $this = $(this);
+              var name = $this.get(0).getAttribute('name');
+              if($this.get(0).getAttribute('name').indexOf("gridList") > -1 && name.charAt(9) === index) {
+                $this.prev('strong').remove();
               }
             });
           }
@@ -411,15 +424,21 @@ var _utils = {
 
             if($input.is("div")) $input = $input.children(":first");
 
-            if ($input.get(0)) {
-              if ($input.get(0).getAttribute('multiple') == null) $input.val(value)
-              else {
-                var valueArr = value.split(",");
+            var firstObj = $input.get(0);
 
-                for (var j in valueArr) {
-                  if (valueArr[j].charAt(0) == ' ') valueArr[j] = valueArr[j].replace(" ", "");
-                  $input.multipleSelect('setSelects', valueArr);
+            if (firstObj) {
+              if (firstObj.getAttribute('type') != 'file') {
+                if (firstObj.getAttribute('multiple') == null) $input.val(value)
+                else {
+                  var valueArr = value.split(",");
+
+                  for (var j in valueArr) {
+                    if (valueArr[j].charAt(0) == ' ') valueArr[j] = valueArr[j].replace(" ", "");
+                    $input.multipleSelect('setSelects', valueArr);
+                  }
                 }
+              } else{
+                $(firstObj).before("<strong>" + value.substring(value.indexOf("_") + 1) + "</strong>");
               }
             } else {
               $input.val(value);
