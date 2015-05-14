@@ -129,7 +129,7 @@
   }
 
   $(document).ready(function() {
-    var attributeType = '${attributeTypeMap}';
+    var attributeType = "${attributeTypeMap}";
     attributeType = attributeType.replace("{","").replace("}","").replace(/, /gi, ",");
     var attributeTypes = attributeType.split(",");
     for(var i = 0; i < attributeTypes.length; i++) {
