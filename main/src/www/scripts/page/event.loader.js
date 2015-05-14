@@ -698,7 +698,7 @@ var button = {
           utils.error.add("Sample Name is empty!");
           return;
         }
-      } else if(sampleName && sampleName === '' && sampleName.toLowerCase().indexOf('project') < 0){
+      } else if(sampleName.length == 0 && eventName.toLowerCase().indexOf('project') < 0){
         utils.error.add("Data cannot be submitted without sample. Please select a sample! If the project does not have any sample, create a new one first!");
         return;
       }
