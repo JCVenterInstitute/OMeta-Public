@@ -55,7 +55,7 @@ public class ModelValidator {
     public static final String EDIT_GROUP_LV_TYPE_NAME = "Edit Group";
 
     public static final SimpleDateFormat PST_DEFAULT_DATE_FORMAT = new SimpleDateFormat(Constants.DATE_DEFAULT_FORMAT);
-    public static final SimpleDateFormat PST_DEFAULT_TIMESTAMP_FORMAT = new SimpleDateFormat(Constants.DATE_DEFAULT_FORMAT + " H:mm");
+    public static final SimpleDateFormat PST_DEFAULT_TIMESTAMP_FORMAT = new SimpleDateFormat(Constants.DATE_DEFAULT_FORMAT + " H:mm:ss");
 
     private static final MessageFormat NO_SAMPLE_ERR_MSG_FMT =
             new MessageFormat("Event {0} requires a sample for event attribute(s) {1} but no sample was given.");
