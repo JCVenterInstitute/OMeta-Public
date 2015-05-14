@@ -380,14 +380,14 @@ var _utils = {
           //Clear existing data
           if (selectName === 'sampleName') {  //single sample view
             $('#attributeInputDiv input[type="text"]').val('');
-            $('select[id^="select_"]').each(function(){
+            $('select[id^="select_"], select[id^="req_select_"]').each(function(){
               var $this = $(this);
               if($this.get(0).getAttribute('name').indexOf("gridList") < 0) {
                 if ($this.get(0).getAttribute('multiple') == null) $this.val('');
                 else $this.multipleSelect('uncheckAll');
               }
             });
-            $('input[type="file"][id^="file_"]').each(function(){
+            $('input[type="file"][id^="file_"], input[type="file"][id^="req_file_"]').each(function(){
               var $this = $(this);
               if($this.get(0).getAttribute('name').indexOf("gridList") < 0) {
                 $this.prev('strong').remove();
@@ -396,7 +396,7 @@ var _utils = {
           } else {  // multiple samples view
             index = selectName.charAt(9);
             $('#gridBody .borderBottom:eq(' + index+ ') input[type="text"]').val('');
-            $('select[id^="select_"]').each(function(){
+            $('select[id^="select_"], select[id^="req_select_"]').each(function(){
               var $this = $(this);
               var name = $this.get(0).getAttribute('name');
               if(name.indexOf("gridList") > -1 && name.charAt(9) === index) {
@@ -404,7 +404,7 @@ var _utils = {
                 else $this.multipleSelect('uncheckAll');
               }
             });
-            $('input[type="file"][id^="file_"]').each(function(){
+            $('input[type="file"][id^="file_"], input[type="file"][id^="req_file_"]').each(function(){
               var $this = $(this);
               var name = $this.get(0).getAttribute('name');
               if($this.get(0).getAttribute('name').indexOf("gridList") > -1 && name.charAt(9) === index) {
@@ -500,7 +500,7 @@ var button = {
     if(loadType === 'form') { //check is form is empty
       var hasAllReq = true, reqErrorMsg = ""; // require field check
       var $formFields = $('#attributeInputDiv > tr > td');
-      $formFields.find('[id^="req_"]:not(:hidden)').each(function(i, v) {
+      $formFields.find('[id^="req_"]:not(:hidden), [id^="req_select_"]').each(function(i, v) {
         var $node = $(v);
         if($node.val() === null || $node.val() === '') {
           hasAllReq = false;
