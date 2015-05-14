@@ -527,7 +527,7 @@ var button = {
       }
     } else if(loadType === "grid"){ // check grid table data
       var listHasData = true, hasAllReq = true, allEmpty = true; reqErrorMsg = ""; // require field check
-      var $formFields = $('#gridBody > tr > td').find(':not(:hidden):not(option)');  //:not(option) added for firefox
+      var $formFields = $('#gridBody > tr > td').find(':not(:hidden):not(option), select[multiple=multiple]');  //:not(option) added for firefox
 
       var rowCheck = [], rowMsg = "", empty = true, rowAllReq = true, rowHasData = false;
 
