@@ -238,9 +238,12 @@ public class EventPersistenceHelper {
         // Not all values are controlled.  Some may have empty control values.
         if ( controlValues != null  &&  controlValues.trim().length() > 0 ) {
             String multiplePrefix = "multi(";
+            String radioPrefix = "radio(";
             //trim multiple select for validation
             if(controlValues.startsWith(multiplePrefix) && controlValues.endsWith(")")) {
                 controlValues = controlValues.substring(multiplePrefix.length(), controlValues.length()-1);
+            } else if(controlValues.startsWith(radioPrefix) && controlValues.endsWith(")")) {
+                controlValues = controlValues.substring(radioPrefix.length(), controlValues.length()-1);
             }
             List<String> controlValueList = Arrays.asList(controlValues.split(";"));
             boolean found = true;

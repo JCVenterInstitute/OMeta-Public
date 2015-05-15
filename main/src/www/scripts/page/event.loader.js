@@ -142,6 +142,7 @@ var _utils = {
         var content = '';
         var count= 0;
         var multiSelectPrefix='multi(';
+        var radioSelectPrefix='radio(';
 
         var $attributeDiv = $("#attributeInputDiv"); //where attributes are placed
         $attributeDiv.empty(); //empty any existing contents
@@ -221,7 +222,7 @@ var _utils = {
 
             var inputElement='';
             var isSelect = (_ma.options && _ma.options !== '' && _ma.options.indexOf(';') > 0);
-            var isMulti = false;
+            var isMulti = false, isRadio = false;
             var isText = false;
 
             inputElement = '<input type="hidden" value="' + utils.getProjectName() + '" name="$lt$projectName"/>';
@@ -230,11 +231,15 @@ var _utils = {
             if(isSelect) { //select box for option values
               //is this multi select
               isMulti = (_ma.options.substring(0, multiSelectPrefix.length)===multiSelectPrefix) && (_ma.options.lastIndexOf(')')===_ma.options.length-1);
-              var options = isMulti ? '' : '<option value=""></option>';
+              //check if radio button
+              isRadio = (_ma.options.substring(0, radioSelectPrefix.length)===radioSelectPrefix) && (_ma.options.lastIndexOf(')')===_ma.options.length-1);
+              var options = isMulti || isRadio ? '' : '<option value=""></option>';
               var givenOptions = _ma.options;
 
               if(isMulti) { //trim multi select wrapper
                 givenOptions = givenOptions.substring(multiSelectPrefix.length, givenOptions.length-1);
+              } else if(isRadio){
+                givenOptions = givenOptions.substring(radioSelectPrefix.length, givenOptions.length-1);
               }
 
               //convert 0 or 1 options to yes/no
@@ -245,7 +250,8 @@ var _utils = {
                   options += '<option value="' + o_v + '">' + o_v + '</option>';
                 });
               }
-              inputElement += '<select id="'  + (isRequired ? 'req_' : '') + 'select_$id$" name="$lt$attributeValue" style="min-width:35px;width:200px;" ' + (isMulti ? 'multiple="multiple"':'') + '>' + options + '</select>';
+
+              inputElement += '<select id="'  + (isRequired ? 'req_' : '') + 'select_$id$" name="$lt$attributeValue" style="min-width:35px;width:200px;" ' + (isMulti || isRadio ? 'multiple="multiple"':'') + '>' + options + '</select>';
 
               $autofillDiv.append(autofillButtonHtml.replace('$w$', '130').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
             } else {
@@ -276,7 +282,8 @@ var _utils = {
               'isText': isText,
               'hasOntoloty': hasOntology,
               'isSelect': isSelect,
-              'isMulti': isMulti
+              'isMulti': isMulti,
+              'isRadio': isRadio
             };
 
             var $inputNode = $('<td/>').append(inputElement.replace(/\$val\$/g, '').replace(/\$id\$/g, 'f_' + count).replace(/\$lt\$/g,"beanList["+count+"]."));
@@ -288,7 +295,12 @@ var _utils = {
 
             /* multiple select jquery plugin */
             if(isMulti) {
-              $inputNode.find('select').multipleSelect();
+              $inputNode.find('select').multipleSelect({multipleWidth: '200px'});
+            } else if(isRadio){
+              $inputNode.find('select').multipleSelect({
+                single: true,
+                multipleWidth: '200px'
+              });
             }
 
             $attributeDiv.append($attributeTr.append($inputNode));
@@ -377,41 +389,41 @@ var _utils = {
         if(data && data.aaData) {
           var index; //grid row number
 
+          var singleSample = (selectName === 'sampleName');
+
           //Clear existing data
-          if (selectName === 'sampleName') {  //single sample view
+          if (singleSample) {  //single sample view
             $('#attributeInputDiv input[type="text"]').val('');
-            $('select[id^="select_"], select[id^="req_select_"]').each(function(){
-              var $this = $(this);
-              if($this.get(0).getAttribute('name').indexOf("gridList") < 0) {
-                if ($this.get(0).getAttribute('multiple') == null) $this.val('');
-                else $this.multipleSelect('uncheckAll');
-              }
-            });
-            $('input[type="file"][id^="file_"], input[type="file"][id^="req_file_"]').each(function(){
-              var $this = $(this);
-              if($this.get(0).getAttribute('name').indexOf("gridList") < 0) {
-                $this.prev('strong').remove();
-              }
-            });
           } else {  // multiple samples view
             index = selectName.charAt(9);
             $('#gridBody .borderBottom:eq(' + index+ ') input[type="text"]').val('');
-            $('select[id^="select_"], select[id^="req_select_"]').each(function(){
-              var $this = $(this);
-              var name = $this.get(0).getAttribute('name');
-              if(name.indexOf("gridList") > -1 && name.charAt(9) === index) {
-                if ($this.get(0).getAttribute('multiple') == null) $this.val('');
-                else $this.multipleSelect('uncheckAll');
-              }
-            });
-            $('input[type="file"][id^="file_"], input[type="file"][id^="req_file_"]').each(function(){
-              var $this = $(this);
-              var name = $this.get(0).getAttribute('name');
-              if($this.get(0).getAttribute('name').indexOf("gridList") > -1 && name.charAt(9) === index) {
-                $this.prev('strong').remove();
-              }
-            });
           }
+
+          $('select[id^="select_"], select[id^="req_select_"]').each(function(){
+            var $this = $(this);
+            var name = $this.get(0).getAttribute('name');
+            if( singleSample ? (name.indexOf("gridList") < 0)
+                    : (name.indexOf("gridList") > -1 && name.charAt(9) === index)) {
+              if ($this.get(0).getAttribute('multiple') == null) $this.val('');
+              else $this.multipleSelect('uncheckAll');
+            }
+          });
+          $('input[type="file"][id^="file_"], input[type="file"][id^="req_file_"]').each(function(){
+            var $this = $(this);
+            var name = $this.get(0).getAttribute('name');
+            if(singleSample ? (name.indexOf("gridList") < 0)
+                    : name.indexOf("gridList") > -1 && name.charAt(9) === index) {
+              $this.prev('strong').remove();
+            }
+          });
+          $('input[type="radio"][class="radio_attr"], input[type="radio"][class="req_radio_attr"]').each(function(){
+            var $this = $(this);
+            var name = $this.get(0).getAttribute('name');
+            if(singleSample ? name.indexOf("gridList") < 0
+                    : name.indexOf("gridList") > -1 && name.charAt(9) === index) {
+              $this.prop('checked', false);
+            }
+          });
 
           var sampleAttrMap = data.aaData[0];
 
@@ -427,7 +439,13 @@ var _utils = {
             var firstObj = $input.get(0);
 
             if (firstObj) {
-              if (firstObj.getAttribute('type') != 'file') {
+              if (firstObj.getAttribute('type') == 'file') {
+                $(firstObj).before("<strong>" + value.substring(value.indexOf("_") + 1) + "</strong>");
+              } else if(firstObj.getAttribute('type') == 'radio'){
+                var name = firstObj.getAttribute('name');
+
+                $("input[name="+name+"][value=" + value + "]").attr('checked', 'checked');
+              } else{
                 if (firstObj.getAttribute('multiple') == null) $input.val(value)
                 else {
                   var valueArr = value.split(",");
@@ -437,8 +455,6 @@ var _utils = {
                     $input.multipleSelect('setSelects', valueArr);
                   }
                 }
-              } else{
-                $(firstObj).before("<strong>" + value.substring(value.indexOf("_") + 1) + "</strong>");
               }
             } else {
               $input.val(value);
@@ -860,6 +876,8 @@ var button = {
         }
         if(av_v.isMulti === true) {
           $inputNode.find('select').multipleSelect();
+        } else if(av_v.isRadio === true){
+          $inputNode.find('select').multipleSelect({single:true});
         }
         $eventLine.append($inputNode);
       });
