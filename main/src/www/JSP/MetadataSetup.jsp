@@ -237,9 +237,9 @@
       _utils.flip('Project', 'PMADiv');
     }
 
-    //preload page with data if available
+    //preload page with data if available and there is no error
     var projectId = '${projectId}';
-    if(projectId && projectId != 0) {
+    if(projectId && projectId != 0 && !$("#error_messages").get(0)) {
       _utils.loading.show();
       _utils.makeAjax('g_all', projectId, null, _utils.callback.all);
     }
