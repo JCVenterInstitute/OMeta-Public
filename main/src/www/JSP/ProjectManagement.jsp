@@ -127,7 +127,10 @@
                             <s:if test="%{#group.groupId==#project.viewGroup}"><s:property value="#group.groupNameLookupValue.name" /></s:if>
                           </s:iterator>
                         </td>
-                        <td class=""><input type="button" class="btn btn-warning" id="<s:property value="#project.projectId"/>" value="Edit Project" onclick="editProject(this.id);"/></td>
+                        <td class="">
+                          <input type="button" class="btn btn-xs btn-warning" id="<s:property value="#project.projectId"/>" value="Edit Project" onclick="editProject(this.id);" style="float: left;"/>
+                          <input type="button" class="btn btn-xs btn-info" id="<s:property value="#project.projectName"/>" value="Download Setup" onclick="downloadProjectSetup(this.id);" style="float: right;"/>
+                        </td>
                       </tr>
                     </s:iterator>
                     </tbody>
@@ -156,11 +159,11 @@
       "bAutoWidth" : true,
       "aoColumnDefs": [
         {"sWidth": "30%", "aTargets": [ 0 ]},
-        {"sWidth": "10%", "aTargets":[1]},
-        {"sWidth": "10%", "aTargets":[2]},
-        {"sWidth": "20%", "aTargets":[3]},
-        {"sWidth": "20%", "aTargets":[4]},
-        {"sWidth": "10%", "aTargets":[5]}
+        {"sWidth": "8%", "aTargets":[1]},
+        {"sWidth": "8%", "aTargets":[2]},
+        {"sWidth": "19%", "aTargets":[3]},
+        {"sWidth": "19%", "aTargets":[4]},
+        {"sWidth": "16%", "aTargets":[5]}
       ]
     });
   });
@@ -187,6 +190,29 @@
 
     $('body').append($editProjectForm);
     $editProjectForm.submit();
+  }
+
+  function downloadProjectSetup(name){
+    var $projectSetupForm = $('<form>').attr({
+      id: 'projectSetupForm',
+      method: 'POST',
+      action: 'downloadProjectSetup.action'
+    }).css('display', 'none');
+
+    $('<input>').attr({
+      id: 'projectName',
+      name: 'projectName',
+      value : name
+    }).appendTo($projectSetupForm);
+
+    $('<input>').attr({
+      id: 'eventName',
+      name: 'eventName',
+      value : 'ProjectSetup'
+    }).appendTo($projectSetupForm);
+
+    $('body').append($projectSetupForm);
+    $projectSetupForm.submit();
   }
 </script>
 </body>

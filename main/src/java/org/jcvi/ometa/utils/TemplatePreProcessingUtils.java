@@ -8,9 +8,7 @@ import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellRangeAddressList;
 import org.apache.poi.ss.usermodel.*;
-import org.jcvi.ometa.model.EventMetaAttribute;
-import org.jcvi.ometa.model.FileReadAttributeBean;
-import org.jcvi.ometa.model.GridBean;
+import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.validation.ErrorMessages;
 import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.scratch.ScratchUtils;
@@ -72,6 +70,108 @@ public class TemplatePreProcessingUtils {
         }
 
         return templateStream;
+    }
+
+    public InputStream buildProjectSetupContent(Project project, List<ProjectMetaAttribute> pmaList, List<EventMetaAttribute> emaList,
+                                                List<LookupValue> eventNameList, List<SampleMetaAttribute> smaList) {
+        StringBuilder csvContents = new StringBuilder();
+        String projectName = project.getProjectName();
+
+        //Project Setup
+        csvContents.append(Constants.TEMPLATE_COMMENT_INDICATOR).append(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER).append(":").append("Project\n");
+        csvContents.append(Constants.ATTR_PROJECT_NAME).append(",")
+                .append(Constants.ATTR_PARENT_PROJECT_NAME).append(",")
+                .append(Constants.ATTR_PROJECT_LEVEL).append(",")
+                .append(Constants.ATTR_PUBLIC_FLAG).append("\n");
+        csvContents.append(projectName + "," + project.getParentProjectName() + ","
+                + project.getProjectLevel() + "," + project.getIsPublic() + "\n");
+
+        csvContents.append("\n");
+
+        //Project Meta Attributes
+        csvContents.append(Constants.TEMPLATE_COMMENT_INDICATOR).append(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER).append(":").append("ProjectMetaAttributes\n");
+        csvContents.append(Constants.ATTR_PROJECT_NAME).append(",")
+                .append(Constants.ATTR_LABEL).append(",")
+                .append(Constants.ATTR_DATA_TYPE).append(",")
+                .append(Constants.ATTR_REQUIRED).append(",")
+                .append(Constants.ATTR_ATTRIBUTE_NAME).append(",")
+                .append(Constants.ATTR_DESCRIPTION).append(",")
+                .append(Constants.ATTR_OPTIONS).append(",")
+                .append(Constants.ATTR_ORDER).append("\n");
+        int i = 0;
+        for(ProjectMetaAttribute pma : pmaList){
+            csvContents.append("\"").append(projectName).append("\",")
+                    .append("\"").append(pma.getLabel()).append("\",")
+                    .append("\"").append(pma.getDataType()).append("\",")
+                    .append("\"").append(pma.isRequired() ? "T" : "F").append("\",")
+                    .append("\"").append(pma.getAttributeName()).append("\",")
+                    .append("\"").append(pma.getDesc()).append("\",")
+                    .append("\"").append(pma.getOptions()).append("\",")
+                    .append(++i).append("\n");
+        }
+
+        csvContents.append("\n");
+
+        //Sample Meta Attributes
+        csvContents.append(Constants.TEMPLATE_COMMENT_INDICATOR).append(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER).append(":").append("SampleMetaAttributes\n");
+        csvContents.append(Constants.ATTR_PROJECT_NAME).append(",")
+                .append(Constants.ATTR_LABEL).append(",")
+                .append(Constants.ATTR_DATA_TYPE).append(",")
+                .append(Constants.ATTR_REQUIRED).append(",")
+                .append(Constants.ATTR_ATTRIBUTE_NAME).append(",")
+                .append(Constants.ATTR_DESCRIPTION).append(",")
+                .append(Constants.ATTR_OPTIONS).append(",")
+                .append(Constants.ATTR_ORDER).append("\n");
+        i=0;
+        for(SampleMetaAttribute sma : smaList){
+            csvContents.append("\"").append(projectName).append("\",")
+                    .append("\"").append(sma.getLabel()).append("\",")
+                    .append("\"").append(sma.getDataType()).append("\",")
+                    .append("\"").append(sma.isRequired() ? "T" : "F").append("\",")
+                    .append("\"").append(sma.getAttributeName()).append("\",")
+                    .append("\"").append(sma.getDesc()).append("\",")
+                    .append("\"").append(sma.getOptions()).append("\",")
+                    .append(++i).append("\n");
+        }
+
+        csvContents.append("\n");
+
+        //Project Meta Attributes
+        csvContents.append(Constants.TEMPLATE_COMMENT_INDICATOR).append(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER).append(":").append("EventMetaAttributes\n");
+        csvContents.append(Constants.ATTR_PROJECT_NAME).append(",")
+                .append(Constants.ATTR_EVENT_NAME).append(",")
+                .append(Constants.ATTR_SAMPLE_REQUIRED).append(",")
+                .append(Constants.ATTR_LABEL).append(",")
+                .append(Constants.ATTR_DATA_TYPE).append(",")
+                .append(Constants.ATTR_REQUIRED).append(",")
+                .append(Constants.ATTR_ATTRIBUTE_NAME).append(",")
+                .append(Constants.ATTR_DESCRIPTION).append(",")
+                .append(Constants.ATTR_OPTIONS).append(",")
+                .append(Constants.ATTR_ORDER).append("\n");
+        Map<String, StringBuilder> emaMap = new HashMap<String, StringBuilder>(eventNameList.size());
+        for(LookupValue lv : eventNameList){
+            emaMap.put(lv.getName(), new StringBuilder());
+        }
+
+        for(EventMetaAttribute ema : emaList){
+            String eventName = ema.getEventName();
+            emaMap.get(eventName).append("\"").append(projectName).append("\",")
+                    .append("\"").append(eventName).append("\",")
+                    .append("\"").append(ema.isSampleRequired() ? "T" : "F").append("\",")
+                    .append("\"").append(ema.getLabel()).append("\",")
+                    .append("\"").append(ema.getDataType()).append("\",")
+                    .append("\"").append(ema.isRequired() ? "T" : "F").append("\",")
+                    .append("\"").append(ema.getAttributeName()).append("\",")
+                    .append("\"").append(ema.getDesc()).append("\",")
+                    .append("\"").append(ema.getOptions()).append("\",")
+                    .append(ema.getOrder()).append("\n");
+        }
+
+        for(LookupValue lv : eventNameList){
+            csvContents.append(emaMap.get(lv.getName()));
+        }
+
+        return IOUtils.toInputStream(csvContents.toString().replaceAll("null", ""));
     }
 
     private InputStream createCSV(List<HeaderDetail> attributes, boolean isProjectRegistration, String projectName, String sampleName, String eventName) throws Exception {

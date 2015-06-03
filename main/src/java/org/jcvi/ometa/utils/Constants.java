@@ -120,10 +120,21 @@ public class Constants {
 
     public static final String ATTR_PROJECT_NAME = "ProjectName";
     public static final String ATTR_SAMPLE_NAME = "SampleName";
+    public static final String ATTR_EVENT_NAME = "EventName";
     public static final String ATTR_PARENT_SAMPLE_NAME = "ParentSample";
+    public static final String ATTR_PARENT_PROJECT_NAME = "ParentProjectName";
+    public static final String ATTR_PROJECT_LEVEL = "ProjectLevel";
     public static final String ATTR_PROJECT_STATUS = "Project Status";
     public static final String ATTR_SAMPLE_STATUS = "Sample_Status";
     public static final String ATTR_PUBLIC_FLAG = "Public";
+    public static final String ATTR_REQUIRED = "Required";
+    public static final String ATTR_SAMPLE_REQUIRED = "SampleRequired";
+    public static final String ATTR_DATA_TYPE = "DataType";
+    public static final String ATTR_LABEL = "Label";
+    public static final String ATTR_ATTRIBUTE_NAME = "AttributeName";
+    public static final String ATTR_DESCRIPTION = "Desc";
+    public static final String ATTR_OPTIONS = "Options";
+    public static final String ATTR_ORDER = "Order";
     public static final String ATTR_SUBMISSION_ID = "Submission_ID";
     public static final String ATTR_ACCESSION_NUMBER = "Genbank_Accession_Numbers";
     public static final String ATTR_SAMPLE_IDENTIFIER = "Sample_Identifier";
