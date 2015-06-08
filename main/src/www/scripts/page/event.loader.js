@@ -362,7 +362,8 @@ var _utils = {
 
             while(key.indexOf(" ") > -1) key = key.replace(" ", "_");
 
-            var $input = $("input[id*='"+key+"']");
+            //jquery regex for single quotation
+            var $input = $("input[id*='"+key.replace(/([ #;&,.+*~\':"!^$[\]()=>|\/@])/g,'\\$1')+"']");
 
             if($input.length > 0) $input.val(value);
             else {
