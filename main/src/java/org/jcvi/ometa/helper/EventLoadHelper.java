@@ -1,5 +1,6 @@
 package org.jcvi.ometa.helper;
 
+import com.sun.tools.jxc.apt.Const;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
@@ -55,9 +56,9 @@ public class EventLoadHelper {
             throw new Exception("event name is missing.");
         }
 
-        boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION);
-        boolean isProjectUpdate = eventName.contains(Constants.EVENT_PROJECT_UPDATE);
-        boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);
+        boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) || eventName.contains(Constants.EVENT_CORE_PROJECT_REGISTRATION);
+        boolean isProjectUpdate = eventName.contains(Constants.EVENT_PROJECT_UPDATE) || eventName.contains(Constants.EVENT_CORE_PROJECT_UPDATE);
+        boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) || eventName.contains(Constants.EVENT_CORE_SAMPLE_REGISTRATION);
 
         // check if the user has data support role
         boolean isUserDataSupporter = false;
@@ -135,9 +136,11 @@ public class EventLoadHelper {
 
         loadParameter.setEventName(eventName);
 
-        boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION);
-        boolean isProjectLevelEvent = isProjectRegistration || eventName.toLowerCase().contains(Constants.EVENT_PROJECT_UPDATE.toLowerCase());
-        boolean isSampleRegistration = (eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) && sample.getSampleName() != null && !sample.getSampleName().isEmpty());
+        boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) || eventName.contains(Constants.EVENT_CORE_PROJECT_REGISTRATION);
+        boolean isProjectLevelEvent = isProjectRegistration || eventName.toLowerCase().contains(Constants.EVENT_PROJECT_UPDATE.toLowerCase())
+                || eventName.toLowerCase().contains(Constants.EVENT_CORE_PROJECT_UPDATE.toLowerCase());
+        boolean isSampleRegistration = ((eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) || eventName.contains(Constants.EVENT_CORE_SAMPLE_REGISTRATION))
+                && sample.getSampleName() != null && !sample.getSampleName().isEmpty());
 
         List<FileReadAttributeBean> loadingList = null;
 
@@ -292,7 +295,8 @@ public class EventLoadHelper {
     private List<FileReadAttributeBean> feedAndFilterFileReadBeans(String eventName, String projectName, String sampleName, List<FileReadAttributeBean> loadingList) throws Exception {
         List<FileReadAttributeBean> processedList = new ArrayList<FileReadAttributeBean>();
         String sampleIdentifier = null;
-        boolean isSequenceSubmission = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) && eventName.contains(Constants.EVENT_SEQUENCE_SUBMISSION);
+        boolean isSequenceSubmission = (eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) || eventName.contains(Constants.EVENT_CORE_SAMPLE_REGISTRATION))
+                && eventName.contains(Constants.EVENT_SEQUENCE_SUBMISSION);
 
         for(FileReadAttributeBean fBean : loadingList) { //skip invalid attribute bean
             boolean hasValue = !fBean.getAttributeName().equals("0") && fBean.getAttributeValue() != null
@@ -302,10 +306,11 @@ public class EventLoadHelper {
                 continue;
             }
 
-            if(fBean.getProjectName() == null || eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)) {
+            if(fBean.getProjectName() == null || eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) || eventName.contains(Constants.EVENT_CORE_PROJECT_REGISTRATION)) {
                 fBean.setProjectName(projectName);
             }
-            if(fBean.getSampleName() == null && !eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) && !eventName.contains(Constants.EVENT_PROJECT_UPDATE)) {
+            if(fBean.getSampleName() == null && !eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) && !eventName.contains(Constants.EVENT_CORE_PROJECT_REGISTRATION)
+                    && !eventName.contains(Constants.EVENT_PROJECT_UPDATE) && !eventName.contains(Constants.EVENT_CORE_PROJECT_UPDATE)) {
                 if(sampleName == null || sampleName.isEmpty()) {
                     throw new Exception(ErrorMessages.SAMPLE_NOT_FOUND);
                 }

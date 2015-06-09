@@ -490,7 +490,7 @@
     //remove any existing dom elements
     //$('[name^="beanList"]').remove();
     <s:iterator value="#oldBeanList" var="bean" status="bstat">
-    var currAttributeName = '${bean.attributeName}'.replace(/ /g,"_");
+    var currAttributeName = "${bean.attributeName}".replace(/ /g,"_").replace("'", "''");;
     var currAttributeValue = "${bean.attributeValue}";
     $("[id*='_" + currAttributeName + "_f']:not(:file)").val(currAttributeValue);
     $("[id*='file_" + currAttributeName + "_f']").after("<strong>" + currAttributeValue.substring(currAttributeValue.indexOf("_") + 1) + "</strong>");

@@ -113,9 +113,13 @@ public class Constants {
     public static final String FORBIDDEN_ACTION_RESPONSE = "forbidden";
 
     public static final String EVENT_PROJECT_REGISTRATION = "ProjectRegistration";
+    public static final String EVENT_CORE_PROJECT_REGISTRATION = "Core Project-ProjectRegistration";
     public static final String EVENT_SAMPLE_REGISTRATION = "SampleRegistration";
+    public static final String EVENT_CORE_SAMPLE_REGISTRATION = "Core Sample-SampleRegistration";
     public static final String EVENT_PROJECT_UPDATE = "ProjectUpdate";
+    public static final String EVENT_CORE_PROJECT_UPDATE = "Core Project-Update";
     public static final String EVENT_SAMPLE_UPDATE = "SampleUpdate";
+    public static final String EVENT_CORE_SAMPLE_UPDATE = "Core Sample-Update";
     public static final String EVENT_SEQUENCE_SUBMISSION = "Sequence Submission";
 
     public static final String ATTR_PROJECT_NAME = "ProjectName";
