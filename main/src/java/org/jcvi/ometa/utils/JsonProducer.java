@@ -383,7 +383,9 @@ public class JsonProducer implements Schedulable {
                     singleRow = workSheet.createRow(rowIndex++);
                     for (String tempAttribute : parameterizedAttributes) {
                         singleRow.createCell(cellIndex++)
-                                .setCellValue(sampleAttrMap.get(tempAttribute) != null ? "" + sampleAttrMap.get(tempAttribute) : "");
+                                .setCellValue(sampleAttrMap.get(tempAttribute) != null ? "" + sampleAttrMap.get(tempAttribute)
+                                        : (tempAttribute.equals("Sample Name") ?
+                                        (sampleAttrMap.get(Constants.ATTR_SAMPLE_NAME) != null ? "" + sampleAttrMap.get(Constants.ATTR_SAMPLE_NAME) : "") : ""));
                     }
                 }
                 sumList.add(currSum);
