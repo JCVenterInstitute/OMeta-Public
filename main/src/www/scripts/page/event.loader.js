@@ -3,7 +3,7 @@ var _utils = {
         $.ajax({
           url:u,
           cache: false,
-          async: false,
+          async: true,
           data: d,
           success: function(data){ cb(data,p); },
           fail: function() { alert("Ajax Process has failed."); }
@@ -14,8 +14,10 @@ var _utils = {
         var $gridSize = $('#gridListSize').val();
         if($gridSize === '' && g_sampleIds) $gridSize = g_sampleIds.split(',').length;
         var rowSize = utils.checkPU(en) ? 1 : ($gridSize > 0) ? $gridSize : 5;
-        for(var _rows=$('#gridBody > tr').length;_rows<rowSize;_rows++) {
-          button.add_event(pn,en);
+        if(g_sampleIds == null) {
+          for (var _rows = $('#gridBody > tr').length; _rows < rowSize; _rows++) {
+            button.add_event(pn, en);
+          }
         }
       },
       showPS: function(eventName) {
@@ -136,6 +138,12 @@ var _utils = {
         });
 
         $("#_eventSelect").html(list);
+
+        //Reload event attributes after submit
+        if(oldEventName) {
+          utils.preSelect("_eventSelect", oldEventName);
+          changes.event(oldEventName, $('#_eventSelect').val());
+        }
         return;
       },
       meta: function(data, en) {
@@ -333,7 +341,7 @@ var _utils = {
       eventAttribute: function(data, eventName) {
         if(data && data.aaData) {
           g_gridLineCount = 0;
-          $('#gridBody').html('');
+          $('#gridBody').empty();
           $('[name^="gridList"]').remove();
           $.each(data.aaData, function(i,v) {
             if(v.object && v.attributes) {
@@ -341,7 +349,7 @@ var _utils = {
               $.each(v.attributes, function(ai, at) {
                 beans.push([at.attributeName, at.attributeValue]);
               });
-              gridLine['pn']= data.projectName;
+              gridLine['pn']= v.projectName;
               gridLine['psn']= v.object.parentSampleName;
               gridLine['sn']= v.object.sampleName;
               gridLine['beans']=beans;
@@ -349,8 +357,13 @@ var _utils = {
             }
           });
         }
+        $('#loadingImg').hide();
+        $("#sample-pagination-nav").show();
+        $("#pagination-loadingImg").hide();
+        $("#gridInputDiv").show();
+        $("#autofill-option").width($('thead#gridHeader').width() + 70);
 
-        _utils.addGridRows(null,eventName);
+        //_utils.addGridRows(null,eventName);
       },
       populateProjectInfo: function(data, eventName) {
         if(data && data.aaData) {
@@ -497,18 +510,73 @@ var _utils = {
         );
 
         if(utils.checkNP(eventName) && g_sampleIds) {
-          _utils.makeAjax(
-              'sharedAjax.action',
-              'type=sa&projectName='+utils.getProjectName() + '&projectId=' + $('#_projectSelect').val() + '&eventId=' + eventId + '&eventName=' + eventName + '&ids=' + g_sampleIds,
-              eventName,
-              callbacks.eventAttribute
-          );
-        }
+          $("#sample-pagination-nav").hide();
+          $("#gridInputDiv").hide();
+          sampleData = [];
+          $("#sample-pagination-nav ul").empty();
+          var sampleIds = g_sampleIds.split(",");
+          $("input[name='ids']").remove();
+          $('#eventLoaderPage').append($('<input/>').attr({type: 'hidden', name: 'ids'}).val(g_sampleIds));
+          if(sampleIds.length <= 100){
+            _utils.makeAjax(
+                'sharedAjax.action',
+                'type=sa&projectName=' + utils.getProjectName() + '&projectId=' + $('#_projectSelect').val() + '&eventId=' + eventId + '&eventName=' + eventName + '&ids=' + g_sampleIds,
+                eventName,
+                callbacks.eventAttribute
+            );
+            sampleData.push(sampleIds);
+          } else {
+            var unifiedSampleIds = "";
+            for (var i = 0; i < sampleIds.length; i++) {
+              unifiedSampleIds += sampleIds[i];
 
-        $('#loadingImg').hide();
+              if(i != 0 && (i+1) % 100 == 0) {
+                sampleData.push(unifiedSampleIds);
+                unifiedSampleIds = "";
+              } else{
+                unifiedSampleIds += ",";
+              }
+            }
+
+            if(unifiedSampleIds != "" || unifiedSampleIds != ","){
+              sampleData.push(unifiedSampleIds);
+            }
+
+            _utils.makeAjax(
+                'sharedAjax.action',
+                'type=sa&projectName=' + utils.getProjectName() + '&projectId=' + $('#_projectSelect').val() + '&eventId=' + eventId + '&eventName=' + eventName + '&ids=' + sampleData[g_sampleArrIndex],
+                eventName,
+                callbacks.eventAttribute
+            );
+            for(var i=0; i<sampleData.length; i++){
+              $("#sample-pagination-nav ul").append('<li><a onclick="getNextSamples('+i+','+eventId+',\''+eventName+'\')">'+(i+1)+'</a></li>');
+            }
+
+            $("#sample-pagination-nav ul li:nth-child("+(parseInt(g_sampleArrIndex,10)+1)+")").addClass("active");
+          }
+        } else{
+          $('#loadingImg').hide();
+        }
       }
     };
 // end _utils
+
+//Stores up to 100 ids per object
+var sampleData = [];
+
+function getNextSamples(index,eventId,eventName){
+  $("#pagination-loadingImg").show();
+  g_sampleArrIndex = index;
+  utils.error.remove();
+  $("#sample-pagination-nav ul li").removeClass("active");
+  $("#sample-pagination-nav ul li:nth-child("+(index+1)+")").addClass("active");
+  _utils.makeAjax(
+      'sharedAjax.action',
+      'type=sa&projectName=' + utils.getProjectName() + '&projectId=' + $('#_projectSelect').val() + '&eventId=' + eventId + '&eventName=' + eventName + '&ids=' + sampleData[index],
+      eventName,
+      callbacks.eventAttribute
+  );
+}
 
 var button = {
   submit: function(status) {
@@ -729,6 +797,15 @@ var button = {
       //   $("form#eventLoaderPage").attr("enctype", "multipart/form-data");
       // }
     }
+
+    $('<input>').attr({
+      id: 'sampleArrIndex',
+      name: 'sampleArrIndex',
+      value : g_sampleArrIndex
+    }).css('display', 'none').appendTo($('form#eventLoaderPage'));
+
+    $('#loadingImg').show();
+    $('#pagination-loadingImg').show();
     $('form#eventLoaderPage').submit();
   },
   add_event: function(pn,en,dict) { //add event to grid view
@@ -974,6 +1051,7 @@ function comboBoxChanged(option, id) {
   } else if(id==='_eventSelect') {
     button.clear_attr();
     if(option.value && option.value!=0 && option.text && option.text!='') {
+      $('input[name="ids"]').remove();
       changes.event(option.text, option.value);
 
       //Hide Sample dropdown if SampleRegistration is selected

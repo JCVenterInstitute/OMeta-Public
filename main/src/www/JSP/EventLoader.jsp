@@ -70,6 +70,8 @@
       position:initial !important;position: static\0 !important;height: 24px;color: #362b36;border-top-left-radius:6px;border-bottom-left-radius:6px;
       font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;font-size: 1.1em;margin: 0;padding: 1px;vertical-align: top;padding-left: 5px;
     }
+
+    .scrollButton{padding:10px;text-align:center;font-weight: bold;color: #FFFAFA;text-decoration: none;position:fixed;right:40px;background: rgb(0, 129, 179);display: none;}
   </style>
 </head>
 
@@ -79,6 +81,8 @@
   <jsp:include page="top.jsp" />
 
   <div id="main" class="">
+    <a href="#" class="scrollButton scrollToTop" style="top:75px;"><i class="glyphicon glyphicon-chevron-up"></i></a>
+    <a href="#" class="scrollButton scrollToBottom" style="top:125px;"><i class="glyphicon glyphicon-chevron-down"></i></a>
     <div id="inner-content" class="">
       <div id="content" class="container max-container" role="main">
         <div id="ribbon">
@@ -284,6 +288,18 @@
                     <tbody id="gridBody"></tbody>
                   </table>
                 </div>
+                <nav id="sample-pagination-nav" style="display: none;">
+                  <ul class="pagination">
+                  </ul>
+                  <div class="row" id="pagination-loadingImg" style="display: none;margin-top: -50px;">
+                    <div class="container" style="padding-left:5px;">
+                      <img src="images/loading.gif" style="width: 25px;"/>
+                    </div>
+                  </div>
+                  <div style="padding-top: 20px;">
+                    <label style="color: rgb(169, 32, 32);">You will lose the updated data if you don't submit before pulling other samples.</label>
+                  </div>
+                </nav>
                 <div id="confirmDiv"></div>
                 <div id="fileInputDiv" style="margin:25px 10px 0 0 ;display:none;">
                   <table>
@@ -362,6 +378,7 @@
   var g_gridLineCount=0;
   var g_avDic= {};
   var g_sampleIds;
+  var g_sampleArrIndex = 0;
   var g_transferType;
   var avHtml;
   var sample_options;
@@ -436,19 +453,27 @@
     if(oldProjectId) {
       changes.project(oldProjectId);
       var oldSampleName = '${sampleName}';
-      var oldEventName = '${eventName}';
+      oldEventName = '${eventName}';
       var ids = '${ids}';
       var transferType = '${label}';
+      g_sampleArrIndex = '${sampleArrIndex}';
 
+      if(g_sampleArrIndex == ''){
+        g_sampleArrIndex = 0;
+      }
       if(ids !== '' && ids.indexOf(',') > 0) { //gets sample IDs from Event Loader
-        g_sampleIds = ids.substr(0, ids.length - 1);
+        if(ids.slice(-1) == ',') g_sampleIds = ids.substr(0, ids.length - 1);
+        else g_sampleIds = ids;
       }
       if(transferType !== '') {
         g_transferType = transferType;
       }
       if(oldEventName !== '') {
-        utils.preSelect("_eventSelect", oldEventName);
-        changes.event(oldEventName, $('#_eventSelect').val());
+        if(typeof InstallTrigger !== 'undefined') { // only if browser is Firefox
+          $("#loadingImg").show();
+          utils.preSelect("_eventSelect", oldEventName);
+          changes.event(oldEventName, $('#_eventSelect').val());
+        }
       }
       if(oldSampleName !== '') {
         utils.preSelect("_sampleSelect", oldSampleName);
@@ -552,4 +577,30 @@
     });
 
     $('#loadingImg').hide();
+
+    var offset = 250;
+    var duration = 300;
+    $(window).scroll(function() {
+      if ($(this).scrollTop() > offset) {
+        $('.scrollToTop').fadeIn(duration);
+      } else {
+        $('.scrollToTop').fadeOut(duration);
+      }
+
+      if ((($(document).height() - $(this).height()) - $(this).scrollTop()) > offset) {
+        $('.scrollToBottom').fadeIn(duration);
+      } else {
+        $('.scrollToBottom').fadeOut(duration);
+      }
+    });
+
+    $('.scrollToTop').click(function(event) {
+      $('html, body').animate({scrollTop: 0}, duration);
+      return false;
+    })
+
+    $('.scrollToBottom').click(function(event) {
+      $('html, body').animate({scrollTop: $(document).height()}, duration);
+      return false;
+    })
   });</script><script src="scripts/page/event.loader.js"></script></body></html>
