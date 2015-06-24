@@ -140,7 +140,7 @@ var _utils = {
         $("#_eventSelect").html(list);
 
         //Reload event attributes after submit
-        if(oldEventName) {
+        if(typeof oldEventName !== 'undefined' && oldEventName) {
           utils.preSelect("_eventSelect", oldEventName);
           changes.event(oldEventName, $('#_eventSelect').val());
         }
