@@ -410,7 +410,7 @@ var _utils = {
             $('#attributeInputDiv input[type="text"]').val('');
           } else {  // multiple samples view
             index = selectName.charAt(9);
-            $('#gridBody .borderBottom:eq(' + index+ ') input[type="text"]').val('');
+            $('#gridBody .borderBottom:eq(' + index+ ') input[type="text"][name!="gridList[' + index + '].sampleName"]').val('');
           }
 
           $('select[id^="select_"], select[id^="req_select_"]').each(function(){
