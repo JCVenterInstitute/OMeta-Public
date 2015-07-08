@@ -296,7 +296,7 @@
                       <img src="images/loading.gif" style="width: 25px;"/>
                     </div>
                   </div>
-                  <div style="padding-top: 20px;">
+                  <div id="pagination-warning" style="padding-top: 20px;display: none;">
                     <label style="color: rgb(169, 32, 32);">You will lose the updated data if you don't submit before pulling other samples.</label>
                   </div>
                 </nav>

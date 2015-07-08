@@ -21,8 +21,14 @@
 
 package org.jcvi.ometa.utils;
 
+import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONObject;
+import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.*;
+import org.jcvi.ometa.model.Dictionary;
 import org.jcvi.ometa.validation.ModelValidator;
+import org.jtc.common.util.property.PropertyHelper;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -37,6 +43,7 @@ import java.util.*;
  * Time: 3:27 PM
  */
 public class CommonTool {
+    private static Logger logger = Logger.getLogger(CommonTool.class);
 
     public static Map<String, String> decorateAttributeMap(Map<String, Object> attributeMap, List<String> attributeList, Project project) {
         Map<String, String> newSampleAttrMap = new HashMap<String, String>();
@@ -204,13 +211,95 @@ public class CommonTool {
         return formattedDate;
     }
 
-    public static List<EventMetaAttribute> filterEventMetaAttribute(List<EventMetaAttribute> list) {
+    public static List<EventMetaAttribute> filterEventMetaAttribute(List<EventMetaAttribute> list, String action) {
         List<EventMetaAttribute> filtered = new ArrayList<EventMetaAttribute>(list.size());
 
         List<String> hiddenAttributes = Arrays.asList(Constants.HIDDEN_ATTRIBUTES);
+        Map<String, String> dictTypeMap = new HashMap<String, String>(0);
 
         for(EventMetaAttribute ema : list) {
             if(ema.isActive() && !hiddenAttributes.contains(ema.getLookupValue().getName())) {
+                if(ema.getOptions() != null && ema.getOptions().startsWith("Dictionary:")){
+                    String dictType = ema.getOptions().replace("Dictionary:", "");
+                    boolean hasParent = dictType.contains("Parent:");
+
+                    try {
+                        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
+                        ReadBeanPersister readPersister = new ReadBeanPersister(props);
+
+                        if(hasParent){
+                            String[] dictOpts = dictType.split(",Parent:");
+
+                            if(action.equals("template")) {
+                                ema.setOptions("Depends on " + dictOpts[1]);
+                            } else {
+                                String parentDictType = dictTypeMap.get(dictOpts[1]);
+                                if (parentDictType == null) {
+                                    for (EventMetaAttribute ema_ : list) {
+                                        if (ema_.getLookupValue().getName().equals(dictOpts[1])) {
+                                            parentDictType = ema_.getOptions().replace("Dictionary:", "");
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (parentDictType != null) {
+                                    List<Dictionary> parentDictList = readPersister.getDictionaryByType(parentDictType);
+                                    JSONArray jsonArray = new JSONArray();
+                                    jsonArray.put(new JSONObject()
+                                            .put("name", "parent_attribute")
+                                            .put("value", dictOpts[1]));
+
+                                    for (Dictionary parentDict : parentDictList) {
+                                        List<Dictionary> childList = readPersister.getDictionaryDependenciesByType(parentDict.getDictionaryType(), parentDict.getDictionaryCode());
+
+                                        StringBuilder sb = new StringBuilder();
+                                        String delim = "";
+
+                                        for (Dictionary dictionary : childList) {
+                                            String code = dictionary.getDictionaryCode();
+                                            String value = dictionary.getDictionaryValue();
+
+                                            sb.append(delim);
+                                            if (code.equals(value)) sb.append(value);
+                                            else sb.append(code).append(" - ").append(value);
+
+                                            delim = ";";
+                                        }
+
+                                        jsonArray.put(new JSONObject()
+                                                .put("name", parentDict.getDictionaryCode())
+                                                .put("value", sb.toString()));
+                                    }
+
+                                    ema.setOptions(jsonArray.toString());
+                                }
+                            }
+                        } else{
+                            List<Dictionary> dictList = readPersister.getDictionaryByType(dictType);
+                            dictTypeMap.put(ema.getLookupValue().getName(), dictType);
+
+                            StringBuilder sb = new StringBuilder();
+                            String delim = "";
+
+                            for(Dictionary dictionary : dictList){
+                                sb.append(delim);
+
+                                if(action.equals("template")) {
+                                    sb.append(dictionary.getDictionaryCode());
+                                } else {
+                                    sb.append(dictionary.getDictionaryCode()).append(" - ").append(dictionary.getDictionaryValue());
+                                }
+                                delim = ";";
+                            }
+
+                            ema.setOptions(sb.toString());
+                        }
+                    } catch (Exception ex) {
+                        logger.error("Exception in Shared AJAX : " + ex.toString());
+                        ex.printStackTrace();
+                    }
+                }
 
                 filtered.add(ema);
             }

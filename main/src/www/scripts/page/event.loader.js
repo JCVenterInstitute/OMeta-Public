@@ -151,6 +151,7 @@ var _utils = {
         var count= 0;
         var multiSelectPrefix='multi(';
         var radioSelectPrefix='radio(';
+        var hasDependantDict = false;
 
         var $attributeDiv = $("#attributeInputDiv"); //where attributes are placed
         $attributeDiv.empty(); //empty any existing contents
@@ -254,9 +255,27 @@ var _utils = {
               if(givenOptions === '0;1' || givenOptions === '1;0') {
                 options = '<option value="0">No</option><option value="1">Yes</option>';
               } else {
-                $.each(givenOptions.split(';'), function(o_i,o_v) {
-                  options += '<option value="' + o_v + '">' + o_v + '</option>';
-                });
+                if(givenOptions.indexOf("[{") === 0 && givenOptions.indexOf("parent_attribute") > -1){
+                  var childDictJson = JSON.parse(givenOptions);
+                  childOptionsMap = {};
+                  childFieldName = this.attributeName;
+
+                  for(var index in childDictJson){
+                    var key = childDictJson[index].name;
+                    if(key == 'parent_attribute'){
+                      parentFieldName = childDictJson[index].value;
+                    } else {
+                      childOptionsMap[key] = childDictJson[index].value;
+                    }
+                  }
+
+                  options = '<option>Select '+parentFieldName +' </option>';
+                  hasDependantDict = true;
+                } else {
+                  $.each(givenOptions.split(';'), function (o_i, o_v) {
+                    options += '<option value="' + o_v.split(" - ")[0] + '">' + o_v + '</option>';
+                  });
+                }
               }
 
               inputElement += '<select id="'  + (isRequired ? 'req_' : '') + 'select_$id$" name="$lt$attributeValue" style="min-width:35px;width:200px;" ' + (isMulti || isRadio ? 'multiple="multiple"':'') + '>' + options + '</select>';
@@ -323,6 +342,27 @@ var _utils = {
         //add attribut headers to the grid view and add empty rows
         $('thead#gridHeader').append($gridHeaders);
         _utils.addGridRows(null, en);
+
+        if(hasDependantDict){
+          $("select[id*='select_"+parentFieldName+"']").change({childOptionsMap: childOptionsMap}, function(event, data){
+            var selectedParent = ($(this).val()).split(" - ")[0];
+            var selectedParentIdArr = ($(this).attr('id')).split("_");
+            var attrIndex = (selectedParentIdArr[selectedParentIdArr.length-2] == 'f') ? parseInt(selectedParentIdArr[selectedParentIdArr.length-1],10) + 1 : selectedParentIdArr[selectedParentIdArr.length-1];
+            var childOptions = event.data.childOptionsMap[selectedParent];
+            var childSelectInput = $("select[id*='select_"+childFieldName+"_" + selectedParentIdArr[selectedParentIdArr.length-2] + "_" + attrIndex +"']");
+            var childValue = (data && data.sampleData == true) ? data.sampleAttrMap[childFieldName] : null;
+            childSelectInput.html('');
+            childSelectInput.append('<option value=""></option>');
+
+            if(childOptions) {
+              $.each(childOptions.split(';'), function (o_i, o_v) {
+                childSelectInput.append('<option value="' + o_v.split(" - ")[0] + '">' + o_v + '</option>');
+              });
+
+              if(childValue != null) childSelectInput.val(childValue);
+            }
+          });
+        }
 
         $("#autofill-option").width($('thead#gridHeader').width() + 70);
 
@@ -460,8 +500,10 @@ var _utils = {
 
                 $("input[name="+name+"][value=" + value + "]").attr('checked', 'checked');
               } else{
-                if (firstObj.getAttribute('multiple') == null) $input.val(value)
-                else {
+                if (firstObj.getAttribute('multiple') == null) {
+                  $input.val(value);
+                  $input.trigger("change", [{sampleData:true, sampleAttrMap:sampleAttrMap}]);
+                } else {
                   var valueArr = value.split(",");
 
                   for (var j in valueArr) {
@@ -553,6 +595,7 @@ var _utils = {
             }
 
             $("#sample-pagination-nav ul li:nth-child("+(parseInt(g_sampleArrIndex,10)+1)+")").addClass("active");
+            $("#pagination-warning").show();
           }
         } else{
           $('#loadingImg').hide();

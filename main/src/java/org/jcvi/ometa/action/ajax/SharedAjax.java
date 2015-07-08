@@ -616,7 +616,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                 }
             } else if ("ea".equals(type)) { //attribute for an event
                 List<EventMetaAttribute> emaList = readPersister.getEventMetaAttributes(projectName, eventName);
-                emaList = CommonTool.filterEventMetaAttribute(emaList);
+                emaList = CommonTool.filterEventMetaAttribute(emaList, "event");
                 //CommonTool.sortEventMetaAttributeByOrder(emaList);
                 aaData = emaList;
             } else if ("ces".equals(type)) { //Change Event Status
