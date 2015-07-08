@@ -38,4 +38,5 @@ public class FileMappingSupport {
     public static final String LOOKUPVALUE_FILE_SUFFIX = "LookupValues" + INPUT_FILE_EXTENSION;
     public static final String EVENT_META_ATTRIBUTES_FILE_SUFFIX = "EventMetaAttributes" + INPUT_FILE_EXTENSION;
     public static final String EVENT_ATTRIBUTES_FILE_SUFFIX = "EventAttributes" + INPUT_FILE_EXTENSION;
+    public static final String DICTIONARY_FILE_SUFFIX = "Dictionary" + INPUT_FILE_EXTENSION;
 }

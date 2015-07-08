@@ -69,6 +69,10 @@ public class FileCollector {
         return getFilesWhoseNamesEndWith(FileMappingSupport.LOOKUPVALUE_FILE_SUFFIX);
     }
 
+    public List<File> getDictionaryFiles() {
+        return getFilesWhoseNamesEndWith(FileMappingSupport.DICTIONARY_FILE_SUFFIX);
+    }
+
     public List<File> getProjectMetaAttributeFiles() {
         return getFilesWhoseNamesEndWith(FileMappingSupport.PROJECT_META_ATTRIBUTES_FILE_SUFFIX);
     }

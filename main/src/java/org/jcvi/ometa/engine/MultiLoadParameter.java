@@ -38,6 +38,7 @@ import java.util.List;
 public class MultiLoadParameter implements Serializable {
 
     private List<List<LookupValue>> lookupValues;
+    private List<List<Dictionary>> dictionaries;
     private List<List<Project>> projects;
     private List<ProjectPair> projectPairs;
     private List<SamplePair> samplePairs;
@@ -59,6 +60,14 @@ public class MultiLoadParameter implements Serializable {
             lookupValues = new ArrayList<List<LookupValue>>();
         }
         getLookupValues().add(lvs);
+    }
+
+    public void addDictionaries( List<Dictionary> dicts) {
+        if( getDictionaries() == null) {
+            dictionaries = new ArrayList<List<Dictionary>>();
+        }
+
+        getDictionaries().add(dicts);
     }
 
     public void addProjects( List<Project> newProjects ) {
@@ -110,6 +119,10 @@ public class MultiLoadParameter implements Serializable {
     /** Getters all return list-of-list. */
     public List<List<LookupValue>> getLookupValues() {
         return lookupValues;
+    }
+
+    public List<List<Dictionary>> getDictionaries() {
+        return dictionaries;
     }
 
     public List<List<Project>> getProjects() {

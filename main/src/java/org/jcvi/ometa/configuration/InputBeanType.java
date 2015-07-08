@@ -36,7 +36,8 @@ public enum InputBeanType {
     eventAttributes         ( FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX ),
     project                 ( FileMappingSupport.PROJECT_FILE_SUFFIX ),
     sample                  ( FileMappingSupport.SAMPLE_FILE_SUFFIX ),
-    lookupValue             ( FileMappingSupport.LOOKUPVALUE_FILE_SUFFIX );
+    lookupValue             ( FileMappingSupport.LOOKUPVALUE_FILE_SUFFIX ),
+    dictionary              ( FileMappingSupport.DICTIONARY_FILE_SUFFIX );
 
     private String beanFileSuffix;
 
@@ -56,6 +57,8 @@ public enum InputBeanType {
             return projectMetaAttributes;
         } else if ( inputFilePathStr.endsWith( FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX  ) ) {
             return eventAttributes;
+        } else if ( inputFilePathStr.endsWith( FileMappingSupport.DICTIONARY_FILE_SUFFIX )){
+            return dictionary;
         } else {
             throw new IllegalArgumentException( inputFilePathStr + " is of unknown file type" );
         }

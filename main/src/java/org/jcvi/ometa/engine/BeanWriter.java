@@ -30,7 +30,11 @@ import org.jcvi.ometa.configuration.BeanPopulator;
 import org.jcvi.ometa.configuration.InputBeanType;
 import org.jcvi.ometa.helper.EventLoadHelper;
 import org.jcvi.ometa.model.*;
-import org.jcvi.ometa.utils.*;
+import org.jcvi.ometa.model.Dictionary;
+import org.jcvi.ometa.utils.Constants;
+import org.jcvi.ometa.utils.PresentationActionDelegate;
+import org.jcvi.ometa.utils.TemplatePreProcessingUtils;
+import org.jcvi.ometa.utils.UploadActionDelegate;
 
 import java.io.File;
 import java.util.*;
@@ -110,7 +114,6 @@ public class BeanWriter {
 
     public String writeEvent(File eventFile, String eventName, String projectName, boolean processInput, String path, String submissionId, String submitterId) throws Exception {
         String lastSampleName = null;
-        List<GridBean> gridList = this.getEventBeansFromFile(eventFile, eventName, processInput);
 
         MultiLoadParameter loadParameter = new MultiLoadParameter();
 
@@ -119,15 +122,17 @@ public class BeanWriter {
             this.submitter = this.readEjb.getActorByUserName(submitterId);
         }
 
+        List<GridBean> gridList = this.getEventBeansFromFile(eventFile, eventName, processInput);
+
         EventLoadHelper loadHelper = new EventLoadHelper(this.readEjb);
         loadHelper.setOriginalPath(path); //add path to the helper for relative file paths
         loadHelper.setSubmissionId(submissionId);
 
-        loadHelper.gridListToMultiLoadParameter(loadParameter, gridList, projectName, eventName, null);
+        loadHelper.gridListToMultiLoadParameter(loadParameter, gridList, projectName, eventName, Constants.DPCC_STATUS_SUBMITTED_FORM, submitterId);
 
         writeEjb.loadAll(null, loadParameter);
 
-        if(gridList != null && gridList.get(0) != null) {
+        if(gridList != null && gridList.size() > 0 && gridList.get(0) != null) {
             lastSampleName =  gridList.get(0).getSampleName();
         }
 
@@ -171,6 +176,25 @@ public class BeanWriter {
             }
 
             parameterObject.addLookupValues(newLv);
+        }
+
+        files = collector.getDictionaryFiles();
+        for (File file: files) {
+            List<Dictionary> dictBeans = this.getGenericModelBeans(file, Dictionary.class);
+
+            //load only new dictionaries
+            List<Dictionary> newDict = new ArrayList<Dictionary>();
+            for(Dictionary dict : dictBeans){
+                String code = dict.getDictionaryCode();
+                if(code == null || code.equals("")) code = dict.getDictionaryValue();
+
+                Dictionary existingDict = this.readEjb.getDictionaryByTypeAndCode(dict.getDictionaryType(), code);
+                if(existingDict == null) {
+                    newDict.add(dict);
+                }
+            }
+
+            parameterObject.addDictionaries(newDict);
         }
 
         files = collector.getProjectFiles();
@@ -406,6 +430,9 @@ public class BeanWriter {
                     break;
                 case lookupValue:
                     bean = (B) new LookupValue();
+                    break;
+                case dictionary:
+                    bean = (B) new Dictionary();
                     break;
                 default:
                     break;
