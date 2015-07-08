@@ -74,6 +74,12 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
     private List<String> dataTypes;
     private List<String> types;
 
+    //Add Dictionary
+    private String dictType;
+    private String dictValue;
+    private String dictCode;
+    private String parentDictTypeCode;
+
     public MetadataSetup() {
         getReadEJB();
     }
@@ -479,6 +485,20 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                         psewt.loadGroups(groups);
                     }
                 }
+            } else if("dict".equals(type)) {
+                UploadActionDelegate udelegate = new UploadActionDelegate();
+                ProjectSampleEventWritebackBusiness psewt = null;
+                psewt = udelegate.initializeBusinessObject(logger, psewt);
+
+                if(dictType != null && dictValue != null && parentDictTypeCode != null) {
+                    if(dictCode == null || dictCode.equals("")) dictCode = dictValue;
+                    if(parentDictTypeCode.equals("undefined")){
+                        psewt.loadDictionary(dictType, dictValue, dictCode);
+                    } else{
+                        psewt.loadDictionaryWithDependency(dictType, dictValue, dictCode, parentDictTypeCode);
+                    }
+                }
+
             } else if("g_all".equals(type)) {
                 /* Metadata Setup page selects the first event type by default
 
@@ -576,6 +596,23 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
         }
 
         return SUCCESS;
+    }
+
+    public String addDictionary() {
+        boolean isError = false;
+        try {
+            List<Object[]> typeCodePairs = psept.getAllDictionaryTypeCodePairs();
+            types = new ArrayList<String>(typeCodePairs.size());
+
+            for(Object[] pair : typeCodePairs){
+             types.add((String) pair[0] + " - " + (String) pair[1]);
+            }
+        } catch (Exception ex) {
+            logger.error("Exception in runAjax of MetadataSetup : " + ex.toString());
+            isError = true;
+        }
+
+        return (!isError) ? SUCCESS : ERROR ;
     }
 
     private boolean isUnchanged(MetadataSetupReadBean b1, MetaAttributeModelBean b2) {
@@ -734,5 +771,37 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
 
     public List<String> getTypes() {
         return types;
+    }
+
+    public String getDictType() {
+        return dictType;
+    }
+
+    public void setDictType(String dictType) {
+        this.dictType = dictType;
+    }
+
+    public String getDictValue() {
+        return dictValue;
+    }
+
+    public void setDictValue(String dictValue) {
+        this.dictValue = dictValue;
+    }
+
+    public String getDictCode() {
+        return dictCode;
+    }
+
+    public void setDictCode(String dictCode) {
+        this.dictCode = dictCode;
+    }
+
+    public String getParentDictTypeCode() {
+        return parentDictTypeCode;
+    }
+
+    public void setParentDictTypeCode(String parentDictTypeCode) {
+        this.parentDictTypeCode = parentDictTypeCode;
     }
 }
