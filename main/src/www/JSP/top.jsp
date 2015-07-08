@@ -32,6 +32,7 @@
               <li><a href="eventDetail.action">Search and Edit Data</a></li>
               <li><a href="eventHistory.action">Event History</a></li>
               <li><a href="eventReport.action">Report</a></li>
+              <li><a href="dictionary.action">Dictionary</a></li>
             </ul>
           </li>
           <li class="dropdown" id="admin_li">
