@@ -45,6 +45,7 @@ public class DAOFactory {
     private EventDAO eventDAO;
     private SecurityDAO securityDAO;
     private GroupDAO groupDAO;
+    private DictionaryDAO dictionaryDAO;
 
     public ProjectDAO getProjectDAO() {
         if (projectDAO == null) {
@@ -136,5 +137,12 @@ public class DAOFactory {
             groupDAO = new GroupDAO();
         }
         return groupDAO;
+    }
+
+    public DictionaryDAO getDictionaryDAO(){
+        if( dictionaryDAO == null ) {
+            dictionaryDAO = new DictionaryDAO();
+        }
+        return dictionaryDAO;
     }
 }

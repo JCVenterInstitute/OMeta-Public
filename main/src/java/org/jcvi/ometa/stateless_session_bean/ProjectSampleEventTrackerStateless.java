@@ -290,6 +290,13 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
                     beanPersister.writeBackLookupValues(lv);
                 }
             }
+
+            if (multiLoadParameter.getDictionaries() != null) {
+                for(List<Dictionary> dict : multiLoadParameter.getDictionaries()) {
+                    beanPersister.writeBackDictionaries(dict);
+                }
+            }
+
             if(multiLoadParameter.getProjectPairs() != null) {
                 for(MultiLoadParameter.ProjectPair projectPair : multiLoadParameter.getProjectPairs()) {
                     rowIndex = projectPair.getRowIndex();
@@ -477,6 +484,40 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
             }
         };
         return localLoader.loadBeans(beans);
+    }
+
+    @Override
+    @WebMethod
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void loadDictionary(String dictType, String dictValue, String dictCode) throws Exception {
+        BeanPersistenceFacadeI beanPersister = getBeanPersister();
+        beanPersister.open();
+        try {
+            beanPersister.loadDictionary(dictType, dictValue, dictCode);
+        } catch (Exception ex) {
+            logger.error(ex);
+            beanPersister.error();
+            throw ex;
+        } finally {
+            beanPersister.close();
+        }
+    }
+
+    @Override
+    @WebMethod
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void loadDictionaryWithDependency(String dictType, String dictValue, String dictCode, String parentDictTypeCode) throws Exception {
+        BeanPersistenceFacadeI beanPersister = getBeanPersister();
+        beanPersister.open();
+        try {
+            beanPersister.loadDictionaryWithDependency(dictType, dictValue, dictCode, parentDictTypeCode);
+        } catch (Exception ex) {
+            logger.error(ex);
+            beanPersister.error();
+            throw ex;
+        } finally {
+            beanPersister.close();
+        }
     }
 
     private String getUserName() {

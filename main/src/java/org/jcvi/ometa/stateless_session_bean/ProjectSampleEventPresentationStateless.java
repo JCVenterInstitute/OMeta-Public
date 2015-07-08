@@ -29,6 +29,7 @@ import org.jcvi.ometa.db_interface.DAOFactory;
 import org.jcvi.ometa.hibernate.dao.*;
 import org.jcvi.ometa.interceptor.javaee.ReadOnlyAllOrNothingAuthInterceptor;
 import org.jcvi.ometa.model.*;
+import org.jcvi.ometa.model.Dictionary;
 import org.jcvi.ometa.utils.Constants;
 import org.jtc.common.util.property.PropertyHelper;
 
@@ -1144,6 +1145,114 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
             LookupValueDAO lookupValueDAO = daoFactory.getLookupValueDAO();
             Session session = this.startTransactedSession();
             rtnVal = lookupValueDAO.getLookupValueByType(type, session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+
+        return rtnVal;
+    }
+
+    public List<Dictionary> getDictionaries() throws Exception {
+        List<Dictionary> rtnVal = null;
+
+        try {
+            DictionaryDAO dictionaryDAO = daoFactory.getDictionaryDAO();
+            Session session = this.startTransactedSession();
+            rtnVal = dictionaryDAO.getDictionaries(session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+
+        return rtnVal;
+    }
+
+    public List<DictionaryDependency> getDictionaryDependencies() throws Exception {
+        List<DictionaryDependency> rtnVal = null;
+
+        try {
+            DictionaryDAO dictionaryDAO = daoFactory.getDictionaryDAO();
+            Session session = this.startTransactedSession();
+            rtnVal = dictionaryDAO.getDictionaryDependencies(session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+
+        return rtnVal;
+    }
+
+    public List<Dictionary> getDictionaryByType(String dictType) throws Exception {
+        List<Dictionary> rtnVal = null;
+
+        try {
+            DictionaryDAO dictionaryDAO = daoFactory.getDictionaryDAO();
+            Session session = this.startTransactedSession();
+            rtnVal = dictionaryDAO.getDictionaryByType(dictType, session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+
+        return rtnVal;
+    }
+
+    public Dictionary getDictionaryByTypeAndCode(String dictType, String dictCode) throws Exception {
+        Dictionary rtnVal = null;
+
+        try {
+            DictionaryDAO dictionaryDAO = daoFactory.getDictionaryDAO();
+            Session session = this.startTransactedSession();
+            rtnVal = dictionaryDAO.getDictionaryByTypeAndCode(dictType, dictCode, session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+
+        return rtnVal;
+    }
+
+    public List<Dictionary> getDictionaryDependenciesByType(String dictType, String dictCode) throws Exception {
+        List<Dictionary> rtnVal = null;
+
+        try {
+            DictionaryDAO dictionaryDAO = daoFactory.getDictionaryDAO();
+            Session session = this.startTransactedSession();
+            rtnVal = dictionaryDAO.getDictionaryDependenciesByType(dictType, dictCode, session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+
+        return rtnVal;
+    }
+
+    public List<Object[]> getAllDictionaryTypeCodePairs() throws Exception {
+        List<Object[]> rtnVal = null;
+
+        try {
+            DictionaryDAO dictionaryDAO = daoFactory.getDictionaryDAO();
+            Session session = this.startTransactedSession();
+            rtnVal = dictionaryDAO.getAllDictionaryTypeCodePairs(session);
             sessionAndTransactionManager.commitTransaction();
         } catch (Exception ex) {
             sessionAndTransactionManager.rollBackTransaction();

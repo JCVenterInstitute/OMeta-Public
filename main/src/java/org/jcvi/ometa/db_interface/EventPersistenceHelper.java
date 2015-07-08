@@ -24,10 +24,13 @@ package org.jcvi.ometa.db_interface;
 import org.hibernate.Session;
 import org.jcvi.ometa.hibernate.dao.*;
 import org.jcvi.ometa.model.*;
+import org.jcvi.ometa.model.Dictionary;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.GuidGetter;
 import org.jcvi.ometa.validation.ModelValidator;
+import org.jtc.common.util.property.PropertyHelper;
 
+import java.io.File;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -87,6 +90,8 @@ public class EventPersistenceHelper {
     private Map<String,String> pmaNameToControls = null;
     private Map<String,String> smaNameToControls = null;
     private Map<String,String> emaNameToControls = null;
+
+    private Map<String,String> dictParentValueMap = null;
 
     private boolean sampleAttributesEncountered = false;
     private boolean isSampleRequiredForEvent = false;
@@ -213,6 +218,42 @@ public class EventPersistenceHelper {
         }
     }
 
+    public void setDictionaryParentValue(List<FileReadAttributeBean> aBeans, AttributeType aType) throws Exception {
+        Map<String,String> controlMap = null;
+        switch( aType ) {
+            case project:
+                controlMap = pmaNameToControls;
+                break;
+            case sample:
+                controlMap = smaNameToControls;
+                break;
+            case event:
+                controlMap = emaNameToControls;
+                break;
+            default: {
+                String message = UNKNOWN_ATTRIB_TYPE_HUMAN_READABLE_MSG.format( new Object[] { aType.toString() } );
+                throw new Exception( message );
+            }
+        }
+
+        dictParentValueMap = new HashMap<String, String>(0);
+        String parentDef = "Parent:";
+        for( Map.Entry<String, String> entry : controlMap.entrySet()){
+            String value = entry.getValue();
+            if(value.contains(parentDef)){
+                dictParentValueMap.put(value.substring(value.lastIndexOf(parentDef) + 7), "");
+            }
+        }
+
+        for(FileReadAttributeBean bean : aBeans) {
+            String parentFieldName = bean.getAttributeName();
+
+            if(dictParentValueMap.get(parentFieldName) != null){
+                dictParentValueMap.put(parentFieldName, bean.getAttributeValue());
+            }
+        }
+    }
+
     /** Check that the value given is within the control set, if a control set was given. */
     public void checkControlledValue( String attributeName, String attributeValue, AttributeType aType )
             throws Exception {
@@ -239,11 +280,48 @@ public class EventPersistenceHelper {
         if ( controlValues != null  &&  controlValues.trim().length() > 0 ) {
             String multiplePrefix = "multi(";
             String radioPrefix = "radio(";
+            String dictionaryPrefix = "Dictionary:";
+
             //trim multiple select for validation
             if(controlValues.startsWith(multiplePrefix) && controlValues.endsWith(")")) {
                 controlValues = controlValues.substring(multiplePrefix.length(), controlValues.length()-1);
             } else if(controlValues.startsWith(radioPrefix) && controlValues.endsWith(")")) {
                 controlValues = controlValues.substring(radioPrefix.length(), controlValues.length()-1);
+            } else if(controlValues.startsWith(dictionaryPrefix)) {
+                String dictType = controlValues.replace(dictionaryPrefix, "");
+                boolean hasParent = dictType.contains("Parent:");
+
+                try {
+                    Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
+                    ReadBeanPersister readPersister = new ReadBeanPersister(props);
+                    List<Dictionary> dictList = null;
+
+                    if(hasParent){
+                        String[] dictOpts = dictType.split(",Parent:");
+                        String parentAttrName = dictOpts[1];
+                        String parentAttrValue = dictParentValueMap.get(parentAttrName);
+
+                        if(parentAttrValue != null && !parentAttrValue.equals("")){
+                            dictList = readPersister.getDictionaryDependenciesByType(
+                                    controlMap.get(parentAttrName).replace(dictionaryPrefix,""), parentAttrValue.split(" - ")[0]);
+                        }
+                    } else{
+                        dictList = readPersister.getDictionaryByType(dictType);
+                    }
+
+                    StringBuilder sb = new StringBuilder();
+                    String delim = "";
+
+                    for(Dictionary dictionary : dictList){
+                        sb.append(delim).append(dictionary.getDictionaryCode());
+
+                        delim = ";";
+                    }
+
+                    controlValues = sb.toString();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
             List<String> controlValueList = Arrays.asList(controlValues.split(";"));
             boolean found = true;

@@ -172,4 +172,16 @@ public interface ProjectSampleEventPresentationBusiness {
     public List<Group> getAllGroup() throws Exception;
 
     public List<LookupValue> getLookupValueByType(String type) throws Exception;
+
+    public List<Dictionary> getDictionaries() throws Exception;
+
+    public List<DictionaryDependency> getDictionaryDependencies() throws Exception;
+
+    public List<Dictionary> getDictionaryByType(String dictType) throws Exception;
+
+    public Dictionary getDictionaryByTypeAndCode(String dictType, String dictCode) throws Exception;
+
+    public List<Dictionary> getDictionaryDependenciesByType(String dictType, String dictCode) throws Exception;
+
+    public List<Object[]> getAllDictionaryTypeCodePairs() throws Exception;
 }

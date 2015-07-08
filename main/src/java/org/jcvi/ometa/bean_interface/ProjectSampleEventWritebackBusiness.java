@@ -120,4 +120,8 @@ public interface ProjectSampleEventWritebackBusiness {
     void updateProject(Project projects) throws Exception;
 
     void updateSample(Sample sample) throws Exception;
+
+    void loadDictionaryWithDependency(String dictType, String dictValue, String dictCode, String parentDictTypeCode) throws Exception;
+
+    void loadDictionary(String dictType, String dictValue, String dictCode) throws Exception;
 }

@@ -44,6 +44,8 @@ public interface BeanPersistenceFacadeI {
 
     void writeBackLookupValues(List<LookupValue> lBeans ) throws Exception;
 
+    void writeBackDictionaries(List<Dictionary> dictBeans ) throws Exception;
+
     void writeBackProjects(List<Project> pBeans, String actorUserName) throws Exception;
 
     void writeBackSamples(List<Sample> sBeans, String actorUserName) throws Exception;
@@ -69,4 +71,8 @@ public interface BeanPersistenceFacadeI {
     void deleteActorGroup(List<ActorGroup> actorgroups) throws Exception;
 
     void writeBackGroups(List<Group> groups) throws Exception;
+
+    void loadDictionaryWithDependency(String dictType, String dictValue, String dictCode, String parentDictTypeCode) throws Exception;
+
+    void loadDictionary(String dictType, String dictValue, String dictCode) throws Exception;
 }

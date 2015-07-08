@@ -29,6 +29,7 @@ import org.jcvi.ometa.exception.InvalidInputException;
 import org.jcvi.ometa.hibernate.dao.*;
 import org.jcvi.ometa.intf.BeanPersistenceFacadeI;
 import org.jcvi.ometa.model.*;
+import org.jcvi.ometa.model.Dictionary;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.GuidGetter;
 import org.jcvi.ometa.validation.ModelValidator;
@@ -50,6 +51,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
     protected static final String BAD_LOOKUP_TYPE_MSG = "'%s' is not an attribute.";
     protected static final String INVALID_LOOKUP_VALUE_DATA_TYPE_MSG = "invalid data type '%s'.";
     protected static final String INCOMPATIBLE_LOOKUP_VALUE_MSG = "Lookup value %s already exists. (%s, %s)";//, and is not compatible.";
+    protected static final String INCOMPATIBLE_DICTIONARY_MSG = "Dictionary already exists. (%s, %s, %s)";//, and is not compatible.";
     protected static final String UNKNOWN_SAMPLE_FOR_PROJECT_MSG = "Project '%s' does not have sample '%s'.";
 
     private SessionAndTransactionManagerI sessionAndTransactionManager;
@@ -263,6 +265,70 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
             if(loadingList.size() > 0 && loadingList.size() == lookupValueList.size()) { //only load if there is no error
                 for(LookupValue lv : loadingList) {
                     lookupValueDAO.createLookupValue(lv, sessionAndTransactionManager.getTransactionStartDate(), session);
+                }
+            }
+
+            // Explain what went wrong.
+            if (errors.length() > 0) {
+                throw new Exception(errors.toString());
+            }
+
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        }
+    }
+
+    public void writeBackDictionaries(List<Dictionary> dictList) throws Exception {
+        try {
+            StringBuilder errors = new StringBuilder();
+
+            DictionaryDAO dictionaryDAO = daoFactory.getDictionaryDAO();
+            List<Dictionary> loadingList = new ArrayList<Dictionary>(dictList.size()); //load all or nothing list
+
+            for (Dictionary dict : dictList) {
+                String dictType = dict.getDictionaryType();
+                String dictCode = dict.getDictionaryCode();
+                String dictValue = dict.getDictionaryValue();
+                if(dictCode == null || dictCode.equals("")) dictCode = dictValue;
+
+                Dictionary oldDict = dictionaryDAO.getDictionaryByTypeAndCode(dictType, dictCode, session);
+                if (oldDict == null) {
+                    boolean hasParentError = false;
+                    String parentDictionary = dict.getParentDependency();
+                    if(parentDictionary != null && !parentDictionary.equals("")){
+                        String[] parentDictTypeCode = parentDictionary.split(" - ");
+                        Dictionary parentDict = dictionaryDAO.getDictionaryByTypeAndCode(parentDictTypeCode[0], parentDictTypeCode[1], session);
+
+                        if(parentDict == null) {
+                            hasParentError = true;
+                            errors.append(dictType + ", " + dictCode + ", " + dictValue + ":parent dictionary does not exist!\n");
+                        }
+                    }
+
+                    if(!hasParentError)
+                        loadingList.add(dict);
+                } else {
+                    String message = String.format(INCOMPATIBLE_DICTIONARY_MSG,
+                            oldDict.getDictionaryType(), oldDict.getDictionaryCode(), oldDict.getDictionaryValue());
+                    errors.append(dictType + ", " + dictCode + ", " + dictValue + ":dictionary already exists\n");
+                }
+            }
+
+            if(loadingList.size() > 0 && loadingList.size() == dictList.size()) { //only load if there is no error
+                for(Dictionary dict : loadingList) {
+                    String dictCode = dict.getDictionaryCode();
+                    String dictValue = dict.getDictionaryValue();
+                    if(dictCode == null || dictCode.equals("")) dictCode = dictValue;
+
+                    String parentDictionary = dict.getParentDependency();
+                    if(parentDictionary != null && !parentDictionary.equals("")) {
+                        dictionaryDAO.loadDictionaryWithDependency(dict.getDictionaryType(), dictValue, dictCode, parentDictionary,
+                                sessionAndTransactionManager.getTransactionStartDate(), session);
+                    } else {
+                        dictionaryDAO.loadDictionary(dict.getDictionaryType(), dictValue, dictCode,
+                                sessionAndTransactionManager.getTransactionStartDate(), session);
+                    }
                 }
             }
 
@@ -603,6 +669,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
             Long eventId = event.getEventId();
 
             helper.setPhase(EventPersistenceHelper.ProcessingPhase.iterate);
+            helper.setDictionaryParentValue(aBeans, EventPersistenceHelper.AttributeType.event);
             for (FileReadAttributeBean bean : aBeans) {
                 String beanProjectName = bean.getProjectName();
                 String beanSampleName = bean.getSampleName();
@@ -700,6 +767,31 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
             helper.setPhase(EventPersistenceHelper.ProcessingPhase.postIterate);
 
             helper.checkRequiredEventAttribsAndSample();
+
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        }
+    }
+
+    public void loadDictionary(String dictType, String dictValue, String dictCode) throws Exception {
+        try {
+            DictionaryDAO dictionaryDAO = daoFactory.getDictionaryDAO();
+
+            dictionaryDAO.loadDictionary(dictType, dictValue, dictCode, new Date(), session);
+
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        }
+    }
+
+    public void loadDictionaryWithDependency(String dictType, String dictValue, String dictCode, String parentDictTypeCode) throws Exception {
+        try {
+            DictionaryDAO dictionaryDAO = daoFactory.getDictionaryDAO();
+
+            dictionaryDAO.loadDictionaryWithDependency(dictType, dictValue, dictCode, parentDictTypeCode,
+                    sessionAndTransactionManager.getTransactionStartDate(), session);
 
         } catch (Exception ex) {
             sessionAndTransactionManager.rollBackTransaction();

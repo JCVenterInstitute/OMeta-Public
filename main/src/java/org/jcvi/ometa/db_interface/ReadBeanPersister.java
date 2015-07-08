@@ -325,4 +325,20 @@ public class ReadBeanPersister implements WebDataFacadeI {
     public List<LookupValue> getLookupValueByType(String type) throws Exception {
         return pseb.getLookupValueByType(type);
     }
+
+    public List<Dictionary> getDictionaries() throws Exception {
+        return pseb.getDictionaries();
+    }
+
+    public List<DictionaryDependency> getDictionaryDependencies() throws Exception {
+        return pseb.getDictionaryDependencies();
+    }
+
+    public List<Dictionary> getDictionaryByType(String dictType) throws Exception {
+        return pseb.getDictionaryByType(dictType);
+    }
+
+    public List<Dictionary> getDictionaryDependenciesByType(String dictType, String dictCode) throws Exception {
+        return pseb.getDictionaryDependenciesByType(dictType, dictCode);
+    }
 }
