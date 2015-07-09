@@ -361,9 +361,20 @@ public class SampleDAO extends HibernateDAO {
                                 : operation.equals("in") ? " " + logicGate + " LOWER(S2.sample_name) in ('" + searchVal.replaceAll(",", "','") + "') "
                                 : " " + logicGate + " LOWER(S2.sample_name) = '" + searchVal + "' ";
                     } else if (key.equals("User")) {
-                        sql += operation.equals("like") ? " " + logicGate + " (LOWER(A.actor_first_name) like '%" + searchVal + "%' or LOWER(A.actor_last_name) like '%" + searchVal + "%') "
-                                : operation.equals("in") ? " " + logicGate + " (LOWER(A.actor_first_name) in ('" + searchVal.replaceAll(",", "','") + "') or LOWER(A.actor_last_name) in ('" + searchVal.replaceAll(",", "','") + "')) "
-                                : " " + logicGate + " (LOWER(A.actor_first_name) = '" + searchVal + "' or LOWER(A.actor_last_name) = '" + searchVal + "') ";
+                        String flNameSeparator = ", ";
+                        if(searchVal.contains(flNameSeparator)){
+                            String[] searchValArr = searchVal.split(flNameSeparator);
+                            String firstName = searchValArr[1];
+                            String lastName = searchValArr[0];
+
+                            sql += operation.equals("like") ? " " + logicGate + " (LOWER(A.actor_first_name) like '%" + firstName + "%' or LOWER(A.actor_last_name) like '%" + lastName + "%') "
+                                    : operation.equals("in") ? " " + logicGate + " (LOWER(A.actor_first_name) in ('" + firstName.replaceAll(",", "','") + "') or LOWER(A.actor_last_name) in ('" + lastName.replaceAll(",", "','") + "')) "
+                                    : " " + logicGate + " (LOWER(A.actor_first_name) = '" + firstName + "' or LOWER(A.actor_last_name) = '" + lastName + "') ";
+                        } else {
+                            sql += operation.equals("like") ? " " + logicGate + " (LOWER(A.actor_first_name) like '%" + searchVal + "%' or LOWER(A.actor_last_name) like '%" + searchVal + "%') "
+                                    : operation.equals("in") ? " " + logicGate + " (LOWER(A.actor_first_name) in ('" + searchVal.replaceAll(",", "','") + "') or LOWER(A.actor_last_name) in ('" + searchVal.replaceAll(",", "','") + "')) "
+                                    : " " + logicGate + " (LOWER(A.actor_first_name) = '" + searchVal + "' or LOWER(A.actor_last_name) = '" + searchVal + "') ";
+                        }
                     } else if (key.equals("Date")) {
                         sql += operation.equals("like") ? " " + logicGate + " S1.sample_create_date like '%" + searchVal + "%' "
                                 : operation.equals("in") ? " " + logicGate + " S1.sample_create_date in ('" + searchVal.replaceAll(",", "','") + "') "
