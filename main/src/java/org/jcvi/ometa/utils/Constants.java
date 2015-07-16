@@ -77,6 +77,7 @@ public class Constants {
 
     public static final String ACCEPTABLE_CHARACTERS = "A-Za-z0-9 _\\-+=@.,:;<>()\\[\\]/\\\\"; //"A-Za-z0-9=.,;:!?@$%#+()<>\\[\\]/\\-_'\" "
     public final static String DATE_DEFAULT_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public final static String DATE_USER_ENTER_FORMAT = "yyyy-MM-dd";
     public final static String DATE_ALTERNATIVE_FORMAT = "dd-MMM-yyyy";
     public final static String[] DATE_ALL_POSSIBLE_FORMATS = {
             "yyyy",

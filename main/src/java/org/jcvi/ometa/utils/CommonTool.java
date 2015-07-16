@@ -188,7 +188,7 @@ public class CommonTool {
 
     public static String convertTimestampToDate(Object value) throws Exception {
         String formattedDate = null;
-        String[] formats = {"MM/dd/yyyy", Constants.DATE_DEFAULT_FORMAT};
+        String[] formats = {"MM/dd/yyyy", Constants.DATE_USER_ENTER_FORMAT, "yyyy-MM-dd'T'HH:mm:ss"};
         Date parsedDate = null;
         boolean isString = (value.getClass() == String.class);
 
@@ -204,7 +204,7 @@ public class CommonTool {
         }
 
         try {
-            formattedDate = ModelValidator.PST_DEFAULT_DATE_FORMAT.format(parsedDate);
+            formattedDate = ModelValidator.PST_ACCEPT_DATE_FORMAT.format(parsedDate);
         } catch(Exception ex) {
             throw new ParseException("invalid date value: '" + value + "'", 0);
         }

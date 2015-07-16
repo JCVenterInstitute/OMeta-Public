@@ -133,7 +133,7 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                     sampleMap.put("sampleName", sample.getSampleName());
                     sampleMap.put("parentSampleName", sampleNameById.get(sample.getParentSampleId()));
                     sampleMap.put("actor", actors.get(sample.getCreatedBy()));
-                    sampleMap.put("createdOn", ModelValidator.PST_DEFAULT_TIMESTAMP_FORMAT.format(sample.getCreationDate()));
+                    sampleMap.put("createdOn", ModelValidator.PST_DEFAULT_DATE_FORMAT.format(sample.getCreationDate()));
 
                     if(sampleIdVsAttributes.containsKey(sample.getSampleId())) {
                         Map<String, Object> attributeMap = new LinkedHashMap<String, Object>();
@@ -219,7 +219,7 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                     eventMap.put("eventId", event.getEventId());
                     eventMap.put("eventName", event.getEventTypeLookupValue().getName());
                     eventMap.put("sampleName", sampleName);
-                    eventMap.put("createdOn", ModelValidator.PST_DEFAULT_TIMESTAMP_FORMAT.format(event.getCreationDate()));
+                    eventMap.put("createdOn", ModelValidator.PST_DEFAULT_DATE_FORMAT.format(event.getCreationDate()));
                     eventMap.put("actor", actors.get(event.getCreatedBy()));
                     eventMap.put("eventStatus", eventStatus);
                     eventMap.put("canEdit", canEdit);
