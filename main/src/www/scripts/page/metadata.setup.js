@@ -4,6 +4,7 @@ var _html = {
   odo:
   '<td><input type="text" name="beanList[$cnt$].options" id="options$cnt$" size="27"/></td>' +
   '<td><textarea name="beanList[$cnt$].desc" id="desc$cnt$" cols="27" rows="1"/></td>' +
+  '<td><input type="text" name="beanList[$cnt$].valueLength" id="valueLength$cnt$" size="10"/></td>' +
   '<td><input type="text" name="beanList[$cnt$].ontology" id="ontology$cnt$"  placeholder="Search Ontology"/></td>',
   lar:
   '<td><input type="text" name="beanList[$cnt$].label" id="label$cnt$" size="15"/></td>' +
@@ -102,7 +103,7 @@ var _utils = {
           _utils.add.ema(null,_ema.ema.eventName, _ema.ema.attributeName, _ema.ema.activeDB,
               _ema.ema.requiredDB, _ema.ema.sampleRequiredDB, _ema.ema.options,
               _ema.ema.desc, _ema.ema.label, _ema.ema.ontology,
-              _ema.projectMeta, _ema.sampleMeta, _ema.ema.order);
+              _ema.projectMeta, _ema.sampleMeta, _ema.ema.order, _ema.ema.valueLength);
         });
       }
       $('input:button[id$="AddButton"]').prop('disabled', false);
@@ -181,7 +182,7 @@ var _utils = {
       utils.preSelect('ma'+maCnt, n);
       this.setValues(a,r,o,d,l,ot);
     },
-    ema: function(added,et,n,a,r,s,o,d,l,ot,pm,sm,pos) {
+    ema: function(added,et,n,a,r,s,o,d,l,ot,pm,sm,pos,valLen) {
       //$('#etAdditionTbody').append(emaHtml.replace(/\$cnt\$/g,maCnt).replace("$et$",etOptions).replace("$ema$",maOptions));
       var _that = this,
           _et = et ? et : '',
@@ -234,15 +235,16 @@ var _utils = {
       utils.checkCB('sampleRequired'+maCnt, s);
       utils.checkCB('projectMeta'+maCnt, pm);
       utils.checkCB('sampleMeta'+maCnt, sm);
-      this.setValues(a,r,o,d,l,ot,pos);
+      this.setValues(a,r,o,d,l,ot,pos,valLen);
     },
-    setValues: function(a,r,o,d,l,ot,pos) {
+    setValues: function(a,r,o,d,l,ot,pos,valLen) {
       utils.checkCB('active'+maCnt, a);
       utils.checkCB('required'+maCnt, r);
       $('#options'+maCnt).val(o);
       $('#desc'+maCnt).val(d);
       $('#label'+maCnt).val(l);
       $('#order'+maCnt).val(pos);
+      $('#valueLength'+maCnt).val(valLen);
       $('#ontology'+maCnt).val(ot).autocomplete({
         source: function( request, response ) {
           $.ajax({

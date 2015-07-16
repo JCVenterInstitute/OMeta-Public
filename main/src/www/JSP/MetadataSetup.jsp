@@ -191,6 +191,7 @@
                       <th class="tableHeaderNoSort checkBoxHeader">Sample Required</th>
                       <th class="tableHeaderNoSort boxesHeader">Default Options</th>
                       <th class="tableHeaderNoSort boxesHeader">Desc</th>
+                      <th class="tableHeaderNoSort boxesHeader">Value Length</th>
                       <th class="tableHeaderNoSort boxesHeader">Ontology</th>
                       <th class="tableHeaderNoSort checkBoxHeader">Project Metadata</th>
                       <th class="tableHeaderNoSort checkBoxHeader">Sample Metadata</th>

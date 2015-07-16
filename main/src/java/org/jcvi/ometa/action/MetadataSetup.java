@@ -207,7 +207,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                             //sets EMA values
                             this.setMAValues(ema,
                                     bean.getActiveDB(), bean.getRequiredDB(),bean.getDesc(),
-                                    bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName());
+                                    bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName(), bean.getValueLength());
                             ema.setEventName(bean.getEt());
                             ema.setSampleRequiredDB(bean.getSampleRequiredDB());
                             ema.setOrder(Integer.parseInt(bean.getOrder()));
@@ -219,7 +219,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                             ProjectMetaAttribute pma = existingPmaMap.get(bean.getName());
                             this.setMAValues(pma,
                                     bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
-                                    bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName());
+                                    bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName(), bean.getValueLength());
                             pmaList.add(pma);
                         } else {
                             //handles Project Metadata checkbox by adding new project meta attribute
@@ -230,7 +230,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                                 newPma.setAttributeName(bean.getName());
                                 this.setMAValues(newPma,
                                         bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
-                                        bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName());
+                                        bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName(), bean.getValueLength());
                                 pmaList.add(newPma);
                             }
                         }
@@ -238,7 +238,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                             SampleMetaAttribute sma = existingSmaMap.get(bean.getName());
                             this.setMAValues(sma,
                                     bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
-                                    bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName());
+                                    bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName(), bean.getValueLength());
                             smaList.add(sma);
                         } else {
                             //handles Sample Metadata checkbox by adding new sample meta attribute
@@ -249,7 +249,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                                 newSma.setAttributeName(bean.getName());
                                 this.setMAValues(newSma,
                                         bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
-                                        bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName());
+                                        bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName(), bean.getValueLength());
                                 smaList.add(newSma);
                             }
                         }
@@ -621,12 +621,13 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                 && (b1.getDesc()!=null && b1.getDesc().equals(b2.getDesc()))
                 && (b1.getOptions()!=null && b1.getOptions().equals(b2.getOptions()))
                 && (b1.getLabel()!=null && b1.getLabel().equals(b2.getLabel()))
-                && (b1.getOntology()!=null && b1.getOntology().equals(b2.getOntology()));
+                && (b1.getOntology()!=null && b1.getOntology().equals(b2.getOntology()))
+                && (b1.getValueLength()!=null && b1.getValueLength().equals(b2.getValueLength()));
     }
 
     private void setMAValues(MetaAttributeModelBean b,
                              Integer active, Integer required,
-                             String desc, String options, String label, String ontology, String projectName) {
+                             String desc, String options, String label, String ontology, String projectName, Integer valueLength) {
         b.setActiveDB(active);
         b.setRequiredDB(required);
         b.setDesc(desc);
@@ -634,6 +635,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
         b.setLabel(label);
         b.setOntology(ontology);
         b.setProjectName(projectName);
+        b.setValueLength(valueLength);
     }
 
     private List<EventMetaAttribute> updateExistingEMA(List<EventMetaAttribute> emas, MetadataSetupReadBean bean, String projectName) {
@@ -642,7 +644,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
             for(EventMetaAttribute ema : emas) {
                 if(!this.isUnchanged(bean, ema)) {
                     this.setMAValues(ema, bean.getActiveDB(), bean.getRequiredDB(),
-                            bean.getDesc(), bean.getOptions(), bean.getLabel(), bean.getOntology(), projectName);
+                            bean.getDesc(), bean.getOptions(), bean.getLabel(), bean.getOntology(), projectName, bean.getValueLength());
                     emaList.add(ema);
                 }
             }

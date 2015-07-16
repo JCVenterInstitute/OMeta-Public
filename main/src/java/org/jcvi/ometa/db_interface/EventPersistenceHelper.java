@@ -68,6 +68,8 @@ public class EventPersistenceHelper {
             "Project {0} unknown." );
     protected static final MessageFormat SAMPLE_REQUIRED_HUMAN_READABLE_MSG = new MessageFormat(
             "Event attribute of {0} requires sample " );
+    protected static final MessageFormat EXCEED_VALUE_LENGTH_HUMAN_READABLE_MSG = new MessageFormat(
+            "Event attribute of {0} exceeds value length limit ( {1} character(s)) " );
 
     private DAOFactory daoFactory;
     private GuidGetter guidGetter;
@@ -371,13 +373,22 @@ public class EventPersistenceHelper {
         EventMetaAttribute ema = metaAttributeDAO.getEventMetaAttribute(attributeNameLookupValueId, projectId, eventTypeLookupId, session);
 
         checkSampleGivenForEventAttribute(attribName, ema);
+        String dataType = ema.getLookupValue().getDataType();
+        int attrValueLength = (dataType.equals("string")) ? attribute.getAttributeStringValue().length()
+                : (dataType.equals("int")) ? attribute.getAttributeIntValue().toString().length()
+                : (dataType.equals("date")) ? attribute.getAttributeDateValue() .toString().length()
+                : attribute.getAttributeFloatValue().toString().length() ;
 
         if ( ema == null   &&  ! attributeNamesPermitted.contains( attribName ) ) {
             String message = EVENT_NOT_IN_PROJECT_HUMAN_READABLE_MSG.format( new Object[] { attribName, projectName } );
             throw new DAOException( message );
         }
         else if ( ema.isSampleRequired() && ( sampleId == null || sampleId == 0 ) ) {
-            String message = SAMPLE_REQUIRED_HUMAN_READABLE_MSG.format( new Object[] { attribName } );
+            String message = SAMPLE_REQUIRED_HUMAN_READABLE_MSG.format(new Object[]{attribName } );
+            throw new DAOException( message );
+        }
+        else if ( ema.getValueLength() != null && attrValueLength > ema.getValueLength() ) {
+            String message = EXCEED_VALUE_LENGTH_HUMAN_READABLE_MSG.format(new Object[]{attribName, ema.getValueLength() } );
             throw new DAOException( message );
         }
         else {

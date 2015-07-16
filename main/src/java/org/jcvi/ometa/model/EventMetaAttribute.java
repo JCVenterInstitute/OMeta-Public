@@ -46,6 +46,7 @@ public class EventMetaAttribute implements MetaAttributeModelBean, ProjectRefere
     private Boolean sampleRequired;
     private String desc;
     private String options;
+    private Integer valueLength;
     private String dataType;
     private Date creationDate;
     private Date modifiedDate;
@@ -197,6 +198,16 @@ public class EventMetaAttribute implements MetaAttributeModelBean, ProjectRefere
     @JCVI_BeanPopulator_Column
     public void setOptions(String options) {
         this.options = options;
+    }
+
+    @Column(name="evenma_value_length", nullable=true)
+    public Integer getValueLength() {
+        return valueLength;
+    }
+
+    @JCVI_BeanPopulator_Column
+    public void setValueLength(Integer valueLength) {
+        this.valueLength = valueLength;
     }
 
     @Column(name="evenma_create_date", nullable=false)

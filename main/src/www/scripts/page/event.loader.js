@@ -310,7 +310,8 @@ var _utils = {
               'hasOntoloty': hasOntology,
               'isSelect': isSelect,
               'isMulti': isMulti,
-              'isRadio': isRadio
+              'isRadio': isRadio,
+              'valueLength' :_ma.valueLength
             };
 
             var $inputNode = $('<td/>').append(inputElement.replace(/\$val\$/g, '').replace(/\$id\$/g, 'f_' + count).replace(/\$lt\$/g,"beanList["+count+"]."));
@@ -642,22 +643,38 @@ var button = {
       }
 
       var allEmpty = true; // empty submission form
+      var hasValueLengthErr = false; // empty submission form
       $formFields.find('[name$=".attributeValue"], [name$=".upload"]').each(function(i,v) {
         var $node = $(v);
         if($node.val() !== null && $node.val() !== '') {
           allEmpty = false;
+
+          if($node.attr('id') && $node.siblings('[name$="attributeName"]').val()){
+            var attrName = $node.siblings('[name$="attributeName"]').val();
+
+            var valueLength = g_avDic[attrName].valueLength;
+            var count = $node.val().length;
+
+            if(valueLength != null && count > valueLength) {
+              reqErrorMsg += "&nbsp;&nbsp;" + $node.siblings('[name$="attributeName"]').val() + " has more than " + valueLength + " character! <br />";
+              hasValueLengthErr = true;
+            }
+          }
         }
       });
 
       if(allEmpty) {
         utils.error.add("Data submission form is empty. Please insert value(s).");
         return;
+      } else if(hasValueLengthErr){
+        utils.error.add("Value Length Limitation Error(s):<br/>" + reqErrorMsg);
+        return;
       }
     } else if(loadType === "grid"){ // check grid table data
-      var listHasData = true, hasAllReq = true, allEmpty = true; reqErrorMsg = ""; // require field check
+      var listHasData = true, hasAllReq = true, allEmpty = true, hasValErr = false; reqErrorMsg = ""; // require field check
       var $formFields = $('#gridBody > tr > td').find(':not(:hidden):not(option), select[multiple=multiple]');  //:not(option) added for firefox
 
-      var rowCheck = [], rowMsg = "", empty = true, rowAllReq = true, rowHasData = false;
+      var rowCheck = [], rowMsg = "", empty = true, rowAllReq = true, rowHasData = false, hasValueLengthErr = false;;
 
       if(utils.checkPR($("#_eventSelect option:selected").text())) { // if data temp is Project Registration
         $formFields.each(function (i, v) {
@@ -674,15 +691,30 @@ var button = {
           } else if ($node.attr('name').indexOf("projectPublic") === -1) {
             empty = false;
 
-            if($node.attr('id') && $node.attr('id').indexOf("projectName") === -1) rowHasData = true;
+            if($node.attr('id') && $node.attr('id').indexOf("projectName") === -1) {
+              rowHasData = true;
+
+              if($node.attr('id') && $node.siblings('[name$="attributeName"]').val()){
+                var attrName = $node.siblings('[name$="attributeName"]').val();
+
+                var valueLength = g_avDic[attrName].valueLength;
+                var count = $node.val().length;
+
+                if(valueLength != null && count > valueLength) {
+                  rowMsg += "&nbsp;&nbsp;" + $node.siblings('[name$="attributeName"]').val() + " has more than " + valueLength + " character! <br />";
+                  hasValueLengthErr = true;
+                }
+              }
+            }
           }
 
           if ($(this).attr('id') && $(this).parent().is(':last-child')) {
-            rowCheck.push({"e": empty, "r": rowAllReq, "m": rowMsg, "h" : rowHasData});
+            rowCheck.push({"e" : empty, "r" : rowAllReq, "m" : rowMsg, "h" : rowHasData, 'v' : hasValueLengthErr});
             empty = true;
             rowMsg = "";
             rowAllReq = true;
             rowHasData = false;
+            hasValueLengthErr = false;
           }
         });
       } else if(utils.checkSR($("#_eventSelect option:selected").text())) {
@@ -705,15 +737,30 @@ var button = {
           } else {
             empty = false;
 
-            if($node.attr('id') && $node.attr('id').indexOf("sampleName") === -1) rowHasData = true;
+            if($node.attr('id') && $node.attr('id').indexOf("sampleName") === -1) {
+              rowHasData = true;
+
+              if($node.attr('id') && $node.siblings('[name$="attributeName"]').val()){
+                var attrName = $node.siblings('[name$="attributeName"]').val();
+
+                var valueLength = g_avDic[attrName].valueLength;
+                var count = $node.val().length;
+
+                if(valueLength != null && count > valueLength) {
+                  rowMsg += "&nbsp;&nbsp;" + $node.siblings('[name$="attributeName"]').val() + " has more than " + valueLength + " character! <br />";
+                  hasValueLengthErr = true;
+                }
+              }
+            }
           }
 
           if($(this).attr('id') && $(this).parents('td').is(':last-child')){
-            rowCheck.push({"e" : empty, "r" : rowAllReq, "m" : rowMsg, "h" : rowHasData});
+            rowCheck.push({"e" : empty, "r" : rowAllReq, "m" : rowMsg, "h" : rowHasData, 'v' : hasValueLengthErr});
             empty = true;
             rowMsg = "";
             rowAllReq = true;
             rowHasData = false;
+            hasValueLengthErr = false;
           }
         });
       } else {
@@ -736,15 +783,30 @@ var button = {
           } else {
             empty = false;
 
-            if($node.attr('id') && $node.attr('id').indexOf("sampleSelect") === -1) rowHasData = true;
+            if($node.attr('id') && $node.attr('id').indexOf("sampleSelect") === -1) {
+              rowHasData = true;
+
+              if($node.attr('id') && $node.siblings('[name$="attributeName"]').val()){
+                var attrName = $node.siblings('[name$="attributeName"]').val();
+
+                var valueLength = g_avDic[attrName].valueLength;
+                var count = $node.val().length;
+
+                if(valueLength != null && count > valueLength) {
+                  rowMsg += "&nbsp;&nbsp;" + $node.siblings('[name$="attributeName"]').val() + " has more than " + valueLength + " character! <br />";
+                  hasValueLengthErr = true;
+                }
+              }
+            }
           }
 
           if($(this).attr('id') && $(this).parents('td').is(':last-child')){
-            rowCheck.push({"e" : empty, "r" : rowAllReq, "m" : rowMsg, "h" : rowHasData});
+            rowCheck.push({"e" : empty, "r" : rowAllReq, "m" : rowMsg, "h" : rowHasData, 'v' : hasValueLengthErr});
             empty = true;
             rowMsg = "";
             rowAllReq = true;
             rowHasData = false;
+            hasValueLengthErr = false;
           }
         });
       }
@@ -760,6 +822,9 @@ var button = {
           } else if(rowCheck[i].h === false){
             listHasData = false;
             reqErrorMsg += "&nbsp;&nbsp;" + (i+1) + " :  Data submission is empty. Please insert value(s). <br>";
+          } else if(rowCheck[i].v === true) {
+            hasValErr = true;
+            reqErrorMsg += "&nbsp;&nbsp;" + (i+1) + " : " + rowCheck[i].m + "<br>";
           }
         }
       }
@@ -772,6 +837,9 @@ var button = {
         return;
       } else if(!listHasData) {
         utils.error.add("Error(s):<br/>" + reqErrorMsg);
+        return;
+      } else if(hasValErr){
+        utils.error.add("Value Length Limitation Error(s):<br/>" + reqErrorMsg);
         return;
       } else{
         for(var i=0; i < rowCheck.length; ++i){

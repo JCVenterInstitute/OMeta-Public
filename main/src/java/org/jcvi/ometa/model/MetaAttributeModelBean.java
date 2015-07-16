@@ -58,6 +58,8 @@ public interface MetaAttributeModelBean extends ModelBean {
     void setLabel(String label);
     String getDataType();
     void setDataType(String dataType);
+    Integer getValueLength();
+    void setValueLength(Integer valueLength);
 
     LookupValue getLookupValue();
 }

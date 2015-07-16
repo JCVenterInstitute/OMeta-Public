@@ -39,6 +39,7 @@ public class MetadataSetupReadBean implements Serializable {
     private String active;
     private String options;
     private String desc;
+    private Integer valueLength;
     private String value;
     private String label;
     private String ontology;
@@ -147,6 +148,15 @@ public class MetadataSetupReadBean implements Serializable {
     @JCVI_BeanPopulator_Column
     public void setOntology(String ontology) {
         this.ontology = ontology;
+    }
+
+    public Integer getValueLength() {
+        return valueLength;
+    }
+
+    @JCVI_BeanPopulator_Column
+    public void setValueLength(Integer valueLength) {
+        this.valueLength = valueLength;
     }
 
     public String getProjectMeta() {

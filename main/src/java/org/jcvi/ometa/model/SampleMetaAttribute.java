@@ -62,6 +62,7 @@ public class SampleMetaAttribute implements MetaAttributeModelBean, ProjectRefer
     private String ontology;
 
     private LookupValue lookupValue;
+    private Integer valueLength;
 
     @Id
     @Column(name="sampma_id",nullable=false)
@@ -96,6 +97,16 @@ public class SampleMetaAttribute implements MetaAttributeModelBean, ProjectRefer
     @JCVI_BeanPopulator_Column
     public void setDataType(String dataType) {
         this.dataType = dataType;
+    }
+
+    @Transient
+    public Integer getValueLength() {
+        return valueLength;
+    }
+
+    @JCVI_BeanPopulator_Column
+    public void setValueLength(Integer valueLength) {
+        this.valueLength = valueLength;
     }
 
     /**

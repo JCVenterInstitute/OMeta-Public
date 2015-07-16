@@ -57,6 +57,8 @@ public class ProjectMetaAttribute implements MetaAttributeModelBean, ProjectRefe
     private String label;
     private String ontology;
 
+    private Integer valueLength;
+
     @Id
     @Column(name="projma_id", nullable=false)
     public Long getId() {
@@ -90,6 +92,16 @@ public class ProjectMetaAttribute implements MetaAttributeModelBean, ProjectRefe
     @JCVI_BeanPopulator_Column
     public void setDataType(String dataType) {
         this.dataType = dataType;
+    }
+
+    @Transient
+    public Integer getValueLength() {
+        return valueLength;
+    }
+
+    @JCVI_BeanPopulator_Column
+    public void setValueLength(Integer valueLength) {
+        this.valueLength = valueLength;
     }
 
     /**
