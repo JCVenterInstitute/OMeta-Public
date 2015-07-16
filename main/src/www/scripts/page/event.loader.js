@@ -624,6 +624,7 @@ function getNextSamples(index,eventId,eventName){
 
 var button = {
   submit: function(status) {
+    processing(true);
     var loadType = $('input[name="loadType"]:radio:checked').val();
 
     if(loadType === 'form') { //check is form is empty
@@ -639,6 +640,7 @@ var button = {
 
       if(!hasAllReq) {
         utils.error.add("Required Field(s):<br/>" + reqErrorMsg);
+        processing(false);
         return;
       }
 
@@ -665,9 +667,11 @@ var button = {
 
       if(allEmpty) {
         utils.error.add("Data submission form is empty. Please insert value(s).");
+        processing(false);
         return;
       } else if(hasValueLengthErr){
         utils.error.add("Value Length Limitation Error(s):<br/>" + reqErrorMsg);
+        processing(false);
         return;
       }
     } else if(loadType === "grid"){ // check grid table data
@@ -831,15 +835,19 @@ var button = {
 
       if(allEmpty){
         utils.error.add("There is no data to submit!");
+        processing(false);
         return;
       } else if (!hasAllReq) {
         utils.error.add("Required Field(s):<br/>" + reqErrorMsg);
+        processing(false);
         return;
       } else if(!listHasData) {
         utils.error.add("Error(s):<br/>" + reqErrorMsg);
+        processing(false);
         return;
       } else if(hasValErr){
         utils.error.add("Value Length Limitation Error(s):<br/>" + reqErrorMsg);
+        processing(false);
         return;
       } else{
         for(var i=0; i < rowCheck.length; ++i){
@@ -886,22 +894,26 @@ var button = {
         var projectRegName = $("#_projectName").val();
         if(projectRegName == null || projectRegName === ''){
           utils.error.add("Project Name is empty!");
+          processing(false);
           return;
         }
       } else if(utils.checkSR(eventName)) {
         var sampleRegName = $("#_sampleName").val();
         if(sampleRegName == null || sampleRegName === ''){
           utils.error.add("Sample Name is empty!");
+          processing(false);
           return;
         }
       } else if(sampleName.length == 0 && eventName.toLowerCase().indexOf('project') < 0){
         utils.error.add("Data cannot be submitted without sample. Please select a sample! If the project does not have any sample, create a new one first!");
+        processing(false);
         return;
       }
     } else if(type === 'file') {
       var $fileNode = $('#dataTemplate');
       if($fileNode.val() == null || $fileNode.val().length === 0) { //check if file is there
         utils.error.add("Please select a data template file.");
+        processing(false);
         return false;
       }
       // else {
@@ -1517,4 +1529,14 @@ function clearSampleAutoComplete(){
   $("#searchParentSample").trigger("click");
   $sampleSelect.val("");
   $parentSelect.val("");
+}
+
+function processing(isProcessing){
+  if(isProcessing){
+    $("#popupLayerScreenLocker").show();
+    $("#processingDiv").show();
+  } else{
+    $("#popupLayerScreenLocker").hide();
+    $("#processingDiv").hide();
+  }
 }

@@ -125,7 +125,8 @@
           </div>
         </div>
 
-        <div id="processingDiv" class="show_processing" style="display: none;">Processing your request. Please wait...</div>
+        <div id="popupLayerScreenLocker" style="position: fixed; left: 0; top: 0; opacity: 0.5; height: 100%; width: 100%; z-index: 1000; display: none; background: rgb(0, 0, 0);"><!-- --></div>
+        <div id="processingDiv" class="show_processing" style="display: none;position: fixed;">Processing your request. Please wait...</div>
 
         <div id="mainContent" style="">
           <!-- regular interactive event loader -->
