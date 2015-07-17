@@ -207,8 +207,10 @@ public class BeanPopulator {
             Long value = Long.parseLong(valueStr);
             method.invoke(bean, value);
         } else if(setType.equals(Integer.class)) {
-            Integer value = Integer.parseInt(valueStr);
-            method.invoke(bean, value);
+            if(!valueStr.equals("")) {
+                Integer value = Integer.parseInt(valueStr);
+                method.invoke(bean, value);
+            }
         } else if(setType.equals(Float.class)) {
             Float value = Float.parseFloat(valueStr);
             method.invoke(bean, value);
