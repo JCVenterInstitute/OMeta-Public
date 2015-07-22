@@ -1113,6 +1113,37 @@ var button = {
 
       g_gridLineCount++;
     }
+
+    if(beans != null && typeof parentFieldName != "undefined" && typeof childOptionsMap != "undefined"){
+      $("select[id*='select_"+parentFieldName+"']").change({childOptionsMap: childOptionsMap}, function(event, data){
+        var selectedParent = ($(this).val()).split(" - ")[0];
+        var selectedParentIdArr = ($(this).attr('id')).split("_");
+        var attrIndex = (selectedParentIdArr[selectedParentIdArr.length-2] == 'f') ? parseInt(selectedParentIdArr[selectedParentIdArr.length-1],10) + 1 : selectedParentIdArr[selectedParentIdArr.length-1];
+        var childOptions = event.data.childOptionsMap[selectedParent];
+        var childSelectInput = $("select[id*='select_"+childFieldName+"_" + selectedParentIdArr[selectedParentIdArr.length-2] + "_" + attrIndex +"']");
+        var childValue = (data && data.sampleData == true) ? data.sampleAttrMap[childFieldName] : null;
+        childSelectInput.html('');
+        childSelectInput.append('<option value=""></option>');
+
+        if(childOptions) {
+          $.each(childOptions.split(';'), function (o_i, o_v) {
+            childSelectInput.append('<option value="' + o_v.split(" - ")[0] + '">' + o_v + '</option>');
+          });
+
+          if(childValue != null) childSelectInput.val(childValue);
+        }
+      });
+
+      var sampleAttrMap = [];
+
+      for(var i=0; i<beans.length; i++){
+        if(beans[i][0] == childFieldName){
+          sampleAttrMap[childFieldName] = beans[i][1];
+        }
+      }
+
+      $("select[id='select_"+parentFieldName+"_g_"+ltVal.charAt(9)+"']").trigger("change", [{sampleData:true, sampleAttrMap:sampleAttrMap}]);
+    }
   },
   remove_event: function() {
     var $lastChild = $("#gridBody tr:last-child");
