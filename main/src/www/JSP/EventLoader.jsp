@@ -252,7 +252,7 @@
                     <h3>Data Submission</h3>
                   </div>
                   <div style="font-size:0.9em;padding-top:30px;" class="col-lg-9 col-md-8">
-                    [<img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Information, <small class="text-danger" style="vertical-align: bottom">*</small>-Required]
+                    [<img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Information, <img src="images/icon/ontology.png"/>-Ontology, <small class="text-danger" style="vertical-align: bottom">*</small>-Required]
                   </div>
                 </div>
                 <div id="attributeInputDiv" style="clear:both;display:none;">

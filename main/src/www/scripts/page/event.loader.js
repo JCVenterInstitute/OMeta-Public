@@ -41,8 +41,8 @@ var _utils = {
         var ontologyInfo = desc.substring(desc.lastIndexOf('[')+1, desc.length-1).split(',');
 
         if(ontologyInfo.length === 2) {
-          var tid = ontologyInfo[0].replace(/^\s+|\s+$/g, '');
-          var ot = ontologyInfo[1].replace(/^\s+|\s+$/g, '');
+          var tid = ontologyInfo[1].replace(/^\s+|\s+$/g, '');
+          var ot = ontologyInfo[0].replace(/^\s+|\s+$/g, '');
           $inputNode.find('input').autocomplete({
             source: function(request, response) {
               $.ajax({
@@ -52,6 +52,12 @@ var _utils = {
                   sw: request.term.replace(' ', '%20'),
                   tid: tid,
                   ot: ot
+                },
+                beforeSend: function() {
+                  processing(true);
+                },
+                complete: function() {
+                  processing(false);
                 },
                 success: function( data ) {
                   //cleans decorated input fields when fails
@@ -217,7 +223,7 @@ var _utils = {
                     (_ma.label != null && _ma.label !== '' ?_ma.label:_ma.lookupValue.name),
                     "&nbsp;",
                     isDesc ? requireImgHtml : ''
-                    //, (hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
+                    , (hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
                 )
             );
             $gridHeaders.append(
@@ -225,7 +231,7 @@ var _utils = {
                     isRequired ? '<small class="text-danger">*</small>' : '',
                     (_ma.label ? _ma.label : _ma.lookupValue.name) + '<br/>',
                     isDesc ? requireImgHtml : ''
-                    //,(hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
+                    ,(hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
                 )
             );
 
@@ -307,7 +313,7 @@ var _utils = {
               'ma': _ma,
               'inputElement': inputElement,
               'isText': isText,
-              'hasOntoloty': hasOntology,
+              'hasOntology': hasOntology,
               'isSelect': isSelect,
               'isMulti': isMulti,
               'isRadio': isRadio,
@@ -1080,6 +1086,11 @@ var button = {
         } else if(av_v.isRadio === true){
           $inputNode.find('select').multipleSelect({single:true});
         }
+
+        if(av_v.isText && av_v.hasOntology) {
+          _utils.ontologify(av_v.ma.desc, $inputNode);
+        }
+
         $eventLine.append($inputNode);
       });
 
@@ -1107,7 +1118,12 @@ var button = {
 
       //set minimum width for date and autocomplete TDs
       $('#gridBody .hasDatepicker').parent('td').attr('style', 'min-width:163px !important;');
-      $('#gridBody .ui-autocomplete-input').parent('td').attr('style', 'min-width:200px !important;');
+      $('#gridBody .ui-autocomplete-input').each(function() {
+        var $this = $(this);
+        if($this.next().is("span")) {
+          $this.parent('td').attr('style', 'min-width:200px !important;');
+        }
+      });
 
       if(g_gridLineCount == 1) $('#gridRemoveLineButton').removeAttr("disabled");
 
