@@ -27,10 +27,12 @@ import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.model.Dictionary;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.GuidGetter;
+import org.jcvi.ometa.validation.DataValidator;
 import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.property.PropertyHelper;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -52,6 +54,8 @@ public class EventPersistenceHelper {
             "Unknown attribute type {0} " );
     protected static final MessageFormat CONTROLLED_VOCAB_VIOLATED_HUMAN_READABLE_MSG = new MessageFormat(
             "{0} {1} attribute may not be set to {2}.  Possible values: {3} " );
+    protected static final MessageFormat NOT_VALID_ATTRIB_HUMAN_READABLE_MSG = new MessageFormat(
+            "{0} {1} attribute may not be set to {2}.  Validation failed! " );
     protected static final MessageFormat EVENT_NOT_IN_PROJECT_HUMAN_READABLE_MSG = new MessageFormat(
             "Event attribute of {0} does not belong to project {1} " );
     protected static final MessageFormat INVALID_PROJECT_META_ATTRIB_HUMAN_READABLE_MSG = new MessageFormat(
@@ -283,72 +287,118 @@ public class EventPersistenceHelper {
             String multiplePrefix = "multi(";
             String radioPrefix = "radio(";
             String dictionaryPrefix = "Dictionary:";
+            String validationPrefix = "validate:";
+            boolean valid = true;
 
-            //trim multiple select for validation
-            if(controlValues.startsWith(multiplePrefix) && controlValues.endsWith(")")) {
-                controlValues = controlValues.substring(multiplePrefix.length(), controlValues.length()-1);
-            } else if(controlValues.startsWith(radioPrefix) && controlValues.endsWith(")")) {
-                controlValues = controlValues.substring(radioPrefix.length(), controlValues.length()-1);
-            } else if(controlValues.startsWith(dictionaryPrefix)) {
-                String dictType = controlValues.replace(dictionaryPrefix, "");
-                boolean hasParent = dictType.contains("Parent:");
+            if(controlValues.contains(validationPrefix)){
+                int indexOfValidate = controlValues.indexOf(validationPrefix);
 
-                try {
-                    Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-                    ReadBeanPersister readPersister = new ReadBeanPersister(props);
-                    List<Dictionary> dictList = null;
+                String valStr = controlValues.substring(indexOfValidate, controlValues.length());
+                controlValues = controlValues.replace(valStr, "");
 
-                    if(hasParent){
-                        String[] dictOpts = dictType.split(",Parent:");
-                        String parentAttrName = dictOpts[1];
-                        String parentAttrValue = dictParentValueMap.get(parentAttrName);
+                valStr = valStr.substring(validationPrefix.length(), valStr.length());
+                String[] validationRequests = valStr.split(",");
 
-                        if(parentAttrValue != null && !parentAttrValue.equals("")){
-                            dictList = readPersister.getDictionaryDependenciesByType(
-                                    controlMap.get(parentAttrName).replace(dictionaryPrefix,""), parentAttrValue.split(" - ")[0]);
-                        }
-                    } else{
-                        dictList = readPersister.getDictionaryByType(dictType);
+                for(String valReq : validationRequests){
+                    String[] classMethodVal = valReq.split("\\.");
+                    boolean hasArgument = false;
+                    String argVal = null;
+
+                    if(classMethodVal[1].contains("(") && classMethodVal[1].contains(")")){
+                        int indexOfArg = classMethodVal[1].indexOf("(");
+                        argVal = classMethodVal[1].substring(indexOfArg+1, classMethodVal[1].length() - 1);
+
+                        classMethodVal[1] = classMethodVal[1].substring(0, indexOfArg);
+                        hasArgument = true;
                     }
 
-                    StringBuilder sb = new StringBuilder();
-                    String delim = "";
-
-                    for(Dictionary dictionary : dictList){
-                        sb.append(delim).append(dictionary.getDictionaryCode());
-
-                        delim = ";";
+                    Class validatorClass = Class.forName("org.jcvi.ometa.validation."+classMethodVal[0]);
+                    Method validatorMethod;
+                    if(hasArgument){
+                        validatorMethod = validatorClass.getDeclaredMethod(classMethodVal[1], String.class, String.class);
+                        valid = (Boolean) validatorMethod.invoke(validatorClass.newInstance(), attributeValue, argVal);
+                    } else {
+                        validatorMethod = validatorClass.getDeclaredMethod(classMethodVal[1], String.class);
+                        valid = (Boolean) validatorMethod.invoke(validatorClass.newInstance(), attributeValue);
                     }
 
-                    controlValues = sb.toString();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
+                    if(!valid) break;
                 }
             }
-            List<String> controlValueList = Arrays.asList(controlValues.split(";"));
-            boolean found = true;
-            if(attributeValue.contains(",")) {
-                for(String currentAttributeValue : attributeValue.split(",")) {
-                    if(controlValueList.indexOf(currentAttributeValue.trim())<0) {
-                        found = false;
+
+            if(valid) {
+                if(!controlValues.equals("")) {
+                    //trim multiple select for validation
+                    if (controlValues.startsWith(multiplePrefix) && controlValues.endsWith(")")) {
+                        controlValues = controlValues.substring(multiplePrefix.length(), controlValues.length() - 1);
+                    } else if (controlValues.startsWith(radioPrefix) && controlValues.endsWith(")")) {
+                        controlValues = controlValues.substring(radioPrefix.length(), controlValues.length() - 1);
+                    } else if (controlValues.startsWith(dictionaryPrefix)) {
+                        String dictType = controlValues.replace(dictionaryPrefix, "");
+                        boolean hasParent = dictType.contains("Parent:");
+
+                        try {
+                            Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
+                            ReadBeanPersister readPersister = new ReadBeanPersister(props);
+                            List<Dictionary> dictList = null;
+
+                            if (hasParent) {
+                                String[] dictOpts = dictType.split(",Parent:");
+                                String parentAttrName = dictOpts[1];
+                                String parentAttrValue = dictParentValueMap.get(parentAttrName);
+
+                                if (parentAttrValue != null && !parentAttrValue.equals("")) {
+                                    dictList = readPersister.getDictionaryDependenciesByType(
+                                            controlMap.get(parentAttrName).replace(dictionaryPrefix, ""), parentAttrValue.split(" - ")[0]);
+                                }
+                            } else {
+                                dictList = readPersister.getDictionaryByType(dictType);
+                            }
+
+                            StringBuilder sb = new StringBuilder();
+                            String delim = "";
+
+                            for (Dictionary dictionary : dictList) {
+                                sb.append(delim).append(dictionary.getDictionaryCode());
+
+                                delim = ";";
+                            }
+
+                            controlValues = sb.toString();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                    List<String> controlValueList = Arrays.asList(controlValues.split(";"));
+                    boolean found = true;
+                    if (attributeValue.contains(",")) {
+                        for (String currentAttributeValue : attributeValue.split(",")) {
+                            if (controlValueList.indexOf(currentAttributeValue.trim()) < 0) {
+                                found = false;
+                                break;
+                            }
+                        }
+                    } else {
+                        found = controlValueList.indexOf(attributeValue) >= 0;
+                    }
+                /*for ( String controlValue: controlValueArray ) {
+                    if ( attributeValue.equals( controlValue ) ) {
+                        found = true;
                         break;
+                    }
+                }*/
+
+                    if (!found) {
+                        String message = CONTROLLED_VOCAB_VIOLATED_HUMAN_READABLE_MSG.format(
+                                new Object[]{aType.toString(), attributeName, attributeValue, controlValues});
+                        throw new Exception(message);
+
                     }
                 }
             } else {
-                found = controlValueList.indexOf(attributeValue) >= 0;
-            }
-            /*for ( String controlValue: controlValueArray ) {
-                if ( attributeValue.equals( controlValue ) ) {
-                    found = true;
-                    break;
-                }
-            }*/
-
-            if ( ! found ) {
-                String message = CONTROLLED_VOCAB_VIOLATED_HUMAN_READABLE_MSG.format(
-                        new Object[] { aType.toString(), attributeName, attributeValue, controlValues } );
-                throw new Exception( message );
-
+                String message = NOT_VALID_ATTRIB_HUMAN_READABLE_MSG.format(
+                        new Object[]{aType.toString(), attributeName, attributeValue});
+                throw new Exception(message);
             }
         }
     }
