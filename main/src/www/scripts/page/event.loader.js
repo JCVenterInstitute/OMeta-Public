@@ -162,8 +162,8 @@ var _utils = {
         var $attributeDiv = $("#attributeInputDiv"); //where attributes are placed
         $attributeDiv.empty(); //empty any existing contents
 
-        var $autofillDiv = $("#autofill-option-button");
-        $autofillDiv.empty();
+        var $autofillLine = $('<tr style="display: none;"/>');
+        $autofillLine.append('<td class="gridIndex"></td>'); //grid row index
         var autofill_no = 2; //to specify which column is going to be autofilled (nth-element)
 
         g_eventAttributes = [];
@@ -171,9 +171,9 @@ var _utils = {
         g_avDic={};
 
         var requireImgHtml = '<img class="attributeIcon" src="images/icon/info_r.png"/>';
-        var autofillButtonHtml = '<button type="button" class="btn btn-info btn-xs" id="all-$a$" onClick="dataAutofill(this.id)"><i class="glyphicon glyphicon-arrow-down"></i></button>' +
-            '<button type="button" id="sequence-$b$" onclick="dataAutofill(this.id)" style="border: none;background:none;padding:0; margin:0;"><img src="images/fill_sequence.png"></button>' +
-            '<button type="button" class="btn btn-primary btn-xs" id="clear-$c$" onClick="dataAutofill(this.id)" style="margin-right: $w$px;"><i class="glyphicon glyphicon-remove"></i></button>';
+        var autofillButtonHtml = '<button type="button" class="btn btn-default btn-xs" id="all-$a$" onClick="dataAutofill(this.id)"><img src="images/autofill.png" style="width: 24px;height: 22px;"></i></button>' +
+            '<button type="button" id="sequence-$b$" onclick="dataAutofill(this.id)" class="btn btn-default btn-xs"><img src="images/autofill_sequence.png" style="width: 24px;height: 22px;"></button>' +
+            '<button type="button" class="btn btn-default btn-xs" id="clear-$c$" onClick="dataAutofill(this.id)"><img src="images/autofill_clear.png" style="width: 24px;height: 22px;"></i></button>';
 
 
         // //add table headers for grid view
@@ -182,7 +182,7 @@ var _utils = {
         if(utils.checkNP(en)) {
           if(!utils.checkSR(en)) {
             $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Sample Name<br/>'));
-            $autofillDiv.append(autofillButtonHtml.replace('$w$', '135').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
+            $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '135').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
             autofill_no+=1;
           } else {
             $gridHeaders.append(
@@ -190,8 +190,9 @@ var _utils = {
                 $('<th/>').addClass('tableHeaderNoBG').append('Parent Sample'),
                 $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>')
             );
-            $autofillDiv.append(autofillButtonHtml.replace('$w$', '95').replace('$a$', 2).replace('$b$', 2).replace('$c$', 2),
-                autofillButtonHtml.replace('$w$', '190').replace('$a$', 3).replace('$b$', 3).replace('$c$', 3));
+            $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '95').replace('$a$', 2).replace('$b$', 2).replace('$c$', 2)));
+            $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '190').replace('$a$', 3).replace('$b$', 3).replace('$c$', 3)));
+            $autofillLine.append($('<td/>')); // empty for Public
             autofill_no = 5; //set to 5 to pass Public column
           }
         } else {
@@ -200,7 +201,8 @@ var _utils = {
                 $('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Project Name<br/>', requireImgHtml),
                 $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
             );
-            $autofillDiv.append(autofillButtonHtml.replace('$w$', '145').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
+            $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '145').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
+            $autofillLine.append($('<td/>')); // empty for Public
             autofill_no+=2;
           }
         }
@@ -286,12 +288,12 @@ var _utils = {
 
               inputElement += '<select id="'  + (isRequired ? 'req_' : '') + 'select_$id$" name="$lt$attributeValue" style="min-width:35px;width:200px;" ' + (isMulti || isRadio ? 'multiple="multiple"':'') + '>' + options + '</select>';
 
-              $autofillDiv.append(autofillButtonHtml.replace('$w$', '130').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
+              $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '130').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
             } else {
               var maDatatype = _ma.lookupValue.dataType;
               if(maDatatype === 'file') { //file
                 inputElement += '<input type="file" id="' + maDatatype + '_$id$" name="$lt$upload" style="width:253px;"/>';
-                $autofillDiv.append('<label style="width: 253px;"></label>');
+                $autofillLine.append($('<td/>'));
               } else if(maDatatype ==='date') {
                 inputElement +=
                     '<div class="input-group col-sm-5">'+
@@ -299,12 +301,12 @@ var _utils = {
                     '  <label for="' + maDatatype + '_$id$" class="input-group-addon" style="padding:4px;"><span><i class="fa fa-calendar"></i></span></label>' +
                     '</div>';
 
-                $autofillDiv.append(autofillButtonHtml.replace('$w$', '110').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
+                $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '110').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
               } else { //text input
                 isText = true;
                 inputElement += '<input type="text" id="' + (isRequired ? 'req_' : '') + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" style="width:160px;"/> ';
 
-                $autofillDiv.append(autofillButtonHtml.replace('$w$', '94').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no));
+                $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '94').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
               }
             }
             inputElement = inputElement.replace(/\$id\$/g,_ma.lookupValue.name.replace(/ /g,"_") + "_$id$");
@@ -348,6 +350,7 @@ var _utils = {
 
         //add attribut headers to the grid view and add empty rows
         $('thead#gridHeader').append($gridHeaders);
+        $("#gridBody").append($autofillLine);
         _utils.addGridRows(null, en);
 
         if(hasDependantDict){
@@ -682,7 +685,7 @@ var button = {
       }
     } else if(loadType === "grid"){ // check grid table data
       var listHasData = true, hasAllReq = true, allEmpty = true, hasValErr = false; reqErrorMsg = ""; // require field check
-      var $formFields = $('#gridBody > tr > td').find(':not(:hidden):not(option), select[multiple=multiple]');  //:not(option) added for firefox
+      var $formFields = $('#gridBody > tr:not(:first) > td').find(':not(:hidden):not(option), select[multiple=multiple]');  //:not(option) added for firefox
 
       var rowCheck = [], rowMsg = "", empty = true, rowAllReq = true, rowHasData = false, hasValueLengthErr = false;;
 

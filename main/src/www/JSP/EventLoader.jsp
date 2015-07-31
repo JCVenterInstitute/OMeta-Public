@@ -72,6 +72,12 @@
     }
 
     .scrollButton{padding:10px;text-align:center;font-weight: bold;color: #FFFAFA;text-decoration: none;position:fixed;right:40px;background: rgb(0, 129, 179);display: none;}
+
+    #autofill-control:hover:after{ background: #333; background: rgba(0,0,0,.8);
+      border-radius: 5px; bottom: 0px; color: #fff; content: attr(data-tooltip);
+      left: 140%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
+    #autofill-control:hover:before{border: solid; border-color: transparent #333;border-width: 6px 6px 6px 0px;
+      bottom: 8px; content: ""; left: 125%; position: absolute; z-index: 99;}
   </style>
 </head>
 
@@ -248,10 +254,11 @@
 
               <div id="dataSubmissionScope">
                 <div class="row row_spacer">
-                  <div class="col-lg-3 col-md-4 middle-header">
+                  <div class="col-lg-3 col-md-4 middle-header" style="border-bottom: none;">
                     <h3>Data Submission</h3>
                   </div>
                   <div style="font-size:0.9em;padding-top:30px;" class="col-lg-9 col-md-8">
+                    <input type="image" id="autofill-control" src="images/autofill_icon.png" onclick="triggerAutofill();return false;" title="Toggle Autofill" data-tooltip="Toggle Autofill" style="float: left;margin-right: 10px;margin-top: -3px;"/>
                     [<img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Information, <img src="images/icon/ontology.png"/>-Ontology, <small class="text-danger" style="vertical-align: bottom">*</small>-Required]
                   </div>
                 </div>
@@ -272,7 +279,7 @@
                 </div>
                 <div id="gridInputDiv" style="margin:25px 10px 0 0 ;overflow-x: auto;display:none;">
                   <div class="col-lg-1" style="position: absolute;">
-                    <div class="input-group">
+                    <div class="input-group" id="autofill-type-button" style="display: none">
                       <input class="input-sm" id="s-name-autofill" placeholder="Type autofill value...">
                       <span class="input-group-btn">
                         <button type="button" class="btn btn-primary btn-sm" id="autofill-clear">
@@ -281,7 +288,7 @@
                       </span>
                     </div><!-- /input-group -->
                   </div>
-                  <div id="autofill-option" style="margin-bottom: 10px;margin-top: 35px">
+                  <div id="autofill-option" style="display:none;margin-bottom: 10px;margin-top: 35px">
                     <div id="autofill-option-button" style="margin-top: 10px;margin-left: 15px;display: none"></div>
                   </div>
                   <table name="eventTable" id="eventTable" class="contenttable">
@@ -384,6 +391,10 @@
   var avHtml;
   var sample_options;
 
+  function triggerAutofill(){
+    $("#autofill-option, #gridBody tr:first, #autofill-type-button").toggle();
+  }
+
   $(document).ready(function() {
     $('#dataSubmissionScope').hide();
 
@@ -409,13 +420,13 @@
 
     //load type radio button change event
     $('input[name="loadType"]').change(function() {
-      $('div[id$="InputDiv"], #gridAddLineButton, #gridRemoveLineButton, #sampleSelectRow, #dropBoxDiv, #toInteractiveP, #confirmDiv').hide();
+      $('div[id$="InputDiv"], #gridAddLineButton, #gridRemoveLineButton, #sampleSelectRow, #dropBoxDiv, #toInteractiveP, #confirmDiv, #autofill-control').hide();
       if(dataSubmissionDisplay) $('#dataSubmissionScope').show();
       $('.interactiveTableInfo').show();
       utils.preSelect('_sampleSelect', '');
       var _selectedType = $(this).val();
       if(_selectedType === 'grid') {
-        $('#gridInputDiv, #gridAddLineButton, #gridRemoveLineButton, #confirmDiv').show();
+        $('#gridInputDiv, #gridAddLineButton, #gridRemoveLineButton, #confirmDiv, #autofill-control').show();
         $("#interactive-submission-table tr:last").hide();
         _utils.addGridRows(utils.getProjectName(), utils.getEventName());
         $("#autofill-option").width($('thead#gridHeader').width() + 70);
