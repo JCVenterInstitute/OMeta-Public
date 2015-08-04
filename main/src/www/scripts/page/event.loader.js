@@ -391,7 +391,9 @@ var _utils = {
       eventAttribute: function(data, eventName) {
         if(data && data.aaData) {
           g_gridLineCount = 0;
+          var $autofillRow = $("#gridBody tr:first");
           $('#gridBody').empty();
+          $('#gridBody').append($autofillRow);
           $('[name^="gridList"]').remove();
           $.each(data.aaData, function(i,v) {
             if(v.object && v.attributes) {
