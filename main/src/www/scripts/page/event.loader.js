@@ -332,13 +332,9 @@ var _utils = {
             /* multiple select jquery plugin */
             if(isMulti) {
               $inputNode.find('select').multipleSelect({
-                onOpen: function(){adjustParentDivHeight("open")},
-                onClose: function() {adjustParentDivHeight("close")},
                 multipleWidth: '200px'});
             } else if(isRadio){
               $inputNode.find('select').multipleSelect({
-                onOpen: function(){adjustParentDivHeight("open")},
-                onClose: function() {adjustParentDivHeight("close")},
                 single: true,
                 multipleWidth: '200px'
               });
