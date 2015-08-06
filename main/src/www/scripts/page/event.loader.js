@@ -331,9 +331,14 @@ var _utils = {
 
             /* multiple select jquery plugin */
             if(isMulti) {
-              $inputNode.find('select').multipleSelect({multipleWidth: '200px'});
+              $inputNode.find('select').multipleSelect({
+                onOpen: function(){adjustParentDivHeight("open")},
+                onClose: function() {adjustParentDivHeight("close")},
+                multipleWidth: '200px'});
             } else if(isRadio){
               $inputNode.find('select').multipleSelect({
+                onOpen: function(){adjustParentDivHeight("open")},
+                onClose: function() {adjustParentDivHeight("close")},
                 single: true,
                 multipleWidth: '200px'
               });
@@ -615,6 +620,17 @@ var _utils = {
       }
     };
 // end _utils
+
+function adjustParentDivHeight(status){
+  if(status == 'open') {
+    var gridInputDiv = document.getElementById('gridInputDiv');
+    if (gridInputDiv.clientHeight < gridInputDiv.scrollHeight) {
+      gridInputDiv.style.height = (gridInputDiv.scrollHeight + 25) + "px";
+    }
+  } else{
+    $('#gridInputDiv').height($('#eventTable').height() + 21);
+  }
+}
 
 //Stores up to 100 ids per object
 var sampleData = [];
@@ -1087,9 +1103,15 @@ var button = {
           utils.preSelectWithNode($inputNode, bean[1]);
         }
         if(av_v.isMulti === true) {
-          $inputNode.find('select').multipleSelect();
+          $inputNode.find('select').multipleSelect({
+            onOpen: function () {adjustParentDivHeight("open")},
+            onClose: function () {adjustParentDivHeight("close")}
+          });
         } else if(av_v.isRadio === true){
-          $inputNode.find('select').multipleSelect({single:true});
+          $inputNode.find('select').multipleSelect({
+            onOpen: function () {adjustParentDivHeight("open")},
+            onClose: function () {adjustParentDivHeight("close")},
+            single:true});
         }
 
         if(av_v.isText && av_v.hasOntology) {
