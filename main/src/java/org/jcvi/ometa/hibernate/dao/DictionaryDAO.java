@@ -20,6 +20,7 @@ public class DictionaryDAO extends HibernateDAO {
 
         try {
             Criteria crit = session.createCriteria( Dictionary.class );
+            crit.add( Restrictions.eq("isActive", 1) );
             rtnVal = crit.list();
         } catch ( Exception ex ) {
             throw new DAOException( ex );
@@ -46,6 +47,7 @@ public class DictionaryDAO extends HibernateDAO {
 
         try {
             Criteria crit = session.createCriteria( Dictionary.class );
+            crit.add( Restrictions.eq("isActive", 1) );
             crit.add( Restrictions.eq("dictionaryType", dictType) );
             rtnVal = crit.list();
         } catch ( Exception ex ) {
@@ -60,6 +62,7 @@ public class DictionaryDAO extends HibernateDAO {
 
         try {
             Criteria crit = session.createCriteria( Dictionary.class );
+            crit.add( Restrictions.eq("isActive", 1) );
             crit.add( Restrictions.eq("dictionaryType", dictType) );
             crit.add( Restrictions.eq("dictionaryCode", dictCode) );
             rtnVal = (Dictionary) crit.uniqueResult();
@@ -78,7 +81,7 @@ public class DictionaryDAO extends HibernateDAO {
                     "where d.dict_id in (" +
                     "select dd.dict_id from ifx_projects.dictionary_dependency dd " +
                     "left join ifx_projects.dictionary d on dd.parent_id = d.dict_id " +
-                    "where d.dict_type = :dictType and d.dict_code = :dictCode)";
+                    "where d.dict_type = :dictType and d.dict_code = :dictCode) and d.dict_is_active = 1";
 
             SQLQuery query = session.createSQLQuery(sql);
             query.addEntity(Dictionary.class);
@@ -103,6 +106,7 @@ public class DictionaryDAO extends HibernateDAO {
 
             Criteria crit = session.createCriteria( Dictionary.class );
             crit.setProjection(projList);
+            crit.add(Restrictions.eq("isActive", 1));
             rtnVal = (List<Object[]>) crit.list();
         } catch ( Exception ex ) {
             throw new DAOException( ex );
@@ -117,6 +121,7 @@ public class DictionaryDAO extends HibernateDAO {
             dictionary.setDictionaryCode(dictCode);
             dictionary.setDictionaryValue(dictValue);
             dictionary.setDictionaryType(dictType);
+            dictionary.setIsActive(1);
             dictionary.setCreationDate(creationDate);
 
             session.save(dictionary);
@@ -132,6 +137,7 @@ public class DictionaryDAO extends HibernateDAO {
             dictionary.setDictionaryCode(dictCode);
             dictionary.setDictionaryValue(dictValue);
             dictionary.setDictionaryType(dictType);
+            dictionary.setIsActive(1);
             dictionary.setCreationDate(creationDate);
 
             session.save(dictionary);

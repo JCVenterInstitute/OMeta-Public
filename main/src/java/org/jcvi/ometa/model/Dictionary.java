@@ -16,6 +16,7 @@ public class Dictionary implements ModelBean {
     private String dictionaryType;
     private String dictionaryCode;
     private String dictionaryValue;
+    private Integer isActive;
 
     private Date creationDate;
     private Date modifiedDate;
@@ -62,6 +63,15 @@ public class Dictionary implements ModelBean {
     @JCVI_BeanPopulator_Column("DictionaryValue")
     public void setDictionaryValue(String dictionaryValue) {
         this.dictionaryValue = dictionaryValue;
+    }
+
+    @Column(name="dict_is_active", nullable=false)
+    public Integer getIsActive() {
+        return (isActive != null && isActive > 0) ? 1 : 0;
+    }
+
+    public void setIsActive(Integer isActive) {
+        this.isActive = (isActive != null && isActive > 0) ? 1 : 0;
     }
 
     @Column(name="dict_create_date", nullable=false)
