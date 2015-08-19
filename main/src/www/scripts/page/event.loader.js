@@ -1442,6 +1442,18 @@ function toBulk() {
 
       //$('#progress .bar').css('width', '0%');
     },
+    fail: function (e, data) {
+      $('#files').find('p').each(function(i,v) {
+        var $node = $(v);
+
+        if($node.text().indexOf(data.files[0].name) >= 0) {
+          if($node.find('span.label').length < 1) {
+            $node.prepend($('<span class="label label-danger" style="margin-right: 10px;"/>').text("Failed to upload!"));
+            $node.find('button').hide();
+          }
+        }
+      });
+    },
     dropZone: $('#dropzone'),
     progressall: function (e, data) {
       var progress = parseInt(data.loaded / data.total * 100, 10);
