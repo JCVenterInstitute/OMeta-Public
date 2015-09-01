@@ -173,7 +173,7 @@ public interface ProjectSampleEventPresentationBusiness {
 
     public List<LookupValue> getLookupValueByType(String type) throws Exception;
 
-    public List<Dictionary> getDictionaries() throws Exception;
+    public List<Dictionary> getDictionaries(boolean includeInactive) throws Exception;
 
     public List<DictionaryDependency> getDictionaryDependencies() throws Exception;
 
@@ -184,4 +184,6 @@ public interface ProjectSampleEventPresentationBusiness {
     public List<Dictionary> getDictionaryDependenciesByType(String dictType, String dictCode) throws Exception;
 
     public List<Object[]> getAllDictionaryTypeCodePairs() throws Exception;
+
+    public void updateDictionary(Long dictionaryId, boolean active) throws Exception;
 }

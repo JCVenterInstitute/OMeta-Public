@@ -26,6 +26,8 @@ public class DictionaryManagement extends ActionSupport {
     private List<Dictionary> dictionaryList;
     private Map<Long, Long> dependencyMap;
     private String errorMsg;
+    private boolean active;
+    private Long dictionaryId;
 
     public DictionaryManagement() {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
@@ -36,7 +38,7 @@ public class DictionaryManagement extends ActionSupport {
         String returnValue = NONE;
 
         try {
-            this.dictionaryList = readPersister.getDictionaries();
+            this.dictionaryList = readPersister.getDictionaries(true);
             List<DictionaryDependency> dictionaryDependencyList = readPersister.getDictionaryDependencies();
 
             dependencyMap = new HashMap<Long, Long>(dictionaryDependencyList.size());
@@ -52,7 +54,60 @@ public class DictionaryManagement extends ActionSupport {
             logger.info( Constants.LOGIN_REQUIRED_MESSAGE );
             return LOGIN;
         } catch(Exception ex) {
-            logger.error("Exception in Event Detail Action : " + ex.toString());
+            logger.error("Exception in Dictionary Action : " + ex.toString());
+            ex.printStackTrace();
+        }
+
+        if(errorMsg != null) addActionError(errorMsg);
+
+        return returnValue;
+    }
+
+    public String getDictionariesForAdmin(){
+        String returnValue = NONE;
+
+        try {
+            this.dictionaryList = readPersister.getDictionaries(true);
+            List<DictionaryDependency> dictionaryDependencyList = readPersister.getDictionaryDependencies();
+
+            dependencyMap = new HashMap<Long, Long>(dictionaryDependencyList.size());
+
+            for(DictionaryDependency dictDependency : dictionaryDependencyList){
+                this.dependencyMap.put(dictDependency.getDictionaryId(), dictDependency.getParentId());
+            }
+        } catch (ForbiddenResourceException fre ) {
+            logger.info( Constants.DENIED_USER_EDIT_MESSAGE );
+            addActionError( Constants.DENIED_USER_EDIT_MESSAGE );
+            return Constants.FORBIDDEN_ACTION_RESPONSE;
+        } catch(LoginRequiredException lre ) {
+            logger.info( Constants.LOGIN_REQUIRED_MESSAGE );
+            return LOGIN;
+        } catch(Exception ex) {
+            logger.error("Exception in Dictionary Management Action : " + ex.toString());
+            ex.printStackTrace();
+        }
+
+        if(errorMsg != null) addActionError(errorMsg);
+
+        return returnValue;
+    }
+
+    public String updateDictionary() {
+        String returnValue = NONE;
+
+        try {
+            this.dictionaryList = readPersister.getDictionaries(true);
+            readPersister.updateDictionary(dictionaryId, active);
+
+        } catch (ForbiddenResourceException fre ) {
+            logger.info( Constants.DENIED_USER_EDIT_MESSAGE );
+            addActionError( Constants.DENIED_USER_EDIT_MESSAGE );
+            return Constants.FORBIDDEN_ACTION_RESPONSE;
+        } catch(LoginRequiredException lre ) {
+            logger.info( Constants.LOGIN_REQUIRED_MESSAGE );
+            return LOGIN;
+        } catch(Exception ex) {
+            logger.error("Exception in Update Dictionary Action : " + ex.toString());
             ex.printStackTrace();
         }
 
@@ -83,5 +138,21 @@ public class DictionaryManagement extends ActionSupport {
 
     public void setDependencyMap(Map<Long, Long> dependencyMap) {
         this.dependencyMap = dependencyMap;
+    }
+
+    public Long getDictionaryId() {
+        return dictionaryId;
+    }
+
+    public void setDictionaryId(Long dictionaryId) {
+        this.dictionaryId = dictionaryId;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

@@ -1156,13 +1156,13 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return rtnVal;
     }
 
-    public List<Dictionary> getDictionaries() throws Exception {
+    public List<Dictionary> getDictionaries(boolean includeInactive) throws Exception {
         List<Dictionary> rtnVal = null;
 
         try {
             DictionaryDAO dictionaryDAO = daoFactory.getDictionaryDAO();
             Session session = this.startTransactedSession();
-            rtnVal = dictionaryDAO.getDictionaries(session);
+            rtnVal = dictionaryDAO.getDictionaries(session, includeInactive);
             sessionAndTransactionManager.commitTransaction();
         } catch (Exception ex) {
             sessionAndTransactionManager.rollBackTransaction();
@@ -1262,6 +1262,20 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         }
 
         return rtnVal;
+    }
+
+    public void updateDictionary(Long dictionaryId, boolean active) throws Exception{
+        try {
+            DictionaryDAO dictionaryDAO = daoFactory.getDictionaryDAO();
+            Session session = this.startTransactedSession();
+            dictionaryDAO.updateDictionary(session, dictionaryId, active);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
     }
 
     //---------------------------------------------HELPER METHODS

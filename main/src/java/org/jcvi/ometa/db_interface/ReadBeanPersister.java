@@ -326,8 +326,8 @@ public class ReadBeanPersister implements WebDataFacadeI {
         return pseb.getLookupValueByType(type);
     }
 
-    public List<Dictionary> getDictionaries() throws Exception {
-        return pseb.getDictionaries();
+    public List<Dictionary> getDictionaries(boolean includeInactive) throws Exception {
+        return pseb.getDictionaries(includeInactive);
     }
 
     public List<DictionaryDependency> getDictionaryDependencies() throws Exception {
@@ -340,5 +340,9 @@ public class ReadBeanPersister implements WebDataFacadeI {
 
     public List<Dictionary> getDictionaryDependenciesByType(String dictType, String dictCode) throws Exception {
         return pseb.getDictionaryDependenciesByType(dictType, dictCode);
+    }
+
+    public void updateDictionary(Long dictionaryId, boolean active) throws Exception{
+        pseb.updateDictionary(dictionaryId, active);
     }
 }

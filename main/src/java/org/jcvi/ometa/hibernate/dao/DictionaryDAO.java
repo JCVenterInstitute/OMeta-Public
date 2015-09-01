@@ -1,6 +1,7 @@
 package org.jcvi.ometa.hibernate.dao;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
@@ -15,12 +16,12 @@ import java.util.List;
  */
 public class DictionaryDAO extends HibernateDAO {
 
-    public List<Dictionary> getDictionaries(Session session) throws DAOException {
+    public List<Dictionary> getDictionaries(Session session, boolean includeInactive) throws DAOException {
         List<Dictionary> rtnVal = null;
 
         try {
             Criteria crit = session.createCriteria( Dictionary.class );
-            crit.add( Restrictions.eq("isActive", 1) );
+            if(!includeInactive) crit.add( Restrictions.eq("isActive", 1) );
             rtnVal = crit.list();
         } catch ( Exception ex ) {
             throw new DAOException( ex );
@@ -160,5 +161,19 @@ public class DictionaryDAO extends HibernateDAO {
         } catch ( Exception ex ) {
             throw new DAOException( ex );
         }
+    }
+
+    public void updateDictionary(Session session, Long dictionaryId, boolean active) throws Exception{
+        try {
+            Query query = session.createQuery("update Dictionary set isActive = :active" +
+                    " where dictionaryId = :dictionaryId");
+            query.setParameter("dictionaryId", dictionaryId);
+            if(active) query.setParameter("active", 1);
+            else query.setParameter("active", 0);
+            query.executeUpdate();
+        } catch ( Exception ex ) {
+            throw new DAOException( ex );
+        }
+
     }
 }

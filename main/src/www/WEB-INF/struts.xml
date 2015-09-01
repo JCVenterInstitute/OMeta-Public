@@ -218,9 +218,33 @@
                 <param name="projectNames">${projectNames}</param>
                 <param name="attributes">${attributes}</param>
             </result>
+            <result name="success">/JSP/Dictionary.jsp</result>
+            <result name="none">/JSP/Dictionary.jsp</result>
+            <result name="error">/JSP/Dictionary.jsp</result>
+        </action>
+
+        <action name="dictionaryManagement" class="org.jcvi.ometa.action.DictionaryManagement" method="getDictionariesForAdmin">
+            <result name="login" type="redirectAction">
+                <param name="actionName">forceLoginForEventReport</param>
+                <param name="namespace">/</param>
+                <param name="projectNames">${projectNames}</param>
+                <param name="attributes">${attributes}</param>
+            </result>
             <result name="success">/JSP/DictionaryManagement.jsp</result>
             <result name="none">/JSP/DictionaryManagement.jsp</result>
             <result name="error">/JSP/DictionaryManagement.jsp</result>
+        </action>
+
+        <action name="updateDictionary" class="org.jcvi.ometa.action.DictionaryManagement" method="updateDictionary">
+            <result name="login" type="redirectAction">
+                <param name="actionName">forceLoginForEventReport</param>
+                <param name="namespace">/</param>
+                <param name="projectNames">${projectNames}</param>
+                <param name="attributes">${attributes}</param>
+            </result>
+            <result name="success" type="redirectAction">dictionaryManagement</result>
+            <result name="none" type="redirectAction">dictionaryManagement</result>
+            <result name="error" type="redirectAction">dictionaryManagement</result>
         </action>
 
         <action name="eventDetail" class="org.jcvi.ometa.action.EventDetail" method="eventDetail">

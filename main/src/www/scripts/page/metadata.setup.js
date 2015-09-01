@@ -307,9 +307,6 @@ var _utils = {
     attribute: function(t) {
       this.open('LPopupAddLookupValue', 'addLookupValue.action?type='+t);
     },
-    dictionary: function() {
-      this.open('LPopupAddDictionary', 'addDictionary.action')
-    },
     ontology: function() {
       this.open('LPopupOntologySearch', 'ontologySearch.action');
     }
