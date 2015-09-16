@@ -53,6 +53,7 @@ public class JsonProducer implements Schedulable {
 
     private final String forbiddenAttributes[] = {"run date"};
     private final String SAMPLE_STATUS = "Sample Status";
+    private final String AIM = "Aim";
     private final String PROD_SERVER_ADDRESS = "https://projectsampletracking.jcvi.org";
 
     public JsonProducer() {
@@ -260,6 +261,9 @@ public class JsonProducer implements Schedulable {
             List<String> statusList = new ArrayList<String>();
             List<JSONObject> sumList = new ArrayList<JSONObject>();
 
+            //Add Aim Column to production status summary page
+            statusList.add(AIM);
+
             for (Project project : projects) {
                 JSONObject currSum = new JSONObject();
 
@@ -287,6 +291,7 @@ public class JsonProducer implements Schedulable {
                 currSum.put("p_n", project.getProjectName());
                 currSum.put("p_s", projectAttrMap.get(PROJECT_STATUS));
                 currSum.put("p_g", projectAttrMap.get("Project Group"));
+                currSum.put(AIM, projectAttrMap.get(AIM));
 
                 List<Long> sampleIdList = getSampleIdList(getSamplesFromList(projectIdVsSampleList, tempProjectId));
                 Map<Long, List<SampleAttribute>> sampleIdVsAttributeList = getSampleVsAttributeList(sampleIdList);
@@ -321,7 +326,6 @@ public class JsonProducer implements Schedulable {
                                     statusList.add(currStatus);
                                 currSum.put(currStatus, currSum.has(currStatus)?currSum.getInt(currStatus)+1:1); //count
                             }
-
                         }
                     }
 
