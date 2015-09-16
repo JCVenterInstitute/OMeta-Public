@@ -521,6 +521,10 @@
             <result name="error" type="json"/>
             <result name="input" type="json"/>
         </action>
+        <action name="getChildDictionary" class="org.jcvi.ometa.action.DictionaryManagement" method="getChildDictionary">
+            <result name="success" type="json"/>
+            <result name="error" type="json"/>
+        </action>
     </package>
 
     <package name="default" namespace="/" extends="struts-default">
