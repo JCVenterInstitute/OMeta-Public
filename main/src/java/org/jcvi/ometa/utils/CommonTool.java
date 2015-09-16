@@ -244,33 +244,13 @@ public class CommonTool {
                                 }
 
                                 if (parentDictType != null) {
-                                    List<Dictionary> parentDictList = readPersister.getDictionaryByType(parentDictType);
                                     JSONArray jsonArray = new JSONArray();
                                     jsonArray.put(new JSONObject()
                                             .put("name", "parent_attribute")
                                             .put("value", dictOpts[1]));
-
-                                    for (Dictionary parentDict : parentDictList) {
-                                        List<Dictionary> childList = readPersister.getDictionaryDependenciesByType(parentDict.getDictionaryType(), parentDict.getDictionaryCode());
-
-                                        StringBuilder sb = new StringBuilder();
-                                        String delim = "";
-
-                                        for (Dictionary dictionary : childList) {
-                                            String code = dictionary.getDictionaryCode();
-                                            String value = dictionary.getDictionaryValue();
-
-                                            sb.append(delim);
-                                            if (code.equals(value)) sb.append(value);
-                                            else sb.append(code).append(" - ").append(value);
-
-                                            delim = ";";
-                                        }
-
-                                        jsonArray.put(new JSONObject()
-                                                .put("name", parentDict.getDictionaryCode())
-                                                .put("value", sb.toString()));
-                                    }
+                                    jsonArray.put(new JSONObject()
+                                            .put("name", "parent_dict_type")
+                                            .put("value", parentDictType));
 
                                     ema.setOptions(jsonArray.toString());
                                 }

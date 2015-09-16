@@ -2,6 +2,7 @@ package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.Logger;
+import org.codehaus.jettison.json.JSONObject;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.exception.ForbiddenResourceException;
 import org.jcvi.ometa.exception.LoginRequiredException;
@@ -10,10 +11,7 @@ import org.jcvi.ometa.model.DictionaryDependency;
 import org.jcvi.ometa.utils.Constants;
 import org.jtc.common.util.property.PropertyHelper;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by mkuscuog on 7/7/2015.
@@ -28,6 +26,10 @@ public class DictionaryManagement extends ActionSupport {
     private String errorMsg;
     private boolean active;
     private Long dictionaryId;
+
+    private String parentDictType;
+    private String parentDictCode;
+    private List aaData;
 
     public DictionaryManagement() {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
@@ -116,6 +118,38 @@ public class DictionaryManagement extends ActionSupport {
         return returnValue;
     }
 
+    public String getChildDictionary(){
+        String returnValue = NONE;
+
+        try {
+            aaData = new ArrayList<String>();
+            List<Dictionary> childList = readPersister.getDictionaryDependenciesByType(parentDictType, parentDictCode);
+
+            for (Dictionary dictionary : childList) {
+                String code = dictionary.getDictionaryCode();
+                String value = dictionary.getDictionaryValue();
+
+                aaData.add(code + " - " + value);
+            }
+
+            returnValue = SUCCESS;
+        } catch (ForbiddenResourceException fre ) {
+            logger.info( Constants.DENIED_USER_EDIT_MESSAGE );
+            addActionError( Constants.DENIED_USER_EDIT_MESSAGE );
+            return Constants.FORBIDDEN_ACTION_RESPONSE;
+        } catch(LoginRequiredException lre ) {
+            logger.info( Constants.LOGIN_REQUIRED_MESSAGE );
+            return LOGIN;
+        } catch(Exception ex) {
+            logger.error("Exception in Update Dictionary Action : " + ex.toString());
+            ex.printStackTrace();
+        }
+
+        if(errorMsg != null) addActionError(errorMsg);
+
+        return returnValue;
+    }
+
     public String getErrorMsg() {
         return errorMsg;
     }
@@ -154,5 +188,29 @@ public class DictionaryManagement extends ActionSupport {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getParentDictType() {
+        return parentDictType;
+    }
+
+    public void setParentDictType(String parentDictType) {
+        this.parentDictType = parentDictType;
+    }
+
+    public String getParentDictCode() {
+        return parentDictCode;
+    }
+
+    public void setParentDictCode(String parentDictCode) {
+        this.parentDictCode = parentDictCode;
+    }
+
+    public List getAaData() {
+        return aaData;
+    }
+
+    public void setAaData(List aaData) {
+        this.aaData = aaData;
     }
 }

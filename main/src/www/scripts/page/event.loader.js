@@ -15,7 +15,7 @@ var _utils = {
         if($gridSize === '' && g_sampleIds) $gridSize = g_sampleIds.split(',').length;
         var rowSize = utils.checkPU(en) ? 1 : ($gridSize > 0) ? $gridSize : 5;
         if(g_sampleIds == null) {
-          for (var _rows = $('#gridBody > tr').length; _rows < rowSize; _rows++) {
+          for (var _rows = $('#gridBody > tr.borderBottom').length; _rows < rowSize; _rows++) {
             button.add_event(pn, en);
           }
         }
@@ -238,7 +238,7 @@ var _utils = {
             );
 
             var inputElement='';
-            var isSelect = (_ma.options && _ma.options !== '' && _ma.options.indexOf(';') > 0);
+            var isSelect = (_ma.options && _ma.options !== '' && (_ma.options.indexOf(';') > 0 || _ma.options.indexOf("[{") === 0));
             var isMulti = false, isRadio = false;
             var isText = false;
 
@@ -265,17 +265,19 @@ var _utils = {
               } else {
                 if(givenOptions.indexOf("[{") === 0 && givenOptions.indexOf("parent_attribute") > -1){
                   var childDictJson = JSON.parse(givenOptions);
-                  childOptionsMap = {};
                   childFieldName = this.attributeName;
+                  parentChildDict = []
 
                   for(var index in childDictJson){
                     var key = childDictJson[index].name;
                     if(key == 'parent_attribute'){
                       parentFieldName = childDictJson[index].value;
-                    } else {
-                      childOptionsMap[key] = childDictJson[index].value;
+                    } else if(key == 'parent_dict_type'){
+                      parentDictName = childDictJson[index].value;
                     }
                   }
+
+                  parentChildDict[parentFieldName] = {"dictName":parentDictName,"childFieldName":childFieldName};
 
                   options = '<option>Select '+parentFieldName +' </option>';
                   hasDependantDict = true;
@@ -355,22 +357,32 @@ var _utils = {
         _utils.addGridRows(null, en);
 
         if(hasDependantDict){
-          $("select[id*='select_"+parentFieldName+"']").change({childOptionsMap: childOptionsMap}, function(event, data){
+          $("select[id*='select_"+parentFieldName+"']").change(function(event, data){
+            var val = parentChildDict[parentFieldName];
+            var childFieldName = val['childFieldName'];
+            var parentDictName = val['dictName'];
             var selectedParent = ($(this).val()).split(" - ")[0];
             var selectedParentIdArr = ($(this).attr('id')).split("_");
             var attrIndex = (selectedParentIdArr[selectedParentIdArr.length-2] == 'f') ? parseInt(selectedParentIdArr[selectedParentIdArr.length-1],10) + 1 : selectedParentIdArr[selectedParentIdArr.length-1];
-            var childOptions = event.data.childOptionsMap[selectedParent];
             var childSelectInput = $("select[id*='select_"+childFieldName+"_" + selectedParentIdArr[selectedParentIdArr.length-2] + "_" + attrIndex +"']");
             var childValue = (data && data.sampleData == true) ? data.sampleAttrMap[childFieldName] : null;
             childSelectInput.html('');
             childSelectInput.append('<option value=""></option>');
 
-            if(childOptions) {
-              $.each(childOptions.split(';'), function (o_i, o_v) {
-                childSelectInput.append('<option value="' + o_v.split(" - ")[0] + '">' + o_v + '</option>');
+            if(selectedParent && selectedParent != "") {
+              $.ajax({
+                url: 'getChildDictionary.action',
+                data: 'parentDictType=' + parentDictName +'&parentDictCode=' + selectedParent,
+                cache: false,
+                async: false,
+                success: function (data) {
+                  $.each(data.aaData, function (i1, v1) {
+                    childSelectInput.append('<option value="' + v1.split(" - ")[0] + '">' + v1 + '</option>');
+                  });
+                }
               });
 
-              if(childValue != null) childSelectInput.val(childValue);
+              if (childValue != null) childSelectInput.val(childValue);
             }
           });
         }
@@ -1153,23 +1165,33 @@ var button = {
       g_gridLineCount++;
     }
 
-    if(beans != null && typeof parentFieldName != "undefined" && typeof childOptionsMap != "undefined"){
-      $("select[id*='select_"+parentFieldName+"']").change({childOptionsMap: childOptionsMap}, function(event, data){
+    if(beans != null && typeof parentFieldName != "undefined"){
+      $("select[id*='select_"+parentFieldName+"']").change(function(event, data){
+        var val = parentChildDict[parentFieldName];
+        var childFieldName = val['childFieldName'];
+        var parentDictName = val['dictName'];
         var selectedParent = ($(this).val()).split(" - ")[0];
         var selectedParentIdArr = ($(this).attr('id')).split("_");
         var attrIndex = (selectedParentIdArr[selectedParentIdArr.length-2] == 'f') ? parseInt(selectedParentIdArr[selectedParentIdArr.length-1],10) + 1 : selectedParentIdArr[selectedParentIdArr.length-1];
-        var childOptions = event.data.childOptionsMap[selectedParent];
         var childSelectInput = $("select[id*='select_"+childFieldName+"_" + selectedParentIdArr[selectedParentIdArr.length-2] + "_" + attrIndex +"']");
         var childValue = (data && data.sampleData == true) ? data.sampleAttrMap[childFieldName] : null;
         childSelectInput.html('');
         childSelectInput.append('<option value=""></option>');
 
-        if(childOptions) {
-          $.each(childOptions.split(';'), function (o_i, o_v) {
-            childSelectInput.append('<option value="' + o_v.split(" - ")[0] + '">' + o_v + '</option>');
-          });
+        if(selectedParent && selectedParent != "") {
+          $.ajax({
+            url: 'getChildDictionary.action',
+            data: 'parentDictType=' + parentDictName + '&parentDictCode=' + selectedParent,
+            cache: false,
+            async: false,
+            success: function (data) {
+              $.each(data.aaData, function (i1, v1) {
+                childSelectInput.append('<option value="' + v1.split(" - ")[0] + '">' + v1 + '</option>');
+              });
 
-          if(childValue != null) childSelectInput.val(childValue);
+              if (childValue != null) childSelectInput.val(childValue);
+            }
+          });
         }
       });
 
