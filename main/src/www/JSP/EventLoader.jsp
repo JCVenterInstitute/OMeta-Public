@@ -278,19 +278,6 @@
                   </s:if>
                 </div>
                 <div id="gridInputDiv" style="margin:25px 10px 0 0 ;overflow-x: auto;display:none;">
-                  <div class="col-lg-1" style="position: absolute;">
-                    <div class="input-group" id="autofill-type-button" style="display: none">
-                      <input class="input-sm" id="s-name-autofill" placeholder="Type autofill value...">
-                      <span class="input-group-btn">
-                        <button type="button" class="btn btn-primary btn-sm" id="autofill-clear">
-                          <i class="glyphicon glyphicon-remove"></i>
-                        </button>
-                      </span>
-                    </div><!-- /input-group -->
-                  </div>
-                  <div id="autofill-option" style="display:none;margin-bottom: 10px;margin-top: 35px">
-                    <div id="autofill-option-button" style="margin-top: 10px;margin-left: 15px;display: none"></div>
-                  </div>
                   <table name="eventTable" id="eventTable" class="contenttable">
                     <thead id="gridHeader" style="background-color: #B6B6B6"></thead>
                     <tbody id="gridBody"></tbody>
@@ -519,7 +506,7 @@
     button.add_event(null,null,gridLine);
     </s:iterator>
 
-    _utils.addGridRows(null,oldEventName);
+    //_utils.addGridRows(null,oldEventName);
     </s:if>
     <s:elseif test="%{#oldBeanList != null && #oldBeanList.size() >0}">
     //preload form view

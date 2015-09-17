@@ -1311,11 +1311,14 @@ function comboBoxChanged(option, id) {
 
 function dataAutofill(id){
   var idArr = id.split("-");
+  var autofillValue = $('#gridBody tr:nth-child(2) td:nth-child(' + idArr[1] +') input[type=text]').val();
+  if(autofillValue == undefined) autofillValue = $('#gridBody tr:nth-child(2) td:nth-child(' + idArr[1] +') select').val();
   var $sampleFields = $('#gridBody tr td:nth-child(' + idArr[1] +') input, #gridBody tr td:nth-child(' + idArr[1] +') select');
 
   if(idArr[0] === "all"){
-    var autofillValue = $("#s-name-autofill").val();
     var index = 1;
+    var override = false;
+    var overrideInputs = [];
 
     $sampleFields.each(function (i, v) {
       if(v.id != '' || v.className != '') {
@@ -1323,24 +1326,42 @@ function dataAutofill(id){
         if(typeof $v.attr("multiple") !== 'undefined') multi = true;
 
         if(!multi) {
-          if ($(v).val() != '') {
-            var columnName = $("#gridHeader tr th:nth-child(" + idArr[1] + ")").text().replace('*', '');
-            confirmBox(i, "Are you sure to overwrite [" + index + ":" + columnName + "] ?", function () {
-              $v.val(autofillValue);
-            });
+          if ($(v).val() != '' && $(v).val() != autofillValue) {
+            override = true;
+            overrideInputs.push($v);
           } else {
             $v.val(autofillValue);
+            $v.trigger("change");
           }
         } else{
-          $v.find("option[value='"+autofillValue+"']").prop('selected', true);
+          $v.find("option:selected").prop("selected", false);
+
+          if(Array.isArray(autofillValue)){
+            for(var i in autofillValue){
+              $v.find("option[value='"+autofillValue[i]+"']").prop('selected', true);
+            }
+          } else{
+            $v.find("option[value='"+autofillValue+"']").prop('selected', true);
+          }
+
           $v.multipleSelect("refresh");
         }
         index += 1;
       }
     });
+
+    if(override) {
+      confirmBox("","Are you sure to overwrite existing data?", function () {
+        for (var j = 0; j < overrideInputs.length; j++) {
+          overrideInputs[j].val(autofillValue);
+          overrideInputs[j].trigger("change");
+        }
+      });
+    }
   } else if(idArr[0] === "sequence"){
-    var autofillValue = $("#s-name-autofill").val();
     var index = 1;
+    var override = false;
+    var overrideInputs = [];
 
     $sampleFields.each(function (i, v) {
       if(v.id != '' || v.className != ''){
@@ -1349,21 +1370,38 @@ function dataAutofill(id){
 
         var value = autofillValue + index;
         if(!multi) {
-          if ($(v).val() != '') {
-            var columnName = $("#gridHeader tr th:nth-child(" + idArr[1] + ")").text().replace('*', '');
-            confirmBox(i, "Are you sure to overwrite [" + index + ":" + columnName + "] ?", function () {
-              $v.val(value);
-            });
+          if ($(v).val() != '' && $(v).val() != autofillValue) {
+            override = true;
+            overrideInputs.push($v);
           } else {
             $v.val(value);
+            $v.trigger("change");
           }
         } else{
-          $v.find("option[value='"+value+"']").prop('selected', true);
+          $v.find("option:selected").prop("selected", false);
+
+          if(Array.isArray(autofillValue)){
+            for(var i in autofillValue){
+              $v.find("option[value='"+autofillValue[i]+"']").prop('selected', true);
+            }
+          } else{
+            $v.find("option[value='"+autofillValue+"']").prop('selected', true);
+          }
+
           $v.multipleSelect("refresh");
         }
         index+=1;
       }
     });
+
+    if(override) {
+      confirmBox("","Are you sure to overwrite existing data?", function () {
+        for (var j = 0; j < overrideInputs.length; j++) {
+          overrideInputs[j].val(autofillValue);
+          overrideInputs[j].trigger("change");
+        }
+      });
+    }
   } else{
     var columnName = $("#gridHeader tr th:nth-child("+idArr[1]+")").text().replace('*','');
     confirmBox("Remove","Are you sure to delete contents in "+columnName+" ?",  function () {
@@ -1382,22 +1420,22 @@ function dataAutofill(id){
   }
 }
 
-function confirmBox(index,text,func) {
-  var html = '<div style="margin-top: 10px;" id="confirm'+index+'">' +
+function confirmBox(action,text,func) {
+  var html = '<div style="margin-top: 10px;" id="confirmOverride'+action+'">' +
       '<label class="confirm-text" style="margin-right: 5px;color:#a90329;">'+text+'</label>' +
       '<button class="yes btn btn-success btn-xs" type="button" style="margin-right:2px">Yes</button><button class="no btn btn-primary btn-xs" type="button">No</button>' +
       '</div>';
 
-  $('#confirm'+index).remove(); //remove if exists
+  $('#confirmOverride'+action).remove(); //remove if exists
   $("#confirmDiv").append(html);
-  var $confirmBox = $('#confirm'+index);
+  var $confirmBox = $('#confirmOverride'+action);
   $confirmBox.show();
-  $('#confirm'+index+' > .yes').click(function () {
+  $('#confirmOverride'+action+' > .yes').click(function () {
     func();
     $confirmBox.remove();
     func = function () {};
   });
-  $('#confirm'+index+' > .no').click(function () {
+  $('#confirmOverride'+action+' > .no').click(function () {
     $confirmBox.remove();
     func = function () {};
   });
