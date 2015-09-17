@@ -142,6 +142,8 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                     //process meta attribute orders
                     Map<String, List<MetadataSetupReadBean>> groupedList = new HashMap<String, List<MetadataSetupReadBean>>();
                     for (MetadataSetupReadBean bean : beanList) {
+                        boolean hasError = validateBeanOptions(bean.getOptions());
+                        if(hasError) throw new Exception();
                         if(groupedList.containsKey(bean.getEt())) {
                             groupedList.get(bean.getEt()).add(bean);
                         } else {
@@ -580,6 +582,45 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
         }
 
         return rtnVal;
+    }
+
+    public boolean validateBeanOptions(String options) {
+        String validationPrefix = "validate:";
+        boolean hasError = false;
+
+        if(options.contains(validationPrefix)){
+            int indexOfValidate = options.indexOf(validationPrefix);
+
+            String valStr = options.substring(indexOfValidate, options.length());
+
+            valStr = valStr.substring(validationPrefix.length(), valStr.length());
+            String[] validationRequests = valStr.split(",");
+
+            for(String valReq : validationRequests){
+                String[] classMethodVal = valReq.split("\\.");
+
+                try {
+                    Class validatorClass = Class.forName("org.jcvi.ometa.validation." + classMethodVal[0]);
+
+                    if(classMethodVal[1].contains("(") && classMethodVal[1].contains(")")){
+                        int indexOfArg = classMethodVal[1].indexOf("(");
+                        classMethodVal[1] = classMethodVal[1].substring(0, indexOfArg);
+
+                        validatorClass.getDeclaredMethod(classMethodVal[1], String.class, String.class);
+                    } else {
+                        validatorClass.getDeclaredMethod(classMethodVal[1], String.class);
+                    }
+                } catch (ClassNotFoundException e){
+                    addActionError("Error while processing meta attribute positions. Validation class:"+ classMethodVal[0] +" not found!");
+                    hasError = true;
+                } catch (NoSuchMethodException e){
+                    addActionError("Error while processing meta attribute positions. Validation method:"+ classMethodVal[1] +" not found!");
+                    hasError = true;
+                }
+            }
+        }
+
+        return hasError;
     }
 
     public String openNewAttribute() {
