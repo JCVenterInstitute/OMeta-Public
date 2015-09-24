@@ -52,7 +52,8 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
     protected static final String INVALID_LOOKUP_VALUE_DATA_TYPE_MSG = "invalid data type '%s'.";
     protected static final String INCOMPATIBLE_LOOKUP_VALUE_MSG = "Lookup value %s already exists. (%s, %s)";//, and is not compatible.";
     protected static final String INCOMPATIBLE_DICTIONARY_MSG = "Dictionary already exists. (%s, %s, %s)";//, and is not compatible.";
-    protected static final String UNKNOWN_SAMPLE_FOR_PROJECT_MSG = "Project '%s' does not have sample '%s'.";
+    protected static final String UNKNOWN_SAMPLE_FOR_PROJECT_MSG = "Project '%s' does not have sample '%s'.";;
+    protected static final String VALIDATION_PREFIX = "validate:";
 
     private SessionAndTransactionManagerI sessionAndTransactionManager;
     private Session session;
@@ -922,7 +923,8 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
         }
     }
 
-    private void validateProjectMetaAttributeInput(ProjectMetaAttribute attribute) throws InvalidInputException {
+    private void validateProjectMetaAttributeInput(ProjectMetaAttribute attribute)
+            throws InvalidInputException, ClassNotFoundException, NoSuchMethodException {
         /*if (isEmpty(attribute.getAttributeName())) {
             throw new InvalidInputException("Invalid project meta attribute: must have attribute name.");
         }
@@ -935,10 +937,13 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
         modelValidator.isValidDataType(dataType);*/
         if (isEmpty(attribute.getAttributeName()) || isEmpty(attribute.getProjectName())) {
             throw new InvalidInputException("Invalid project meta attribute: must have attribute name and project name.");
+        } else if(attribute.getOptions() != null && attribute.getOptions().contains(VALIDATION_PREFIX)){
+            checkValidationClassAndMethod(attribute.getOptions());
         }
     }
 
-    private void validateSampleMetaAttributeInput(SampleMetaAttribute attribute) throws InvalidInputException {
+    private void validateSampleMetaAttributeInput(SampleMetaAttribute attribute)
+            throws InvalidInputException, ClassNotFoundException, NoSuchMethodException {
         /*if (isEmpty(attribute.getAttributeName())) {
             throw new InvalidInputException("Invalid project meta attribute: must have attribute name.");
         }
@@ -952,12 +957,17 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
         modelValidator.isValidDataType(dataType);*/
         if (isEmpty(attribute.getAttributeName()) || isEmpty(attribute.getProjectName())) {
             throw new InvalidInputException("project name and attribute name are required.");
+        } else if(attribute.getOptions() != null && attribute.getOptions().contains(VALIDATION_PREFIX)){
+            checkValidationClassAndMethod(attribute.getOptions());
         }
     }
 
-    private void validateEventMetaAttributeInput(EventMetaAttribute attribute) throws InvalidInputException {
+    private void validateEventMetaAttributeInput(EventMetaAttribute attribute)
+            throws InvalidInputException, ClassNotFoundException, NoSuchMethodException {
         if (isEmpty(attribute.getAttributeName())) {
             throw new InvalidInputException("attribute name is empty or null.");
+        } else if(attribute.getOptions() != null && attribute.getOptions().contains(VALIDATION_PREFIX)){
+            checkValidationClassAndMethod(attribute.getOptions());
         }
 
         if (isEmpty(attribute.getProjectName()) || isEmpty(attribute.getEventName())) {
@@ -977,6 +987,36 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
         // Check: valid data type?
         modelValidator.isValidDataType(dataType);
         */
+    }
+
+    public void checkValidationClassAndMethod(String options) throws ClassNotFoundException, NoSuchMethodException{
+        int indexOfValidate = options.indexOf(VALIDATION_PREFIX);
+
+        String valStr = options.substring(indexOfValidate, options.length());
+
+        valStr = valStr.substring(VALIDATION_PREFIX.length(), valStr.length());
+        String[] validationRequests = valStr.split(",");
+
+        for(String valReq : validationRequests){
+            String[] classMethodVal = valReq.split("\\.");
+
+            try {
+                Class validatorClass = Class.forName("org.jcvi.ometa.validation." + classMethodVal[0]);
+
+                if(classMethodVal[1].contains("(") && classMethodVal[1].contains(")")){
+                    int indexOfArg = classMethodVal[1].indexOf("(");
+                    classMethodVal[1] = classMethodVal[1].substring(0, indexOfArg);
+
+                    validatorClass.getDeclaredMethod(classMethodVal[1], String.class, String.class);
+                } else {
+                    validatorClass.getDeclaredMethod(classMethodVal[1], String.class);
+                }
+            } catch (ClassNotFoundException e){
+                throw new ClassNotFoundException("Error while processing meta attribute positions. Validation class:" + classMethodVal[0] + " not found!");
+            } catch (NoSuchMethodException e){
+                throw new NoSuchMethodException("Error while processing meta attribute positions. Validation method:"+ classMethodVal[1] +" not found!");
+            }
+        }
     }
 
 }
