@@ -181,7 +181,7 @@ var _utils = {
         $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG gridIndex').append('#')); //grid row index
         if(utils.checkNP(en)) {
           if(!utils.checkSR(en)) {
-            $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Sample Name<br/>'));
+            $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG resizable-header').append('<small class="text-danger">*</small>Sample Name').append('<img class="attributeIcon" src="images/icon/resize_icon.gif" style="position:absolute;bottom:0;right:0;"/>'));
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '135').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
             autofill_no+=1;
           } else {
@@ -228,19 +228,21 @@ var _utils = {
                     , (hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
                 )
             );
-            $gridHeaders.append(
-                $('<th/>').addClass('tableHeaderNoBG').attr('data-tooltip', (isDesc ? _ma.desc : '')).append(
-                    isRequired ? '<small class="text-danger">*</small>' : '',
-                    (_ma.label ? _ma.label : _ma.lookupValue.name) + '<br/>',
-                    isDesc ? requireImgHtml : ''
-                    ,(hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
-                )
-            );
 
             var inputElement='';
             var isSelect = (_ma.options && _ma.options !== '' && (_ma.options.indexOf(';') > 0 || _ma.options.indexOf("[{") === 0));
             var isMulti = false, isRadio = false;
             var isText = false;
+
+            $gridHeaders.append(
+                $('<th/>').addClass('tableHeaderNoBG' + (isSelect ? ' resizable-header':'')).attr('data-tooltip', (isDesc ? _ma.desc : '')).append(
+                    isRequired ? '<small class="text-danger">*</small>' : '',
+                    (_ma.label ? _ma.label : _ma.lookupValue.name) + '<br/>',
+                    isDesc ? requireImgHtml : ''
+                    ,(hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
+                    ,(isSelect ? '<img class="attributeIcon" src="images/icon/resize_icon.gif" style="position:absolute;bottom:0;right:0;"/>':'')
+                )
+            );
 
             inputElement = '<input type="hidden" value="' + utils.getProjectName() + '" name="$lt$projectName"/>';
             inputElement += '<input type="hidden" value="' + _ma.lookupValue.name + '" name="$lt$attributeName"/>';
@@ -406,6 +408,22 @@ var _utils = {
             using: function( position, feedback ) {
               $( this ).css( position );
             }
+          }
+        });
+
+        $(".resizable-header").resizable({
+          handles: 'e',
+          resize: function( event, ui ) {
+            var columnIndex = this.cellIndex + 1;
+
+            $('#gridBody tr td:nth-child('+columnIndex+') select,' +
+            '#gridBody tr td:nth-child('+columnIndex+') div.ms-parent,' +
+            '#gridBody tr td:nth-child('+columnIndex+') div.input-group input').each(function (i, v) {
+              if(v.id != '' || v.className != '') {
+                var $v = $(v);
+                $v.css("width", ui.size.width);
+              }
+            });
           }
         });
 
