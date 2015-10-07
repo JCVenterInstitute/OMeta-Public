@@ -378,6 +378,13 @@
   var avHtml;
   var sample_options;
 
+  $( "#autofill-control" ).tooltip({
+    show: {
+      effect: "slideDown",
+      delay: 250
+    }
+  });
+
   function triggerAutofill(){
     $("#autofill-option, #gridBody tr:first, #autofill-type-button").toggle();
   }
@@ -468,11 +475,9 @@
         g_transferType = transferType;
       }
       if(oldEventName !== '') {
-        if(typeof InstallTrigger !== 'undefined') { // only if browser is Firefox
           $("#loadingImg").show();
           utils.preSelect("_eventSelect", oldEventName);
           changes.event(oldEventName, $('#_eventSelect').val());
-        }
       }
       if(oldSampleName !== '') {
         utils.preSelect("_sampleSelect", oldSampleName);
@@ -486,7 +491,9 @@
     <s:if test="%{#oldGridList != null && #oldGridList.size() > 0}">
     //remove any existing dom elements
     g_gridLineCount = 0;
+    var $autofillRow = $("#gridBody tr:first");
     $('#gridBody').html('');
+    $('#gridBody').append($autofillRow);
     $('[name^="gridList"]').remove();
 
     <s:iterator value="#oldGridList" var="gbean" status="gstat">
@@ -506,7 +513,7 @@
     button.add_event(null,null,gridLine);
     </s:iterator>
 
-    //_utils.addGridRows(null,oldEventName);
+    _utils.addGridRows(null,oldEventName);
     </s:if>
     <s:elseif test="%{#oldBeanList != null && #oldBeanList.size() >0}">
     //preload form view

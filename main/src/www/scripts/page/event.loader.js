@@ -3,7 +3,7 @@ var _utils = {
         $.ajax({
           url:u,
           cache: false,
-          async: true,
+          async: false,
           data: d,
           success: function(data){ cb(data,p); },
           fail: function() { alert("Ajax Process has failed."); }
@@ -171,9 +171,9 @@ var _utils = {
         g_avDic={};
 
         var requireImgHtml = '<img class="attributeIcon" src="images/icon/info_r.png"/>';
-        var autofillButtonHtml = '<button type="button" class="btn btn-default btn-xs" id="all-$a$" onClick="dataAutofill(this.id)"><img src="images/autofill.png" style="width: 24px;height: 22px;"></i></button>' +
-            '<button type="button" id="sequence-$b$" onclick="dataAutofill(this.id)" class="btn btn-default btn-xs"><img src="images/autofill_sequence.png" style="width: 24px;height: 22px;"></button>' +
-            '<button type="button" class="btn btn-default btn-xs" id="clear-$c$" onClick="dataAutofill(this.id)"><img src="images/autofill_clear.png" style="width: 24px;height: 22px;"></i></button>';
+        var autofillButtonHtml = '<button type="button" class="btn btn-default btn-xs autofill-title" data-placement="left" id="all-$a$" onClick="dataAutofill(this.id)" title="Autofill column"><img src="images/autofill.png" style="width: 24px;height: 22px;"></i></button>' +
+            '<button type="button" id="sequence-$b$" onclick="dataAutofill(this.id)" data-placement="left" class="btn btn-default btn-xs autofill-title" title="Autofill column in sequence"><img src="images/autofill_sequence.png" style="width: 24px;height: 22px;"></button>' +
+            '<button type="button" class="btn btn-default btn-xs autofill-title" data-placement="left" id="clear-$c$" onClick="dataAutofill(this.id)" title="Remove data in column"><img src="images/autofill_clear.png" style="width: 24px;height: 22px;"></i></button>';
 
 
         // //add table headers for grid view
@@ -328,7 +328,7 @@ var _utils = {
             utils.smartDatePicker($inputNode);
 
             if(isText && hasOntology) {
-              _utils.ontologify(_ma.desc, $inputNode);
+              _utils.ontologify(_ma.ontology, $inputNode);
             }
 
             /* multiple select jquery plugin */
@@ -398,6 +398,16 @@ var _utils = {
               callbacks.populateProjectInfo
           );
         }
+
+        $(".autofill-title").tooltip({
+          position: {
+            my: "center bottom-20",
+            at: "center top",
+            using: function( position, feedback ) {
+              $( this ).css( position );
+            }
+          }
+        });
 
         return;
       },
@@ -1123,7 +1133,7 @@ var button = {
         }
 
         if(av_v.isText && av_v.hasOntology) {
-          _utils.ontologify(av_v.ma.desc, $inputNode);
+          _utils.ontologify(av_v.ma.ontology, $inputNode);
         }
 
         $eventLine.append($inputNode);
@@ -1319,31 +1329,39 @@ function dataAutofill(id){
     var index = 1;
     var override = false;
     var overrideInputs = [];
+    var overrideInputsValue = [];
+    var multi = false;
 
     $sampleFields.each(function (i, v) {
       if(v.id != '' || v.className != '') {
-        var $v = $(v), multi = false;
+        var $v = $(v);
         if(typeof $v.attr("multiple") !== 'undefined') multi = true;
 
         if(!multi) {
           if ($(v).val() != '' && $(v).val() != autofillValue) {
             override = true;
             overrideInputs.push($v);
+            overrideInputsValue.push(autofillValue);
           } else {
             $v.val(autofillValue);
             $v.trigger("change");
           }
         } else{
-          $v.find("option:selected").prop("selected", false);
+          var selected_options = $v.find("option:selected");
 
-          if(Array.isArray(autofillValue)){
-            for(var i in autofillValue){
-              $v.find("option[value='"+autofillValue[i]+"']").prop('selected', true);
+          if(selected_options.length > 0 && v.name.indexOf("gridList[0]") != 0 && $(v).val() != autofillValue.toString()){
+            override = true;
+            overrideInputs.push($v);
+            overrideInputsValue.push(autofillValue);
+          } else {
+            if(Array.isArray(autofillValue)){
+              for(var i in autofillValue){
+                $v.find("option[value='"+autofillValue[i]+"']").prop('selected', true);
+              }
+            } else{
+              $v.find("option[value='"+autofillValue+"']").prop('selected', true);
             }
-          } else{
-            $v.find("option[value='"+autofillValue+"']").prop('selected', true);
           }
-
           $v.multipleSelect("refresh");
         }
         index += 1;
@@ -1353,42 +1371,92 @@ function dataAutofill(id){
     if(override) {
       confirmBox("","Are you sure to overwrite existing data?", function () {
         for (var j = 0; j < overrideInputs.length; j++) {
-          overrideInputs[j].val(autofillValue);
-          overrideInputs[j].trigger("change");
+          if (Array.isArray(overrideInputsValue[j])) {
+            overrideInputs[j].find("option:selected").prop("selected", false);
+            for (var i in overrideInputsValue[j]) {
+              overrideInputs[j].find("option[value='" + overrideInputsValue[j][i] + "']").prop('selected', true);
+            }
+
+            overrideInputs[j].multipleSelect("refresh");
+          } else {
+            if(multi){
+              overrideInputs[j].find("option:selected").prop("selected", false);
+              overrideInputs[j].find("option[value='" + overrideInputsValue[j] + "']").prop('selected', true);
+              overrideInputs[j].multipleSelect("refresh");
+            } else{
+              overrideInputs[j].val(overrideInputsValue[j]);
+              overrideInputs[j].trigger("change");
+            }
+          }
         }
       });
     }
   } else if(idArr[0] === "sequence"){
-    var index = 1;
+    var index = 0;
     var override = false;
     var overrideInputs = [];
+    var overrideInputsValue = [];
+    var multi = false;
 
     $sampleFields.each(function (i, v) {
       if(v.id != '' || v.className != ''){
-        var $v = $(v), multi = false;
+        var $v = $(v);
         if(typeof $v.attr("multiple") !== 'undefined') multi = true;
 
-        var value = autofillValue + index;
         if(!multi) {
-          if ($(v).val() != '' && $(v).val() != autofillValue) {
+          var value = autofillValue.slice(-1) != "" && !isNaN(autofillValue.slice(-1))
+              ? increaseNumberInString(autofillValue, index)
+              : autofillValue + (index + 1);
+          if (v.name.indexOf("gridList[0]") != 0 && $(v).val() != '' && $(v).val() != value) {
             override = true;
             overrideInputs.push($v);
+            overrideInputsValue.push(value);
           } else {
             $v.val(value);
             $v.trigger("change");
           }
         } else{
-          $v.find("option:selected").prop("selected", false);
+          var selected_options = $v.find("option:selected");
 
-          if(Array.isArray(autofillValue)){
-            for(var i in autofillValue){
-              $v.find("option[value='"+autofillValue[i]+"']").prop('selected', true);
+          if(selected_options.length > 0 && v.name.indexOf("gridList[0]") != 0){
+            if (Array.isArray(autofillValue)) {
+              var value = [];
+              for (var i in autofillValue) {
+                value.push(autofillValue[i].slice(-1) != "" && !isNaN(autofillValue[i].slice(-1))
+                    ? increaseNumberInString(autofillValue[i], index)
+                    : autofillValue[i] + (index + 1));
+              }
+
+              overrideInputsValue.push(value);
+            } else {
+              var value = autofillValue != null && autofillValue.slice(-1) != "" && !isNaN(autofillValue.slice(-1))
+                  ? increaseNumberInString(autofillValue, index)
+                  : autofillValue + (index + 1);
+
+              overrideInputsValue.push(value);
             }
-          } else{
-            $v.find("option[value='"+autofillValue+"']").prop('selected', true);
-          }
 
-          $v.multipleSelect("refresh");
+            override = true;
+            overrideInputs.push($v);
+          } else {
+            if (Array.isArray(autofillValue)) {
+              for (var i in autofillValue) {
+                var value = autofillValue[i].slice(-1) != "" && !isNaN(autofillValue[i].slice(-1))
+                    ? increaseNumberInString(autofillValue[i], index)
+                    : autofillValue[i] + (index + 1);
+
+                $v.find("option[value='" + value + "']").prop('selected', true);
+              }
+            } else {
+              var value = autofillValue != null && autofillValue.slice(-1) != "" && !isNaN(autofillValue.slice(-1))
+                  ? increaseNumberInString(autofillValue, index)
+                  : autofillValue + (index + 1);
+
+              $v.find("option[value='" + value + "']").prop('selected', true);
+            }
+
+            $v.multipleSelect("refresh");
+          }
         }
         index+=1;
       }
@@ -1397,8 +1465,23 @@ function dataAutofill(id){
     if(override) {
       confirmBox("","Are you sure to overwrite existing data?", function () {
         for (var j = 0; j < overrideInputs.length; j++) {
-          overrideInputs[j].val(autofillValue);
-          overrideInputs[j].trigger("change");
+          if (Array.isArray(overrideInputsValue[j])) {
+            overrideInputs[j].find("option:selected").prop("selected", false);
+            for (var i in overrideInputsValue[j]) {
+              overrideInputs[j].find("option[value='" + overrideInputsValue[j][i] + "']").prop('selected', true);
+            }
+
+            overrideInputs[j].multipleSelect("refresh");
+          } else {
+            if(multi){
+              overrideInputs[j].find("option:selected").prop("selected", false);
+              overrideInputs[j].find("option[value='" + overrideInputsValue[j] + "']").prop('selected', true);
+              overrideInputs[j].multipleSelect("refresh");
+            } else{
+              overrideInputs[j].val(overrideInputsValue[j]);
+              overrideInputs[j].trigger("change");
+            }
+          }
         }
       });
     }
@@ -1418,6 +1501,17 @@ function dataAutofill(id){
       });
     });
   }
+}
+
+function increaseNumberInString(value, increase) {
+  var number = "";
+
+  while(value !== "" && !isNaN(value.slice(-1))){
+    number =  value.slice(-1) + number;
+    value = value.substring(0, value.length - 1);
+  }
+
+  return value + (parseInt(number) + increase);
 }
 
 function confirmBox(action,text,func) {
