@@ -2,10 +2,10 @@
 var _html = {
   tr: '<tr id="$trid$" class="borderBottom">$tds$</tr>',
   odo:
-  '<td><input type="text" name="beanList[$cnt$].options" id="options$cnt$" size="27"/></td>' +
+  '<td><textarea name="beanList[$cnt$].options" id="options$cnt$" cols="27" rows="1"/></td>' +
   '<td><textarea name="beanList[$cnt$].desc" id="desc$cnt$" cols="27" rows="1"/></td>' +
   '<td><input type="text" name="beanList[$cnt$].valueLength" id="valueLength$cnt$" size="10"/></td>' +
-  '<td><input type="text" name="beanList[$cnt$].ontology" id="ontology$cnt$"  placeholder="Search Ontology"/></td>',
+  '<td><textarea name="beanList[$cnt$].ontology" id="ontology$cnt$"  placeholder="Search Ontology" cols="27" rows="1"/></td>',
   lar:
   '<td><input type="text" name="beanList[$cnt$].label" id="label$cnt$" size="15"/></td>' +
   '<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].active" id="active$cnt$"/>' +
@@ -265,7 +265,7 @@ var _utils = {
                   if(item.ontology) {
                     return {
                       label: item.tlabel + " - " + item.ontolabel,
-                      value: item.tlabel,
+                      value: "[" + item.ontolabel + "," + item.taccession + "]",
                       ontologyId: item.ontology,
                       ontologyLabel: item.ontolabel,
                       accession: item.taccession,
