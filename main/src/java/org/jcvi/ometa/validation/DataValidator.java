@@ -3,7 +3,7 @@ package org.jcvi.ometa.validation;
 import org.apache.log4j.Logger;
 import org.jcvi.ometa.utils.Constants;
 
-import java.text.ParseException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 /**
@@ -13,12 +13,22 @@ public class DataValidator {
     private Logger logger = Logger.getLogger(DataValidator.class);
 
     public boolean validateDate(String value) {
-        try {
-            new SimpleDateFormat(Constants.DATE_USER_ENTER_FORMAT).parse(value);
-            return true;
-        } catch(ParseException e) {
-            return false;
+        if(value.equals("NA")) return true;
+
+        boolean result = false;
+        for(String dateFormat : Constants.DATE_ALL_ALLOWED_FORMATS){
+            if(dateFormat.length() == value.length()) {
+                try {
+                    DateFormat sdf = new SimpleDateFormat(dateFormat);
+                    sdf.setLenient(false);
+                    sdf.parse(value);
+                    result = true;
+                    break;
+                } catch (Exception e) {
+                }
+            }
         }
+        return result;
     }
 
     public boolean validateMaxLength(String value, String maxLength) {
