@@ -424,6 +424,7 @@ var _utils = {
                 $v.css("width", ui.size.width);
               }
             });
+            $(this).removeAttr('style');
           }
         });
 
