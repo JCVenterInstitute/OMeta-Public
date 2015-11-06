@@ -19,7 +19,6 @@ public class DictionaryDependency {
 
     @Id
     @Column(name="dict_dpcy_id", nullable=false)
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
     public Long getDictionaryDependencyId() {
         return dictionaryDependencyId;
     }

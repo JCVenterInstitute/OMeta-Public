@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.*;
 import org.jcvi.ometa.model.Dictionary;
 import org.jcvi.ometa.model.DictionaryDependency;
+import org.jcvi.ometa.utils.GuidGetter;
 
 import java.util.Date;
 import java.util.List;
@@ -119,6 +120,8 @@ public class DictionaryDAO extends HibernateDAO {
     public void loadDictionary(String dictType, String dictValue, String dictCode, Date creationDate, Session session) throws DAOException {
         try {
             Dictionary dictionary = new Dictionary();
+            GuidGetter guidGetter = new GuidGetter();
+            dictionary.setDictionaryId(guidGetter.getGuid());
             dictionary.setDictionaryCode(dictCode);
             dictionary.setDictionaryValue(dictValue);
             dictionary.setDictionaryType(dictType);
@@ -135,6 +138,8 @@ public class DictionaryDAO extends HibernateDAO {
                                              String parentDictTypeCode, Date creationDate, Session session) throws DAOException {
         try {
             Dictionary dictionary = new Dictionary();
+            GuidGetter guidGetter = new GuidGetter();
+            dictionary.setDictionaryId(guidGetter.getGuid());
             dictionary.setDictionaryCode(dictCode);
             dictionary.setDictionaryValue(dictValue);
             dictionary.setDictionaryType(dictType);
@@ -153,6 +158,7 @@ public class DictionaryDAO extends HibernateDAO {
             Long parentDictId = (Long) crit.uniqueResult();
 
             DictionaryDependency dictDependency = new DictionaryDependency();
+            dictDependency.setDictionaryDependencyId(guidGetter.getGuid());
             dictDependency.setParentId(parentDictId);
             dictDependency.setDictionaryId(dictionary.getDictionaryId());
             dictDependency.setCreatedDate(creationDate);

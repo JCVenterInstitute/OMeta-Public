@@ -26,7 +26,6 @@ public class Dictionary implements ModelBean {
 
     @Id
     @Column(name="dict_id", nullable=false)
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
     public Long getDictionaryId() {
         return dictionaryId;
     }
