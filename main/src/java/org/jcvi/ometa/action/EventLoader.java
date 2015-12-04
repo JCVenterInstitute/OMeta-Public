@@ -161,7 +161,7 @@ public class EventLoader extends ActionSupport implements Preparable {
 
             if(this.filter != null && this.filter.equals("pr")) {
                 //this.projectId = this.defaultProjectId;
-                this.eventName = Constants.EVENT_PROJECT_REGISTRATION;
+                //this.eventName = Constants.EVENT_PROJECT_REGISTRATION;
             }
 
             if (jobType != null) {

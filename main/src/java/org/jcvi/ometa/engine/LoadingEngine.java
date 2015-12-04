@@ -76,6 +76,8 @@ public class LoadingEngine {
                 success = engine.digestMultipart();
             } else if(usage.isDirectory()) {
                 engine.digestMultiDirectory();
+            } else if(usage.isDownloadData()){
+                engine.downloadData();
             } else {
                 engine.loadEventFile();
                 //engine.dispatchByFilename();
@@ -498,6 +500,27 @@ public class LoadingEngine {
 
         return success;
     }
+
+    public void downloadData() throws Exception {
+        String userName = usage.getUsername();
+        String passWord = usage.getPassword();
+        String serverUrl = usage.getServerUrl();
+
+        String projectName = usage.getProjectName();
+        String eventName = usage.getEventName();
+        String outputPath = usage.getOutputLocation();
+
+        try {
+            BeanWriter writer = new BeanWriter(serverUrl, userName, passWord);
+            String filePath = outputPath + File.separator + projectName + "_Data.csv";
+            writer.readProjectData(filePath, projectName, eventName);
+
+        } catch (Exception ex) {
+            throw ex;
+        }
+    }
+
+
     public static String getNameWoExt(String name) {
         int index = name.lastIndexOf(".");
         if (index < 1) return name;

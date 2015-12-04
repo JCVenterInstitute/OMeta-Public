@@ -286,7 +286,8 @@ public abstract class HibernateDAO {
         for (B model : models) {
             Long lvId = model.getNameLookupId();
             LookupValue lv = idVsValue.get(lvId);
-            model.setAttributeName(lv.getName());
+            if(lv != null)
+                model.setAttributeName(lv.getName());
         }
     }
 

@@ -35,8 +35,10 @@ import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.PresentationActionDelegate;
 import org.jcvi.ometa.utils.TemplatePreProcessingUtils;
 import org.jcvi.ometa.utils.UploadActionDelegate;
+import org.jcvi.ometa.validation.ModelValidator;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.*;
 
 /**
@@ -149,6 +151,101 @@ public class BeanWriter {
         MultiLoadParameter parameterObject = this.createMultiLoadParameterWithCollector(collector);
         List<String> projectsToSecure = this.getProjectsToSecure(parameterObject);
         writeEjb.loadAll(projectsToSecure, parameterObject);
+    }
+
+    public void readProjectData(String filePath, String projectName, String eventName) throws  Exception{
+        FileWriter writer = new FileWriter(filePath);
+        LookupValue tempLookupValue;
+
+        Project project = this.readEjb.getProject(projectName);
+        Long projectId = project.getProjectId();
+
+        List<Sample> samples = this.readEjb.getSamplesForProject(projectId);
+
+        if(samples!=null && samples.size()>0) {
+            List<Long> sampleIdList = new ArrayList<Long>();
+            for (Sample sample : samples) {
+                sampleIdList.add(sample.getSampleId());
+            }
+
+            List<SampleAttribute> allSampleAttributes = this.readEjb.getSampleAttributes(sampleIdList);
+            Map<Long, List<SampleAttribute>> sampleIdVsAttributeList = new HashMap<Long, List<SampleAttribute>>();
+            for (SampleAttribute att : allSampleAttributes) {
+                List<SampleAttribute> atts = sampleIdVsAttributeList.get(att.getSampleId());
+                if (atts == null) {
+                    atts = new ArrayList<SampleAttribute>();
+                    sampleIdVsAttributeList.put(att.getSampleId(), atts);
+                }
+                atts.add(att);
+            }
+
+            List<Event> allSampleEvents = this.readEjb.getEventsForSamples(sampleIdList);
+            Map<Long, List<Event>> sampleIdVsEventList = new HashMap<Long, List<Event>>();
+            for (Event att : allSampleEvents) {
+                if(att.getEventTypeLookupValue().getName().equals(eventName)) {
+                    List<Event> atts = sampleIdVsEventList.get(att.getSampleId());
+                    if (atts == null) {
+                        atts = new ArrayList<Event>();
+                        sampleIdVsEventList.put(att.getSampleId(), atts);
+                    }
+                    atts.add(att);
+                }
+            }
+
+            //Create Header
+            List<EventMetaAttribute> eventMetaAttributeList = this.readEjb.getEventMetaAttributes(projectName, eventName);
+            List<String> headerList = new ArrayList<String>(eventMetaAttributeList.size());
+            writer.append("Sample Name");
+            writer.append(",");
+            for(EventMetaAttribute ema : eventMetaAttributeList){
+                if(ema.isActive()) {
+                    writer.append(ema.getAttributeName());
+                    writer.append(',');
+
+                    headerList.add(ema.getAttributeName());
+                }
+            }
+            writer.append('\n');
+
+            HashMap<String, String> sampleData;
+            for (Sample sample : samples) {
+                List<SampleAttribute> sampleAttributes = sampleIdVsAttributeList.get(sample.getSampleId());
+                sampleData = new HashMap<String, String>(sampleAttributes.size());
+
+                writer.append(sample.getSampleName());
+                writer.append(',');
+
+                if (sampleAttributes != null && sampleAttributes.size() > 0) {
+                    for (SampleAttribute sa : sampleAttributes) {
+                        if (sa.getMetaAttribute() == null)
+                            continue;
+                        tempLookupValue = sa.getMetaAttribute().getLookupValue();
+                        String dataType = tempLookupValue.getDataType();
+
+                        if(dataType.equals("date")) {
+                            sampleData.put(tempLookupValue.getName(), '"' + sa.getAttributeDateValue().toString()+  '"');
+                        } else if(dataType.equals("int")) {
+                            sampleData.put(tempLookupValue.getName(), '"' + sa.getAttributeIntValue().toString()+  '"');
+                        } else if(dataType.equals("string") || dataType.equals("file") || dataType.equals("url")) {
+                            sampleData.put(tempLookupValue.getName(), '"' + sa.getAttributeStringValue().toString()+  '"');
+                        } else {
+                            sampleData.put(tempLookupValue.getName(), '"' + sa.getAttributeFloatValue().toString()+  '"');
+                        }
+                    }
+                }
+
+                for(String header : headerList){
+                    String value = sampleData.get(header);
+                    writer.append((value == null) ? "" : value);
+                    writer.append(",");
+                }
+
+                writer.append('\n');
+            }
+        }
+
+        writer.flush();
+        writer.close();
     }
 
     /**
