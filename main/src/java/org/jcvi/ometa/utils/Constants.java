@@ -90,6 +90,7 @@ public class Constants {
     };
     public final static String[] DATE_ALL_ALLOWED_FORMATS = {
             "yyyy",
+            "yyyy-MM-dd",
             "yyyy-MMM-DD",
             "yyyy-MMM"
     };
