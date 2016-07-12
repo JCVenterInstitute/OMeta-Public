@@ -336,6 +336,7 @@
 
         <action name="popup" class="org.jcvi.ometa.action.Popup" method="run">
             <result name="SELECT_TEMPLATE">/JSP/popup/LPopupTemplateSelect.jsp</result>
+            <result name="SELECT_EXPORT">/JSP/popup/LPopupExportSelect.jsp</result>
             <result name="PROJECT_DETAIL_POP">/JSP/popup/LPopupProjectDetails.jsp</result>
             <result name="PROJECT_DETAIL" type="redirectAction">
                 <param name="actionName">projectdetail</param>
@@ -495,6 +496,18 @@
             <result name="success" type="json"/>
             <result name="error" type="json"/>
         </action>
+        <action name="downloadfile" class="org.jcvi.ometa.action.ajax.SharedAjax" method="downloadFile">
+            <result name="error" type="stream" >
+                <param name="contentType">"application/msword"</param>
+                <param name="contentDisposition">attachment;filename="error.doc"</param>
+                <param name="inputName">dataTemplateStream</param>
+            </result>
+            <result name="DOWNLOAD" type="stream">
+                <param name="contentType">${dataTemplateContentType}</param>
+                <param name="contentDisposition">attachment;filename="${dataTemplateFileName}"</param>
+                <param name="inputName">dataTemplateStream</param>
+            </result>
+        </action>
         <action name="metadataSetupAjax" class="org.jcvi.ometa.action.MetadataSetup" method="runAjax">
             <result name="success" type="json"/>
             <result name="error" type="json"/>
@@ -517,6 +530,11 @@
         </action>
         <!-- file upload ajax-->
         <action name="fileUploadAjax" class="org.jcvi.ometa.action.ajax.FileUploadAjax" method="runAjax">
+            <result name="success" type="json"/>
+            <result name="error" type="json"/>
+            <result name="input" type="json"/>
+        </action>
+        <action name="temporaryFileUpload" class="org.jcvi.ometa.action.ajax.FileUploadAjax" method="temporaryFileUpload">
             <result name="success" type="json"/>
             <result name="error" type="json"/>
             <result name="input" type="json"/>
