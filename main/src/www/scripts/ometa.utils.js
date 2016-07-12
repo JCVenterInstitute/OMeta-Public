@@ -145,7 +145,7 @@ var utils = {
       });
     },
     baloon: function(msg) {
-      var $errorNode = $('<div class="alert_error" onclick="$(\'.alert_error\').remove();">').html(
+      var $errorNode = $('<div class="alert_error btn btn-danger" onclick="$(\'.alert_error\').remove();">').html(
           "<strong>" + msg + "</strong>"
       );
       $('#errorMessagesPanel').append($errorNode);
