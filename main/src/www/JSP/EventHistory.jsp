@@ -38,9 +38,9 @@
       border: 1px gray dotted;
     }
     td._details div {
-      position: relative;
+      /*position: relative;*/
       overflow: auto;
-      overflow-y: hidden;
+      /*overflow-y: hidden;*/
     }
     td._details table td {
       border:1px solid white;
@@ -507,6 +507,13 @@
       _page.get.edt($('#_projectSelect').val(), $('#_sampleSelect').val());
     });
 
+    var _html = {
+      fm: '<div id="attach-file-dialog-$id$" class="attach-file-dialog" style="display:none;">' +
+      '<div class="file-dialog-heading"><h2 title="Attach Files:&nbsp;">Attach Files<span style="display:none" class="header-separator">:&nbsp;</span></h2></div>' +
+      '<div class="buttons-container form-footer" style="overflow: visible;min-height: 51px;height: 100%;margin: 0;padding: 10px;"><fieldset class="fm-fieldset" style="width: 600px;"><legend><span>Attachment(s)</span></legend><div id="files-$id$" class="files" style="padding-left:20px;">$existingFileField$</div></fieldset>' +
+      '<div class="buttons" style="float: right"><button type="button" class="btn btn-primary" id="attach-file-done-$id$" style="margin: 10px;">Done</button></div></div></div>'
+    }
+
     <!-- EVENT TABLE -->
     eDT =  $("#eventTable").dataTable({
       "sDom": '<"datatable_top"lf><"datatable_table"rt><"datatable_bottom"ip>',
@@ -557,9 +564,41 @@
                   // }
                   if(rowData.attributes) {
                     var headers = '', values = '';
+                    var ri = 0;
                     $.each(rowData.attributes, function(ai, av) {
                       headers += '<td>' + ai + '</td>';
-                      values += '<td>' + av + '</td>';
+
+                      if(av && av.toString().indexOf("downloadfile") > -1 ) {
+                        var id = ai + '_' + ri;
+
+                        var valArr = av.toString().split(',');
+                        var valArrLength = valArr.length;
+                        var existingFileField = "", downloadAllButton = "", fileNameList = "", separator = "", fileNameCharCount = 0;
+
+                        for(var j=0; j < valArr.length; j++) {
+                          var fileName = valArr[j].substring(valArr[j].indexOf("_") + 1, valArr[j].indexOf("&"));
+                          if (fileName != "") {
+                            existingFileField += "<div id='file-" + id + "-" + j + "'><strong>" + fileName + "</strong><button type='button' class='btn btn-default btn-xs table-tooltip' data-tooltip='Download' style='float: right;margin-left: 2px;' onclick='downloadFile(\"" + fileName + "\",\"" + rowData.sampleName + "\",\"" + ai + "\");'><img src='images/download_file.png' style='height: 20px;'></button></div><br>";
+
+                            fileNameList += separator + fileName;
+                            fileNameCharCount = (fileName.length > fileNameCharCount) ? fileName.length : fileNameCharCount;
+                            separator = " ";
+                          } else {
+                            valArrLength -= 1;
+                          }
+                        }
+
+                        if(valArrLength > 1) {
+                          downloadAllButton = "<button type='button' class='btn btn-success' onclick='downloadFile(\"DOWNLOADALL\",\"" + rowData.sampleName + "\",\"" + ai + "\");'>Download All</button>";
+                        }
+
+                        values += '<td><button type="button" id="file_' + id + '"  class="btn btn-default btn-xs table-tooltip" data-tooltip="'+ fileNameList +'" style="white-space: pre-line;" value="FILE MANAGEMENT" onclick="showFMPopup(this.id)">File Store</button>' + _html.fm.replace(/\\$id\\$/g,id).replace(/\\$existingFileField\\$/g, existingFileField).replace(/\\$downloadallbutton\\$/g, downloadAllButton) + '</td>';
+                        $("head").append("<style> #file_" + id + ":hover:after {width : " + ((fileNameCharCount + 1) * 7) + "px !important;}</style>");
+                      } else {
+                        values += '<td>' + av + '</td>';
+                      }
+
+                      ri += 1;
                     })
                     attributes = '<tr class="even">' + headers + '</tr><tr class="odd">' + values + '</tr>';
                   } else {
@@ -656,6 +695,52 @@
 
     utils.error.check();
   });
+
+  function showFMPopup(id){
+    id = id.substring(id.indexOf("_") + 1);
+    $("#attach-file-dialog-" + id).show();
+    $(".ui-blanket").css({"visibility":"visible"});
+
+    $('#attach-file-done-' + id).click(function() {
+      $("#attach-file-dialog-" + id).hide();
+      $(".ui-blanket").css({"visibility":"hidden"});
+    });
+  }
+
+  function downloadFile(fileName, sampleName, attrName) {
+    var $downloadFileForm = $('<form>').attr({
+      id: 'downloadFileForm',
+      method: 'POST',
+      action: 'downloadfile.action'
+    }).css('display', 'none');
+
+    $('<input>').attr({
+      id: 'attributeName',
+      name: 'attributeName',
+      value : attrName
+    }).appendTo($downloadFileForm);
+
+    $('<input>').attr({
+      id: 'fileName',
+      name: 'fileName',
+      value : fileName
+    }).appendTo($downloadFileForm);
+
+    $('<input>').attr({
+      id: 'projectId',
+      name: 'projectId',
+      value : utils.getProjectId()
+    }).appendTo($downloadFileForm);
+
+    $('<input>').attr({
+      id: 'sampleVal',
+      name: 'sampleVal',
+      value : sampleName
+    }).appendTo($downloadFileForm);
+
+    $('body').append($downloadFileForm);
+    $downloadFileForm.submit();
+  }
 </script>
 </body>
 </html>
