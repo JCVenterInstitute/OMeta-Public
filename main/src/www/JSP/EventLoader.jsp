@@ -53,7 +53,7 @@
     }
 
     /* dropbox */
-    #dropzone {
+    .dropzone, #dropzone {
       border-style: dashed;
       border-color: #3276b1;
       width: 500px;
@@ -119,7 +119,7 @@
           <s:if test="hasActionMessages()">
             <div class="row" style="margin-top: 15px;margin-bottom: 15px;margin-left: 0px;">
               <div class="alert_info" onclick="$('.alert_info').remove();">
-                <strong style="color: #31708f;background-color: #d9edf7;padding: 3px;border-color: #bce8f1;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
+                <strong id="action_message" style="color: #31708f;background-color: #d9edf7;padding: 3px;border-color: #bce8f1;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
               </div>
             </div>
           </s:if>
@@ -314,7 +314,7 @@
                   <input type="button" class="btn btn-info" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Row" style="display:none;"/>
                   <input type="button" class="btn btn-info" onclick="javascript:button.remove_event();" id="gridRemoveLineButton" value="Remove Row" style="display:none;"/>
                   <input type="button" class="btn btn-info" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
-                  <!--<input type="button" class="btn btn-info" onclick="javascript:return;" id="exportButton" value="Export to .csv Template"/>  -->
+                  <input type="button" class="btn btn-info" onclick="javascript:button.exportSample();" id="exportButton" value="Export Sample(s)" style="display:none;"/>
                   <input type="button" class="btn btn-primary" onclick="javascript:button.clear_form();" value="Clear" />
                 </div>
               </div>
@@ -481,6 +481,7 @@
       }
       if(oldSampleName !== '') {
         utils.preSelect("_sampleSelect", oldSampleName);
+        $('input[name="sampleName"]').val(oldSampleName);
       }
     }
 
@@ -497,10 +498,15 @@
     $('[name^="gridList"]').remove();
 
     <s:iterator value="#oldGridList" var="gbean" status="gstat">
-    var gridLine={}, beans=[];
+    var gridLine={}, beans=[], uploadedFilePaths=[];
 
     <s:iterator value="beanList" var="fbean" status="fstat">
-    beans.push(["${fbean.attributeName}", "${attributeValue}"]);
+      beans.push(["${fbean.attributeName}", "${attributeValue}"]);
+      var path = [];
+      <s:iterator value="#fbean.uploadFilePath" var="path">
+        path.push("${path}");
+      </s:iterator>
+      uploadedFilePaths.push(["${fbean.attributeName}", path]);
     </s:iterator>
 
     gridLine['pn']="${gbean.projectName}";
@@ -509,6 +515,7 @@
     gridLine['psn']="${gbean.parentSampleName}";
     gridLine['sp']="${gbean.samplePublic}";
     gridLine['beans']=beans;
+    gridLine['filePaths']=uploadedFilePaths;
 
     button.add_event(null,null,gridLine);
     </s:iterator>
@@ -517,14 +524,88 @@
     </s:if>
     <s:elseif test="%{#oldBeanList != null && #oldBeanList.size() >0}">
     //preload form view
+    $("#interactive-submission-table tr:last").show(); //show sample name
 
     //remove any existing dom elements
     //$('[name^="beanList"]').remove();
     <s:iterator value="#oldBeanList" var="bean" status="bstat">
     var currAttributeName = "${bean.attributeName}".replace(/ /g,"_").replace("'", "''");;
     var currAttributeValue = "${bean.attributeValue}";
-    $("[id*='_" + currAttributeName + "_f']:not(:file)").val(currAttributeValue);
-    $("[id*='file_" + currAttributeName + "_f']").after("<strong>" + currAttributeValue.substring(currAttributeValue.indexOf("_") + 1) + "</strong>");
+    $("[id*='_" + currAttributeName + "_f']:not(:file):not(:button)").val(currAttributeValue);
+    //$("[id*='file_" + currAttributeName + "_f']").after("<strong>" + currAttributeValue.substring(currAttributeValue.indexOf("_") + 1) + "</strong>");
+
+    if ( $("[id*='File-" + currAttributeName + "_f']").length ) {
+      var id = $("[id*='File-" + currAttributeName + "_f']").attr('id');
+      id = id.substring(id.indexOf("-") + 1);
+      var name = $("#uploadFile-" + id).attr('name');
+      name = name.substring(0, name.lastIndexOf('.'));
+      var $files = $('#files-' + id);
+
+      //Attached Files
+      var uploadFilePath = "${bean.uploadFilePath}";
+      var fileNameArr = [];
+      if(uploadFilePath && uploadFilePath != ""){
+        <s:iterator value="#bean.uploadFilePath" var="path">
+        var attrName = $("[id*='File-" + currAttributeName + "_f']").attr('name');
+        var attrFilePath = attrName.substring(0, attrName.lastIndexOf('.') + 1);
+        var paths = "${path}".split(",");
+
+        for(var i in paths) {
+          var $hiddenFileValue = $('<input>').attr({type: 'hidden',name: attrFilePath + "uploadFilePath",value: paths[i]});
+          $hiddenFileValue.appendTo($("#attach-file-dialog-" + id));
+
+          var fileName = paths[i].substring(paths[i].lastIndexOf("/") + 1);
+          fileName = fileName.substring(fileName.indexOf("_") + 1);
+          fileNameArr.push(fileName);
+
+          var $fileRow = $('<p/>').text(fileName).css("margin-top", "10px");
+          $fileRow.prepend($('<span class="label label-info" style="margin-right: 10px;"/>').text("Uploaded Successfully"));
+          $fileRow.appendTo($('#attach-files-' + id));
+        }
+        </s:iterator>
+      }
+
+      var valArr = currAttributeValue.split(',');
+      var valArrLength = valArr.length;
+      var fileNameList = "", separator = "", fileNameCharCount = 0;
+      for(var j=0; j < valArr.length; j++){
+        var fileName = valArr[j].substring(valArr[j].indexOf("_") + 1);
+        if(fileName != "") {
+          var exist = false;
+          for (var index in fileNameArr) {
+            if (fileNameArr[index] == fileName) {
+              exist = true;
+              break;
+            }
+          }
+          if (!exist) {
+            $files.append("<div id='file-" + id + "-" + j + "'><strong><input type='hidden' name='" + name + ".existingFileName' value='" + fileName + "' >" + fileName + "</strong> " +
+                    "<button type='button' class='btn btn-default btn-xs table-tooltip' data-tooltip='Download' style='float: right;margin-left: 2px;' onclick='downloadFile(\"" + fileName + "\",\"sampleName\",\"" + currAttributeName + "\");'><img src='images/download_file.png' style='height: 20px;'></button>" +
+                    "<button type='button' class='btn btn-default btn-xs table-tooltip' data-tooltip='Remove' style='float: right;' onclick='removeFile(\"file-" + id + "-" + j + "\");'><img src='images/cancel.png' style='height: 20px;'></button></div><br>");
+
+            fileNameList += separator + fileName;
+            fileNameCharCount = (fileName.length > fileNameCharCount) ? fileName.length : fileNameCharCount;
+            separator = " ";
+          } else {
+            valArrLength -= 1;
+          }
+        } else {
+          valArrLength -= 1;
+        }
+      }
+      if(valArrLength > 1) {
+        $files.append("<button type='button' class='btn btn-info btn-xs' onclick='downloadFile(\"DOWNLOADALL\",\"sampleName\",\"" + currAttributeName + "\");'>Download All</button>")
+      }
+      if(valArrLength > 0) {
+        $files.append("<input type='hidden' name='" + name + ".existingFileName' value='  ' >");
+      }
+
+      if(fileNameList != "") {  //update tooltip
+        $("#file_" + id).attr("data-tooltip", fileNameList);
+
+        $("head").append("<style> #file_" + id + ":hover:after {width : " + ((fileNameCharCount + 1) * 7) + "px !important;}</style>");
+      }
+    }
     </s:iterator>
     <s:set name="oldLoadingSample" value="loadingSample" />
     <s:if test="%{#oldLoadingSample != null && #oldLoadingSample.getSampleName() != null}">
@@ -561,6 +642,7 @@
       $('.page-header h1').html('Edit Data');
       $('#interactive-submission-table tbody tr td:first').html('Edit Data For');
       $('#interactive-submission-table tbody tr:first td:nth-child(2) label:not(:nth-child(2))').addClass('disabled'); //Disable data submits except web form
+      $('#exportButton').show(); //show export samples button
     }
 
     $('#sampleSelect').keypress(function (e) {

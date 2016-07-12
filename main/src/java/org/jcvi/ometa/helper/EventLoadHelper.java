@@ -33,6 +33,8 @@ public class EventLoadHelper {
     private String submissionId; // submission id
     private String dataRole;
 
+    private final String ZIP_FILE_DIRECTORY_APPENDER = "___zip";
+
     public EventLoadHelper(ReadBeanPersister readPersister) {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
         if(readPersister == null) {
@@ -301,8 +303,10 @@ public class EventLoadHelper {
         for(FileReadAttributeBean fBean : loadingList) { //skip invalid attribute bean
             boolean hasValue = !fBean.getAttributeName().equals("0") && fBean.getAttributeValue() != null
                     && !fBean.getAttributeValue().isEmpty() && !fBean.getAttributeValue().toLowerCase().equals("null");
-            boolean hasUploadFile  = fBean.getUpload() != null && fBean.getUploadFileName() != null && !fBean.getUploadFileName().isEmpty();
-            if (!hasValue && !hasUploadFile) { // skip empty file read bean  - && !fBean.getAttributeValue().equals("0")
+            boolean hasUploadFile  = fBean.getUploadFilePath() != null && fBean.getUploadFilePath().length != 0;
+            boolean hasExistingFile = fBean.getExistingFileName() != null;
+
+            if (!hasValue && !hasUploadFile && !hasExistingFile) { // skip empty file read bean  - && !fBean.getAttributeValue().equals("0")
                 continue;
             }
 
@@ -326,12 +330,23 @@ public class EventLoadHelper {
 
                 if(lv.getDataType().equals(Constants.FILE_DATA_TYPE)) { //process file upload
 
-                    // sample_identifier must come before the sequence file for the validation
-                    if(isSequenceSubmission && sampleIdentifier == null) { //sample_identifier is required
-                        throw new Exception(String.format(ErrorMessages.ATTRIBUTE_VALUE_MISSING, attributeName));
+                    if(hasUploadFile) {
+                        // sample_identifier must come before the sequence file for the validation
+                        if (isSequenceSubmission && sampleIdentifier == null) { //sample_identifier is required
+                            throw new Exception(String.format(ErrorMessages.ATTRIBUTE_VALUE_MISSING, attributeName));
+                        }
+
+                        this.processFileUpload(fBean, projectName, sampleName, isSequenceSubmission, sampleIdentifier, false);
                     }
 
-                    this.processFileUpload(fBean, projectName, sampleName, isSequenceSubmission, sampleIdentifier);
+                    if(hasExistingFile){
+                        this.processExistingFiles(fBean, projectName, sampleName);
+                    }
+
+                    if(this.originalPath != null) { //check if it is bulk upload
+                        fBean.setUploadFilePath(fBean.getAttributeValue().split(","));
+                        this.processFileUpload(fBean, projectName, sampleName, isSequenceSubmission, sampleIdentifier, true);
+                    }
                 } else if(attributeName.equals(Constants.ATTR_SAMPLE_IDENTIFIER)) {
                     sampleIdentifier = fBean.getAttributeValue();
                 }
@@ -369,70 +384,103 @@ public class EventLoadHelper {
         }
     }
 
-    private void processFileUpload(FileReadAttributeBean fBean, String projectName, String sampleName, boolean isSequenceSubmission, String sampleIdentifier) throws Exception {
+    private void processExistingFiles(FileReadAttributeBean fBean, String projectName, String sampleName) throws Exception {
+        SampleAttribute sa = this.readPersister.getSampleAttribute(projectName, sampleName, fBean.getAttributeName());
+
+        if(sa != null){
+            String attributeValue = fBean.getAttributeValue();
+            String[] existingFileNames = fBean.getExistingFileName();
+            String[] attributeStringValues = sa.getAttributeStringValue().split(",");
+
+            StringBuilder sb = new StringBuilder();
+            String separator = "";
+
+            for(String existingFileName : existingFileNames){
+                for(String attributeStringValue : attributeStringValues){
+                    if(attributeStringValue.contains(existingFileName)){
+                        sb.append(separator).append(attributeStringValue);
+                        separator = ",";
+                        break;
+                    }
+                }
+            }
+
+            if(attributeValue != null) {  // if there is new upload
+                sb.append(",").append(attributeValue);
+            }
+
+            fBean.setAttributeValue(sb.toString());
+        }
+    }
+
+    private void processFileUpload(FileReadAttributeBean fBean, String projectName, String sampleName, boolean isSequenceSubmission, String sampleIdentifier, boolean bulkUpload) throws Exception {
 
         try {
-            File fileToUpload = null;
             boolean isTempFile = true;
+            String currentDate = CommonTool.currentDateToDefaultFormat();
+            StringBuilder attributeValue = new StringBuilder();
+            String separator = "";
 
-            if(fBean.getUpload() == null || fBean.getUploadFileName() == null) {
-                String filePath = (this.originalPath == null ? "" : this.originalPath) + File.separator + fBean.getAttributeValue();
-                fileToUpload = new File(filePath);
+            for(int index = 0; index < fBean.getUploadFilePath().length; index++){
+                String tempFilePath = fBean.getUploadFilePath()[index];
+                String uploadFileName = tempFilePath.substring(tempFilePath.lastIndexOf("/") + 1);
 
-                fBean.setUpload(fileToUpload);
-                fBean.setUploadFileName(fileToUpload.getName());
-
-                isTempFile = false;
-            }
-
-            fileToUpload = fBean.getUpload();
-
-            if(!fileToUpload.exists() || !fileToUpload.canRead() || !fileToUpload.isFile()) {
-                throw new Exception("file '" + fBean.getUploadFileName() + "' does not exist!");
-            }
-
-            if(isSequenceSubmission) {
-                if(sampleIdentifier == null) {
-                    throw new Exception(String.format(ErrorMessages.ATTRIBUTE_VALUE_MISSING, Constants.ATTR_SAMPLE_IDENTIFIER));
+                if(bulkUpload) {
+                    if(this.originalPath.indexOf(this.ZIP_FILE_DIRECTORY_APPENDER) > 0) {
+                        tempFilePath = this.originalPath + File.separator + tempFilePath;
+                    }
+                    uploadFileName = CommonTool.getGuid().toString() + "_" + uploadFileName;
                 }
 
-                if(FilenameUtils.isExtension(fBean.getUploadFileName(), Constants.SEQUENCE_EXTENSIONS)) {
-                    SequenceHelper sequenceHelper = new SequenceHelper();
-                    Map<String, List<String>> parsedSequenceFileMap = sequenceHelper.parseSequenceFileIntoMapBySI(fileToUpload);
+                File upload = new File(tempFilePath);
 
-                    if(parsedSequenceFileMap.size() == 0 || parsedSequenceFileMap.size() > 1) {
-                        throw new Exception(ErrorMessages.SEQUENCE_SINGLE_SEQUENCE_ONLY);
+                if (!upload.exists() || !upload.canRead() || !upload.isFile()) {
+                    throw new Exception("file under '" + tempFilePath + "' does not exist!");
+                }
+
+                if (isSequenceSubmission) {
+                    if (sampleIdentifier == null) {
+                        throw new Exception(String.format(ErrorMessages.ATTRIBUTE_VALUE_MISSING, Constants.ATTR_SAMPLE_IDENTIFIER));
                     }
 
-                    if(!parsedSequenceFileMap.containsKey(sampleIdentifier)) {
-                        throw new Exception(ErrorMessages.SEQUENCE_SI_NOT_MATCHING);
+                    if (FilenameUtils.isExtension(uploadFileName, Constants.SEQUENCE_EXTENSIONS)) {
+                        SequenceHelper sequenceHelper = new SequenceHelper();
+                        Map<String, List<String>> parsedSequenceFileMap = sequenceHelper.parseSequenceFileIntoMapBySI(upload);
+
+                        if (parsedSequenceFileMap.size() == 0 || parsedSequenceFileMap.size() > 1) {
+                            throw new Exception(ErrorMessages.SEQUENCE_SINGLE_SEQUENCE_ONLY);
+                        }
+
+                        if (!parsedSequenceFileMap.containsKey(sampleIdentifier)) {
+                            throw new Exception(ErrorMessages.SEQUENCE_SI_NOT_MATCHING);
+                        }
                     }
                 }
+
+                Project project = this.readPersister.getProject(projectName);
+
+                //String storagePathProject = projectName.replaceAll(" ", "_"); //project folder
+                //String storagePathSample = (sampleName != null && !sampleName.isEmpty() ? sampleName.replaceAll(" ", "_") : "project"); //sample folder
+
+                String storagePath = project.getProjectId() + File.separator + currentDate;
+
+                File storingDirectory = new File(this.fileStoragePath + File.separator + Constants.DIRECTORY_PROJECT + File.separator + storagePath);
+                storingDirectory.mkdirs();
+
+                File destFile = new File(storingDirectory.getAbsolutePath() + File.separator + uploadFileName);
+
+                FileUtils.copyFile(upload, destFile);
+
+                attributeValue.append(separator);
+                attributeValue.append(storagePath + File.separator + uploadFileName);
+                separator = ",";
+
+                /*if (isTempFile) {
+                    upload.delete();
+                }*/
             }
 
-            Project project = this.readPersister.getProject(projectName);
-
-            //String storagePathProject = projectName.replaceAll(" ", "_"); //project folder
-            //String storagePathSample = (sampleName != null && !sampleName.isEmpty() ? sampleName.replaceAll(" ", "_") : "project"); //sample folder
-
-            String storagePath =  project.getProjectId() + File.separator + CommonTool.currentDateToDefaultFormat();
-
-            File storingDirectory = new File(this.fileStoragePath + File.separator + Constants.DIRECTORY_PROJECT + File.separator + storagePath);
-            storingDirectory.mkdirs();
-
-            GuidGetter guidGetter = new GuidGetter();
-            Long guid = guidGetter.getGuid();
-
-            String destFileName = guid + "_" + fBean.getUploadFileName();
-            File destFile = new File(storingDirectory.getAbsolutePath() + File.separator + destFileName);
-
-            FileUtils.copyFile(fileToUpload, destFile);
-
-            fBean.setAttributeValue(storagePath + File.separator + destFileName);
-
-            if(isTempFile) {
-                fBean.getUpload().delete();
-            }
+            fBean.setAttributeValue(attributeValue.toString());
 
         } catch(Exception ex) {
             throw new Exception(ex.getMessage());

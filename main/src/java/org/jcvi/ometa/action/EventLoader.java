@@ -40,16 +40,18 @@ import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.TemplatePreProcessingUtils;
 import org.jcvi.ometa.utils.UploadActionDelegate;
+import org.jcvi.ometa.validation.ErrorMessages;
 import org.jtc.common.util.property.PropertyHelper;
 
 import javax.naming.InitialContext;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.text.DateFormat;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by IntelliJ IDEA.
@@ -65,26 +67,26 @@ public class EventLoader extends ActionSupport implements Preparable {
     private List<Project> projectList;
     private String projectNames;
 
+    // form values
     private String projectName;
     private String sampleName;
     private String eventName;
     private Long projectId;
     private Long eventId;
 
-    private String status;
-    private String jobType;
+    private String status; // sample status value
+    private String jobType; // form action type : insert, grid, file, template
     private String label;
     private String filter;
 
-    private Project loadingProject;
-    private Sample loadingSample;
-    private List<FileReadAttributeBean> beanList;
-    private List<GridBean> gridList;
+    private Project loadingProject; // single project loading
+    private Sample loadingSample; // single sample loading
+    private List<FileReadAttributeBean> beanList; // form
+    private List<GridBean> gridList; // grid
 
-    private InputStream downloadStream;
-    private String downloadContentType;
-
+    // template files
     private File dataTemplate;
+    private InputStream dataTemplateStream;
     private String dataTemplateFileName;
     private String dataTemplateContentType;
 
@@ -100,15 +102,11 @@ public class EventLoader extends ActionSupport implements Preparable {
     private final String SUBMISSION_TYPE_FILE = "file";
     private final String SUBMISSION_TYPE_FORM = "form";
     private final String TEMPLATE_DOWNLOAD = "template";
+    private final String EXPORT_SAMPLE = "export";
 
     private final String SUBMISSION_STATUS_SAVE = "save";
     private final String SUBMISSION_STATUS_VALIDATE = "validate";
     private final String SUBMISSION_STATUS_SUBMIT = "submit";
-
-    private static final String DEFAULT_USER_MESSAGE = "Not yet entered";
-    private final String MULTIPLE_SUBJECT_IN_FILE_MESSAGE = "Multiple projects are found in the file";
-    private final String UNSUPPORTED_UPLOAD_FILE_TYPE_MESSAGE = "File type is not supported. Supported file types are JPG, JPEG, GIF and BMP.";
-    private String message = DEFAULT_USER_MESSAGE;
 
     private Logger logger = Logger.getLogger(EventLoader.class);
 
@@ -148,8 +146,8 @@ public class EventLoader extends ActionSupport implements Preparable {
     /**
      * Setup a download filename to fully-indicate type of event.  See also: struts.xml
      */
-    public String getDownloadFileName() {
-        return eventName + "_template." + (jobType.endsWith("e") ? "xls" : "csv");
+    public String getDataTemplateFileName() {
+        return this.dataTemplateFileName;
     }
 
     public String execute() {
@@ -168,8 +166,10 @@ public class EventLoader extends ActionSupport implements Preparable {
                 boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION);
                 boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);
 
+                String userName = ServletActionContext.getRequest().getRemoteUser();
+
                 if(this.projectName==null || this.projectName.equals("0") || eventName==null || eventName.equals("0"))
-                    throw new Exception("Project or Event type is not selected.");
+                    throw new Exception(ErrorMessages.PROJECT_OR_EVENT_NOT_SELECTED);
 
                 if (jobType.equals(SUBMISSION_TYPE_FORM)) { //loads single event
                     tx = (UserTransaction) new InitialContext().lookup("java:comp/UserTransaction");
@@ -180,8 +180,10 @@ public class EventLoader extends ActionSupport implements Preparable {
                     EventLoadHelper loadHelper = new EventLoadHelper(this.readPersister);
                     loadHelper.setSubmissionId(Long.toString(CommonTool.getGuid()));
 
+                    // manually create grid list then delegate it to the helper
                     List<GridBean> singleGridList = new ArrayList<GridBean>(1);
                     GridBean singleGridBean = new GridBean();
+
                     singleGridBean.setProjectName(isProjectRegistration ? this.loadingProject.getProjectName() : this.projectName);
                     if(isProjectRegistration) {
                         singleGridBean.setProjectPublic(Integer.toString(this.loadingProject.getIsPublic()));
@@ -194,12 +196,13 @@ public class EventLoader extends ActionSupport implements Preparable {
                     singleGridBean.setBeanList(this.beanList);
                     singleGridList.add(singleGridBean);
 
-                    loadHelper.gridListToMultiLoadParameter(loadParameter, singleGridList, this.projectName, this.eventName, this.status);
+                    loadHelper.gridListToMultiLoadParameter(loadParameter, singleGridList, this.projectName, this.eventName, this.status, userName);
                     psewt.loadAll(null, loadParameter);
+
 
                     this.pageDataReset(isProjectRegistration, isSampleRegistration, this.status);
 
-                    if(isSampleRegistration) {
+                    if(isSampleRegistration) { // set sample name for sample update form load with newly loaded sample
                         this.sampleName = singleGridBean.getSampleName();
                     }
 
@@ -212,7 +215,8 @@ public class EventLoader extends ActionSupport implements Preparable {
                     //delegate populating multiload parameter to the helper
                     MultiLoadParameter loadParameter = new MultiLoadParameter();
                     EventLoadHelper loadHelper = new EventLoadHelper(this.readPersister);
-                    loadHelper.gridListToMultiLoadParameter(loadParameter, this.gridList, this.projectName, this.eventName, this.status);
+
+                    loadHelper.gridListToMultiLoadParameter(loadParameter, this.gridList, this.projectName, this.eventName, this.status, userName);
                     psewt.loadAll(null, loadParameter);
 
                     if(!filter.equals("su"))this.pageDataReset(isProjectRegistration, isSampleRegistration, this.status);
@@ -221,7 +225,7 @@ public class EventLoader extends ActionSupport implements Preparable {
 
                 } else if (jobType.equals(SUBMISSION_TYPE_FILE)) { //loads data from a CSV file to grid view
                     if(!this.dataTemplate.canRead()) {
-                        throw new Exception("Error in reading the file.");
+                        throw new Exception(ErrorMessages.EVENT_LOADER_FILE_READ);
                     } else {
                         try {
                             TemplatePreProcessingUtils templateUtil = new TemplatePreProcessingUtils();
@@ -249,8 +253,26 @@ public class EventLoader extends ActionSupport implements Preparable {
 
                     TemplatePreProcessingUtils templateUtil = new TemplatePreProcessingUtils();
                     String templateType = this.jobType.substring(jobType.indexOf("_")+1);
-                    this.downloadStream = templateUtil.buildFileContent(templateType, emaList, this.projectName, this.sampleName, this.eventName);
-                    this.downloadContentType = "application/octet-stream"; //templateType.equals("e") ? "application/vnd.ms-excel" : "text/csv";
+                    this.dataTemplateStream = templateUtil.buildFileContent(templateType, emaList, this.projectName, this.sampleName, this.eventName);
+                    this.dataTemplateContentType = "application/octet-stream"; //templateType.equals("e") ? "application/vnd.ms-excel" : "text/csv";
+                    this.dataTemplateFileName = eventName.replaceAll(" ", "_") + "_template." + (jobType.endsWith("e") ? "xls" : "csv");
+
+                    rtnVal = Constants.STRUTS_FILE_DOWNLOAD;
+                } else if(jobType.startsWith(EXPORT_SAMPLE)) { //export sample
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ZipOutputStream zos = new ZipOutputStream(baos);
+                    List<EventMetaAttribute> emaList = this.readPersister.getEventMetaAttributes(this.projectName, this.eventName);
+                    emaList = CommonTool.filterEventMetaAttribute(emaList, "template");
+
+                    TemplatePreProcessingUtils templateUtil = new TemplatePreProcessingUtils();
+                    List<String> templateLines = IOUtils.readLines(templateUtil.buildFileContent("c", emaList, this.projectName, this.sampleName, this.eventName));
+                    StringBuffer newTemplateBuffer = new StringBuffer();
+
+                    for(int i = 0;i < 2;i++) { //only writes column headers and descriptions
+                        newTemplateBuffer.append(templateLines.get(i)).append("\n");
+                    }
+
+                    this.dataTemplateContentType = "application/zip";
 
                     if(ids != null && !ids.isEmpty()) { //project or sample edit from EventDetail
                         StringBuffer dataBuffer = new StringBuffer();
@@ -269,24 +291,75 @@ public class EventLoader extends ActionSupport implements Preparable {
                                 List<FileReadAttributeBean> attributeList = pair.getAttributeList();
                                 Map<String, String> attributeMap = AttributeHelper.attributeListToMap(attributeList);
 
+                                boolean sampleFolderCreated = false;
+
                                 for(EventMetaAttribute ema : emaList) {
                                     String attributeName = ema.getLookupValue().getName();
-                                    dataBuffer.append(attributeMap.containsKey(attributeName) ? attributeMap.get(attributeName) : "");
+                                    if(ema.getLookupValue().getDataType().equals("file")){
+                                        if(attributeMap.containsKey(attributeName)) {
+                                            String[] paths = attributeMap.get(attributeName).split(",");
+
+                                            if(!paths[0].equals("")) {
+                                                File file = null;
+                                                byte[] bytes;
+                                                FileInputStream fis;
+
+                                                if (!sampleFolderCreated) {
+                                                    zos.putNextEntry(new ZipEntry(currSample.getSampleName() + "/"));
+                                                    sampleFolderCreated = true;
+                                                }
+
+                                                zos.putNextEntry(new ZipEntry(currSample.getSampleName() + "/" + attributeName + "/"));
+
+                                                StringBuilder dataBufferFilePath = new StringBuilder();
+                                                String delim = "";
+
+                                                for (String path : paths) {
+                                                    String absoluteFilePath = this.fileStoragePath + File.separator + Constants.DIRECTORY_PROJECT + File.separator + File.separator + path;
+                                                    String name = path.substring(path.lastIndexOf(File.separator) + 1);
+
+                                                    file = new File(absoluteFilePath);
+
+                                                    if (file.exists()) {
+                                                        String zipPath = currSample.getSampleName() + "/" + attributeName + "/" + name;
+                                                        fis = new FileInputStream(file);
+                                                        bytes = IOUtils.toByteArray(fis);
+                                                        zos.putNextEntry(new ZipEntry(zipPath));
+                                                        zos.write(bytes);
+
+                                                        dataBufferFilePath.append(delim).append("/" + zipPath);
+                                                        delim = ",";
+                                                    }
+                                                }
+
+                                                zos.closeEntry();
+
+                                                dataBuffer.append("\"" + dataBufferFilePath.toString() + "\"");
+                                            }
+                                        } else{
+                                            dataBuffer.append("");
+                                        }
+                                    } else {
+                                        dataBuffer.append(attributeMap.containsKey(attributeName) ? "\"" + attributeMap.get(attributeName) + "\"" : "");
+                                    }
                                     dataBuffer.append(",");
                                 }
                                 dataBuffer.append("\n");
                             }
                         }
 
-                        StringBuffer newTemplateBuffer = new StringBuffer();
-                        List<String> templateLines = IOUtils.readLines(this.downloadStream);
-                        for(int i = 0;i < 2;i++) { //only writes column headers and descriptions
-                            newTemplateBuffer.append(templateLines.get(i)).append("\n");
-                        }
                         newTemplateBuffer.append(dataBuffer);
-                        this.downloadStream = IOUtils.toInputStream(newTemplateBuffer.toString());
                     }
-                    rtnVal = Constants.FILE_DOWNLOAD_MSG;
+
+                    zos.putNextEntry(new ZipEntry(this.eventName + "_samples.csv"));
+                    zos.write(newTemplateBuffer.toString().getBytes());
+                    zos.closeEntry();
+                    zos.flush();
+                    zos.close();
+                    this.dataTemplateStream = new ByteArrayInputStream(baos.toByteArray());
+                    this.dataTemplateFileName = eventName.replaceAll(" ", "_") + "_export.zip";
+
+                    rtnVal = Constants.STRUTS_FILE_DOWNLOAD;
 
                 } else if(jobType.equals("projectedit")) {
                     AttributeHelper attributeHelper = new AttributeHelper(this.readPersister);
@@ -411,14 +484,6 @@ public class EventLoader extends ActionSupport implements Preparable {
         return resultMessage;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
     private String getUnknownErrorMessage() {
         return "Unknown error uploading file " + this.dataTemplateFileName;
     }
@@ -535,24 +600,12 @@ public class EventLoader extends ActionSupport implements Preparable {
         this.eventId = eventId;
     }
 
-    public InputStream getDownloadStream() {
-        return downloadStream;
-    }
-
-    public void setDownloadStream(InputStream downloadStream) {
-        this.downloadStream = downloadStream;
-    }
-
-    public String getDownloadContentType() {
-        return downloadContentType;
-    }
-
-    public void setDownloadContentType(String downloadContentType) {
-        this.downloadContentType = downloadContentType;
-    }
-
     public void setDataTemplateContentType(String dataTemplateContentType) {
         this.dataTemplateContentType = dataTemplateContentType;
+    }
+
+    public String getDataTemplateContentType() {
+        return dataTemplateContentType;
     }
 
     public void setDataTemplateFileName(String dataTemplateFileName) {
@@ -561,6 +614,10 @@ public class EventLoader extends ActionSupport implements Preparable {
 
     public void setDataTemplate(File dataTemplate) {
         this.dataTemplate = dataTemplate;
+    }
+
+    public InputStream getDataTemplateStream() {
+        return dataTemplateStream;
     }
 
     public String getIds() {

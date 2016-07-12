@@ -1,3 +1,13 @@
+var _html = {
+  fm: '<div id="attach-file-dialog-$id$" class="attach-file-dialog" style="display:none;">' +
+  '<div class="file-dialog-heading"><h2 style="margin-top: 0px;margin-bottom: 9px;" title="Attach Files:&nbsp;">Attach Files<span style="display:none" class="header-separator">:&nbsp;</span>' +
+  '</h2></div><div class="form-body" style="max-height: 364px;position: relative;overflow: auto;padding: 20px;"><fieldset class="fm-fieldset"><legend><span>Select</span></legend>' +
+  '<input class="upload-file" id="uploadFile-$id$" multiple="multiple" type="file" name="$lt$upload" style="margin-bottom: 10px;"><div id="dropzone-$id$" class="dropzone" class="well">Drop files here</div><div id="attach-files-$id$">$uploadedFiles$</div>' +
+  '<button type="button" class="btn btn-success" id="attach-file-upload-$id$" style="margin-top: 10px;">UPLOAD</button><img id="loading-$id$" src="images/loading.gif" style="margin: 10px 0 0 10px;width: 24px;display: none;"></fieldset><fieldset class="fm-fieldset" style="width: 660px;margin-top: 5px;"><b>Tip:</b> After uploading or removing the file(s), click “Back to Submit Page”  button and submit the page to compete the changes!</fieldset>' +
+  '</div><div class="buttons-container form-footer" style="overflow: visible;min-height: 51px;height: 100%;margin: 0;padding: 10px;"><fieldset class="fm-fieldset" style="width: 600px;"><legend><span>Attachment(s)</span></legend><div id="files-$id$" class="files" style="padding-left:20px;">$existingFileField$</div></fieldset>' +
+  '<div class="buttons" style="float: right"><button type="button" class="btn btn-primary" id="attach-file-done-$id$" style="margin: 10px;" disabled>Back to Submit Page</button><button type="button" class="btn btn-warning" id="attach-file-cancel-$id$" style="margin: 10px;">Cancel</button></div></div></div>'
+}
+
 var _utils = {
       makeAjax: function(u,d,p,cb) {
         $.ajax({
@@ -181,14 +191,14 @@ var _utils = {
         $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG gridIndex').append('#')); //grid row index
         if(utils.checkNP(en)) {
           if(!utils.checkSR(en)) {
-            $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG resizable-header').append('<small class="text-danger">*</small>Sample Name').append('<img class="attributeIcon" src="images/icon/resize_icon.gif" style="position:absolute;bottom:0;right:0;"/>'));
+            $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG resizable-header').attr('style','border-right: 2px solid #7D7878;').append('<small class="text-danger">*</small>Sample Name'));
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '135').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
             autofill_no+=1;
           } else {
             $gridHeaders.append(
-                $('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Sample Name<br/>'),
-                $('<th/>').addClass('tableHeaderNoBG').append('Parent Sample'),
-                $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>')
+                $('<th/>').addClass('tableHeaderNoBG resizable-header').attr('style','border-right: 2px solid #7D7878;').append('<small class="text-danger">*</small>Sample Name<br/>'),
+                $('<th/>').addClass('tableHeaderNoBG resizable-header').attr('style','border-right: 2px solid #7D7878;').append('Parent Sample'),
+                $('<th/>').addClass('tableHeaderNoBG resizable-header').attr('style','border-right: 2px solid #7D7878;').append('Public<br/>')
             );
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '95').replace('$a$', 2).replace('$b$', 2).replace('$c$', 2)));
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '190').replace('$a$', 3).replace('$b$', 3).replace('$c$', 3)));
@@ -198,8 +208,8 @@ var _utils = {
         } else {
           if(utils.checkPR(en)) {
             $gridHeaders.append(
-                $('<th/>').addClass('tableHeaderNoBG').append('<small class="text-danger">*</small>Project Name<br/>', requireImgHtml),
-                $('<th/>').addClass('tableHeaderNoBG').append('Public<br/>', requireImgHtml)
+                $('<th/>').addClass('tableHeaderNoBG resizable-header').attr('style','border-right: 2px solid #7D7878;').append('<small class="text-danger">*</small>Project Name<br/>', requireImgHtml),
+                $('<th/>').addClass('tableHeaderNoBG resizable-header').attr('style','border-right: 2px solid #7D7878;').append('Public<br/>', requireImgHtml)
             );
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '145').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
             $autofillLine.append($('<td/>')); // empty for Public
@@ -233,16 +243,6 @@ var _utils = {
             var isSelect = (_ma.options && _ma.options !== '' && (_ma.options.indexOf(';') > 0 || _ma.options.indexOf("[{") === 0));
             var isMulti = false, isRadio = false;
             var isText = false;
-
-            $gridHeaders.append(
-                $('<th/>').addClass('tableHeaderNoBG' + (isSelect ? ' resizable-header':'')).attr('data-tooltip', (isDesc ? _ma.desc : '')).append(
-                    isRequired ? '<small class="text-danger">*</small>' : '',
-                    (_ma.label ? _ma.label : _ma.lookupValue.name) + '<br/>',
-                    isDesc ? requireImgHtml : ''
-                    ,(hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
-                    ,(isSelect ? '<img class="attributeIcon" src="images/icon/resize_icon.gif" style="position:absolute;bottom:0;right:0;"/>':'')
-                )
-            );
 
             inputElement = '<input type="hidden" value="' + utils.getProjectName() + '" name="$lt$projectName"/>';
             inputElement += '<input type="hidden" value="' + _ma.lookupValue.name + '" name="$lt$attributeName"/>';
@@ -296,7 +296,10 @@ var _utils = {
             } else {
               var maDatatype = _ma.lookupValue.dataType;
               if(maDatatype === 'file') { //file
-                inputElement += '<input type="file" id="' + maDatatype + '_$id$" name="$lt$upload" style="width:253px;"/>';
+                // inputElement += '<input type="file" id="' + maDatatype + '_$id$" name="$lt$upload" style="width:253px;"/>';
+                //inputElement += '<input type="button"  id="' + maDatatype + '_$id$" style="width:253px;" value="FILE MANAGEMENT" onclick="showFMPopup(this.id)"/>';
+                inputElement += '<button type="button" id="' + maDatatype + '_$id$"  class="btn btn-default btn-xs table-tooltip" data-tooltip="FILE MANAGEMENT" value="FILE MANAGEMENT" onclick="showFMPopup(this.id)">File Store</button>'
+                inputElement += _html.fm;
                 $autofillLine.append($('<td/>'));
               } else if(maDatatype ==='date') {
                 inputElement +=
@@ -315,6 +318,17 @@ var _utils = {
             }
             inputElement = inputElement.replace(/\$id\$/g,_ma.lookupValue.name.replace(/ /g,"_") + "_$id$");
 
+            $gridHeaders.append(
+                $('<th/>').addClass('tableHeaderNoBG resizable-header').attr('style','border-right: 2px solid #7D7878;')
+                    .attr('data-tooltip', (isDesc ? _ma.desc : '')).append(
+                    isRequired ? '<small class="text-danger">*</small>' : '',
+                    (_ma.label ? _ma.label : _ma.lookupValue.name) + '<br/>',
+                    isDesc ? requireImgHtml : ''
+                    ,(hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
+                    /*,(isSelect || isText ? '<img class="attributeIcon" src="images/icon/resize_icon.gif" style="position:absolute;bottom:0;right:0;"/>':'')*/
+                )
+            );
+
             g_avDic[_ma.lookupValue.name] = { //store html contents with its attribute name for later use in adding row
               'ma': _ma,
               'inputElement': inputElement,
@@ -326,7 +340,8 @@ var _utils = {
               'valueLength' :_ma.valueLength
             };
 
-            var $inputNode = $('<td/>').append(inputElement.replace(/\$val\$/g, '').replace(/\$id\$/g, 'f_' + count).replace(/\$lt\$/g,"beanList["+count+"]."));
+            var $inputNode = $('<td/>').append(inputElement.replace(/\$existingFileField\$/g, "").replace(/\$uploadedFiles\$/g, "")
+                .replace(/\$val\$/g, '').replace(/\$id\$/g, 'f_' + count).replace(/\$lt\$/g,"beanList["+count+"]."));
             utils.smartDatePicker($inputNode);
 
             if(isText && hasOntology) {
@@ -359,14 +374,14 @@ var _utils = {
         _utils.addGridRows(null, en);
 
         if(hasDependantDict){
-          $("select[id*='select_"+parentFieldName+"']").change(function(event, data){
+          $("select[id*='select_"+parentFieldName.replace(/\s+/g, '_')+"']").change(function(event, data){
             var val = parentChildDict[parentFieldName];
             var childFieldName = val['childFieldName'];
             var parentDictName = val['dictName'];
             var selectedParent = ($(this).val()).split(" - ")[0];
             var selectedParentIdArr = ($(this).attr('id')).split("_");
-            var attrIndex = (selectedParentIdArr[selectedParentIdArr.length-2] == 'f') ? parseInt(selectedParentIdArr[selectedParentIdArr.length-1],10) + 1 : selectedParentIdArr[selectedParentIdArr.length-1];
-            var childSelectInput = $("select[id*='select_"+childFieldName+"_" + selectedParentIdArr[selectedParentIdArr.length-2] + "_" + attrIndex +"']");
+            var attrIndex = (selectedParentIdArr[selectedParentIdArr.length-2] == 'f') ? "" : selectedParentIdArr[selectedParentIdArr.length-1];
+            var childSelectInput = $("select[id*='select_"+childFieldName.replace(/\s+/g, '_')+"_" + selectedParentIdArr[selectedParentIdArr.length-2] + "_" + attrIndex +"']");
             var childValue = (data && data.sampleData == true) ? data.sampleAttrMap[childFieldName] : null;
             childSelectInput.html('');
             childSelectInput.append('<option value=""></option>');
@@ -415,18 +430,35 @@ var _utils = {
           handles: 'e',
           resize: function( event, ui ) {
             var columnIndex = this.cellIndex + 1;
+            var text = $(this).text();
+            var textWidth;
 
-            $('#gridBody tr td:nth-child('+columnIndex+') select,' +
-            '#gridBody tr td:nth-child('+columnIndex+') div.ms-parent,' +
-            '#gridBody tr td:nth-child('+columnIndex+') div.input-group input').each(function (i, v) {
-              if(v.id != '' || v.className != '') {
-                var $v = $(v);
-                $v.css("width", ui.size.width);
-              }
-            });
+            if(text == 'Sample Name' || text == '*Sample Name'){
+              textWidth = 168;
+            } else{
+              var canvas = document.createElement('canvas');
+              var ctx = canvas.getContext("2d");
+              ctx.font = "13px Open Sans";
+              textWidth = ctx.measureText(text).width + 10;
+            }
+
+            if(textWidth < ui.size.width){
+              $('#gridBody tr td:nth-child(' + columnIndex + ') select,' +
+              '#gridBody tr td:nth-child(' + columnIndex + ') input,' +
+              '#gridBody tr td:nth-child(' + columnIndex + ') div.ms-parent,' +
+              '#gridBody tr td:nth-child(' + columnIndex + ') div.input-group input').each(function (i, v) {
+                if (v.id != '' || v.className != '') {
+                  var $v = $(v);
+                  $v.css("width", ui.size.width);
+                }
+              });
+            }
             $(this).removeAttr('style');
+            $(this).css("border-right", "2px solid #7D7878");
           }
         });
+
+        initializeFileManagementFunctions();
 
         return;
       },
@@ -502,9 +534,13 @@ var _utils = {
           //Clear existing data
           if (singleSample) {  //single sample view
             $('#attributeInputDiv input[type="text"]').val('');
+            $('[id^=files-][id*=_f_]').html('');
+            $("button[id^=file_][id*=_f_]").attr("data-tooltip", "FILE MANAGEMENT");
           } else {  // multiple samples view
             index = selectName.charAt(9);
             $('#gridBody .borderBottom:eq(' + index+ ') input[type="text"][name!="gridList[' + index + '].sampleName"]').val('');
+            $('[id^="files-"][id$="_g_' + index + '"]').html('');
+            $('[id^="file_"][id$="_g_' + index + '"]').attr("data-tooltip", "FILE MANAGEMENT");
           }
 
           $('select[id^="select_"], select[id^="req_select_"]').each(function(){
@@ -547,8 +583,44 @@ var _utils = {
             var firstObj = $input.get(0);
 
             if (firstObj) {
-              if (firstObj.getAttribute('type') == 'file') {
-                $(firstObj).before("<strong>" + value.substring(value.indexOf("_") + 1) + "</strong>");
+              if (firstObj.getAttribute('type') == 'button') {
+                var id = $(firstObj).attr('id');
+                id = id.substring(id.indexOf("_") + 1);
+                var name = $("#uploadFile-" + id).attr('name');
+                name = name.substring(0, name.lastIndexOf('.'));
+                var $files = $('#files-' + id);
+
+                var valArr = value.split(',');
+                var valArrLength = valArr.length;
+                var fileNameList = "", separator = "", fileNameCharCount = 0;
+                for(var j=0; j < valArr.length; j++){
+                  var fileName = valArr[j].substring(valArr[j].indexOf("_") + 1);
+                  if(fileName != "") {
+                    $files.append("<div id='file-" + id + "-" + j + "'><strong><input type='hidden' name='" + name + ".existingFileName' value='" + fileName + "' >" + fileName + "</strong> " +
+                        "<button type='button' class='btn btn-default btn-xs table-tooltip' data-tooltip='Download' style='float: right;margin-left: 2px;' onclick='downloadFile(\"" + fileName + "\",\"" + selectName + "\",\"" + key + "\");'><img src='images/download_file.png' style='height: 20px;'></button>" +
+                        "<button type='button' class='btn btn-default btn-xs table-tooltip' data-tooltip='Remove' style='float: right;' onclick='removeFile(\"file-" + id + "-" + j + "\");'><img src='images/cancel.png' style='height: 20px;'></button></div><br>");
+
+                    fileNameList += separator + fileName;
+                    fileNameCharCount = (fileName.length > fileNameCharCount) ? fileName.length : fileNameCharCount;
+                    separator = " ";
+                  } else {
+                    valArrLength -= 1;
+                  }
+                }
+
+                if(valArrLength > 1) {
+                  $files.append("<button type='button' class='btn btn-info btn-xs' onclick='downloadFile(\"DOWNLOADALL\",\"" + selectName + "\",\"" + key + "\");'>Download All</button>")
+                }
+
+                if(valArrLength > 0) {
+                  $files.append("<input type='hidden' name='" + name + ".existingFileName' value='    ' >");
+                }
+
+                if(fileNameList != "") {  //update tooltip
+                  $("#file_" + id).attr("data-tooltip", fileNameList);
+
+                  $("head").append("<style> #file_" + id + ":hover:after {width : " + ((fileNameCharCount + 1) * 7) + "px !important;}</style>");
+                }
               } else if(firstObj.getAttribute('type') == 'radio'){
                 var name = firstObj.getAttribute('name');
 
@@ -651,6 +723,8 @@ var _utils = {
             $("#sample-pagination-nav ul li:nth-child("+(parseInt(g_sampleArrIndex,10)+1)+")").addClass("active");
             $("#pagination-warning").show();
           }
+
+          initializeFileManagementFunctions();
         } else{
           $('#loadingImg').hide();
         }
@@ -748,7 +822,7 @@ var button = {
         $formFields.each(function (i, v) {
           var $node = $(v);
 
-          if ($node.val() === null || $node.val() === '') {
+          if ($node.val() === null || $node.val() === '' || $node.val() === 'FILE MANAGEMENT') {
             if ($node.attr('id').indexOf("req_") !== -1) {
               rowAllReq = false;
               rowMsg += "&nbsp;&nbsp;" + $node.siblings('[name$="attributeName"]').val() + "<br />";
@@ -789,7 +863,7 @@ var button = {
         $formFields.each(function (i, v) {
           var $node = $(v);
 
-          if ($node.val() === null || $node.val() === '') {
+          if ($node.val() === null || $node.val() === '' || $node.val() === 'FILE MANAGEMENT') {
             if ($node.attr('id') && $node.attr('id').indexOf("req_") !== -1) {
               rowAllReq = false;
               rowMsg += "&nbsp;&nbsp;" + $node.siblings('[name$="attributeName"]').val() + "<br />";
@@ -835,7 +909,7 @@ var button = {
         $formFields.each(function (i, v) {
           var $node = $(v);
 
-          if ($node.val() === null || $node.val() === '') {
+          if ($node.val() === null || $node.val() === '' || $node.val() === 'FILE MANAGEMENT') {
             if ($node.attr('id') && $node.attr('id').indexOf("req_") !== -1) {
               rowAllReq = false;
               rowMsg += "&nbsp;&nbsp;" + $node.siblings('[name$="attributeName"]').val() + "<br />";
@@ -938,6 +1012,54 @@ var button = {
         "&eventId=" + $("#_eventSelect").val() + "&ids=" + (g_sampleIds ? g_sampleIds : "")
       });
       //this.submit_form("template");
+    }
+  },
+  exportSample: function() {
+    if(_utils.validation()) {
+      var $exportSampleForm = $('<form>').attr({
+        id: 'exportSampleForm',
+        method: 'POST',
+        action: 'eventLoader.action'
+      }).css('display', 'none');
+
+      $('<input>').attr({
+        id: 'jobType',
+        name: 'jobType',
+        value : 'export'
+      }).appendTo($exportSampleForm);
+
+      $('<input>').attr({
+        id: 'projectName',
+        name: 'projectName',
+        value : $("#_projectSelect option:selected").text()
+      }).appendTo($exportSampleForm);
+
+      $('<input>').attr({
+        id: 'projectId',
+        name: 'projectId',
+        value : $("#_projectSelect").val()
+      }).appendTo($exportSampleForm);
+
+      $('<input>').attr({
+        id: 'eventName',
+        name: 'eventName',
+        value : $("#_eventSelect option:selected").text()
+      }).appendTo($exportSampleForm);
+
+      $('<input>').attr({
+        id: 'eventId',
+        name: 'eventId',
+        value : $("#_eventSelect").val()
+      }).appendTo($exportSampleForm);
+
+      $('<input>').attr({
+        id: 'ids',
+        name: 'ids',
+        value : (g_sampleIds ? g_sampleIds : "")
+      }).appendTo($exportSampleForm);
+
+      $('body').append($exportSampleForm);
+      $exportSampleForm.submit();
     }
   },
   submit_form: function(type, status) {
@@ -1127,11 +1249,86 @@ var button = {
 
         var attributeField = g_avDic[av_v.ma.lookupValue.name]['inputElement'];
         attributeField = attributeField.replace('$val$', (bean ? bean[1] : ''));
+        var existingFileField = "";
+        var uploadedFiles = "";
         if(attributeField.indexOf('type="file"') >= 0) {
           if(bean) {
-            attributeField += ("<strong>" + bean[1].substring(bean[1].indexOf("_") + 1) + "</strong>");
+            //attributeField += ("<strong>" + bean[1].substring(bean[1].indexOf("_") + 1) + "</strong>");
+            var id = av_v.ma.lookupValue.name + "_$id$"
+            var valArr = bean[1].split(',');
+            var selectName = "gridList[" + g_gridLineCount + "].sampleName";
+
+            //Attached Files
+            var filePaths = null;
+            if(dict['filePaths']) {
+              $.each(dict['filePaths'], function (b_i, b_v) {
+                if (av_v.ma.lookupValue.name === b_v[0]) {
+                  filePaths = b_v;
+                }
+              });
+            }
+            var successfullData = $("#action_message").length && $("#action_message").text().indexOf('successfully') >=0;
+
+            var fileNameArr = [];
+            if(filePaths && filePaths[1]){
+              var paths = filePaths[1];
+
+              for(var i in paths) {
+                var fileName = paths[i].substring(paths[i].lastIndexOf("/") + 1);
+                fileName = fileName.substring(fileName.indexOf("_") + 1);
+                fileNameArr.push(fileName);
+
+                if(!successfullData) {
+                  var $hiddenFileValue = $('<input>').attr({
+                    type: 'hidden',
+                    name: ltVal + "uploadFilePath",
+                    value: paths[i]
+                  });
+
+                  var $fileRow = $('<p/>').text(fileName).css("margin-top", "10px");
+                  $fileRow.prepend($('<span class="label label-info" style="margin-right: 10px;"/>').text("Uploaded Successfully")).append($hiddenFileValue);
+
+                  uploadedFiles += $fileRow.prop('outerHTML');
+
+                }
+              }
+            }
+
+            var valArrLength = valArr.length;
+            for(var j=0; j < valArr.length; j++){
+              var fileName = valArr[j].substring(valArr[j].indexOf("_") + 1);
+              if(fileName != "") {
+                var exist = false;
+                if(!successfullData) {
+                  for (var index in fileNameArr) {
+                    if (fileNameArr[index] == fileName) {
+                      exist = true;
+                      break;
+                    }
+                  }
+                }
+                if (!exist) {
+                  existingFileField += "<div id='file-" + id + "-" + j + "'><strong><input type='hidden' name='" + ltVal + "existingFileName' value='" + fileName + "' >" + fileName + "</strong> " +
+                      "<button type='button' class='btn btn-default btn-xs table-tooltip' data-tooltip='Download' style='float: right;margin-left: 2px;' onclick='downloadFile(\"" + fileName + "\",\"" + selectName + "\",\"" + av_v.ma.lookupValue.name + "\");'><img src='images/download_file.png' style='height: 20px;'></button>" +
+                      "<button type='button' class='btn btn-default btn-xs table-tooltip' data-tooltip='Remove' style='float: right;' onclick='removeFile(\"file-" + id + "-" + j + "\");'><img src='images/cancel.png' style='height: 20px;'></button></div><br>";
+                } else {
+                  valArrLength -= 1;
+                }
+              } else {
+                valArrLength -= 1;
+              }
+            }
+
+            if(valArrLength > 1) {
+              existingFileField += "<button type='button' class='btn btn-info btn-xs' onclick='downloadFile(\"DOWNLOADALL\",\"" + selectName + "\",\"" + av_v.ma.lookupValue.name + "\");'>Download All</button>";
+            }
+
+            if(valArrLength > 0) {
+              existingFileField += "<input type='hidden' name='" + ltVal + "existingFileName' value='   ' >";
+            }
           }
         }
+        attributeField = attributeField.replace(/\$existingFileField\$/g, existingFileField).replace(/\$uploadedFiles\$/g, uploadedFiles);
 
         var $inputNode = $('<td/>').append(
             attributeField.replace(/\$lt\$/g, ltVal).replace(/\$id\$/g, 'g_' + g_gridLineCount)
@@ -1234,6 +1431,7 @@ var button = {
 
       $("select[id='select_"+parentFieldName+"_g_"+ltVal.charAt(9)+"']").trigger("change", [{sampleData:true, sampleAttrMap:sampleAttrMap}]);
     }
+    initializeFileManagementFunctions();
   },
   remove_event: function() {
     var $lastChild = $("#gridBody tr:last-child");
@@ -1746,6 +1944,47 @@ function searchSamples(id) {
   });
 }
 
+function downloadFile(fileName, sampleNameInput, attrName) {
+  var $downloadFileForm = $('<form>').attr({
+    id: 'downloadFileForm',
+    method: 'POST',
+    action: 'downloadfile.action'
+  }).css('display', 'none');
+
+  $('<input>').attr({
+    id: 'attributeName',
+    name: 'attributeName',
+    value : attrName
+  }).appendTo($downloadFileForm);
+
+  $('<input>').attr({
+    id: 'fileName',
+    name: 'fileName',
+    value : fileName
+  }).appendTo($downloadFileForm);
+
+  $('<input>').attr({
+    id: 'projectId',
+    name: 'projectId',
+    value : utils.getProjectId()
+  }).appendTo($downloadFileForm);
+
+  $('<input>').attr({
+    id: 'sampleVal',
+    name: 'sampleVal',
+    value : $("input[type!='hidden'][name='" + sampleNameInput + "']").val()
+  }).appendTo($downloadFileForm);
+
+  $('body').append($downloadFileForm);
+  $downloadFileForm.submit();
+}
+
+function removeFile(fileDivId){
+  var name = fileDivId.substring(fileDivId.indexOf("-")+1,fileDivId.lastIndexOf("-"));
+  $("#" + fileDivId + " + br, #" + fileDivId).remove();
+  $("#attach-file-done-" + name).prop('disabled', false);
+}
+
 function fetchSample(arrResult, sampleVal, firstResult, maxResult){
   var $sampleLoadingImg = $("#sampleLoadingImg");
   var projectId = utils.getProjectId();
@@ -1794,4 +2033,140 @@ function processing(isProcessing){
     $("#popupLayerScreenLocker").hide();
     $("#processingDiv").hide();
   }
+}
+
+
+function showFMPopup(id){
+  id = id.substring(id.indexOf("_") + 1);
+  $("#attach-file-dialog-" + id).show();
+  $(".ui-blanket").css({"visibility":"visible"});
+  $("#attach-file-done-" + id).prop('disabled', true);
+
+  $('#attach-file-cancel-' + id + ',#attach-file-done-' + id).click(function() {
+    $("#attach-file-dialog-" + id).hide();
+    $(".ui-blanket").css({"visibility":"hidden"});
+    $this = $(this);
+
+    if($this.attr('id').indexOf("cancel") > -1) {
+      $("#attach-files-" + id + " button.btn-warning").each(function (i, file) {
+        $this.click();
+      });
+    }
+  });
+}
+
+
+function initializeFileManagementFunctions(){
+  $('.upload-file').each(function(i, file) {
+    var id = $(this).attr("id");
+    id = id.substring(id.indexOf("-") + 1);
+    $(file).fileupload({
+      url: "temporaryFileUpload.action",
+      paramName: "temporaryFiles",
+      add: function(e, data) {
+        var fileNameCount = data.files[0]['name'].length;
+
+        var $fileRow = $('<p/>').text(
+            data.files[0]['name']+ " (" + utils.formatFileSize(data.files[0]['size']) + ")"
+        ).css("margin-top", "10px");
+
+        if(fileNameCount > 50) {
+          $fileRow.append($('&nbsp;<strong class="error text-danger"/>').text("[File Name is too long (Max 50 charachter)]"));
+          data.files.length = 0;
+        }
+
+        var $cancelBtn = $('<button type="button" class="btn btn-xs btn-warning cancel" style="margin-left:15px;" />').text("Cancel").click(function() {
+          data.abort();
+          data.files.length = 0;
+          $(this).parent().remove();
+        });
+        data.context = $fileRow.append($cancelBtn).appendTo($('#attach-files-' + id));
+
+        $('#attach-file-upload-' + id).on('click', function(e) {
+          e.preventDefault();
+          if (data.files.length > 0) {
+            data.submit();
+          }
+        });
+
+        $("#attach-file-done-" + id).prop('disabled', true);
+      },
+      dataType: 'json',
+      sequentialUploads: true,
+      done: function (e, data) {
+        $('#attach-files-' + id).find('p').each(function(i,v) {
+          var $node = $(v);
+
+          if(data.files[0] && $node.text().indexOf(data.files[0].name) >= 0) {
+            if($node.find('span.label').length < 1) {
+              $node.prepend($('<span class="label label-info" style="margin-right: 10px;"/>').text("Uploaded Successfully"));
+              $node.find('button').hide();  // remove cancel button after successful upload
+            }
+          }
+        });
+        data.files.length = 0;
+        var attrName = $(this).attr("name");
+        var result = data.result.result;
+
+        var attrFilePath = attrName.substr(0, attrName.lastIndexOf('.') + 1);
+
+        for(var i in result) {
+          var $hiddenFileValue = $('<input>').attr({
+            type: 'hidden',
+            name: attrFilePath + "uploadFilePath",
+            value: result[i]
+          });
+
+          $hiddenFileValue.appendTo($("#attach-file-dialog-" + id));
+        }
+
+        $("#attach-file-done-" + id).prop('disabled', false);
+        $("#loading-" + id).hide();
+      },
+      fail: function (e, data) {
+        $('#attach-files-' + id).find('p').each(function(i,v) {
+          var $node = $(v);
+
+          if(data.files[0] && $node.text().indexOf(data.files[0].name) >= 0) {
+            if($node.find('span.label').length < 1) {
+              $node.prepend($('<span class="label label-danger" style="margin-right: 10px;"/>').text("Failed to upload!"));
+              $node.find('button').hide();
+            }
+          }
+        });
+        $("#loading-" + id).hide();
+      },
+      dropZone: $('#dropzone-' + id),
+      progress: function (e, data) {
+        $("#loading-" + id).show();
+      }
+    });
+
+    $(document).bind('dragover', function (e) {
+      var dropZone = $('#dropzone-' + id),
+          timeout = window.dropZoneTimeout;
+      if(!timeout) {
+        dropZone.addClass('in');
+      } else {
+        clearTimeout(timeout);
+      }
+      var found = false, node = e.target;
+      do {
+        if(node === dropZone[0]) {
+          found = true;
+          break;
+        }
+        node = node.parentNode;
+      } while(node != null);
+      if(found) {
+        dropZone.addClass('hover');
+      } else {
+        dropZone.removeClass('hover');
+      }
+      window.dropZoneTimeout = setTimeout(function () {
+        window.dropZoneTimeout = null;
+        dropZone.removeClass('in hover');
+      }, 100);
+    });
+  });
 }
