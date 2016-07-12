@@ -4,12 +4,14 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.sun.tools.jxc.apt.Const;
 import org.apache.log4j.Logger;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
+import org.jcvi.ometa.model.Event;
 import org.jcvi.ometa.model.LookupValue;
 import org.jcvi.ometa.model.ProjectAttribute;
 import org.jcvi.ometa.model.ProjectMetaAttribute;
 import org.jcvi.ometa.utils.Constants;
 import org.jtc.common.util.property.PropertyHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -29,13 +31,15 @@ public class Popup extends ActionSupport {
 
     private String projectName;
     private String eventName;
-    private String sampleNae;
+    private String sampleName;
 
     private Long projectId;
     private Long eventId;
     private Long sampleId;
 
     private String ids;
+
+    private List<LookupValue> eventTypeList;
 
     public Popup() {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
@@ -47,6 +51,15 @@ public class Popup extends ActionSupport {
 
         if(t.equals("sel_t")) {
             rtnVal = "SELECT_TEMPLATE";
+        } else if(t.equals("sel_e")) {
+            try {
+                this.eventTypeList = readPersister.getEventTypesForProject(this.projectId);
+            }  catch (Exception ex) {
+                logger.error("Exception in POPUP : " + ex.toString());
+                ex.printStackTrace();
+            }
+
+            rtnVal = "SELECT_EXPORT";
         } else if(t.startsWith("projectDetails")) {
             //Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
             //this.ids = props.getProperty(Constants.CONFIG_PROJECT_POPUP_DISPLAY_ATTRS);
@@ -98,12 +111,12 @@ public class Popup extends ActionSupport {
         this.eventName = eventName;
     }
 
-    public String getSampleNae() {
-        return sampleNae;
+    public String getSampleName() {
+        return sampleName;
     }
 
-    public void setSampleNae(String sampleNae) {
-        this.sampleNae = sampleNae;
+    public void setSampleName(String sampleName) {
+        this.sampleName = sampleName;
     }
 
     public Long getProjectId() {
@@ -136,5 +149,13 @@ public class Popup extends ActionSupport {
 
     public void setIds(String ids) {
         this.ids = ids;
+    }
+
+    public List<LookupValue> getEventTypeList() {
+        return eventTypeList;
+    }
+
+    public void setEventTypeList(List<LookupValue> eventTypeList) {
+        this.eventTypeList = eventTypeList;
     }
 }

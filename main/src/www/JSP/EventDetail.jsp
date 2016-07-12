@@ -111,7 +111,7 @@
             <h1>Search and Edit Data</h1>
           </div>
           <div id="HeaderPane">
-            <div id="errorMessagesPanel" style="margin-top:15px;margin-bottom: 15px; color: #ffffff;background-color: #a90329;border-color: #900323;width: auto;display: inline-block;"></div>
+            <div id="errorMessagesPanel" style="margin-top:15px;margin-bottom: 15px;display: inline-block;"></div>
             <s:if test="hasActionErrors()">
               <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
             </s:if>
@@ -182,6 +182,7 @@
                   <tbody id="sampleTableBody"/>
                 </table>
                 <input onclick="_page.edit.sampleEvent();" class="btn btn-primary" disabled="true" type="button" value="Edit Sample" id="editSampleBtn" style="margin-top: 20px;" />
+                <input onclick="_page.edit.exportSample();" class="btn btn-primary" type="button" value="Export Sample(s)" id="exportSampleBtn" style="margin-top: 20px;" />
               </div>
 
             </div>

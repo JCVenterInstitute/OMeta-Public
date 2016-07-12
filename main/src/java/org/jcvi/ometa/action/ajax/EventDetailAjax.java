@@ -164,7 +164,7 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                                 if (sa.getMetaAttribute() != null) {
                                     LookupValue tempLookupValue = sa.getMetaAttribute().getLookupValue();
                                     Object attrValue = ModelValidator.getModelValue(tempLookupValue, sa);
-                                    attributeMap.put(tempLookupValue.getName(), attributeDecorator(tempLookupValue, attrValue));
+                                    attributeMap.put(tempLookupValue.getName(), attributeDecorator(tempLookupValue, attrValue, sample.getSampleName()));
                                 }
                             }
                             sampleMap.put("attributes", attributeMap);
@@ -234,7 +234,7 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                             if(ea.getMetaAttribute() != null) {
                                 LookupValue tempLookupValue = ea.getMetaAttribute().getLookupValue();
                                 Object attrValue = ModelValidator.getModelValue(tempLookupValue, ea);
-                                attributeMap.put(tempLookupValue.getName(), attributeDecorator(tempLookupValue, attrValue));
+                                attributeMap.put(tempLookupValue.getName(), attributeDecorator(tempLookupValue, attrValue, sampleName));
                             }
                         }
                         eventMap.put("attributes", attributeMap);
@@ -274,14 +274,27 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
         return canEdit;
     }
 
-    private Object attributeDecorator(LookupValue lookupValue, Object attrVal) throws Exception {
+    private Object attributeDecorator(LookupValue lookupValue, Object attrVal, String sampleName) throws Exception {
         if(attrVal!=null) {
             if(attrVal.getClass() == Timestamp.class || attrVal.getClass() == Date.class) {
                 attrVal = CommonTool.convertTimestampToDate(attrVal);
             } else if(lookupValue.getDataType().equals(ModelValidator.FILE_DATA_TYPE)) {
-                String justFileName = (String)attrVal;
-                justFileName = justFileName.substring(justFileName.lastIndexOf(File.separator)+1);
-                attrVal = "<a href=\"download.action?fp=" + attrVal + "\">" + justFileName + "</a>";
+                String filePaths = (String)attrVal;
+                String[] filePathsArr = filePaths.split(",");
+                StringBuilder sb = new StringBuilder();
+                String separator = "";
+
+                for(String path : filePathsArr){
+                    String justFileName = path.substring(path.lastIndexOf(File.separator)+1);
+                    String downloadURL = "<a href=\"downloadfile.action?fileName=" + justFileName +
+                            "&attributeName=" + lookupValue.getName() +
+                            "&projectId=" + this.projectId +
+                            "&sampleVal=" + sampleName + "\">" + justFileName + "</a>";
+                    sb.append(separator).append(downloadURL);
+                    separator = ",";
+                }
+
+                attrVal = sb.toString();
             }
         }
         return attrVal;

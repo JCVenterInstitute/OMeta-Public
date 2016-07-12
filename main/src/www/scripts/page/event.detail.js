@@ -1,3 +1,10 @@
+var _html = {
+  fm: '<div id="attach-file-dialog-$id$" class="attach-file-dialog" style="display:none;">' +
+  '<div class="file-dialog-heading"><h2 style="margin-top: 0px;margin-bottom: 9px;" title="Attach Files:&nbsp;">Attach Files<span style="display:none" class="header-separator">:&nbsp;</span></h2></div>' +
+  '<div class="buttons-container form-footer" style="overflow: visible;min-height: 51px;height: 100%;margin: 0;padding: 10px;"><fieldset class="fm-fieldset" style="width: 600px;padding: 4px 0 4px 0px;"><div id="files-$id$" class="files" style="padding-left:20px;">$existingFileField$</div></fieldset>' +
+  '<div class="buttons" style="float: right">$downloadallbutton$<button type="button" class="btn btn-primary" id="attach-file-done-$id$" style="margin: 10px;">Done</button></div></div></div>'
+}
+
 var openBtn = "images/dataTables/details_open.png",
     closeBtn = "images/dataTables/details_close.png",
     subrow_html='<div><table cellpadding="6" cellspacing="0">$d$</table></div>';
@@ -113,6 +120,22 @@ var _page = {
               $('input[name="ids"]').val(sampleIds);
             }
             this.submit('sample');
+          }
+        },
+        exportSample : function() {
+          var sampleIds = '';
+          $('#sampleTableBody input[id^=sampleCB]:checked').each(function(i,v) {
+            sampleIds += v.id.substr(v.id.indexOf('_') + 1) + ',';
+          });
+          if(sampleIds.length === 0) {
+            utils.error.baloon("Please select sample to export!");
+          } else {
+            $.openPopupLayer({
+              name: "LPopupExportSelect",
+              width: 450,
+              url: "popup.action?t=sel_e&projectName=" + $("#_projectSelect option:selected").text() +
+              "&projectId=" + $("#_projectSelect").val() + "&ids=" + sampleIds
+            });
           }
         },
         submit: function(type) {
@@ -334,7 +357,42 @@ function createSampleDataTable(){
                 );
                 if(rowData.attributes) {
                   for(var i=0; i < headerList.length; i++){
-                    row.push(rowData.attributes[headerList[i]]);
+                    var attributeValue = rowData.attributes[headerList[i]];
+
+                    if(attributeValue && attributeValue.toString().indexOf("downloadfile") > -1 ) {
+                      var id = headerList[i] + '_' + ri;
+
+                      var valArr = attributeValue.toString().split(',');
+                      var valArrLength = valArr.length;
+                      var existingFileField = "", downloadAllButton = "", fileNameList = "", separator = "", fileNameCharCount = 0;
+
+                      for(var j=0; j < valArr.length; j++) {
+                        var fileName = valArr[j].substring(valArr[j].indexOf("_") + 1, valArr[j].indexOf("&"));
+                        if (fileName != "" && !fileName.startsWith("<a href=")) {
+                          existingFileField += "<div id='file-" + id + "-" + j + "'><strong>" + fileName + "</strong><button type='button' class='btn btn-default btn-xs table-tooltip' data-tooltip='Download' style='float: right;margin-left: 2px;' onclick='downloadFile(\"" + fileName + "\",\"" + rowData.sampleName + "\",\"" + headerList[i] + "\");'><img src='images/download_file.png' style='height: 20px;'></button></div><br>";
+
+                          fileNameList += separator + fileName;
+                          fileNameCharCount = (fileName.length > fileNameCharCount) ? fileName.length : fileNameCharCount;
+                          separator = " ";
+                        } else {
+                          valArrLength -= 1;
+                        }
+                      }
+
+                      if(valArrLength > 1) {
+                        downloadAllButton = "<button type='button' class='btn btn-success' onclick='downloadFile(\"DOWNLOADALL\",\"" + rowData.sampleName + "\",\"" + headerList[i] + "\");'>Download All</button>";
+                      }
+
+                      if(valArrLength != 0){
+                        row.push('<button type="button" id="file_' + id + '"  class="btn btn-default btn-xs table-tooltip" data-tooltip="'+ fileNameList +'" style="white-space: pre-line;" value="FILE MANAGEMENT" onclick="showFMPopup(this.id)">File Store</button>' + _html.fm.replace(/\$id\$/g,id).replace(/\$existingFileField\$/g, existingFileField).replace(/\$downloadallbutton\$/g, downloadAllButton));
+                        $("head").append("<style> #file_" + id + ":hover:after {width : " + ((fileNameCharCount + 1) * 7) + "px !important;}</style>");
+                      } else {
+                        row.push("");
+                      }
+
+                    } else {
+                      row.push(attributeValue);
+                    }
                   }
                 } else {
                   attributes = '<tr class="odd"><td colspan="6">No Data</td></tr>';
@@ -415,6 +473,52 @@ function createSampleDataTable(){
           )
       )
   );
+}
+
+function showFMPopup(id){
+  id = id.substring(id.indexOf("_") + 1);
+  $("#attach-file-dialog-" + id).show();
+  $(".ui-blanket").css({"visibility":"visible"});
+
+  $('#attach-file-done-' + id).click(function() {
+    $("#attach-file-dialog-" + id).hide();
+    $(".ui-blanket").css({"visibility":"hidden"});
+  });
+}
+
+function downloadFile(fileName, sampleName, attrName) {
+  var $downloadFileForm = $('<form>').attr({
+    id: 'downloadFileForm',
+    method: 'POST',
+    action: 'downloadfile.action'
+  }).css('display', 'none');
+
+  $('<input>').attr({
+    id: 'attributeName',
+    name: 'attributeName',
+    value : attrName
+  }).appendTo($downloadFileForm);
+
+  $('<input>').attr({
+    id: 'fileName',
+    name: 'fileName',
+    value : fileName
+  }).appendTo($downloadFileForm);
+
+  $('<input>').attr({
+    id: 'projectId',
+    name: 'projectId',
+    value : utils.getProjectId()
+  }).appendTo($downloadFileForm);
+
+  $('<input>').attr({
+    id: 'sampleVal',
+    name: 'sampleVal',
+    value : sampleName
+  }).appendTo($downloadFileForm);
+
+  $('body').append($downloadFileForm);
+  $downloadFileForm.submit();
 }
 
 function generateColumnFilter(){
