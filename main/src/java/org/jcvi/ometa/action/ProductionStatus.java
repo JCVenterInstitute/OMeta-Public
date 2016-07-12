@@ -297,7 +297,7 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
                                 if (eventAttributes == null)
                                     continue;
 
-                                sampleAttrMap.putAll(CommonTool.getAttributeValueMap(eventAttributes, false, new String[] {"Sample Status"}));
+                                sampleAttrMap.putAll(CommonTool.getAttributeValueMap(eventAttributes, sample.getProjectId(), sample.getSampleName(), false, new String[] {"Sample Status"}));
                             }
                         }
                         //tempSampleAttrList.add(CommonTool.decorateAttributeMap(sampleAttrMap, tokenizedOnScreenAttribute, project));
@@ -447,7 +447,7 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
 
                     List<ProjectAttribute> projectAttributesList = readPersister.getProjectAttributes(currProject.getProjectId());
                     Map<String, Object> projectAttrMap = new HashMap<String, Object>();
-                    projectAttrMap.putAll(CommonTool.getAttributeValueMap(projectAttributesList, true, null));
+                    projectAttrMap.putAll(CommonTool.getAttributeValueMap(projectAttributesList, sample.getProjectId(), sample.getSampleName(), true, null));
 
                     if(!projectAttrMap.containsKey(Constants.ATTR_PROJECT_NAME)) { //if there is no project name attribute, use project name from project object
                         projectAttrMap.put(Constants.ATTR_PROJECT_NAME, currProject.getProjectName());
@@ -478,7 +478,7 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
                 if(hasSampleAttribute) {
                     List<SampleAttribute> sampleAttributes = sampleIdVsAttributeList.get(sample.getSampleId());
                     if (sampleAttributes != null && sampleAttributes.size() > 0) {
-                        sampleAttrMap.putAll(CommonTool.getAttributeValueMap(sampleAttributes, true, null));
+                        sampleAttrMap.putAll(CommonTool.getAttributeValueMap(sampleAttributes, sample.getProjectId(), sample.getSampleName(), true, null));
                     }
                 }
 
@@ -492,7 +492,7 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
                             if (eventAttributes == null)
                                 continue;
 
-                            sampleAttrMap.putAll(CommonTool.getAttributeValueMap(eventAttributes, true, new String[] {"Sample Status"}));
+                            sampleAttrMap.putAll(CommonTool.getAttributeValueMap(eventAttributes, sample.getProjectId(), sample.getSampleName(), true, new String[] {"Sample Status"}));
                         }
                     }
                 }

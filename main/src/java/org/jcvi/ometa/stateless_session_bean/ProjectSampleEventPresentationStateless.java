@@ -687,6 +687,25 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return sampleAttributes;
     }
 
+    /** Get a specific sample attribute **/
+    @WebMethod
+    public SampleAttribute getSampleAttribute(String projectName, String sampleName, String attributeName) throws Exception {
+        Session session = startTransactedSession();
+
+        SampleAttribute sampleAttribute = null;
+        try {
+            SampleAttributeDAO saDao = daoFactory.getSampleAttributeDAO();
+            sampleAttribute = saDao.getSampleAttribute(projectName, sampleName, attributeName, session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+        return sampleAttribute;
+    }
+
     //-------------------------------------------------------------------EVENT QUERIES
     @Override
     @WebMethod

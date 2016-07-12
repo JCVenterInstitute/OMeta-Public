@@ -340,7 +340,7 @@ public class JsonProducer implements Schedulable {
                             if (eventAttributes == null)
                                 continue;
 
-                            sampleAttrMap.putAll(CommonTool.getAttributeValueMap(eventAttributes, false, skipArrForEventAttribute));
+                            sampleAttrMap.putAll(CommonTool.getAttributeValueMap(eventAttributes, sample.getProjectId(), sample.getSampleName(), false, skipArrForEventAttribute));
                         }
                     }
 

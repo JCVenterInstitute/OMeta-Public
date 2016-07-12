@@ -120,6 +120,9 @@ public interface ProjectSampleEventPresentationBusiness {
     /** Get all attributes associated with a list of samples, by ID. */
     public List<SampleAttribute> getSampleAttributes(List<Long> sampleIds) throws Exception;
 
+    /** Get a specific sample attribute **/
+    public SampleAttribute getSampleAttribute(String projectName, String sampleName, String attributeName) throws Exception;
+
     public List<Event> getEventsForProject(String projectName) throws Exception;
 
     public List<Event> getEventsForProject(Long projectId) throws Exception;

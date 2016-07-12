@@ -216,6 +216,11 @@ public class ReadBeanPersister implements WebDataFacadeI {
         return pseb.getSampleAttributes(sampleIds);
     }
 
+    /** Get a specific sample attribute **/
+    public SampleAttribute getSampleAttribute(String projectName, String sampleName, String attributeName) throws Exception {
+        return pseb.getSampleAttribute(projectName, sampleName, attributeName);
+    }
+
     @Override
     public List<Event> getEventsForProject(String projectName) throws Exception {
         return pseb.getEventsForProject(projectName);

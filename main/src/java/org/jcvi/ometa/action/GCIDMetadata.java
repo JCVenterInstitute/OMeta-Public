@@ -167,7 +167,7 @@ public class GCIDMetadata extends ActionSupport {
                                 if (eventAttributes == null)
                                     continue;
 
-                                sampleAttrMap.putAll(CommonTool.getAttributeValueMap(eventAttributes, false, new String[]{"Sample Status"}));
+                                sampleAttrMap.putAll(CommonTool.getAttributeValueMap(eventAttributes, sample.getProjectId(), sample.getSampleName(), false, new String[]{"Sample Status"}));
                             }
                         }
                         if(bioSample && sampleAttrMap.containsKey(Constants.ATTR_BIOSAMPLE_ID)){

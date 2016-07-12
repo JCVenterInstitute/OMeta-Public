@@ -22,8 +22,10 @@
 package org.jcvi.ometa.hibernate.dao;
 
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.jcvi.ometa.model.Sample;
 import org.jcvi.ometa.model.SampleAttribute;
 
 import java.util.Date;
@@ -71,6 +73,36 @@ public class SampleAttributeDAO extends HibernateDAO {
             crit.add(Restrictions.eq("sampleId", sampleId));
             crit.add( Restrictions.eq( "nameLookupValueId", attributeLookupValueId ) );
             List<SampleAttribute> results = crit.list();
+
+            if ( results != null  &&  results.size() > 0 ) {
+                attribute = results.get( 0 );
+            }
+        } catch (Exception ex) {
+            throw new DAOException(ex);
+        }
+
+        return attribute;
+    }
+
+    public SampleAttribute getSampleAttribute(String projectName, String sampleName, String attributeName, Session session )
+            throws DAOException {
+
+        SampleAttribute attribute = null;
+        try {
+            String sql = "select sa.* from ifx_projects.sample_attribute sa " +
+                    "join ifx_projects.sample s on s.sample_id = sa.sampla_sample_id " +
+                    "join ifx_projects.project p on p.projet_id = s.sample_projet_id " +
+                    "join ifx_projects.lookup_value lv on lv.lkuvlu_id = sa.sampla_lkuvlu_attribute_id " +
+                    "where p.projet_name = :projectName " +
+                    "and s.sample_name = :sampleName " +
+                    "and lv.lkuvlu_name = :attributeName";
+            Query query = session.createSQLQuery(sql)
+                    .addEntity(SampleAttribute.class)
+                    .setParameter("projectName",projectName)
+                    .setParameter("sampleName",sampleName)
+                    .setParameter("attributeName",attributeName);
+
+            List<SampleAttribute> results = query.list();
 
             if ( results != null  &&  results.size() > 0 ) {
                 attribute = results.get( 0 );
