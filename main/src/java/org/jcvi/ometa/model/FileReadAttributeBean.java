@@ -44,6 +44,8 @@ public class FileReadAttributeBean implements ProjectNamerOnFileRead, Serializab
     private File upload;
     private String uploadFileName;
     private String uploadContentType;
+    private String[] existingFileName;
+    private String[] uploadFilePath;
 
     public String getProjectName() {
         return projectName;
@@ -107,4 +109,21 @@ public class FileReadAttributeBean implements ProjectNamerOnFileRead, Serializab
         this.uploadContentType = uploadContentType;
     }
 
+    public String[] getExistingFileName() {
+        return existingFileName;
+    }
+
+    @JCVI_BeanPopulator_Column
+    public void setExistingFileName(String[] existingFileName) {
+        this.existingFileName = existingFileName;
+    }
+
+    public String[] getUploadFilePath() {
+        return uploadFilePath;
+    }
+
+    @JCVI_BeanPopulator_Column
+    public void setUploadFilePath(String[] uploadFilePath) {
+        this.uploadFilePath = uploadFilePath;
+    }
 }
