@@ -24,6 +24,10 @@ public class FileUploadAjax extends ActionSupport implements IAjaxAction {
     private String uploadFileName;
     private String uploadContentType;
 
+    private File[] temporaryFiles;
+    private String[] temporaryFilesFileName;
+    private String[] temporaryFilesContentType;
+
     private String fileStoragePath;
 
     private Map<String, Object> result;
@@ -77,6 +81,41 @@ public class FileUploadAjax extends ActionSupport implements IAjaxAction {
         return returnCode;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public String temporaryFileUpload() {
+        String returnCode = SUCCESS;
+        String currTime = CommonTool.currentDateToDefaultFormat();
+        try {
+            result = new HashMap<String, Object>(this.temporaryFiles.length);
+            String userName = ServletActionContext.getRequest().getRemoteUser();
+            String currWorkDir = System.getProperty("user.dir");
+
+            for(int i = 0; i < this.temporaryFiles.length; i++) {
+                File temporaryFile = this.temporaryFiles[i];
+                String temporaryFileName = this.temporaryFilesFileName[i];
+                String storagePath = Constants.DIRECTORY_USER_BULK + File.separator + userName + File.separator + currTime;
+
+                if (temporaryFile != null && temporaryFile.canRead() && temporaryFile.isFile() && temporaryFileName != null) {
+
+                    File storingDirectory = new File(currWorkDir + File.separator + "scratch" + File.separator + storagePath);
+                    storingDirectory.mkdirs();
+
+                    Long guid = CommonTool.getGuid();
+
+                    String destFileName = guid + "_" + temporaryFileName;
+                    File destFile = new File(storingDirectory.getAbsolutePath() + File.separator + destFileName);
+
+                    FileUtils.copyFile(temporaryFile, destFile);
+
+                    result.put(temporaryFileName, destFile.getAbsolutePath());
+                }
+            }
+        } catch (Exception ex) {
+
+            returnCode = ERROR;
+        }
+        return returnCode;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public File getUpload() {
         return upload;
     }
@@ -103,5 +142,29 @@ public class FileUploadAjax extends ActionSupport implements IAjaxAction {
 
     public Object getResult() {
         return result;
+    }
+
+    public File[] getTemporaryFiles() {
+        return temporaryFiles;
+    }
+
+    public void setTemporaryFiles(File[] temporaryFiles) {
+        this.temporaryFiles = temporaryFiles;
+    }
+
+    public String[] getTemporaryFilesFileName() {
+        return temporaryFilesFileName;
+    }
+
+    public void setTemporaryFilesFileName(String[] temporaryFilesFileName) {
+        this.temporaryFilesFileName = temporaryFilesFileName;
+    }
+
+    public String[] getTemporaryFilesContentType() {
+        return temporaryFilesContentType;
+    }
+
+    public void setTemporaryFilesContentType(String[] temporaryFilesContentType) {
+        this.temporaryFilesContentType = temporaryFilesContentType;
     }
 }

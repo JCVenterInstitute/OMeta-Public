@@ -22,7 +22,11 @@
 package org.jcvi.ometa.action.ajax;
 
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.struts2.ServletActionContext;
 import org.jcvi.ometa.action.Editor;
 import org.jcvi.ometa.configuration.AccessLevel;
@@ -37,8 +41,13 @@ import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.property.PropertyHelper;
 
+import javax.activation.MimetypesFileTypeMap;
+import java.io.*;
+import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by IntelliJ IDEA.
@@ -70,6 +79,14 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
     private int firstResult;
     private int maxResult;
 
+    //Download File
+    private String fileStoragePath;
+    private InputStream dataTemplateStream;
+    private String dataTemplateFileName;
+    private String dataTemplateContentType;
+    private String fileName;
+    private String attributeName;
+
     private String userName;
 
     private String projectPopupAttributes;
@@ -79,6 +96,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
         readPersister = new ReadBeanPersister(props);
 
         this.projectPopupAttributes = props.getProperty(Constants.CONFIG_PROJECT_POPUP_ATTRS);
+        this.fileStoragePath = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH);
     }
 
     public SharedAjax(ReadBeanPersister readPersister) {
@@ -311,6 +329,98 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
             }
 
             returnValue = SUCCESS;
+        } catch (Exception ex) {
+            logger.error("Exception in Shared AJAX : " + ex.toString());
+            this.err = ex.toString();
+            ex.printStackTrace();
+        }
+
+        return returnValue;
+    }
+
+    public String downloadFile() {
+        String returnValue = ERROR;
+        try {
+            Sample sample = readPersister.getSample(this.projectId, this.sampleVal);
+            List<SampleAttribute> sampleAttributes = readPersister.getSampleAttributes(sample.getSampleId());
+            SampleAttribute fileAttribute = null;
+
+            if(sampleAttributes != null) {
+                for (SampleAttribute sa : sampleAttributes) {
+                    SampleMetaAttribute sma = sa.getMetaAttribute();
+                    if (!sma.isActive()) { //skip inactive attribute
+                        continue;
+                    }
+                    LookupValue tempLookupValue = sma.getLookupValue();
+                    if (tempLookupValue != null && tempLookupValue.getName() != null
+                            && tempLookupValue.getName().equals(this.attributeName)) {
+                        fileAttribute = sa;
+                        break;
+                    }
+                }
+            }
+
+            if(fileAttribute != null){
+                String value = fileAttribute.getAttributeStringValue();
+                String[] paths = value.split(",");
+                String absoluteFileName = null;
+                File file = null;
+
+                if(this.fileName.equals("DOWNLOADALL")){
+                    byte[] bytes;
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ZipOutputStream zos = new ZipOutputStream(baos);
+                    FileInputStream fis;
+
+                    for(String path : paths){
+                        String absoluteFilePath = this.fileStoragePath + File.separator + Constants.DIRECTORY_PROJECT + File.separator + File.separator + path;
+                        String name = path.substring(path.lastIndexOf(File.separator) + 1);
+
+                        file = new File(absoluteFilePath);
+
+                        if(file.exists()) {
+                            fis = new FileInputStream(file);
+                            bytes = IOUtils.toByteArray(fis);
+                            zos.putNextEntry(new ZipEntry(name));
+                            zos.write(bytes);
+                            zos.closeEntry();
+                        } else {
+                            generateErrorFile(name, absoluteFilePath);
+                        }
+
+                    }
+
+                    zos.flush();
+                    zos.close();
+                    this.dataTemplateStream = new ByteArrayInputStream(baos.toByteArray());
+                    this.dataTemplateFileName = this.attributeName + "_files.zip";
+                    this.dataTemplateContentType = "application/zip";
+                    returnValue = Constants.STRUTS_FILE_DOWNLOAD;
+                } else {
+                    for(String path : paths){
+                        if(path.contains(this.fileName)){
+                            absoluteFileName = path;
+                            break;
+                        }
+                    }
+
+                    if(absoluteFileName != null) {
+                        String absoluteFilePath = this.fileStoragePath + File.separator + Constants.DIRECTORY_PROJECT + File.separator + File.separator + absoluteFileName;
+
+                        file = new File(absoluteFilePath);
+
+                        if(file.exists()) {
+                            this.dataTemplateStream = new FileInputStream(file);
+                            this.dataTemplateFileName = this.fileName;
+                            this.dataTemplateContentType = new MimetypesFileTypeMap().getContentType(file);
+                            returnValue = Constants.STRUTS_FILE_DOWNLOAD;
+                        } else {
+                            generateErrorFile(absoluteFileName, absoluteFilePath);
+                        }
+                    }
+                }
+
+            }
         } catch (Exception ex) {
             logger.error("Exception in Shared AJAX : " + ex.toString());
             this.err = ex.toString();
@@ -653,6 +763,24 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
         return returnValue;
     }
 
+    private void generateErrorFile(String fileName, String filePath){
+        XWPFDocument doc = new XWPFDocument();
+        XWPFParagraph p1 = doc.createParagraph();
+        XWPFRun r1 = p1.createRun();
+        r1.setText("File doesn't exist: " + fileName);
+        r1.addBreak();
+        r1.setText("File path: " + filePath);
+        r1.setFontSize(20);
+        try {
+            ByteArrayOutputStream boas = new ByteArrayOutputStream();
+            doc.write(boas);
+            this.dataTemplateStream = new ByteArrayInputStream(boas.toByteArray());
+        } catch (IOException ex2) {
+            ex2.printStackTrace();
+        }
+
+    }
+
     private void getCurrentUserName() {
         if(this.userName == null) {
             this.userName = ServletActionContext.getRequest().getRemoteUser();
@@ -842,5 +970,45 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
 
     public void setTotalSampleCount(int totalSampleCount) {
         this.totalSampleCount = totalSampleCount;
+    }
+
+    public String getDataTemplateContentType() {
+        return dataTemplateContentType;
+    }
+
+    public void setDataTemplateContentType(String dataTemplateContentType) {
+        this.dataTemplateContentType = dataTemplateContentType;
+    }
+
+    public InputStream getDataTemplateStream() {
+        return dataTemplateStream;
+    }
+
+    public void setDataTemplateStream(InputStream dataTemplateStream) {
+        this.dataTemplateStream = dataTemplateStream;
+    }
+
+    public String getDataTemplateFileName() {
+        return dataTemplateFileName;
+    }
+
+    public void setDataTemplateFileName(String dataTemplateFileName) {
+        this.dataTemplateFileName = dataTemplateFileName;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getAttributeName() {
+        return attributeName;
+    }
+
+    public void setAttributeName(String attributeName) {
+        this.attributeName = attributeName;
     }
 }

@@ -152,12 +152,26 @@ public class CommonTool {
         ).replaceAll("\\\"", "\\\\\"");
     }
 
-    public static String convertIntoFileLink(String filePath, Long attributeId) {
-        String justFileName = filePath.substring(filePath.lastIndexOf(File.separator) + 1);
-        return "<a href=\"download.action?fp=" + filePath + "\">" + justFileName + "</a>";
+    public static String convertIntoFileLink(String filePath, String lookupValueName, Long projectId, String sampleName, Long attributeId) {
+        String[] filePathsArr = filePath.split(",");
+        StringBuilder sb = new StringBuilder();
+        String separator = "";
+
+        for(String path : filePathsArr){
+            String justFileName = path.substring(path.lastIndexOf(File.separator)+1);
+            String downloadURL = "<a href=\"downloadfile.action?fileName=" + justFileName +
+                    "&attributeName=" + lookupValueName +
+                    "&projectId=" + projectId +
+                    "&sampleVal=" + sampleName + "\">" + justFileName + "</a>";
+            sb.append(separator).append(downloadURL);
+            separator = ",";
+        }
+
+        return sb.toString();
     }
 
-    public static <M extends AttributeModelBean> Map<String, Object> getAttributeValueMap(List<M> attributeList, boolean decorate, String[] skipArr) throws Exception {
+    public static <M extends AttributeModelBean> Map<String, Object> getAttributeValueMap(List<M> attributeList,
+                                                                                          Long projectId, String sampleName, boolean decorate, String[] skipArr) throws Exception {
         Map<String, Object> valueMap = new HashMap<String, Object>();
         List<String> skipList = (skipArr!=null && skipArr.length>0) ? Arrays.asList(skipArr) : null;
 
@@ -175,7 +189,7 @@ public class CommonTool {
                 if(attributeValue.getClass() == Timestamp.class || attributeValue.getClass() == Date.class) {
                     attributeValue = convertTimestampToDate(attributeValue);
                 } else if(lookupValue.getDataType().equals(ModelValidator.FILE_DATA_TYPE) && decorate) {
-                    attributeValue = convertIntoFileLink((String)attributeValue, null);
+                    attributeValue = convertIntoFileLink((String)attributeValue, lookupValue.getName(), projectId, sampleName, null);
                 }
             } else {
                 attributeValue = "";
