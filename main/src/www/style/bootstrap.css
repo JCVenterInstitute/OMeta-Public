@@ -6248,13 +6248,46 @@ button.close {
 
 #eventTable td, #eventTable th{padding:2px}
 
-td.table-tooltip{ /*display: inline;*/ position: relative; text-align: right;}
-td.table-tooltip:hover:after{ background: #333; background: rgba(0,0,0,.8);
-    border-radius: 5px; bottom: 0px; color: #fff; content: attr(data-tooltip);
+td.table-tooltip, button.table-tooltip{ /*display: inline;*/ position: relative;}
+td.table-tooltip{text-align: right;}
+button.table-tooltip{text-align: left;}
+td.table-tooltip:hover:after, button.table-tooltip:hover:after{ background: #333; background: rgba(0,0,0,.8);
+    border-radius: 5px; color: #fff; content: attr(data-tooltip);
     left: 103%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
-td.table-tooltip:hover:before{border: solid; border-color: transparent #333;border-width: 6px 6px 6px 0px;
+td.table-tooltip:hover:before, button.table-tooltip:hover:before{border: solid; border-color: transparent #333;border-width: 6px 6px 6px 0px;
     bottom: 8px; content: ""; left: 100%; position: absolute; z-index: 99;}
+button.table-tooltip:hover:after{left: 109% !important;display: inline !important;top: -10px;white-space: pre-line;}
+td.table-tooltip:hover:after{bottom: 0px;}
 
 .show_processing{z-index: 1000;top: 50%;left: 50%;width: 400px;height: 100px;margin-left: -125px;
     margin-top: -15px;padding: 40px 0 2px 0;text-align: center;font-size: 14px;background-color: white;position: absolute;
     border: 1px solid #aed0ea;background: #d7ebf9;font-weight: bold;color: #2779aa;}
+
+.file-dialog-heading {background: #f5f5f5;border-bottom: 1px solid #ccc;-moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;-ms-box-sizing: border-box;box-sizing: border-box;margin: 0;
+    overflow: hidden;padding: 15px 20px;position: relative;text-overflow: ellipsis;white-space: nowrap;
+}
+.attach-file-dialog {width: 810px;margin-left: -406px;margin-top: -236px;background: #f5f5f5;border: 1px solid #ccc;
+    -moz-border-radius: 4px 4px 4px 4px;border-radius: 4px 4px 4px 4px;overflow: hidden;left: 50%;top: 50%;z-index: 3000;position: fixed;}
+.fm-fieldset{
+    box-sizing: border-box;
+    clear: both;
+    padding: 4px 0 4px 145px;
+    position: relative;
+    margin: 1px 0;
+    width: 100%;
+    padding-top: 0;
+    border: 0;
+}
+.fm-fieldset legend {
+    float: left;
+    margin-left: -145px;
+    padding: 5px 0 0 0;
+    position: relative;
+    text-align: right;
+    width: 130px;
+    word-wrap: break-word;
+    color: #707070;
+    font-size: 14px;
+    line-height: 1.42857142857143;
+}
