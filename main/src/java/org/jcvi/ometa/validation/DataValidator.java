@@ -32,11 +32,11 @@ public class DataValidator {
     }
 
     public boolean validateMaxLength(String value, String maxLength) {
-        return (value.length() < Integer.parseInt(maxLength));
+        return (value.length() <= Integer.parseInt(maxLength));
     }
 
     public boolean validateMinLength(String value, String minLength) {
-        return (value.length() > Integer.parseInt(minLength));
+        return (value.length() >= Integer.parseInt(minLength));
     }
 
     public boolean validateAllNumbers(String value) {
