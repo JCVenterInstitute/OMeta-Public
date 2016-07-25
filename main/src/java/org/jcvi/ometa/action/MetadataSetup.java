@@ -36,6 +36,7 @@ import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.PresentationActionDelegate;
 import org.jcvi.ometa.utils.UploadActionDelegate;
+import org.jcvi.ometa.validation.ErrorMessages;
 import org.jcvi.ometa.validation.ModelValidator;
 
 import javax.naming.InitialContext;
@@ -142,8 +143,6 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                     //process meta attribute orders
                     Map<String, List<MetadataSetupReadBean>> groupedList = new HashMap<String, List<MetadataSetupReadBean>>();
                     for (MetadataSetupReadBean bean : beanList) {
-                        boolean hasError = validateBeanOptions(bean.getOptions());
-                        if(hasError) throw new Exception();
                         if(groupedList.containsKey(bean.getEt())) {
                             groupedList.get(bean.getEt()).add(bean);
                         } else {
@@ -360,7 +359,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                 addActionError(Constants.DENIED_USER_EDIT_MESSAGE);
                 return Constants.FORBIDDEN_ACTION_RESPONSE;
             } else if(ex.getClass() == DuplicatedOrderException.class) {
-                addActionError("Error while processing meta attribute positions. Check for any duplicated position values.");
+                addActionError(ErrorMessages.ATTRIBUTE_DUPLICATE_ORDER);
             } else {
                 addActionError(ex.getMessage());
             }
@@ -369,7 +368,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                 if(tx!=null)
                     tx.rollback();
             } catch (SystemException se) {
-                addActionError("Transaction Error! Use Help menu or contact the administrator.");
+                addActionError(ErrorMessages.TRANSACTION_ERROR);
             }
         } finally {
             try {
@@ -582,45 +581,6 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
         }
 
         return rtnVal;
-    }
-
-    public boolean validateBeanOptions(String options) {
-        String validationPrefix = "validate:";
-        boolean hasError = false;
-
-        if(options.contains(validationPrefix)){
-            int indexOfValidate = options.indexOf(validationPrefix);
-
-            String valStr = options.substring(indexOfValidate, options.length());
-
-            valStr = valStr.substring(validationPrefix.length(), valStr.length());
-            String[] validationRequests = valStr.split(",");
-
-            for(String valReq : validationRequests){
-                String[] classMethodVal = valReq.split("\\.");
-
-                try {
-                    Class validatorClass = Class.forName("org.jcvi.ometa.validation." + classMethodVal[0]);
-
-                    if(classMethodVal[1].contains("(") && classMethodVal[1].contains(")")){
-                        int indexOfArg = classMethodVal[1].indexOf("(");
-                        classMethodVal[1] = classMethodVal[1].substring(0, indexOfArg);
-
-                        validatorClass.getDeclaredMethod(classMethodVal[1], String.class, String.class);
-                    } else {
-                        validatorClass.getDeclaredMethod(classMethodVal[1], String.class);
-                    }
-                } catch (ClassNotFoundException e){
-                    addActionError("Error while processing meta attribute positions. Validation class:"+ classMethodVal[0] +" not found!");
-                    hasError = true;
-                } catch (NoSuchMethodException e){
-                    addActionError("Error while processing meta attribute positions. Validation method:"+ classMethodVal[1] +" not found!");
-                    hasError = true;
-                }
-            }
-        }
-
-        return hasError;
     }
 
     public String openNewAttribute() {
