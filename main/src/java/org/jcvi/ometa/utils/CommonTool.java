@@ -233,65 +233,73 @@ public class CommonTool {
 
         for(EventMetaAttribute ema : list) {
             if(ema.isActive() && !hiddenAttributes.contains(ema.getLookupValue().getName())) {
-                if(ema.getOptions() != null && ema.getOptions().startsWith("Dictionary:")){
-                    String dictType = ema.getOptions().replace("Dictionary:", "");
-                    boolean hasParent = dictType.contains("Parent:");
+                String options = ema.getOptions();
+                if(options != null) {
+                    if (options.contains("validate")) {
+                        String strippedOption = options.replaceAll("\\{.*?\\}", "");
+                        ema.setOptions(strippedOption);
+                    }
 
-                    try {
-                        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-                        ReadBeanPersister readPersister = new ReadBeanPersister(props);
+                    if (options.startsWith("Dictionary:")) {
+                        String dictType = options.replace("Dictionary:", "");
+                        boolean hasParent = dictType.contains("Parent:");
 
-                        if(hasParent){
-                            String[] dictOpts = dictType.split(",Parent:");
+                        try {
+                            Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
+                            ReadBeanPersister readPersister = new ReadBeanPersister(props);
 
-                            if(action.equals("template")) {
-                                ema.setOptions("Depends on " + dictOpts[1]);
-                            } else {
-                                String parentDictType = dictTypeMap.get(dictOpts[1]);
-                                if (parentDictType == null) {
-                                    for (EventMetaAttribute ema_ : list) {
-                                        if (ema_.getLookupValue().getName().equals(dictOpts[1])) {
-                                            parentDictType = ema_.getOptions().replace("Dictionary:", "");
-                                            break;
+                            if (hasParent) {
+                                String[] dictOpts = dictType.split(",Parent:");
+
+                                if (action.equals("template")) {
+                                    ema.setOptions("Depends on " + dictOpts[1]);
+                                } else {
+                                    String parentDictType = dictTypeMap.get(dictOpts[1]);
+                                    if (parentDictType == null) {
+                                        for (EventMetaAttribute ema_ : list) {
+                                            if (ema_.getLookupValue().getName().equals(dictOpts[1])) {
+                                                parentDictType = ema_.getOptions().replace("Dictionary:", "");
+                                                break;
+                                            }
                                         }
                                     }
+
+                                    if (parentDictType != null) {
+                                        JSONArray jsonArray = new JSONArray();
+                                        jsonArray.put(new JSONObject()
+                                                .put("name", "parent_attribute")
+                                                .put("value", dictOpts[1]));
+                                        jsonArray.put(new JSONObject()
+                                                .put("name", "parent_dict_type")
+                                                .put("value", parentDictType));
+
+                                        ema.setOptions(jsonArray.toString());
+                                    }
+                                }
+                            } else {
+                                List<Dictionary> dictList = readPersister.getDictionaryByType(dictType);
+                                dictTypeMap.put(ema.getLookupValue().getName(), dictType);
+
+                                StringBuilder sb = new StringBuilder();
+                                String delim = "";
+
+                                for (Dictionary dictionary : dictList) {
+                                    sb.append(delim);
+
+                                    if (action.equals("template")) {
+                                        sb.append(dictionary.getDictionaryCode());
+                                    } else {
+                                        sb.append(dictionary.getDictionaryCode()).append(" - ").append(dictionary.getDictionaryValue());
+                                    }
+                                    delim = ";";
                                 }
 
-                                if (parentDictType != null) {
-                                    JSONArray jsonArray = new JSONArray();
-                                    jsonArray.put(new JSONObject()
-                                            .put("name", "parent_attribute")
-                                            .put("value", dictOpts[1]));
-                                    jsonArray.put(new JSONObject()
-                                            .put("name", "parent_dict_type")
-                                            .put("value", parentDictType));
-
-                                    ema.setOptions(jsonArray.toString());
-                                }
+                                ema.setOptions(sb.toString());
                             }
-                        } else{
-                            List<Dictionary> dictList = readPersister.getDictionaryByType(dictType);
-                            dictTypeMap.put(ema.getLookupValue().getName(), dictType);
-
-                            StringBuilder sb = new StringBuilder();
-                            String delim = "";
-
-                            for(Dictionary dictionary : dictList){
-                                sb.append(delim);
-
-                                if(action.equals("template")) {
-                                    sb.append(dictionary.getDictionaryCode());
-                                } else {
-                                    sb.append(dictionary.getDictionaryCode()).append(" - ").append(dictionary.getDictionaryValue());
-                                }
-                                delim = ";";
-                            }
-
-                            ema.setOptions(sb.toString());
+                        } catch (Exception ex) {
+                            logger.error("Exception in Shared AJAX : " + ex.toString());
+                            ex.printStackTrace();
                         }
-                    } catch (Exception ex) {
-                        logger.error("Exception in Shared AJAX : " + ex.toString());
-                        ex.printStackTrace();
                     }
                 }
 
