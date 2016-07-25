@@ -53,4 +53,10 @@ public class ErrorMessages {
     public static final String SEQUENCE_EXTRA_SEQUENCE_DATA = "Inconsistency between files: Additional sequences found not referenced in sequence metadata file.";
     public static final String SEQUENCE_MISSING_SEGMENT = "sequence meta data is missing a segment value.";
 
+    public static final String ATTRIBUTE_DUPLICATE_ORDER = "Error while processing meta attribute positions. Check for any duplicated position values.";
+    public static final String TRANSACTION_ERROR = "Transaction Error! Use Help menu or contact the administrator.";
+    public static final String VALIDATION_CLASS_NOT_FOUND = "Error while processing meta attribute. Validation class: %s not found!";
+    public static final String VALIDATION_METHOD_NOT_FOUND = "Error while processing meta attribute. Validation method: %s not found!";
+    public static final String VALIDATION_CLASS_METHOD_NOT_FOUND = "Error while processing meta attribute. Validation class/method: %s.%s not found!";
+
 }

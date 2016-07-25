@@ -32,6 +32,7 @@ import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.model.Dictionary;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.GuidGetter;
+import org.jcvi.ometa.validation.ErrorMessages;
 import org.jcvi.ometa.validation.ModelValidator;
 
 import java.util.*;
@@ -582,9 +583,9 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                     attribute.setEventMetaAttributeId(guidGetter.getGuid());
                 }
 
-                if(attribute.getCreationDate() == null)
+                if(attribute.getCreationDate() == null) {
                     emaDAO.write(attribute, sessionAndTransactionManager.getTransactionStartDate(), session);
-                else { //update corresponding PMA or SMA
+                } else { //update corresponding PMA or SMA
                     emaDAO.update(attribute, sessionAndTransactionManager.getTransactionStartDate(), session);
                     if((pma = getProjectMetaAttribute(attribute.getProjectId(), attributeNameLookup.getLookupValueId())) != null) {
                         pma.setActiveDB(attribute.getActiveDB());
@@ -997,24 +998,25 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
         valStr = valStr.substring(VALIDATION_PREFIX.length(), valStr.length());
         String[] validationRequests = valStr.split(",");
 
-        for(String valReq : validationRequests){
+        for(String valReq : validationRequests) {
             String[] classMethodVal = valReq.split("\\.");
 
             try {
                 Class validatorClass = Class.forName("org.jcvi.ometa.validation." + classMethodVal[0]);
 
-                if(classMethodVal[1].contains("(") && classMethodVal[1].contains(")")){
+                if (classMethodVal[1].contains("(") && classMethodVal[1].contains(")")) {
                     int indexOfArg = classMethodVal[1].indexOf("(");
                     classMethodVal[1] = classMethodVal[1].substring(0, indexOfArg);
 
                     validatorClass.getDeclaredMethod(classMethodVal[1], String.class, String.class);
                 } else {
+                    classMethodVal[1] = classMethodVal[1].replaceAll("\\}", "");
                     validatorClass.getDeclaredMethod(classMethodVal[1], String.class);
                 }
-            } catch (ClassNotFoundException e){
-                throw new ClassNotFoundException("Error while processing meta attribute positions. Validation class:" + classMethodVal[0] + " not found!");
-            } catch (NoSuchMethodException e){
-                throw new NoSuchMethodException("Error while processing meta attribute positions. Validation method:"+ classMethodVal[1] +" not found!");
+            } catch (ClassNotFoundException e) {
+                throw new ClassNotFoundException(String.format(ErrorMessages.VALIDATION_CLASS_NOT_FOUND, classMethodVal[0]));
+            } catch (NoSuchMethodException e) {
+                throw new NoSuchMethodException(String.format(ErrorMessages.VALIDATION_METHOD_NOT_FOUND, classMethodVal[1]));
             }
         }
     }
