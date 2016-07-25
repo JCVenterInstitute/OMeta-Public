@@ -287,7 +287,7 @@ public class EventPersistenceHelper {
             String multiplePrefix = "multi(";
             String radioPrefix = "radio(";
             String dictionaryPrefix = "Dictionary:";
-            String validationPrefix = "validate:";
+            String validationPrefix = "{validate:";
             boolean valid = true;
 
             if(controlValues.contains(validationPrefix)){
@@ -304,17 +304,19 @@ public class EventPersistenceHelper {
                     boolean hasArgument = false;
                     String argVal = null;
 
-                    if(classMethodVal[1].contains("(") && classMethodVal[1].contains(")")){
+                    if (classMethodVal[1].contains("(") && classMethodVal[1].contains(")")) {
                         int indexOfArg = classMethodVal[1].indexOf("(");
-                        argVal = classMethodVal[1].substring(indexOfArg+1, classMethodVal[1].length() - 1);
+                        argVal = classMethodVal[1].substring(indexOfArg + 1, classMethodVal[1].length() - 2);
 
                         classMethodVal[1] = classMethodVal[1].substring(0, indexOfArg);
                         hasArgument = true;
+                    } else {
+                        classMethodVal[1] = classMethodVal[1].replaceAll("\\}", "");
                     }
 
-                    Class validatorClass = Class.forName("org.jcvi.ometa.validation."+classMethodVal[0]);
+                    Class validatorClass = Class.forName("org.jcvi.ometa.validation." + classMethodVal[0]);
                     Method validatorMethod;
-                    if(hasArgument){
+                    if (hasArgument) {
                         validatorMethod = validatorClass.getDeclaredMethod(classMethodVal[1], String.class, String.class);
                         valid = (Boolean) validatorMethod.invoke(validatorClass.newInstance(), attributeValue, argVal);
                     } else {
@@ -322,7 +324,7 @@ public class EventPersistenceHelper {
                         valid = (Boolean) validatorMethod.invoke(validatorClass.newInstance(), attributeValue);
                     }
 
-                    if(!valid) break;
+                    if (!valid) break;
                 }
             }
 
@@ -425,21 +427,23 @@ public class EventPersistenceHelper {
         checkSampleGivenForEventAttribute(attribName, ema);
 
         if(ema.getLookupValue() != null) {
-            String dataType = ema.getLookupValue().getDataType();
-            int attrValueLength = (dataType.equals("string")) ? attribute.getAttributeStringValue().length()
-                    : (dataType.equals("int")) ? attribute.getAttributeIntValue().toString().length()
-                    : (dataType.equals("date")) ? attribute.getAttributeDateValue().toString().length()
-                    : attribute.getAttributeFloatValue().toString().length();
-
             if (ema == null && !attributeNamesPermitted.contains(attribName)) {
                 String message = EVENT_NOT_IN_PROJECT_HUMAN_READABLE_MSG.format(new Object[]{attribName, projectName});
                 throw new DAOException(message);
             } else if (ema.isSampleRequired() && (sampleId == null || sampleId == 0)) {
                 String message = SAMPLE_REQUIRED_HUMAN_READABLE_MSG.format(new Object[]{attribName});
                 throw new DAOException(message);
-            } else if (ema.getValueLength() != null && attrValueLength > ema.getValueLength()) {
-                String message = EXCEED_VALUE_LENGTH_HUMAN_READABLE_MSG.format(new Object[]{attribName, ema.getValueLength()});
-                throw new DAOException(message);
+            } else if (ema.getValueLength() != null) {
+                String dataType = ema.getLookupValue().getDataType();
+                int attrValueLength = (dataType.equals("string")) ? attribute.getAttributeStringValue().length()
+                        : (dataType.equals("int")) ? attribute.getAttributeIntValue().toString().length()
+                        : (dataType.equals("date")) ? attribute.getAttributeDateValue().toString().length()
+                        : attribute.getAttributeFloatValue().toString().length();
+
+                if(attrValueLength > ema.getValueLength()) {
+                    String message = EXCEED_VALUE_LENGTH_HUMAN_READABLE_MSG.format(new Object[]{attribName, ema.getValueLength()});
+                    throw new DAOException(message);
+                }
             }
         }
 
