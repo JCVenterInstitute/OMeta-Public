@@ -74,6 +74,8 @@ public class EventPersistenceHelper {
             "Event attribute of {0} requires sample " );
     protected static final MessageFormat EXCEED_VALUE_LENGTH_HUMAN_READABLE_MSG = new MessageFormat(
             "Event attribute of {0} exceeds value length limit ( {1} character(s)) " );
+    protected static final MessageFormat E_PROJECT_UNIQUE_ATTRIBUTE = new MessageFormat(
+            "Field’s {0}, value {1} is not unique in the project. Field’s {0} value should be unique in the project." );
 
     private DAOFactory daoFactory;
     private GuidGetter guidGetter;
@@ -288,7 +290,7 @@ public class EventPersistenceHelper {
             String radioPrefix = "radio(";
             String dictionaryPrefix = "Dictionary:";
             String validationPrefix = "{validate:";
-            boolean valid = true;
+            boolean valid = true, unique = true;
 
             if(controlValues.contains(validationPrefix)){
                 int indexOfValidate = controlValues.indexOf(validationPrefix);
@@ -320,8 +322,19 @@ public class EventPersistenceHelper {
                         validatorMethod = validatorClass.getDeclaredMethod(classMethodVal[1], String.class, String.class);
                         valid = (Boolean) validatorMethod.invoke(validatorClass.newInstance(), attributeValue, argVal);
                     } else {
-                        validatorMethod = validatorClass.getDeclaredMethod(classMethodVal[1], String.class);
-                        valid = (Boolean) validatorMethod.invoke(validatorClass.newInstance(), attributeValue);
+                        if(classMethodVal[1].equals(Constants.VAL_UNIQUE_METHOD_NAME)) {
+                            SampleAttributeDAO sampleAttributeDAO = this.daoFactory.getSampleAttributeDAO();
+                            LookupValueDAO lookupValueDAO = this.daoFactory.getLookupValueDAO();
+                            LookupValue lv = lookupValueDAO.getLookupValue(attributeName, "Attribute", session);
+
+                            List<SampleAttribute> sampleAttributeList = sampleAttributeDAO.getSampleAttributesFromProject
+                                    (this.projectId, lv.getLookupValueId(), session);
+
+                            unique = valid = DataValidator.checkFieldUniqueness(attributeValue, this.sampleId, sampleAttributeList);
+                        } else {
+                            validatorMethod = validatorClass.getDeclaredMethod(classMethodVal[1], String.class);
+                            valid = (Boolean) validatorMethod.invoke(validatorClass.newInstance(), attributeValue);
+                        }
                     }
 
                     if (!valid) break;
@@ -398,8 +411,15 @@ public class EventPersistenceHelper {
                     }
                 }
             } else {
-                String message = NOT_VALID_ATTRIB_HUMAN_READABLE_MSG.format(
-                        new Object[]{aType.toString(), attributeName, attributeValue});
+                String message;
+                if(unique) {
+                    message = NOT_VALID_ATTRIB_HUMAN_READABLE_MSG.format(
+                            new Object[]{aType.toString(), attributeName, attributeValue});
+                } else {
+                    message = E_PROJECT_UNIQUE_ATTRIBUTE.format(
+                            new Object[]{attributeName, attributeValue});
+                }
+
                 throw new Exception(message);
             }
         }

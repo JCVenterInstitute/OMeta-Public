@@ -1011,7 +1011,9 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                     validatorClass.getDeclaredMethod(classMethodVal[1], String.class, String.class);
                 } else {
                     classMethodVal[1] = classMethodVal[1].replaceAll("\\}", "");
-                    validatorClass.getDeclaredMethod(classMethodVal[1], String.class);
+                    if(!classMethodVal[1].equals(Constants.VAL_UNIQUE_METHOD_NAME)) {
+                        validatorClass.getDeclaredMethod(classMethodVal[1], String.class);
+                    }
                 }
             } catch (ClassNotFoundException e) {
                 throw new ClassNotFoundException(String.format(ErrorMessages.VALIDATION_CLASS_NOT_FOUND, classMethodVal[0]));

@@ -113,6 +113,8 @@ public class Constants {
     public static final String URL_DATA_TYPE = "url";
     public static final String FILE_DATA_TYPE = "file";
 
+    public static final String VAL_UNIQUE_METHOD_NAME = "checkFieldUniqueness";
+
     public static final String DENIED_USER_EDIT_MESSAGE = "You do not have permission to edit the project.";
     public static final String DENIED_USER_VIEW_MESSAGE = "You do not have permission to access the project.";
     public static final String LOGIN_REQUIRED_MESSAGE = "User must first login before attempting to use the requested resources.";

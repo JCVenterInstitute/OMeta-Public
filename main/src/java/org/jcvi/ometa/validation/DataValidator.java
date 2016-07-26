@@ -1,10 +1,12 @@
 package org.jcvi.ometa.validation;
 
 import org.apache.log4j.Logger;
+import org.jcvi.ometa.model.SampleAttribute;
 import org.jcvi.ometa.utils.Constants;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * Created by mkuscuog on 7/24/2015.
@@ -97,5 +99,17 @@ public class DataValidator {
 
     public boolean isEmpty(String value) {
         return value == null || value.length() == 0;
+    }
+
+    public static boolean checkFieldUniqueness(String value, Long currentSampleId, List<SampleAttribute> sampleAttributeList) {
+        for(SampleAttribute sampleAttribute : sampleAttributeList){
+            if(sampleAttribute.getSampleId().compareTo(currentSampleId) != 0) {
+                if (sampleAttribute.getAttributeStringValue() != null && sampleAttribute.getAttributeStringValue().equals(value)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }

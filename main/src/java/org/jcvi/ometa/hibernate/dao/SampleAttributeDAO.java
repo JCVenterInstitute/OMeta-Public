@@ -114,6 +114,22 @@ public class SampleAttributeDAO extends HibernateDAO {
         return attribute;
     }
 
+    public List<SampleAttribute> getSampleAttributesFromProject( Long projectId, Long attributeLookupValueId, Session session )
+            throws DAOException {
+
+        List<SampleAttribute> results = null;
+        try {
+            Criteria crit = session.createCriteria( SampleAttribute.class );
+            crit.add( Restrictions.eq( "projectId", projectId ) );
+            crit.add( Restrictions.eq( "nameLookupValueId", attributeLookupValueId ) );
+            results = crit.list();
+        } catch (Exception ex) {
+            throw new DAOException(ex);
+        }
+
+        return results;
+    }
+
     public List<SampleAttribute> getAllAttributes( Long sampleId, Session session ) throws DAOException {
         List<SampleAttribute> attributeList = new ArrayList<SampleAttribute>();
         try {
