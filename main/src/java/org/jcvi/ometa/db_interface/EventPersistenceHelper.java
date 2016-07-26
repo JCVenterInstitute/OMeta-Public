@@ -330,7 +330,7 @@ public class EventPersistenceHelper {
                             List<SampleAttribute> sampleAttributeList = sampleAttributeDAO.getSampleAttributesFromProject
                                     (this.projectId, lv.getLookupValueId(), session);
 
-                            unique = valid = DataValidator.checkFieldUniqueness(attributeValue, this.sampleId, sampleAttributeList);
+                            unique = valid = DataValidator.checkFieldUniqueness(attributeValue, lv.getDataType(), this.sampleId, sampleAttributeList);
                         } else {
                             validatorMethod = validatorClass.getDeclaredMethod(classMethodVal[1], String.class);
                             valid = (Boolean) validatorMethod.invoke(validatorClass.newInstance(), attributeValue);

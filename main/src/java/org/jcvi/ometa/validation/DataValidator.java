@@ -101,10 +101,15 @@ public class DataValidator {
         return value == null || value.length() == 0;
     }
 
-    public static boolean checkFieldUniqueness(String value, Long currentSampleId, List<SampleAttribute> sampleAttributeList) {
+    public static boolean checkFieldUniqueness(String value, String dataType, Long currentSampleId, List<SampleAttribute> sampleAttributeList) {
         for(SampleAttribute sampleAttribute : sampleAttributeList){
             if(sampleAttribute.getSampleId().compareTo(currentSampleId) != 0) {
-                if (sampleAttribute.getAttributeStringValue() != null && sampleAttribute.getAttributeStringValue().equals(value)) {
+                String attrValue = (dataType.equals("string")) ? sampleAttribute.getAttributeStringValue()
+                        : (dataType.equals("int")) ? ((sampleAttribute.getAttributeIntValue() != null ) ? sampleAttribute.getAttributeIntValue().toString() : null)
+                        : (dataType.equals("date")) ? ((sampleAttribute.getAttributeDateValue() != null) ? sampleAttribute.getAttributeDateValue().toString() : null)
+                        : ((sampleAttribute.getAttributeFloatValue() != null) ? sampleAttribute.getAttributeFloatValue().toString() : null);
+
+                if (attrValue != null && attrValue.equals(value)) {
                     return false;
                 }
             }
