@@ -1,0 +1,7 @@
+ProjectName	EventName	Required    AttributeName
+Werewolf	ProjectRegistration	T	GrantName
+Werewolf	ProjectRegistration	T	GrantAccountingCode
+Werewolf	SampleRegistration	T	SampleName
+Werewolf	SampleRegistration	T	OrganismName
+Werewolf	SampleRegistration	T	Public
+Werewolf	SampleSRASubmission	T	AccessionNumber

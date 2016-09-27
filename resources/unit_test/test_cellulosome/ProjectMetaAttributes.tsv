@@ -1,0 +1,9 @@
+ProjectName	DataType	Required	AttributeName	AttributeDescription	PossibleValues
+Cellulosome	string	T	ProjectDescription	Project long description, suitable for upload to SRA, etc.
+Cellulosome	string	T	GrantName	Name of the grant program.
+Cellulosome	int	T	GrantAccountingCode	Suitable for use on the Grid
+Cellulosome	string	F	ProjectGroup	Any group of projects to which this project may belong.
+Cellulosome	string	F	Collaborator	Other institutes or organizations contributing to this project.
+Cellulosome	string	T	ProjectStatus	Where is the project now?	Started;Completed;Sequencing;Annotation;Finishing;Submitted to Genbank;Submitted to SRA
+Cellulosome	string	T	ProjectURL	Web URL telling index page of project for status and other information.
+Cellulosome	string	F	ProjectReferences	Other resources of value to this project.

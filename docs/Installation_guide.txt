@@ -1,0 +1,106 @@
+OMETA Developer's Guide
+
+1. Prerequisites
+	- Linux
+	- MySql 5.6 
+	- LDAP for user login
+	- Java 1.6 (part of installation tarball)
+	- Jboss 5.0.1.GA (part of installation tarball)
+ 1.2 Untar the downloaded archive ometa.tar file. Moving forward we will reference the location as OMETALoc
+	After untar you should see following directories in OMETALoc
+		drwxr-xr-x  8 isingh tigr 4096 May 21 09:20 jboss-5.1.0.GA
+		drwxr-xr-x 10 isingh tigr 4096 May 20 17:01 jdk-6u23
+		drwxr-xr-x  2 isingh tigr 4096 May 21 10:46 logs
+		drwxr-xr-x  2 isingh tigr 4096 May 22 09:57 scripts
+
+2. Database
+	- Create database and database objects for OMETA and GUID application
+		1. Login to Mysql with user who has adminstrative privileges to create database and users. 
+	     $mysql -h <Mysql-host> -u <user> -p
+		2.run script OMETA_IFX_PROJECTS_db.sql to set database and users. Script will create ifx_projects database, and ifx_projects_app and ifx_projects_adm users. Default password is 'welcome',and it should be changed before production use. 
+		 $mysql> source <OMETALoc>/scripts/OMETA_IFX_PROJECTS_db.sql
+		 
+		 2.1 To cleanup database ifx_projects and its users, you can run OMETA_IFX_PROJECTS_db_Cleanup.sql script.
+		   $mysql> source <OMETALoc>/scripts/OMETA_IFX_PROJECTS_db_Cleanup.sql
+		   
+		3.run script OMETA_GUID_db.sql. Script will create database jcvi_guid, and users jcvi_guid and jcvi_admin. Default password is 'welcome',and it should be changed before production use.
+		 $mysql> source <OMETALoc>/script/OMETA_GUID_db.sql
+		 
+		   3.1 To cleanup database jcvi_guid and its users, you can run OMETA_GUID_db_Cleanup.sql script.
+		   $mysql> source <OMETALoc>/scripts/OMETA_GUID_db_Cleanup.sql
+		 
+3. GUID Generator. OMETA uses GUID generator to generate unique IDs. 
+	- Update mysql server name in <OMETALoc>/jboss-5.1.0.GA/server/ometa/deploy/ometa-guid-ds.xml. Replace [database address] with database host name, if mysql is not running on default port 3306 then specify the port too.
+		e.g. mysql56-lan-cms:3306, port is optional if database is running on default port.
+	- Update password in configuration file in <OMETALoc>/jboss-5.1.0.GA/server/ometa/deploy/ometa-guid-ds.xml. Default password is welcome.
+
+4. Deploy OMETA application (EAR file) to the ometa server in Jboss. 
+	- Update mysql server name in <OMETALoc>/jboss-5.1.0.GA/server/ometa/deploy/ometa-ds.xml. Replace [database address] with database host name, if mysql is not running on default port 3306 then specify the port too.
+		e.g. mysql56-lan-cms:3306, port is optional if database is running on default port.
+	-Update password in ometa-ds.xml. Default password is welcome 
+
+5.	Configure LDAP for users’ authentication. 
+		5.1 - open <OMETALoc>/jboss-5.1.0.GA/server/ometa/conf/login-config.xml
+		    - add following configuration: update values in [] with local configurations
+			<application-policy name = "jcvi">
+			  <authentication>
+			    <login-module code="org.jboss.security.auth.spi.LdapExtLoginModule"flag="required">
+			      <module-option name="java.naming.factory.initial">com.sun.jndi.ldap.LdapCtxFactory</module-option>
+			      <module-option name="unauthenticatedIdentity">guest</module-option>
+			      <module-option name="java.naming.provider.url">ldap://[ldap address]</module-option>
+			      <module-option name="java.naming.security.authentication">simple</module-option>
+			      <module-option name="bindDN">[uid=anonymous,ou=VI,ou=People,dc=dc,dc=org]</module-option>
+			      <module-option name="bindCredential"></module-option>
+			      <module-option name="baseFilter">(uid={0})</module-option>
+			      <module-option name="baseCtxDN">[ou=People,dc=dc,dc=org]</module-option>
+			      <module-option name="roleAttributeID">cn</module-option>
+			      <module-option name="rolesCtxDN">[ou=ApplicationRoles,dc=dc,dc=org]</module-option>
+			      <module-option name="roleFilter">(uniqueMember={1})</module-option>
+			      <module-option name="roleRecursion">-1</module-option>
+			      <module-option name="password-stacking">useFirstPass</module-option>
+			    </login-module>
+			  </authentication>
+			</application-policy>
+       5.2 - Open file <OMETALoc>/jboss-5.1.0.GA/server/ometa/deploy/projectWebsites.ear/resource/LoadingEngine.properties. Change [ldap host] to your LDAP host, and change [dc] to your company domain. Adminstrator should also review 
+	         LDAP base dn property "JndiUserInfo.base_dn" to make sure it matches your LDAP configuration.
+5. start/stop jboss
+	- start: 
+		$cd <OMETALoc>/jboss-5.1.0.GA/
+		$jboss_ometa start
+	- stop: 
+		$cd <OMETALoc>/jboss-5.1.0.GA/
+		$jboss_ometa stop
+		
+  6.1 Now you can access the application using URL
+
+   http://<hostname>:8380/projectWebsites
+   
+   1. You can register your user self-registration page.
+   2. If you want to grant General_admin role required for project configuration then follow step 6.2.
+
+6. Actor Group Management (The supports of user management through the web interface is in progress.)
+	- A guid can be obtained by accessing 'http://[server]:8380/guid/GuidClientServer?Request=GET&Size=1'
+	6.1 Create new actor group
+		- View group
+			INSERT INTO `lookup_value` (`lkuvlu_id`, `lkuvlu_name`, `lkuvlu_type`, `lkuvlu_data_type`, `lkuvlu_create_date`, `lkuvlu_modify_date`) 
+				VALUES ([guid], '[group name]', 'Access Group', 'string', NOW(), null);
+			INSERT INTO `groups` (`group_id`, `group_name_lkuvl_id`) VALUES ([guid],[lookup_value id from previous sql]);
+		- Edit group
+			INSERT INTO `lookup_value` (`lkuvlu_id`, `lkuvlu_name`, `lkuvlu_type`, `lkuvlu_data_type`, `lkuvlu_create_date`, `lkuvlu_modify_date`) 
+				VALUES ([guid], '[group name]', 'Edit Group', 'string', NOW(), null);
+			INSERT INTO `groups` (`group_id`, `group_name_lkuvl_id`) VALUES ([guid],[lookup_value id from previous sql]);
+	6.2 Grant Admin role to an actor
+		- ONLY users with Admin role can create projects, setup events for a project
+		-- Change the user id for variable v_userid and run following script to add new user to General-Admin Role
+		-- Only grant admin role to administrators.
+			
+			set @v_userid='isingh';
+			select @maxid := max(actgrp_id)+1 from ifx_projects.actor_group;
+			INSERT INTO `actor_group` (`actgrp_id`, `actgrp_create_date`, `actgrp_modify_date`, `actgrp_actor_id`, `actgrp_group_id`) 
+						VALUES ( @maxid, NOW() , NULL, (select actor_id from ifx_projects.actor a where a.actor_username=@v_userid) 
+						,(select g.group_id from ifx_projects.groups g,ifx_projects.lookup_value lv where g.group_name_lkuvl_id=lv.lkuvlu_id
+						 and lv.lkuvlu_name='General-Admin')
+						 );
+			
+
+

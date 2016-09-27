@@ -1,0 +1,6 @@
+ProjectName	EventName	Required	AttributeName	DataType	AttributeDescription
+Cellulosome	ProjectRegistration	T	GrantMilestone	string	What milesetone in the grant process is this?
+Cellulosome	ProjectRegistration	T	GrantAccountingStart	date	When does the accounting clock start ticking?
+Cellulosome	SampleRegistration	F	SampleMW	float	Molecular weight of sample DNA.
+Cellulosome	SampleRegistration	T	StrainName	string	Full strain of this organism.
+Cellulosome	Short Read Archive	T	sra accession	string	Accession number coming back from SRA after object registered.

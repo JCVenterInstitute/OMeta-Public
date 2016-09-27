@@ -1,0 +1,28 @@
+<!--
+  ~ Copyright J. Craig Venter Institute, 2013
+  ~
+  ~ The creation of this program was supported by J. Craig Venter Institute
+  ~ and National Institute for Allergy and Infectious Diseases (NIAID),
+  ~ Contract number HHSN272200900007C.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<hibernate-configuration xmlns="urn:jboss:hibernate-deployer:1.0">
+    <session-factory name="java:/hibernate/OMETASessionFactory"
+                     bean="jboss.test.har:service=Hibernate,testcase=TimersUnitTestCase">
+        <property name="datasourceName">java:PWS_DBInterface_MySQL_DS</property>
+        <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
+    </session-factory>
+</hibernate-configuration>

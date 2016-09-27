@@ -1,0 +1,27 @@
+ProjectName	DataType	Required	AttributeName	AttributeDescription	PossibleValues
+Werewolf	string	T	SampleDescription	Full description suitable for SRA upload
+Werewolf	string	T	ContactFirstName	Contact this person as the principal
+Werewolf	string	T	ContactLastName	Contact this person as the principal	
+Werewolf	string	T	Public	Show this site to all interested, or only internal	T;F
+Werewolf	string	F	EstimatedGenomeSize	Estimate of bp in genome.	
+Werewolf	string	T	Genus	Taxonomy information - standard name	
+Werewolf	string	T	Species	Taxonomy information - standard name	
+Werewolf	string	F	Strain	Strain/isolate/breed	
+Werewolf	string	T	OrganismName	Full name of organism	
+Werewolf	string	F	NCBITaxonID	Number identifier good at NCBI for their Taxon database	
+Werewolf	string	F	DataURL	Where to find this data via web	
+Werewolf	string	F	Taxonomy	Colon-separated like NCBI:NNNN with namespace ID	
+Werewolf	string	F	References	References to papers	
+Werewolf	string	F	SequencingCenter	Who did the sequencing	
+Werewolf	string	F	SequencingCenterURL	Where was sequencing done	
+Werewolf	string	F	SequencingMethod	How was sequencing done	
+Werewolf	string	F	SequencingDepth	How many times coverage	
+Werewolf	string	F	SequencingTechnology	Which instrumentation	Titanium 454;GSFLX;ABI SOLID;Illumina;Sanger
+Werewolf	string	F	SubmittingOrganization	Who submits data	
+Werewolf	string	F	SubmittingCenterURL	Where to find who submits data	
+Werewolf	string	F	ConsortiumName	Name of consortium, if one exists	
+Werewolf	string	F	ConsortiumURL	How to lookup the consortium on the web	
+Werewolf	string	F	SourceOfDNA	Where came from	
+Werewolf	string	F	LocusTagPrefix	For other references	
+Werewolf	string	F	Replicon	name, type and size separated by colons	
+Werewolf	string	F	NCBIProjectID	Genome Project identifier at NCBI	

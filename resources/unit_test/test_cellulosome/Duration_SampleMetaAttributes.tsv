@@ -1,0 +1,2 @@
+ProjectName	DataType	Required	AttributeName	AttributeDescription	PossibleValues
+Cellulosome	date	T	Expected Duration	When will sample materials expire.	

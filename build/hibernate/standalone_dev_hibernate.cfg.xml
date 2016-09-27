@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  ~ Copyright J. Craig Venter Institute, 2013
+  ~
+  ~ The creation of this program was supported by J. Craig Venter Institute
+  ~ and National Institute for Allergy and Infectious Diseases (NIAID),
+  ~ Contract number HHSN272200900007C.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="connection.url">jdbc:mysql://{mysql_host}/ifx_projects</property>
+        <property name="connection.username"></property>
+        <property name="connection.password"></property>
+        <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.cache.use_second_level_cache">true</property>
+        <property name="hibernate.cache.use_query_cache">true</property>
+        <property name="hibernate.cache.region.factory_class">net.sf.ehcache.hibernate.EhCacheRegionFactory</property>
+
+        <property name="hibernate.current_session_context_class">thread</property>
+        <property name="hibernate.show_sql">false</property>
+
+        <!-- mapping files -->
+        <mapping class="org.jcvi.ometa.model.Actor"/>
+        <mapping class="org.jcvi.ometa.model.ActorGroup"/>
+        <mapping class="org.jcvi.ometa.model.Group"/>
+        <mapping class="org.jcvi.ometa.model.LookupValue"/>
+        <mapping class="org.jcvi.ometa.model.Project"/>
+        <mapping class="org.jcvi.ometa.model.Sample"/>
+        <mapping class="org.jcvi.ometa.model.ProjectMetaAttribute"/>
+        <mapping class="org.jcvi.ometa.model.SampleMetaAttribute"/>
+        <mapping class="org.jcvi.ometa.model.ProjectAttribute"/>
+        <mapping class="org.jcvi.ometa.model.SampleAttribute"/>
+        <mapping class="org.jcvi.ometa.model.Event"/>
+        <mapping class="org.jcvi.ometa.model.EventMetaAttribute"/>
+        <mapping class="org.jcvi.ometa.model.EventAttribute"/>
+
+    </session-factory>
+</hibernate-configuration>

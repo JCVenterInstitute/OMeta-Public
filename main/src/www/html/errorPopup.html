@@ -1,0 +1,55 @@
+<!--
+  ~ Copyright J. Craig Venter Institute, 2013
+  ~
+  ~ The creation of this program was supported by J. Craig Venter Institute
+  ~ and National Institute for Allergy and Infectious Diseases (NIAID),
+  ~ Contract number HHSN272200900007C.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+<!doctype html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <style>
+        .popup{background-color: white;}
+        .popup-header{padding: 10px 10px 0 10px; border-bottom: thin solid rgb(184, 92, 92);}
+        .errorText {
+            font-family: Tahoma, sans-serif;
+            font-size: 14px;
+            text-align: left;
+            color:#306BA7;
+            font-weight:600;
+            vertical-align:top;
+            padding-right: 5px;
+        }
+    </style>
+
+    <title>O-META: ERROR</title>
+</head>
+<body>
+<div class="popup">
+    <div class="popup-header">
+        <h2 style="color:rgb(184, 92, 92); float:left"><strong>ERROR</strong></h2>
+        <a href="javascript:;" onclick="$.closePopupLayer('erroPopup')" title="Close" class="close-link" style="float: right"><img src="images/xBtn.gif" title="Close" /></a>
+        <br clear="both" />
+    </div>
+    <div style="padding:10px;">
+        <div id="errorMsg" style="margin:5px 5px 5px 5px;word-wrap: break-word;" class="errorText">
+            <script>
+                $('#errorMsg').html($('#error_messages').val());
+            </script>
+        </div>
+    </div>
+</body>
+</html>

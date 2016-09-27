@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  ~ Copyright J. Craig Venter Institute, 2013
+  ~
+  ~ The creation of this program was supported by J. Craig Venter Institute
+  ~ and National Institute for Allergy and Infectious Diseases (NIAID),
+  ~ Contract number HHSN272200900007C.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+
+    <display-name>Production Status</display-name>
+
+    <filter>
+        <filter-name>Struts</filter-name>
+        <filter-class>
+            org.apache.struts2.dispatcher.filter.StrutsPrepareAndExecuteFilter
+        </filter-class>
+    </filter>
+    <filter>
+        <filter-name>struts2</filter-name>
+        <filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Struts</filter-name>
+        <url-pattern>*.action</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <listener>
+        <listener-class>org.apache.struts2.tiles.StrutsTilesListener</listener-class>
+    </listener>
+
+    <welcome-file-list>
+        <welcome-file>/JSP/index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <error-page>
+        <error-code>403</error-code>
+        <location>/JSP/error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/JSP/error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>400</error-code>
+        <location>/JSP/error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>408</error-code>
+        <location>/JSP/error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/JSP/error.jsp</location>
+    </error-page>
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Project Website Resources</web-resource-name>
+            <description>Protects selected resources</description>
+
+            <url-pattern>/forceLoginForProductionStatus.action</url-pattern>
+            <url-pattern>/forceLoginForEventDetails.action</url-pattern>
+            <url-pattern>/forceLoginForEventHistory.action</url-pattern>
+
+            <url-pattern>/eventDetail.action</url-pattern>
+            <url-pattern>/JSP/EventDetail.jsp</url-pattern>
+
+            <url-pattern>/eventHistory.action</url-pattern>
+            <url-pattern>/JSP/EventHistory.jsp</url-pattern>
+
+            <url-pattern>/eventLoader.action</url-pattern>
+            <url-pattern>/JSP/eventLoader.jsp</url-pattern>
+
+            <url-pattern>/projectSetup.action</url-pattern>
+            <url-pattern>/JSP/ProjectSetup.jsp</url-pattern>
+
+            <url-pattern>/metadataSetup.action</url-pattern>
+            <url-pattern>/JSP/MetadataSetup.jsp</url-pattern>
+
+            <url-pattern>/sampleLoader.action</url-pattern>
+            <url-pattern>/JSP/SampleLoader.jsp</url-pattern>
+
+            <url-pattern>/multiLoader.action</url-pattern>
+            <url-pattern>/JSP/MultiLoader.jsp</url-pattern>
+
+            <url-pattern>/actorRole.action</url-pattern>
+            <url-pattern>/JSP/ActorRole.jsp</url-pattern>
+
+            <url-pattern>/addActor.action</url-pattern>
+            <url-pattern>/JSP/AddActor.jsp</url-pattern>
+
+            <url-pattern>/passwordUpdate.action</url-pattern>
+            <url-pattern>/JSP/PasswordUpdate.jsp</url-pattern>
+
+            <url-pattern>/eventReport.action</url-pattern>
+            <url-pattern>/JSP/EventReport.jsp</url-pattern>
+
+            <url-pattern>/dropboxLoader.action</url-pattern>
+            <url-pattern>/fileUploadAjax.action</url-pattern>
+            <url-pattern>/download.action</url-pattern>
+
+            <url-pattern>/secureIndex.action</url-pattern>
+            <url-pattern>/centerreport.action</url-pattern>
+            <url-pattern>/analytics.action</url-pattern>
+
+            <url-pattern>/projectdetail.action</url-pattern>
+
+            <url-pattern>/gcidMetadata.action</url-pattern>
+
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>pstuser</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+
+
+    <login-config>
+        <auth-method>FORM</auth-method>
+        <realm-name>jcvi</realm-name>
+        <form-login-config>
+            <form-login-page>/JSP/Login.jsp</form-login-page>
+            <form-error-page>/JSP/ErrorOnLogin.jsp</form-error-page>
+        </form-login-config>
+    </login-config>
+
+    <security-role>
+        <role-name>pstuser</role-name>
+    </security-role>
+
+</web-app>

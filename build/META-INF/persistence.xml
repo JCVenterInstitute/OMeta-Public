@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright J. Craig Venter Institute, 2013
+  ~
+  ~ The creation of this program was supported by J. Craig Venter Institute
+  ~ and National Institute for Allergy and Infectious Diseases (NIAID),
+  ~ Contract number HHSN272200900007C.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+    <persistence-unit name="OMETAPersistenceUnit">
+        <jta-data-source>java:/PWS_DBInterface_MySQL_DS</jta-data-source>
+        <class>org.jcvi.ometa.model.Actor</class>
+        <class>org.jcvi.ometa.model.ActorGroup</class>
+        <class>org.jcvi.ometa.model.Group</class>
+        <class>org.jcvi.ometa.model.LookupValue</class>
+        <class>org.jcvi.ometa.model.Project</class>
+        <class>org.jcvi.ometa.model.Sample</class>
+        <class>org.jcvi.ometa.model.ProjectMetaAttribute</class>
+        <class>org.jcvi.ometa.model.SampleMetaAttribute</class>
+        <class>org.jcvi.ometa.model.ProjectAttribute</class>
+        <class>org.jcvi.ometa.model.SampleAttribute</class>
+        <class>org.jcvi.ometa.model.Event</class>
+        <class>org.jcvi.ometa.model.EventMetaAttribute</class>
+        <class>org.jcvi.ometa.model.EventAttribute</class>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+            <property name="jboss.entity.manager.jndi.name" value="java:/OMETAPersistenceUnit"/>
+            <property name="jboss.entity.manager.factory.jndi.name" value="java:/OMETAPersistenceUnitFactory"/>
+            <!--<property name="hibernate.hbm2ddl.auto" value="validate"/>-->
+        </properties>
+    </persistence-unit>
+</persistence>

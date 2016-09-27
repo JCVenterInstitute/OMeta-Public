@@ -1,0 +1,5 @@
+./projectsampletracking-jboss-instance/tmp
+./projectsampletracking-jboss-instance/data
+./projectsampletracking-jboss-instance/work
+./projectsampletracking-jboss-instance/log
+./projectsampletracking-jboss-instance/deploy/pws_appdbinterface_MySQL-ds.xml

@@ -1,0 +1,10 @@
+ProjectName	DataType	Required	AttributeName	AttributeDescription	PossibleValues            
+Werewolf	string	T	ProjectDescription	Project long description, suitable for upload to SRA, etc.	
+Werewolf	string	T	GrantName	Name of the grant program.	
+Werewolf	string	T	GrantAccountingCode	Suitable for use on the Grid	
+Werewolf	string	F	PathogenCategory	What type of pathogen, per standard X	
+Werewolf	string	F	ProjectGroup	Any group of projects to which this project may belong.	
+Werewolf	string	F	Collaborator	Other institutes or organizations contributing to this project.	
+Werewolf	string	T	ProjectStatus	Where is the project now?	Started;Completed;Sequencing;Annotation;Finishing;Submitted to Genbank;Submitted to SRA
+Werewolf	string	T	ProjectURL	Web URL telling index page of project for status and other information.	
+Werewolf	string	F	ProjectReferences	Other resources of value to this project.   

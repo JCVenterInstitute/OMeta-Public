@@ -1,0 +1,2 @@
+ProjectName	EventName	Required	AttributeName	DataType	AttributeDescription
+Cellulosome	WGS	T	reference	string	External reference.
