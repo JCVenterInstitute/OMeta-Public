@@ -44,6 +44,7 @@
     <property name="build.dir" value="${base.dir}/build"/>
     <property name="class.dir" value="${tmp.dir}/classes"/>
     <property name="dist.dir" value="${base.dir}/dist"/>
+    <property name="ear.lib.dir" value="${dist.dir}/lib"/>
     <property name="web.dir" value="${base.dir}/main/src/www"/>
     <property name="hibernate.dir" value="${base.dir}/build/hibernate"/>
 
@@ -133,6 +134,7 @@
         <mkdir dir="${tmp.dir}"/>
         <mkdir dir="${class.dir}"/>
         <mkdir dir="${dist.dir}"/>
+        <mkdir dir="${ear.lib.dir}"/>
         <mkdir dir="${class.dir}/resource" />
         <mkdir dir="${class.dir}/resource/internal" />
         <copy todir="${class.dir}/resource">
@@ -300,6 +302,14 @@
         </jar>
     </target>
 
+    <target name="resource-jar" depends="compile">
+        <jar destfile="${ear.lib.dir}/resource.jar">
+            <fileset dir="${build.dir}/resource/">
+                <include name="LoadingEngine*.properties"/>
+            </fileset>
+        </jar>
+    </target>
+
     <target name="ear" depends="compile,server-jar,war,make-har" description="All targets to make the enterprise application." >
         <ear earfile="${dist.dir}/${tracking.web.context}.ear" appxml="${build.dir}/META-INF/application.xml" >
             <metainf dir="${build.dir}/META-INF">
@@ -319,10 +329,13 @@
                 <include name="**/*.properties" />
                 <exclude name="**/*-build.properties" />
             </fileset>
+            <zipfileset dir="${ear.lib.dir}" prefix="lib">
+                <include name="resource.jar"/>
+            </zipfileset>
         </ear>
     </target>
 
-    <target name="dist" depends="clean,make-loader-app,make-etl-app,war,ear" description="generate the distribution" />
+    <target name="dist" depends="clean,make-loader-app,make-etl-app,war,resource-jar,ear" description="generate the distribution" />
 
     <!-- Replace <script> with min version
         Minimized JS files (single file) should be included between "JS to be replaced by min version" and "end" comment

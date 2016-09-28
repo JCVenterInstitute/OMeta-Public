@@ -34,7 +34,7 @@ public class Constants {
 
     public final static String TEXT_PATTERN = "^[a-zA-Z0-9><=_\\-(),\\s ]*$";
 
-    public static final String PROPERTIES_FILE_NAME = "resource/LoadingEngine";
+    public static final String PROPERTIES_FILE_NAME = "LoadingEngine";
     public static final String CONIFG_FILE_STORAGE_PATH = "ometa.fileStorage.path";
     public static final String CONFIG_TAREXCLUDE_PATH = "ometa.tarexclude.files.path";
     public static final String CONFIG_GUID_HOST = "ometa.guid.host";
