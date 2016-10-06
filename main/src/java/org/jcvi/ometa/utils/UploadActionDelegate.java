@@ -37,8 +37,8 @@ import javax.naming.InitialContext;
  */
 public class UploadActionDelegate extends EjbBuilder {
     //public static final String EJB_NAME = Constants.SERVICE_NAME + "/OMETA.Writeback/remote"; //"PWS.Writeback";
-    public static final String EJB_NAME = "ejb:" + Constants.SERVICE_NAME +
-            "/ometa_ejb_server/OMETA.Writeback!org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackRemote";
+    public static final String EJB_NAME = Constants.SERVICE_NAME +
+            "/ometa_ejb_server//OMETA.Writeback!org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackRemote";
     protected static final String EJB_FAILURE_MSG = "Failed to pickup EJB dependency.";
 
     /**

@@ -37,8 +37,8 @@ import javax.naming.InitialContext;
  */
 public class PresentationActionDelegate extends EjbBuilder {
     //public static final String EJB_NAME = Constants.SERVICE_NAME + "/OMETA.Presentation/remote"; //"PWS.Presentation";
-    public static final String EJB_NAME = "ejb:" + Constants.SERVICE_NAME +
-            "/ometa_ejb_server/OMETA.Presentation!org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationRemote";
+    public static final String EJB_NAME = Constants.SERVICE_NAME +
+            "/ometa_ejb_server//OMETA.Presentation!org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationRemote";
 
     /**
      * Fallback method to load up the EJB, if injection fails.
