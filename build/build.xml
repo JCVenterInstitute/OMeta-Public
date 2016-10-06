@@ -190,13 +190,15 @@
         <jar destfile="${dist.dir}/${tracking.web.context}App.jar">
             <fileset dir="${tmp.dir}/classes">
                 <include name="**/*.class" />
-                <include name="**/*.properties" />
                 <include name="**/*.xml" />
                 <include name="**/*.sql" />
                 <exclude name="${package.name}/production_etl/**/*.class" />
                 <exclude name="${package.name}/action/**/*.class" />
                 <exclude name="${package.name}/interceptor/**/*.class" />
                 <exclude name="${package.name}/stateless_session_bean/**/*.class" />
+            </fileset>
+            <fileset dir="${build.dir}/resource/">
+                <include name="LoadingEngine*.properties"/>
             </fileset>
             <fileset dir="${build.dir}/hibernate" includes="standalone_*_hibernate.cfg.xml"/>
             <fileset dir="${build.dir}" file="log4j.xml"/>
