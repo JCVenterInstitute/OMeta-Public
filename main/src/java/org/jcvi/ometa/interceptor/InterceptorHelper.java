@@ -322,6 +322,8 @@ public class InterceptorHelper implements Serializable {
             sessionAndTransactionManager.rollBackTransaction();
             ex.printStackTrace();
             approved = null;
+        } finally {
+            this.sessionAndTransactionManager.closeSession();
         }
         return approved;
     }
@@ -369,6 +371,8 @@ public class InterceptorHelper implements Serializable {
             sessionAndTransactionManager.rollBackTransaction();
             ex.printStackTrace();
             approved = null;
+        } finally {
+            this.sessionAndTransactionManager.closeSession();
         }
         return approved;
     }
