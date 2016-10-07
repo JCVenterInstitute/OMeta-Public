@@ -70,7 +70,6 @@
     <property name="struts.lib.dir" value="${thirdparty.lib.dir}/Struts-2.5.2/"/>
     <property name="servlet.lib.dir" value="${thirdparty.lib.dir}/Servlet-2.4/"/>
     <property name="ehcache.lib.dir" value="${thirdparty.lib.dir}/ehcache-2.3.1/"/>
-    <property name="log4j.lib.dir" value="${thirdparty.lib.dir}/log4j"/>
     <property name="ldap.lib.dir" value="${thirdparty.lib.dir}/ldap"/>
     <property name="zip.lib.dir" value="${thirdparty.lib.dir}/zip4j"/>
     <property name="yuicompressor.lib.dir" value="${thirdparty.lib.dir}/yuicompressor" description="YUICompressor" />
@@ -150,14 +149,12 @@
         <fileset dir="${common.util.dir}" includes="Common-Utils.jar"/>
         <fileset dir="${hibernate.lib.dir}" includes="*.jar"/>
         <fileset dir="${JBoss-Client.lib.dir}" includes="*.jar"/>
-        <fileset dir="${log4j.lib.dir}" includes="*.jar"/>
         <fileset dir="${struts.lib.dir}" includes="*.jar"/>
         <fileset dir="${servlet.lib.dir}" includes="*.jar"/>
         <fileset dir="${apachepoi.lib.dir}" includes="*.jar"/>
         <fileset dir="${ebi.lib.dir}" includes="*.jar"/>
         <fileset dir="${ldap.lib.dir}" includes="*.jar"/>
         <fileset dir="${zip.lib.dir}" includes="*.jar"/>
-        <fileset file="${base.dir}/common/thirdparty/JBoss-5.1.0.GA/server/*.*" />
     </path>
 
     <target name="compile" depends="init" description="compile the source">
@@ -205,12 +202,12 @@
             <fileset file="${persistence-ar}"/>
             <zipgroupfileset dir="${dom4j.lib.dir}" includes="*.jar"/>
             <zipgroupfileset dir="${hibernate.lib.dir}" includes="*.jar"/>
-            <zipgroupfileset dir="${base.dir}/common/thirdparty/Hibernate-Commons-Annotations-3.3.0" includes="**/*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/wildfly-module-jars" includes="**/hibernate-commons-annotations-5.0.1.Final.jar"/>
             <zipgroupfileset dir="${common.util.dir}" includes="**/*.jar"/>
             <zipgroupfileset dir="${mysql.lib.dir}" includes="**/*.jar"/>
             <zipgroupfileset dir="${base.dir}/common/thirdparty/jta-1_1" includes="**/*.jar"/>
             <zipgroupfileset dir="${base.dir}/common/thirdparty/ehcache-2.3.1" includes="**/*.jar"/>
-            <zipgroupfileset dir="${base.dir}/common/thirdparty/commons-collections-3.2.1" includes="**/*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/Struts-2.5.2" includes="**/commons-collections-3.2.2.jar"/>
             <!--<zipgroupfileset dir="${JBoss-Client.lib.dir}" includes="*.jar"
                              excludes="activation.jar, avalon-framework.jar, FastInfoset.jar, getopt.jar, jacorb.jar, jaxb*.jar, jaxws.jar"/>
            --> <zipgroupfileset dir="${base.dir}/common/thirdparty/Servlet-2.4" includes="javax.servlet.jar"/>
@@ -238,16 +235,15 @@
             <fileset file="${persistence-ar}"/>
             <zipgroupfileset dir="${dom4j.lib.dir}" includes="*.jar"/>
             <zipgroupfileset dir="${hibernate.lib.dir}" includes="*.jar"/>
-            <zipgroupfileset dir="${base.dir}/common/thirdparty/Hibernate-Commons-Annotations-3.3.0" includes="**/*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/wildfly-module-jars" includes="**/hibernate-commons-annotations-5.0.1.Final.jar"/>
             <zipgroupfileset dir="${common.util.dir}" includes="**/*.jar"/>
             <zipgroupfileset dir="${mysql.lib.dir}" includes="**/*.jar"/>
             <zipgroupfileset dir="${base.dir}/common/thirdparty/jta-1_1" includes="**/*.jar"/>
             <zipgroupfileset dir="${base.dir}/common/thirdparty/ehcache-2.3.1" includes="**/*.jar"/>
-            <zipgroupfileset dir="${base.dir}/common/thirdparty/commons-collections-3.2.1" includes="**/*.jar"/>
+            <zipgroupfileset dir="${base.dir}/common/thirdparty/Struts-2.5.2" includes="**/commons-collections-3.2.2.jar"/>
             <zipgroupfileset dir="${JBoss-Client.lib.dir}" includes="mail.jar" />
             <zipgroupfileset dir="${JBoss-Client.lib.dir}" includes="activation.jar"/>
             <zipgroupfileset dir="${JBoss-Client.lib.dir}" includes="log4j.jar"/>
-            <zipgroupfileset dir="${log4j.lib.dir}" includes="**/*.jar"/>
         </jar>
     </target>
 
@@ -285,7 +281,11 @@
             <lib dir="${common.util.dir}" includes="**/*.jar"/>
             <lib dir="${apachepoi.lib.dir}" includes="**/*.jar"/>
             <lib dir="${ebi.lib.dir}" includes="**/*.jar"/>
-            <lib dir="${log4j.lib.dir}" includes="**/*.jar"/>
+            <lib dir="${dom4j.lib.dir}" includes="**/*.jar"/>
+            <lib dir="${JBoss-Client.lib.dir}" includes="**/artemis-core-client-1.1.0.wildfly-011.jar" />
+            <lib dir="${JBoss-Client.lib.dir}" includes="**/jboss-remoting-4.0.18.Final.jar" />
+            <lib dir="${JBoss-Client.lib.dir}" includes="**/jboss-ejb3-core-client.jar" />
+            <lib dir="${JBoss-Client.lib.dir}" includes="**/jettison-1.3.3.jar" />
             <zipfileset dir="${base.dir}/build/META-INF" includes="context.xml" prefix="META-INF"/>
         </war>
         <mkdir dir="${war-tmp-dir}" />
