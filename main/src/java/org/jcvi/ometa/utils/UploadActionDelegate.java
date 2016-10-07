@@ -48,7 +48,7 @@ public class UploadActionDelegate extends EjbBuilder {
             Logger logger, ProjectSampleEventWritebackBusiness psew) {
         if ( psew == null ) {
             try {
-                psew = (ProjectSampleEventWritebackRemote) InitialContext.doLookup(EJB_NAME);
+                psew = (ProjectSampleEventWritebackRemote) InitialContext.doLookup("ejb:" + EJB_NAME);
                 logger.warn("Had to lookup pse tracker using initial context.");
             } catch ( Exception ex ) {
                 logger.error(EJB_FAILURE_MSG);

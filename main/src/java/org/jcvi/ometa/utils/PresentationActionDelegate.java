@@ -47,7 +47,7 @@ public class PresentationActionDelegate extends EjbBuilder {
             Logger logger, ProjectSampleEventPresentationBusiness pseb) {
         if ( pseb == null ) {
             try {
-                pseb = (ProjectSampleEventPresentationRemote) InitialContext.doLookup(EJB_NAME);
+                pseb = (ProjectSampleEventPresentationRemote) InitialContext.doLookup("ejb:" + EJB_NAME);
                 logger.warn("Had to lookup pse presentation bean using initial context.");
             } catch ( Exception ex ) {
                 logger.error("Failed to pickup EJB dependency.");
