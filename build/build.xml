@@ -331,6 +331,7 @@
             <fileset dir="${apachepoi.lib.dir}" includes="**/*.jar"/>
             <fileset dir="${build.dir}">
                 <include name="**/*.properties" />
+                <exclude name="**/LoadingEngine*.properties" />
                 <exclude name="**/*-build.properties" />
             </fileset>
             <zipfileset dir="${ear.lib.dir}" prefix="lib">
