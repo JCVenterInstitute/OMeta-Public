@@ -273,6 +273,8 @@
                 <include name="**/*.xml"/>
                 <include name="**/*.swf"/>
                 <include name="**/*.html"/>
+                <include name="**/*.ttf"/>
+                <include name="**/*.woff"/>
                 <exclude name="**/struts.xml" />
                 <exclude name="**/log4j2.xml" />
             </fileset>
