@@ -21,13 +21,13 @@
   -->
 <Configuration status="INFO">
     <Appenders>
-        <File name="File" fileName="${user.home}/.ometa/ometa.log" immediateFlush="false" append="false">
+        <File name="File" fileName="${user.home}/.ometa/ometa.log" immediateFlush="true" append="true">
             <PatternLayout pattern="%d %-5p [%c] %m%n"/>
         </File>
     </Appenders>
     <Loggers>
         <Root level="INFO">
-            <AppenderRef ref="rollingFile" />
+            <AppenderRef ref="File" />
         </Root>
     </Loggers>
 </Configuration>
