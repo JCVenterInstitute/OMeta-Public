@@ -300,6 +300,7 @@
                 <include name="${package.name}/**/*.class" />
                 <exclude name="${package.name}/hibernate/**/*.class" />
                 <exclude name="${package.name}/action/**/*.class" />
+                <exclude name="${package.name}/model/**/*.class" />
             </fileset>
         </jar>
     </target>
