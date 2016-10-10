@@ -98,7 +98,7 @@ var utils = {
     var os='', o=t==='vv'?vs.vvoption:vs.vnoption;
     $.each(l, function(i1,v1) {
       if(v1 && v1[k]) {
-        os+=o.replace(/\\$v\\$/g,v1[k]);
+        os+=o.replace(/\$v\$/g,v1[k]);
       }
     });
     return os;

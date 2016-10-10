@@ -115,7 +115,7 @@
                 var $errorMsg = $('<div id="errorMsg" style="clear:both;" class="alert_error" onclick="_popup.closeError()">' + dataMap.errorMsg + '</div>');
                 $('fieldset').append($errorMsg);
               } else {
-                var newOption = vs.vvoption.replace(/\\$v\\$/g, res.lvName);
+                var newOption = vs.vvoption.replace(/\$v\$/g, res.lvName);
                 if(res.lvType==='Attribute') {
                   if(typeof emaOptions!='undefined' && emaOptions.length>0) emaOptions+=newOption;
                   else if(typeof pmaOptions!='undefined' && emaOptions.length>0) pmaOptions+=newOption;

@@ -170,7 +170,7 @@
                           _html+='<sort><a href="javascript:buttonSwitch(null, \'expand_'+et_us.toLowerCase()+'\');"><img name="expandEvents" id="expand_'+et_us.toLowerCase()+'" src="images/dataTables/details_open.png"/></a><strong>'+et+'</strong>' +
                           '<input class="chkbox ev_attr" type="checkbox" name="sAll" id="'+et_us.toLowerCase()+'" value="'+et+'"/><div class="hidden_event" name="'+et_us.toLowerCase()+'" id="'+et_us+'"><table><tr>';
                           $.each(attrs, function(a_i, a) {
-                            _html+= '<td>' + h_s.cb.replace('$g$',k).replace(/\\$v\\$/g, a) + '</td>';
+                            _html+= '<td>' + h_s.cb.replace('$g$',k).replace(/\$v\$/g, a) + '</td>';
                             if(a_i!=0 && a_i%4==0) {
                               _html += '</tr><tr>';
                             }
@@ -189,7 +189,7 @@
                         _html += '<tr><td style="padding: 0px 8px 6px 8px">';
                         _html += h_s.sl.replace('$s$', 'select').replace('$g$', '_' + k);
                         $.each(values, function(a_i,a) {
-                          _html += h_s.opt.replace(/\\$v\\$/g, a);
+                          _html += h_s.opt.replace(/\$v\$/g, a);
                         });
                         _html += '</select></td><td style="padding-top: 25px;padding-right: 25px;">';
                         _html += h_s.bt.replace('$a$',k).replace('$b$',k).replace('$c$',k).replace('$d$',k);

@@ -170,7 +170,7 @@
           pmaOptions += vs.empty;
           $.each(res.dataMap.a, function(i1,v1) {
             if(v1 && v1.lookupValueId && v1.name) {
-              pmaOptions += vs.vvoption.replace(/\\$v\\$/g, v1.name);
+              pmaOptions += vs.vvoption.replace(/\$v\$/g, v1.name);
             }
           });
         }
@@ -183,7 +183,7 @@
   function comboBoxChanged(option, id) { return; }
 
   function addAttribute() {
-    $("tbody#pmaTbody").append(attrHtml.replace(/\\$cnt\\$/g,attrCnt).replace("$o$",pmaOptions));
+    $("tbody#pmaTbody").append(attrHtml.replace(/\$cnt\$/g,attrCnt).replace("$o$",pmaOptions));
     attrCnt++;
     $('tbody#pmaTbody select:last').combobox();
   }
