@@ -143,6 +143,7 @@
             </fileset>
         </copy>
         <copy file="${web.dir}/WEB-INF/struts.xml" todir="${class.dir}"/>
+        <copy file="${build.dir}/log4j2.xml" todir="${class.dir}"/>
     </target>
 
     <path id="common-classpath">
@@ -198,7 +199,6 @@
                 <include name="LoadingEngine*.properties"/>
             </fileset>
             <fileset dir="${build.dir}/hibernate" includes="standalone_*_hibernate.cfg.xml"/>
-            <fileset dir="${build.dir}" file="log4j.xml"/>
             <fileset file="${persistence-ar}"/>
             <zipgroupfileset dir="${dom4j.lib.dir}" includes="*.jar"/>
             <zipgroupfileset dir="${hibernate.lib.dir}" includes="*.jar"/>
@@ -231,7 +231,7 @@
                 <exclude name="${package.name}/jndi/**/*.class" />
             </fileset>
             <fileset dir="${build.dir}/hibernate" includes="standalone_*_hibernate.cfg.xml"/>
-            <fileset dir="${build.dir}" file="log4j.xml"/>
+            <fileset dir="${build.dir}" file="log4j2.xml"/>
             <fileset file="${persistence-ar}"/>
             <zipgroupfileset dir="${dom4j.lib.dir}" includes="*.jar"/>
             <zipgroupfileset dir="${hibernate.lib.dir}" includes="*.jar"/>
@@ -274,6 +274,7 @@
                 <include name="**/*.swf"/>
                 <include name="**/*.html"/>
                 <exclude name="**/struts.xml" />
+                <exclude name="**/log4j2.xml" />
             </fileset>
             <lib dir="${struts.lib.dir}" includes="*.jar"/>
             <lib dir="${ldap.lib.dir}" includes="*.jar"/>
