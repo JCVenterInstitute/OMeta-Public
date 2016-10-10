@@ -19,19 +19,15 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
-
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
-
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
-    <appender name="rollingFile" class="org.apache.log4j.RollingFileAppender">
-        <param name="File" value="${user.home}/.ometa/ometa.log"/>
-        <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d %-5p [%c] %m%n"/>
-        </layout>
-    </appender>
-
-    <root>
-        <priority value ="INFO" />
-        <appender-ref ref="rollingFile" />
-    </root>
-</log4j:configuration>
+<Configuration status="INFO">
+    <Appenders>
+        <File name="File" fileName="${user.home}/.ometa/ometa.log" immediateFlush="false" append="false">
+            <PatternLayout pattern="%d %-5p [%c] %m%n"/>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="rollingFile" />
+        </Root>
+    </Loggers>
+</Configuration>
