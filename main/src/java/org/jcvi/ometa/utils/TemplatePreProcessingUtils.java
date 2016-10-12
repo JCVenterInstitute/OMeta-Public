@@ -399,101 +399,105 @@ public class TemplatePreProcessingUtils {
             String[] line;
             int lineCount = 0;
 
-            while ((line = reader.readNext()) != null) {
-                ++lineCount;
+            try {
+                while ((line = reader.readNext()) != null) {
+                    ++lineCount;
 
-                if(lineCount == 1) { // event name header
-                    if(line[0].startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && line[0].contains(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER)) { //skip event type line
-                        continue;
-                    } else {
-                        throw new Exception(ErrorMessages.TEMPLATE_MISSING_HEADER_EVENT);
-                    }
+                    if (lineCount == 1) { // event name header
+                        if (line[0].startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && line[0].contains(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER)) { //skip event type line
+                            continue;
+                        } else {
+                            throw new Exception(ErrorMessages.TEMPLATE_MISSING_HEADER_EVENT);
+                        }
 
-                } else if(lineCount == 2) { // attribute headers
-                    Collections.addAll(columns, line);
-                    hasSampleName = columns.indexOf(Constants.ATTR_SAMPLE_NAME) >= 0;
-                    hasParentSampleName = columns.indexOf(Constants.ATTR_PARENT_SAMPLE_NAME) >= 0;
-                    hasPublicFlag = columns.indexOf(Constants.ATTR_PUBLIC_FLAG) >= 0;
+                    } else if (lineCount == 2) { // attribute headers
+                        Collections.addAll(columns, line);
+                        hasSampleName = columns.indexOf(Constants.ATTR_SAMPLE_NAME) >= 0;
+                        hasParentSampleName = columns.indexOf(Constants.ATTR_PARENT_SAMPLE_NAME) >= 0;
+                        hasPublicFlag = columns.indexOf(Constants.ATTR_PUBLIC_FLAG) >= 0;
 
-                } else { // data lines
-                    int colIndex = 0;
+                    } else { // data lines
+                        int colIndex = 0;
 
-                    if (line.length < 1 ) { // skip empty line
-                        continue;
-                    }
-
-                    if(lineCount > Constants.TEMPLATE_MAX_ROW_LIMIT) { // oversize template check
-                        throw new Exception(ErrorMessages.TEMPLATE_OVERSIZE);
-                    }
-
-                    if(line[0].startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) || line[0].startsWith("\"" + Constants.TEMPLATE_COMMENT_INDICATOR)) { //skip comment line
-                        continue;
-                    }
-
-                    if(lineCount == 3) {
-                        //skip the second line that holds metadata of each column
-                        String firstMetaColumn = line[colIndex];
-                        if(!firstMetaColumn.isEmpty() && firstMetaColumn.startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && firstMetaColumn.indexOf("string") > 0) {
+                        if (line.length < 1) { // skip empty line
                             continue;
                         }
-                    }
 
-                    if(line.length != columns.size()) {
-                        throw new Exception(ErrorMessages.TEMPLATE_COLUMN_COUNT_MISMATCH);
-                    }
-
-                    currProjectName = line[colIndex++];
-                    if(currProjectName == null || currProjectName.isEmpty()) {
-                        throw new Exception(ErrorMessages.TEMPLATE_PROJECT_MISSING);
-                    }
-
-                    if(projectName == null) { //assign the first project
-                        projectName = currProjectName;
-                    }
-
-                    if(!currProjectName.isEmpty()) {
-                        if(!isProjectRegistration && !currProjectName.equals(projectName)) {
-                            throw new Exception(ErrorMessages.TEMPLATE_MULTIPLE_PROJECT);
+                        if (lineCount > Constants.TEMPLATE_MAX_ROW_LIMIT) { // oversize template check
+                            throw new Exception(ErrorMessages.TEMPLATE_OVERSIZE);
                         }
 
-                        GridBean gBean = new GridBean();
-                        gBean.setProjectName(currProjectName);
-
-                        if(hasSampleName) {
-                            gBean.setSampleName(line[(colIndex++)]);
+                        if (line[0].startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) || line[0].startsWith("\"" + Constants.TEMPLATE_COMMENT_INDICATOR)) { //skip comment line
+                            continue;
                         }
 
-                        if(isProjectRegistration) {
+                        if (lineCount == 3) {
+                            //skip the second line that holds metadata of each column
+                            String firstMetaColumn = line[colIndex];
+                            if (!firstMetaColumn.isEmpty() && firstMetaColumn.startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && firstMetaColumn.indexOf("string") > 0) {
+                                continue;
+                            }
+                        }
+
+                        if (line.length != columns.size()) {
+                            throw new Exception(ErrorMessages.TEMPLATE_COLUMN_COUNT_MISMATCH);
+                        }
+
+                        currProjectName = line[colIndex++];
+                        if (currProjectName == null || currProjectName.isEmpty()) {
+                            throw new Exception(ErrorMessages.TEMPLATE_PROJECT_MISSING);
+                        }
+
+                        if (projectName == null) { //assign the first project
+                            projectName = currProjectName;
+                        }
+
+                        if (!currProjectName.isEmpty()) {
+                            if (!isProjectRegistration && !currProjectName.equals(projectName)) {
+                                throw new Exception(ErrorMessages.TEMPLATE_MULTIPLE_PROJECT);
+                            }
+
+                            GridBean gBean = new GridBean();
                             gBean.setProjectName(currProjectName);
-                            if(hasPublicFlag) {
-                                gBean.setProjectPublic(line[(colIndex++)]);
+
+                            if (hasSampleName) {
+                                gBean.setSampleName(line[(colIndex++)]);
                             }
-                        } else if(isSampleRegistration) {
-                            if(hasSampleName){
-                                if(hasParentSampleName) {
-                                    gBean.setParentSampleName(line[(colIndex++)]);
+
+                            if (isProjectRegistration) {
+                                gBean.setProjectName(currProjectName);
+                                if (hasPublicFlag) {
+                                    gBean.setProjectPublic(line[(colIndex++)]);
                                 }
-                                if(hasPublicFlag) {
-                                    gBean.setSamplePublic(line[(colIndex++)]);
+                            } else if (isSampleRegistration) {
+                                if (hasSampleName) {
+                                    if (hasParentSampleName) {
+                                        gBean.setParentSampleName(line[(colIndex++)]);
+                                    }
+                                    if (hasPublicFlag) {
+                                        gBean.setSamplePublic(line[(colIndex++)]);
+                                    }
                                 }
                             }
+
+                            gBean.setBeanList(new ArrayList<FileReadAttributeBean>());
+                            for (; colIndex < columns.size(); colIndex++) {
+                                FileReadAttributeBean fBean = new FileReadAttributeBean();
+                                fBean.setProjectName(isProjectRegistration ? currProjectName : projectName);
+                                fBean.setSampleName(hasSampleName ? gBean.getSampleName() : null);
+                                fBean.setAttributeName(this.extractRealAttributeName(columns.get(colIndex)));
+                                fBean.setAttributeValue(line[colIndex]);
+                                gBean.getBeanList().add(fBean);
+                            }
+
+                            gBean.setParsedRowData(line);
+
+                            gridBeans.add(gBean);
                         }
-
-                        gBean.setBeanList(new ArrayList<FileReadAttributeBean>());
-                        for (; colIndex < columns.size(); colIndex++) {
-                            FileReadAttributeBean fBean = new FileReadAttributeBean();
-                            fBean.setProjectName(isProjectRegistration ? currProjectName : projectName);
-                            fBean.setSampleName(hasSampleName ? gBean.getSampleName() : null);
-                            fBean.setAttributeName(this.extractRealAttributeName(columns.get(colIndex)));
-                            fBean.setAttributeValue(line[colIndex]);
-                            gBean.getBeanList().add(fBean);
-                        }
-
-                        gBean.setParsedRowData(line);
-
-                        gridBeans.add(gBean);
                     }
                 }
+            } finally {
+                reader.close();
             }
         }
 
