@@ -609,7 +609,7 @@
     </s:iterator>
     <s:set var="oldLoadingSample" value="loadingSample" />
     <s:if test="%{#oldLoadingSample != null && #oldLoadingSample.getSampleName() != null}">
-    //$('#_sampleName').val('<s:property value="#oldLoadingSample.sampleName"/>');
+      $('#_sampleName').val('<s:property value="#oldLoadingSample.sampleName"/>');
     // utils.preSelect('_parentSampleSelect', '<s:property value="#oldLoadingSample.parentSampleName"/>');
     // utils.preSelect('_isSamplePublic', '<s:property value="#oldLoadingSample.isPublic"/>');
     </s:if>
