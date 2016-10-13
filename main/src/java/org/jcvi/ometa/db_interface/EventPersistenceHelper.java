@@ -55,7 +55,7 @@ public class EventPersistenceHelper {
     protected static final MessageFormat CONTROLLED_VOCAB_VIOLATED_HUMAN_READABLE_MSG = new MessageFormat(
             "{0} {1} attribute may not be set to {2}.  Possible values: {3} " );
     protected static final MessageFormat NOT_VALID_ATTRIB_HUMAN_READABLE_MSG = new MessageFormat(
-            "{0} {1} attribute may not be set to {2}.  Validation failed! " );
+            "{0} {1} attribute may not be set to {2}. {3} " );
     protected static final MessageFormat EVENT_NOT_IN_PROJECT_HUMAN_READABLE_MSG = new MessageFormat(
             "Event attribute of {0} does not belong to project {1} " );
     protected static final MessageFormat INVALID_PROJECT_META_ATTRIB_HUMAN_READABLE_MSG = new MessageFormat(
@@ -291,6 +291,7 @@ public class EventPersistenceHelper {
             String dictionaryPrefix = "Dictionary:";
             String validationPrefix = "{validate:";
             boolean valid = true, unique = true;
+            String validationFailedMessage = "";
 
             if(controlValues.contains(validationPrefix)){
                 int indexOfValidate = controlValues.indexOf(validationPrefix);
@@ -317,10 +318,11 @@ public class EventPersistenceHelper {
                     }
 
                     Class validatorClass = Class.forName("org.jcvi.ometa.validation." + classMethodVal[0]);
+                    Object validatorClassInstance = validatorClass.newInstance();
                     Method validatorMethod;
                     if (hasArgument) {
                         validatorMethod = validatorClass.getDeclaredMethod(classMethodVal[1], String.class, String.class);
-                        valid = (Boolean) validatorMethod.invoke(validatorClass.newInstance(), attributeValue, argVal);
+                        valid = (Boolean) validatorMethod.invoke(validatorClassInstance, attributeValue, argVal);
                     } else {
                         if(classMethodVal[1].equals(Constants.VAL_UNIQUE_METHOD_NAME)) {
                             SampleAttributeDAO sampleAttributeDAO = this.daoFactory.getSampleAttributeDAO();
@@ -333,11 +335,16 @@ public class EventPersistenceHelper {
                             unique = valid = DataValidator.checkFieldUniqueness(attributeValue, lv.getDataType(), this.sampleId, sampleAttributeList);
                         } else {
                             validatorMethod = validatorClass.getDeclaredMethod(classMethodVal[1], String.class);
-                            valid = (Boolean) validatorMethod.invoke(validatorClass.newInstance(), attributeValue);
+                            valid = (Boolean) validatorMethod.invoke(validatorClassInstance, attributeValue);
                         }
                     }
 
-                    if (!valid) break;
+                    if (!valid) {
+                        Method messageMethod = validatorClass.getDeclaredMethod("getMessage");
+                        validationFailedMessage = (String) messageMethod.invoke(validatorClassInstance);
+
+                        break;
+                    }
                 }
             }
 
@@ -414,7 +421,7 @@ public class EventPersistenceHelper {
                 String message;
                 if(unique) {
                     message = NOT_VALID_ATTRIB_HUMAN_READABLE_MSG.format(
-                            new Object[]{aType.toString(), attributeName, attributeValue});
+                            new Object[]{aType.toString(), attributeName, attributeValue, validationFailedMessage});
                 } else {
                     message = E_PROJECT_UNIQUE_ATTRIBUTE.format(
                             new Object[]{attributeName, attributeValue});
