@@ -26,7 +26,6 @@ import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.codehaus.jettison.json.JSONObject;
-import org.jboss.varia.scheduler.Schedulable;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.*;
@@ -47,7 +46,7 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 
-public class JsonProducer implements Schedulable {
+public class JsonProducer implements Runnable {
     private Logger logger = Logger.getLogger(JsonProducer.class);
     private ProjectSampleEventPresentationBusiness pseEjb;
 
@@ -64,7 +63,7 @@ public class JsonProducer implements Schedulable {
         pseEjb = ejb;
     }
 
-    public static void main(String[] args) {
+    public void run() {
         try {
             JsonProducer pro = new JsonProducer();
             pro.generateJson();
@@ -706,7 +705,6 @@ public class JsonProducer implements Schedulable {
         return samplesForCurrentProject;
     }
 
-    @Override
     public void perform(Date date, long l) {
 
         try {
