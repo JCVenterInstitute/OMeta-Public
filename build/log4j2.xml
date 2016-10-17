@@ -21,7 +21,7 @@
   -->
 <Configuration status="INFO">
     <Appenders>
-        <File name="File" fileName="${user.home}/.ometa/ometa.log" immediateFlush="true" append="true">
+        <File name="File" fileName="${sys:user.home}/.ometa/ometa.log" immediateFlush="true" append="true">
             <PatternLayout pattern="%d %-5p [%c] %m%n"/>
         </File>
     </Appenders>
