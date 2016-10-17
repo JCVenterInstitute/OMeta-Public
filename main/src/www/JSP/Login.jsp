@@ -94,14 +94,12 @@
 <jsp:include page="../html/footer.html"/>
 
 <script>
-    $(function () {
-        $("#password").keyup(function (event) {
-            if (event.keyCode == 13) {
-                $("#loginPage").submit();
-            }
-        });
+    $(document).on("keydown",function(e){
+        var keyCode = e.which || e.keyCode;
+        if(keyCode == 13) { // enter key code
+            $("#loginPage").submit();
+        }
     });
-
 </script>
 
 </body>
