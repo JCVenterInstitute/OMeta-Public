@@ -207,9 +207,9 @@ public class JsonProducer implements Runnable {
             CellStyle style = workBook.createCellStyle();
             style.setFillBackgroundColor(IndexedColors.CORNFLOWER_BLUE.getIndex());
             style.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-            style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             Font font = workBook.createFont();
-            font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+            font.setBold(true);
             font.setColor(IndexedColors.WHITE.getIndex());
             style.setFont(font);
             /*------------ XLS Part END ------------*/

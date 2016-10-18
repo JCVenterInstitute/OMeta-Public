@@ -4,6 +4,7 @@ import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -377,7 +378,7 @@ public class GCIDMetadata extends ActionSupport {
 
             if(valCell == null){
                 valCell = valRow.createCell(index);
-                valCell.setCellType(Cell.CELL_TYPE_STRING);
+                valCell.setCellType(CellType.STRING);
             }
 
             String attrName = attrCell.getStringCellValue();

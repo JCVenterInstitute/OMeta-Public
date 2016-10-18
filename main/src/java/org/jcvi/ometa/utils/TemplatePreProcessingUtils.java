@@ -6,7 +6,7 @@ import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.CellRangeAddressList;
+import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.ss.usermodel.*;
 import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.validation.ErrorMessages;
@@ -208,7 +208,7 @@ public class TemplatePreProcessingUtils {
         CellStyle boldCS = wb.createCellStyle();
         Font boldFont = wb.createFont();
         boldFont.setFontHeightInPoints((short) 12);
-        boldFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        boldFont.setBold(true);
         boldCS.setFont(boldFont);
         CellStyle redCS = wb.createCellStyle();
         Font redFont = wb.createFont();
