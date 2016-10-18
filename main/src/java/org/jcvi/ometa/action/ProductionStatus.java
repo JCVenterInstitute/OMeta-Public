@@ -414,7 +414,7 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
                 attributes = attributes.substring(1);
             }
 
-            List<Sample> samples = null;
+            List<Sample> samples;
             if((sSearch!=null && !sSearch.isEmpty()) || (iSortCol_0!=null && !iSortCol_0.isEmpty()) || (columnName != null && !columnName.isEmpty())) {
                 samples = readPersister.getAllSamples(projectIds_str, attributes, sSearch, attributeType, sortCol, sSortDir_0, columnName, columnSearchArguments);
             } else {
@@ -619,11 +619,11 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
         this.pageElementList = pageElementList;
     }
 
-    public List getAaData() {
+    public List getaaData() {
         return aaData;
     }
 
-    public void setAaData(List aaData) {
+    public void setaaData(List aaData) {
         this.aaData = aaData;
     }
 
@@ -639,7 +639,7 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
         return sEcho;
     }
 
-    public void setSEcho(int sEcho) {
+    public void setsEcho(int sEcho) {
         this.sEcho = sEcho;
     }
 
@@ -647,7 +647,7 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
         return iColumns;
     }
 
-    public void setIColumns(int iColumns) {
+    public void setiColumns(int iColumns) {
         this.iColumns = iColumns;
     }
 
@@ -655,7 +655,7 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
         return iDisplayStart;
     }
 
-    public void setIDisplayStart(int iDisplayStart) {
+    public void setiDisplayStart(int iDisplayStart) {
         this.iDisplayStart = iDisplayStart;
     }
 
@@ -663,7 +663,7 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
         return iDisplayLength;
     }
 
-    public void setIDisplayLength(int iDisplayLength) {
+    public void setiDisplayLength(int iDisplayLength) {
         this.iDisplayLength = iDisplayLength;
     }
 
@@ -671,7 +671,7 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
         return iTotalRecords;
     }
 
-    public void setITotalRecords(int iTotalRecords) {
+    public void setiTotalRecords(int iTotalRecords) {
         this.iTotalRecords = iTotalRecords;
     }
 
@@ -679,7 +679,7 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
         return iTotalDisplayRecords;
     }
 
-    public void setITotalDisplayRecords(int iTotalDisplayRecords) {
+    public void setiTotalDisplayRecords(int iTotalDisplayRecords) {
         this.iTotalDisplayRecords = iTotalDisplayRecords;
     }
 
@@ -687,7 +687,7 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
         return sSearch;
     }
 
-    public void setSSearch(String sSearch) {
+    public void setsSearch(String sSearch) {
         this.sSearch = sSearch;
     }
 
@@ -695,15 +695,15 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
         return iSortCol_0;
     }
 
-    public void setISortCol_0(String iSortCol_0) {
+    public void setiSortCol_0(String iSortCol_0) {
         this.iSortCol_0 = iSortCol_0;
     }
 
-    public String getSortDir_0() {
+    public String getsSortDir_0() {
         return sSortDir_0;
     }
 
-    public void setSSortDir_0(String sSortDir_0) {
+    public void setsSortDir_0(String sSortDir_0) {
         this.sSortDir_0 = sSortDir_0;
     }
 

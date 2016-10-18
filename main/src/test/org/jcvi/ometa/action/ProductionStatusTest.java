@@ -49,8 +49,8 @@ public class ProductionStatusTest extends PSTTestAbstract {
     private void ajax() {
         action.setProjectNames("DPCC_1000");
         action.setAttributes("attributes:Project Name,Collecting_Institution,Project_Code,Project_ID,Project_Title,Project_Description,Project_PI_1 First_Name,Project_PI_1 Last_Name,Project_PI_2 First_Name,Project_PI_2 Last_Name,");
-        action.setISortCol_0("2");
-        action.setSSortDir_0("asc");
+        action.setiSortCol_0("2");
+        action.setsSortDir_0("asc");
         action.runAjax();
     }
 
