@@ -28,6 +28,7 @@ public class FileUploadAjax extends ActionSupport implements IAjaxAction {
     private String[] temporaryFilesContentType;
 
     private String fileStoragePath;
+    private String fileTempStoragePath;
 
     private Map<String, Object> result;
 
@@ -36,6 +37,7 @@ public class FileUploadAjax extends ActionSupport implements IAjaxAction {
     public FileUploadAjax() {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
         this.fileStoragePath = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH);
+        this.fileTempStoragePath = props.getProperty(Constants.CONFIG_TEMP_FILE_STORAGE_PATH);
     }
 
     @Override
@@ -82,7 +84,6 @@ public class FileUploadAjax extends ActionSupport implements IAjaxAction {
         try {
             result = new HashMap<String, Object>(this.temporaryFiles.length);
             String userName = ServletActionContext.getRequest().getRemoteUser();
-            String currWorkDir = System.getProperty("user.dir");
 
             for(int i = 0; i < this.temporaryFiles.length; i++) {
                 File temporaryFile = this.temporaryFiles[i];
@@ -91,7 +92,7 @@ public class FileUploadAjax extends ActionSupport implements IAjaxAction {
 
                 if (temporaryFile != null && temporaryFile.canRead() && temporaryFile.isFile() && temporaryFileName != null) {
 
-                    File storingDirectory = new File(currWorkDir + File.separator + "scratch" + File.separator + storagePath);
+                    File storingDirectory = new File(this.fileTempStoragePath + File.separator + "scratch" + File.separator + storagePath);
                     storingDirectory.mkdirs();
 
                     Long guid = CommonTool.getGuid();

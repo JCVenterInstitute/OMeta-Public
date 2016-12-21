@@ -36,6 +36,7 @@ public class Constants {
 
     public static final String PROPERTIES_FILE_NAME = "LoadingEngine";
     public static final String CONIFG_FILE_STORAGE_PATH = "ometa.fileStorage.path";
+    public static final String CONFIG_TEMP_FILE_STORAGE_PATH = "ometa.temp.fileStorage.path";
     public static final String CONFIG_TAREXCLUDE_PATH = "ometa.tarexclude.files.path";
     public static final String CONFIG_GUID_HOST = "ometa.guid.host";
     public static final String CONFIG_GUID_PORT = "ometa.guid.port";
