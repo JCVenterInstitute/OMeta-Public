@@ -639,14 +639,14 @@ function aoColumns() {
       ao.push({"sWidth": "120px", "aTargets":[index]});
       totalWidth+=120;
     } else if(headerList[i].length < 20){
-      ao.push({"sWidth": "150px", "aTargets":[index]});
-      totalWidth+=150;
-    } else if(headerList[i].length < 25){
       ao.push({"sWidth": "170px", "aTargets":[index]});
       totalWidth+=170;
-    } else{
+    } else if(headerList[i].length < 25){
       ao.push({"sWidth": "200px", "aTargets":[index]});
       totalWidth+=200;
+    } else{
+      ao.push({"sWidth": "230px", "aTargets":[index]});
+      totalWidth+=230;
     }
   }
 
