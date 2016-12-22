@@ -32,5 +32,5 @@ This project has been funded in whole or part with federal funds from the Nation
 
 ======
 ##### Project Supported by
-![www.jcvi.org](https://raw.github.com/movence/ometa/master/main/src/www/images/header-logo.png "JCVI")| ![www.jetbrains.com] (https://raw.github.com/movence/ometa/master/main/src/www/images/logo_JetBrains_1.png "JetBrains")| ![www.jboss.org] (https://raw.github.com/movence/ometa/master/main/src/www/images/jboss.png "Jboss")
+| ![www.jcvi.org](https://raw.github.com/movence/ometa/master/main/src/www/images/header-logo.png "JCVI") | ![www.jetbrains.com] (https://raw.github.com/movence/ometa/master/main/src/www/images/logo_JetBrains_1.png "JetBrains") | ![www.jboss.org] (https://raw.github.com/movence/ometa/master/main/src/www/images/jboss.png "Jboss") |
 
