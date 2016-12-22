@@ -31,7 +31,6 @@ O-META (Ontologies based metadata tracking system) is a data driven application 
 This project has been funded in whole or part with federal funds from the National Institute of Allergy and Infectious Diseases, National Institutes of Health, Department of Health and Human Services under contract numbers N01-AI30071 and or HHSN272200900007C.
 
 ======
-Project Supported by
-
-![alt text](https://raw.github.com/movence/ometa/master/main/src/www/images/header-logo.png "JCVI")| ![alt text] (https://raw.github.com/movence/ometa/master/main/src/www/images/logo_JetBrains_1.png "JetBrains")| ![alt text] (https://raw.github.com/movence/ometa/master/main/src/www/images/jboss.png "Jboss")
+##### Project Supported by
+![www.jcvi.org](https://raw.github.com/movence/ometa/master/main/src/www/images/header-logo.png "JCVI")| ![www.jetbrains.com] (https://raw.github.com/movence/ometa/master/main/src/www/images/logo_JetBrains_1.png "JetBrains")| ![www.jboss.org] (https://raw.github.com/movence/ometa/master/main/src/www/images/jboss.png "Jboss")
 
