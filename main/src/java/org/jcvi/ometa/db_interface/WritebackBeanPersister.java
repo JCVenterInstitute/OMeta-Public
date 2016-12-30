@@ -724,6 +724,12 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
 
                     helper.satisfyEmaRequirement(attribName, eventName, beanProjectName);
                     helper.checkControlledValue(attribName, value, EventPersistenceHelper.AttributeType.event);
+
+                    //Verify session is still open after value check
+                    if(!session.isOpen()) {
+                        this.open();
+                        helper.setSession(session);
+                    }
                     helper.writeBackAttribute(eventTypeLookupId, attribName, attributeNameLookupValueId, attribute);
 
                 } else {
