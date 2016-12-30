@@ -499,7 +499,8 @@ var _utils = {
             var key = i;
             var value  = projAttrMap[i];
 
-            while(key.indexOf(" ") > -1) key = key.replace(" ", "_");
+            key = key.replace(/ /g, "_");
+            key = key.replace(/'/g, "\\'");
 
             //jquery regex for single quotation
             var $input = $("input[id*='"+key.replace(/([ #;&,.+*~\':"!^$[\]()=>|\/@])/g,'\$1')+"']");
@@ -1341,6 +1342,7 @@ var button = {
             onOpen: function () {adjustParentDivHeight("open")},
             onClose: function () {adjustParentDivHeight("close")}
           });
+          if(bean != null) utils.multiSelectWithNode($inputNode, bean[1]);
         } else if(av_v.isRadio === true){
           $inputNode.find('select').multipleSelect({
             onOpen: function () {adjustParentDivHeight("open")},

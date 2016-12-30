@@ -524,7 +524,9 @@
     </s:if>
     <s:elseif test="%{#oldBeanList != null && #oldBeanList.size() >0}">
     //preload form view
-    $("#interactive-submission-table tr:last").show(); //show sample name
+    if(oldEventName && oldEventName.indexOf("SampleRegistration") === -1) {
+      $("#interactive-submission-table tr:last").show(); //show sample name
+    }
 
     //remove any existing dom elements
     //$('[name^="beanList"]').remove();
@@ -604,6 +606,14 @@
         $("#file_" + id).attr("data-tooltip", fileNameList);
 
         $("head").append("<style> #file_" + id + ":hover:after {width : " + ((fileNameCharCount + 1) * 7) + "px !important;}</style>");
+      }
+    } else if($("select[id*='select_" + currAttributeName + "_f'][multiple]").length){
+      var valueArr = currAttributeValue.split(",");
+      var $node = $("select[id*='select_" + currAttributeName + "_f'][multiple]");
+
+      for(var j in valueArr){
+        if(valueArr[j].charAt(0) == ' ') valueArr[j] = valueArr[j].replace(" ", "");
+        $node.multipleSelect('setSelects', valueArr);
       }
     }
     </s:iterator>
