@@ -403,12 +403,15 @@ public class LoadingEngine {
                 if(lineCount == 1) {
                     try {
                         if (!currLine.startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && currLine.contains(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER)) {
+                            success = 0;
                             throw new Exception("event type is missing in the data file.");
                         }
                         eventNameLine = currLine;
                         String[] eventTypeTokens = eventNameLine.split(":");
                         if (eventTypeTokens.length != 2 || eventTypeTokens[1].isEmpty()) {
-                            throw new Exception(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + " must be '" + Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + ":<eventName>'");
+                            success = 0;
+                            throw new Exception(Constants.TEMPLATE_HEADER_MISSING + " " +
+                                    Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + " must be '" + Constants.TEMPLATE_COMMENT_INDICATOR + Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + ":<eventName>'");
                         }
                         eventName = eventTypeTokens[1].trim().replaceAll("(,)*$", "");
 

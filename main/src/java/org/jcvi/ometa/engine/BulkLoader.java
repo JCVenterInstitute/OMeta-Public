@@ -111,6 +111,9 @@ public class BulkLoader {
 
                     iterationResult = loadingEngine.batchLoad();
 
+                    //Move csv file under error folder if it is not successfully processed
+                    if (iterationResult == 0) outputDirectoryPath += File.separator + Constants.DIRECTORY_ERROR_BULK;
+
                     File outputDirectory = new File(outputDirectoryPath); // {storage path}/{userName}/{date}/processed/{fileName}
                     outputDirectory.mkdirs();
                     FileUtils.copyDirectory(processingDirectory, outputDirectory);
