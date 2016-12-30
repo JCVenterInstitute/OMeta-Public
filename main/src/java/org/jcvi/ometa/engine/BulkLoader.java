@@ -76,7 +76,7 @@ public class BulkLoader {
 
                     // process sequence file
                     String eventName = this.getEventNameFromFile(currentFile);
-                    if(eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) && eventName.contains(Constants.EVENT_SEQUENCE_SUBMISSION)) {
+                    if(eventName != null && eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) && eventName.contains(Constants.EVENT_SEQUENCE_SUBMISSION)) {
                         if(sequenceHelper.processSequencePair(currentFile, currentUserId) != 1) {
                             continue;
                         }
@@ -204,15 +204,15 @@ public class BulkLoader {
 
         if(lineIterator.hasNext()) {
             String currLine = lineIterator.nextLine();
-            if(!currLine.startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && currLine.contains(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER)) {
-                throw new Exception(ErrorMessages.BULK_EVENT_TYPE_MISSING);
+
+            if(currLine.startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && currLine.contains(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER)) {
+                String eventNameLine = currLine;
+                String[] eventTypeTokens = eventNameLine.split(":");
+
+                if (eventTypeTokens.length == 2 && !eventTypeTokens[1].isEmpty()) {
+                    eventName = eventTypeTokens[1].trim().replaceAll("(,)*$", "");
+                }
             }
-            String eventNameLine = currLine;
-            String[] eventTypeTokens = eventNameLine.split(":");
-            if(eventTypeTokens.length != 2 || eventTypeTokens[1].isEmpty()) {
-                throw new Exception(ErrorMessages.BULK_EVENT_TYPE_FORMAT);
-            }
-            eventName = eventTypeTokens[1].trim().replaceAll("(,)*$", "");
         }
 
         return eventName;

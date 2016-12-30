@@ -141,6 +141,12 @@ public class BeanWriter {
         return lastSampleName;
     }
 
+    public void setSubmitter(String submitterId) throws Exception {
+        if(submitterId != null && !submitterId.isEmpty()) { //manually set createdBy for bulk load
+            this.submitter = this.readEjb.getActorByUserName(submitterId);
+        }
+    }
+
     /**
      * Writes back multiple objects of assorted type, rather than a single type of file.
      *

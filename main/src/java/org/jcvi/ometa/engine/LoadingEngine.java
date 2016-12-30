@@ -401,18 +401,27 @@ public class LoadingEngine {
                 String currLine = lineIterator.nextLine();
 
                 if(lineCount == 1) {
-                    if(!currLine.startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && currLine.contains(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER)) {
-                        throw new Exception("event type is missing in the data file.");
-                    }
-                    eventNameLine = currLine;
-                    String[] eventTypeTokens = eventNameLine.split(":");
-                    if(eventTypeTokens.length != 2 || eventTypeTokens[1].isEmpty()) {
-                        throw new Exception(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + " must be '" + Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + ":<eventName>'");
-                    }
-                    eventName = eventTypeTokens[1].trim().replaceAll("(,)*$", "");
+                    try {
+                        if (!currLine.startsWith(Constants.TEMPLATE_COMMENT_INDICATOR) && currLine.contains(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER)) {
+                            throw new Exception("event type is missing in the data file.");
+                        }
+                        eventNameLine = currLine;
+                        String[] eventTypeTokens = eventNameLine.split(":");
+                        if (eventTypeTokens.length != 2 || eventTypeTokens[1].isEmpty()) {
+                            throw new Exception(Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + " must be '" + Constants.TEMPLATE_EVENT_TYPE_IDENTIFIER + ":<eventName>'");
+                        }
+                        eventName = eventTypeTokens[1].trim().replaceAll("(,)*$", "");
 
-                    processedWriter.write(eventNameLine + "\n");
-                    failedWriter.write(eventNameLine + "\n");
+                        processedWriter.write(eventNameLine + "\n");
+                        failedWriter.write(eventNameLine + "\n");
+                    } catch (Exception ex) {
+                        failedWriter.write(currLine + "\n");
+                        logWriter.write(String.format("[%d] failed : ", ++failedCount));
+                        logWriter.write((ex.getCause() == null ? ex.getMessage() : ex.getCause().getMessage()) + "\n");
+
+                        writer.setSubmitter((usage.getSubmitter() != null ? usage.getSubmitter() : userName));
+                        processedLineCount++;
+                    }
                 } else if(lineCount == 2) {
                     headerLine = currLine;
                     processedWriter.write(currLine + "\n");
@@ -440,16 +449,19 @@ public class LoadingEngine {
                             success = 0;
                             throw iae;
                         }catch (Exception ex) {
+                            boolean isLogged = false;
                             failedWriter.write(currLine + "\n");
                             logWriter.write(String.format("[%d] failed : ", ++failedCount));
-
 
                             if(ex.getClass() == javax.ejb.EJBException.class) {
                                 String accessError = ex.getMessage();
                                 if(accessError != null && accessError.contains("java.lang.IllegalAccessError")) {
                                     logWriter.write(ErrorMessages.DENIED_USER_EDIT_MESSAGE + "\n");
+                                    isLogged = true;
                                 }
-                            } else {
+                            }
+
+                            if(!isLogged){
                                 logWriter.write((ex.getCause() == null ? ex.getMessage() : ex.getCause().getMessage()) + "\n");
                             }
                         }
