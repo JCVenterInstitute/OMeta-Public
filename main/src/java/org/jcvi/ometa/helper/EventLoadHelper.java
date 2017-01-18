@@ -343,7 +343,12 @@ public class EventLoadHelper {
                     }
 
                     if(this.originalPath != null) { //check if it is bulk upload
-                        fBean.setUploadFilePath(fBean.getAttributeValue().split(","));
+                        String[] filePathArr = fBean.getAttributeValue().split(",");
+
+                        //trim spaces from the beginning and end of file paths
+                        for (int i = 0; i < filePathArr.length; i++) filePathArr[i] = filePathArr[i].trim();
+
+                        fBean.setUploadFilePath(filePathArr);
                         this.processFileUpload(fBean, projectName, sampleName, isSequenceSubmission, sampleIdentifier, true);
                     }
                 } else if(attributeName.equals(Constants.ATTR_SAMPLE_IDENTIFIER)) {
@@ -434,7 +439,7 @@ public class EventLoadHelper {
                 File upload = new File(tempFilePath);
 
                 if (!upload.exists() || !upload.canRead() || !upload.isFile()) {
-                    throw new Exception("file under '" + tempFilePath + "' does not exist!");
+                    throw new Exception("file '" + fBean.getUploadFilePath()[index] + "' does not exist! Please check your submission!");
                 }
 
                 if (isSequenceSubmission) {
