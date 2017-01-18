@@ -225,6 +225,7 @@ var _utils = {
             //options
             var isDesc = (_ma.desc && _ma.desc !== '');
             var isRequired = _ma.requiredDB;
+            var isDictionary = _ma.dictionary;
             var hasOntology = (_ma.ontology && _ma.ontology !== '');
             var $attributeTr = $('<tr class="gappedTr"/>');
 
@@ -284,9 +285,15 @@ var _utils = {
                   options = '<option>Select '+parentFieldName +' </option>';
                   hasDependantDict = true;
                 } else {
-                  $.each(givenOptions.split(';'), function (o_i, o_v) {
-                    options += '<option value="' + o_v.split(" - ")[0] + '">' + o_v + '</option>';
-                  });
+                  if(isDictionary) {
+                    $.each(givenOptions.split(';'), function (o_i, o_v) {
+                      options += '<option value="' + o_v.split(" - ")[0] + '">' + o_v + '</option>';
+                    });
+                  } else {
+                    $.each(givenOptions.split(';'), function (o_i, o_v) {
+                      options += '<option value="' + o_v + '">' + o_v + '</option>';
+                    });
+                  }
                 }
               }
 

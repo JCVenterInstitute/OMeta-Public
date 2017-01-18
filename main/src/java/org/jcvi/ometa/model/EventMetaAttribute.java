@@ -66,6 +66,8 @@ public class EventMetaAttribute implements MetaAttributeModelBean, ProjectRefere
     private String ontology;
     private Integer order;
 
+    private boolean dictionary;
+
 
     @Id
     @Column(name="evenma_id", nullable=false)
@@ -123,6 +125,16 @@ public class EventMetaAttribute implements MetaAttributeModelBean, ProjectRefere
     @JCVI_BeanPopulator_Column
     public void setRequired(Boolean required) {
         this.required = required;
+    }
+
+    @Transient
+    public boolean isDictionary() {
+        return dictionary;
+    }
+
+    @JCVI_BeanPopulator_Column
+    public void setDictionary(boolean dictionary) {
+        this.dictionary = dictionary;
     }
 
     /**
