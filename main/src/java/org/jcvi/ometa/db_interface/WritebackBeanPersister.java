@@ -194,8 +194,6 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
         } catch (Exception ex) {
             sessionAndTransactionManager.rollBackTransaction();
             throw ex;
-        } finally {
-            sessionAndTransactionManager.closeSession();
         }
     }
 
