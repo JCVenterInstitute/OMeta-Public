@@ -31,11 +31,7 @@ import org.jcvi.ometa.configuration.InputBeanType;
 import org.jcvi.ometa.helper.EventLoadHelper;
 import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.model.Dictionary;
-import org.jcvi.ometa.utils.Constants;
-import org.jcvi.ometa.utils.PresentationActionDelegate;
-import org.jcvi.ometa.utils.TemplatePreProcessingUtils;
-import org.jcvi.ometa.utils.UploadActionDelegate;
-import org.jcvi.ometa.validation.ModelValidator;
+import org.jcvi.ometa.utils.*;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -157,6 +153,11 @@ public class BeanWriter {
         MultiLoadParameter parameterObject = this.createMultiLoadParameterWithCollector(collector);
         List<String> projectsToSecure = this.getProjectsToSecure(parameterObject);
         writeEjb.loadAll(projectsToSecure, parameterObject);
+    }
+
+    public void runJsonProducer() throws Exception {
+        JsonProducer jsonProducerBean = new JsonProducer(readEjb);
+        jsonProducerBean.generateJson();
     }
 
     public void readProjectData(String filePath, String projectName, String eventName) throws  Exception{

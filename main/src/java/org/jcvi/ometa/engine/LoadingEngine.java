@@ -78,6 +78,8 @@ public class LoadingEngine {
                 engine.digestMultiDirectory();
             } else if(usage.isDownloadData()){
                 engine.downloadData();
+            } else if(usage.isJson()){
+                engine.jsonProducer();
             } else {
                 engine.loadEventFile();
                 //engine.dispatchByFilename();
@@ -535,6 +537,19 @@ public class LoadingEngine {
         }
     }
 
+    public void jsonProducer() throws Exception {
+        String userName = usage.getUsername();
+        String passWord = usage.getPassword();
+        String serverUrl = usage.getServerUrl();
+
+
+        try {
+            BeanWriter writer = new BeanWriter(serverUrl, userName, passWord);
+            writer.runJsonProducer();
+        } catch (Exception ex) {
+            throw ex;
+        }
+    }
 
     public static String getNameWoExt(String name) {
         int index = name.lastIndexOf(".");
