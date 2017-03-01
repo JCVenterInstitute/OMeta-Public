@@ -62,14 +62,20 @@
             <h1>Create Project</h1>
           </div>
 
-          <div id="HeaderPane">
-            <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+          <div id="HeaderPane" style="margin:15px 0 0 30px;">
+            <div id="errorMessagesPanel" style="margin-top:15px;margin-bottom: 15px;"></div>
             <s:if test="hasActionErrors()">
-              <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
+              <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
+                <div class="alert_info" onclick="$('.alert_info').remove();">
+                  <strong style="color: #ffffff;background-color: #a90329;padding: 3px;border-color: #900323;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionErrors'><s:property/></s:iterator></strong>
+                </div>
+              </div>
             </s:if>
             <s:if test="hasActionMessages()">
-              <div class="alert_info" onclick="$('.alert_info').remove();">
-                <strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
+              <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
+                <div class="alert_info" onclick="$('.alert_info').remove();">
+                  <strong style="color: #31708f;background-color: #d9edf7;padding: 3px;border-color: #bce8f1;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
+                </div>
               </div>
             </s:if>
           </div>
