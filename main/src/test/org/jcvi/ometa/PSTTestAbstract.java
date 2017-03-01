@@ -72,7 +72,7 @@ public abstract class PSTTestAbstract {
         this.getUserCrendential();
         ProjectSampleEventWritebackBusiness pseb = (new EjbBuilder()).getEjb(
                 UploadActionDelegate.EJB_NAME,
-                (type.equals("prod")?"jnp://localhost:1399":"jnp://localhost:1299"),
+                (type.equals("prod")?"http-remoting://localhost:8080":"http-remoting://localhost:8080"),
                 userPassProvider.getUsername(),
                 userPassProvider.getPassword(),
                 Logger.getLogger(this.getClass().getName())
@@ -85,7 +85,7 @@ public abstract class PSTTestAbstract {
         this.getUserCrendential();
         ProjectSampleEventPresentationBusiness pseb = (new EjbBuilder()).getEjb(
                 PresentationActionDelegate.EJB_NAME,
-                (type.equals("prod")?"jnp://localhost:1399":"jnp://localhost:1299"),
+                (type.equals("prod")?"http-remoting://localhost:8080":"http-remoting://localhost:8080"),
                 userPassProvider.getUsername(),
                 userPassProvider.getPassword(),
                 Logger.getLogger(this.getClass().getName())
