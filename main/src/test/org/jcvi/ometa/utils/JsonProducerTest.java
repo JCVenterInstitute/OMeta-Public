@@ -41,14 +41,14 @@ public class JsonProducerTest extends PSTTestAbstract {
     }
 
     private void helper() {
-        String projectNames = "Adenovirus,Arbovirus,CDC+Viral+Collection,Coronavirus,Norovirus,Paramyxovirus,Rotavirus";
+        String projectNames = "GCID Acinetobacter,DEMO_WildFly";
         //String attributes = "Project Name,Collaborator,Collaborator Institute,Study Objective,Planned Samples,Received Samples,Discarded Samples,In Progress Samples,Published Samples,End Date,Failed QC";
-        String attributes = "Project Name,Failed QC";
+        String attributes = "Organism,Aim,Category,External Identifier,Project Code,Sample Status,Sample Name,Project Leader,BioProject ID,BioSample ID,BioSample_Accession,Taxonomy ID,Project ID,sra accession,sra date,sra status,trace count,trace date,wgs accession,wgs date,wgs status,annotation accession,annotation date,annotation status,dbSNP accession,dbSNP date,dbSNP status,Project Group, Isolate Repository Accession,Isolate Repository Type,Isolate Repository Status,Anticipated final destination";
         //String screen = "Project Name,Collaborator,Collaborator Institute,Study Objective,Planned Samples,Received Samples,Discarded Samples,In Progress Samples,Published Samples,End Date,Failed QC";
-        String screen = "Project Name,Failed QC";
-        String sorting = "";
-        String fileName = "otherViral";
-        String filePath = "/Users/hkim/Stuffs/test/pst";
+        String screen = "Organism,Aim,Category,External Identifier,Project Code,Sample Status,Sample Name,Project Leader,BioProject ID,BioSample ID,Anticipated final destination";
+        String sorting = "13,1,0";
+        String fileName = "gscmsc";
+        String filePath = "H:/test";
 
         producer.jsonHelper(projectNames, attributes, screen, sorting, fileName, filePath, "some");
     }
