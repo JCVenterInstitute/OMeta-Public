@@ -215,12 +215,15 @@ public class JsonProducer implements Runnable {
             /*------------ XLS Part END ------------*/
 
             List<String> attributeList = new ArrayList<String>();
-
+            String bioSampleId = "BioSample ID";
             for (String tempAttribute : parameterizedAttributes) {
-                attributeList.add(tempAttribute);
-                headerCell = singleRow.createCell(cellIndex++);
-                headerCell.setCellValue(tempAttribute);
-                headerCell.setCellStyle(style);
+                tempAttribute = (tempAttribute.equals("BioSample_Accession") || tempAttribute.equals("BioSample Accession")) ? bioSampleId : tempAttribute;
+                if(!attributeList.contains(tempAttribute)) {
+                    attributeList.add(tempAttribute);
+                    headerCell = singleRow.createCell(cellIndex++);
+                    headerCell.setCellValue(tempAttribute);
+                    headerCell.setCellStyle(style);
+                }
             }
 
             if (screenAttributes == null || screenAttributes.equals("") || screenAttributes.equals("ALL")) {
@@ -313,13 +316,19 @@ public class JsonProducer implements Runnable {
                             SampleMetaAttribute sampleMeta = sa.getMetaAttribute();
                             tempLookupValue = sampleMeta.getLookupValue();
                             Object sav = ModelValidator.getModelValue(tempLookupValue, sa);
-                            sampleAttrMap.put(tempLookupValue.getName(), sav);
+                            String tempLookupValueName = tempLookupValue.getName();
+
+                            //assign biosample_accession value to BioSample ID
+                            if(tempLookupValueName.equals("BioSample_Accession") || tempLookupValueName.equals("BioSample Accession"))
+                                tempLookupValueName = bioSampleId;
+
+                            sampleAttrMap.put(tempLookupValueName, sav);
 
                             if(sampleMeta.getLabel() != null) { //add another key-value pair for a labeled attribute
                                 sampleAttrMap.put(sampleMeta.getLabel(), sav);
                             }
 
-                            if(SAMPLE_STATUS.equals(tempLookupValue.getName())) {
+                            if(SAMPLE_STATUS.equals(tempLookupValueName)) {
                                 String currStatus = (String)sav;
                                 if(!statusList.contains(currStatus)) //add new status value
                                     statusList.add(currStatus);
