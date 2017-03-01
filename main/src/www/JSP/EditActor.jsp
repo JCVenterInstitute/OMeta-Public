@@ -99,7 +99,7 @@
               </div>
               <div id="submitDiv" cssStyle="margin:15px 10px 5px 200px;width:100%;">
                 <input type="button" class="btn btn-primary" onclick="javascript:loadActor();" id="loadButton" value="Update"/>
-                <input type="button" class="btn btn-info" tyle="margin-left:15px;" onclick="self.close()" value="Cancel" />
+                <a href="actorRole.action" class="btn btn-info">Back</a>
               </div>
             </div>
           </div>
