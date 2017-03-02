@@ -79,6 +79,33 @@ public class EjbBuilder {
         }
         return pseb;
     }
+    public <T> T getEjb(
+            Context ctx, String ejbName, String server, String username, String password, Logger logger) {
+        T pseb = null;
+        int i = 0;
+        for ( i = 0; i < NUM_RETRIES; i++ ) {
+            try {
+                logger.info("Getting EJB " + ejbName + " off server " + server + " for user " + username);
+
+                ctx = getContext( server, username, password, ejbName, logger );
+                pseb = (T)ctx.lookup( ejbName );
+                if ( pseb == null ) {
+                    throw new Exception(
+                            "Found null instead of EJB " + ejbName + " on server " + server + " after " + NUM_RETRIES );
+                }
+                else {
+                    logger.info("Found EJB " + ejbName + " on server " + server + " after " + i + " retries." );
+                }
+                if ( pseb != null ) {
+                    break;
+                }
+            } catch ( Exception ex ) {
+                logger.error("Failed to pickup EJB dependency: " + ejbName );
+                throw new RuntimeException(ex);
+            }
+        }
+        return pseb;
+    }
 
     /** Gets an initial context already setup to do server login. */
     public Context getContext(
@@ -93,7 +120,7 @@ public class EjbBuilder {
         Properties jndiProps = new Properties();
         jndiProps.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.remote.client.InitialContextFactory");
         jndiProps.put( Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming" );
-        jndiProps.put("jboss.naming.client.ejb.context", true);
+        jndiProps.put("org.jboss.ejb.client.scoped.context", true);
         jndiProps.put(Context.PROVIDER_URL, ejbServerName);
 
         if ( username != null ) {

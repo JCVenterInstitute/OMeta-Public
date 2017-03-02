@@ -33,6 +33,8 @@ import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.model.Dictionary;
 import org.jcvi.ometa.utils.*;
 
+import javax.naming.Context;
+import javax.naming.NamingException;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.*;
@@ -48,6 +50,7 @@ import java.util.*;
 public class BeanWriter {
     private Logger logger = Logger.getLogger(BeanWriter.class);
 
+    private Context ctx = null;
     private ProjectSampleEventWritebackBusiness writeEjb;
     private ProjectSampleEventPresentationBusiness readEjb;
 
@@ -56,10 +59,20 @@ public class BeanWriter {
     /** Construct with all stuff needed for subsequent calls. */
     public BeanWriter(String server, String userName, String password) {
         UploadActionDelegate writeDelegate = new UploadActionDelegate();
-        writeEjb = (ProjectSampleEventWritebackRemote)writeDelegate.getEjb(UploadActionDelegate.EJB_NAME, server, userName, password, logger);
+        writeEjb = (ProjectSampleEventWritebackRemote)writeDelegate.getEjb(ctx, UploadActionDelegate.EJB_NAME, server, userName, password, logger);
 
         PresentationActionDelegate readDelegate = new PresentationActionDelegate();
-        readEjb = (ProjectSampleEventPresentationRemote)readDelegate.getEjb(PresentationActionDelegate.EJB_NAME, server, userName, password, logger);
+        readEjb = (ProjectSampleEventPresentationRemote)readDelegate.getEjb(ctx, PresentationActionDelegate.EJB_NAME, server, userName, password, logger);
+    }
+
+    public void closeContext() throws Exception {
+        if(ctx != null) {
+            try {
+                ctx.close();
+            } catch (NamingException ex) {
+                throw new Exception("Ejb context cannot be closed : " + ex.getMessage());
+            }
+        }
     }
 
     public void writePMAs(File... files) throws Exception {

@@ -390,15 +390,15 @@ public class LoadingEngine {
 
         int processedLineCount = 0;
         try {
-            BeanWriter writer = new BeanWriter(serverUrl, userName, passWord);
-
             LineIterator lineIterator = FileUtils.lineIterator(eventFile);
             int lineCount = 0;
 
             String eventNameLine = null;
             String eventName = null;
             String headerLine = null;
+            Actor submitter = null;
             while(lineIterator.hasNext()) {
+                BeanWriter writer = new BeanWriter(serverUrl, userName, passWord);
                 ++lineCount;
                 String currLine = lineIterator.nextLine();
 
@@ -473,14 +473,17 @@ public class LoadingEngine {
                         processedLineCount++;
                     }
                 }
+
+                writer.closeContext();
+                if(submitter == null) submitter = writer.getSubmitter();
+                Thread.sleep(1000);
             }
             usage.setTotalCount(processedLineCount);
             usage.setSuccessCount(successCount);
             usage.setFailCount(failedCount);
             usage.setLogFileName(logFile.getName());
             usage.setFailFileName(failedFile.getName());
-            if(writer.getSubmitter() != null) {
-                Actor submitter = writer.getSubmitter();
+            if(submitter != null) {
                 usage.setSubmitterEmail(submitter.getEmail());
                 usage.setSubmitterName(submitter.getFirstName() + " " + submitter.getLastName());
             }
