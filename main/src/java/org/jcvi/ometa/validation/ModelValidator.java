@@ -122,11 +122,13 @@ public class ModelValidator {
         StringBuilder listBuilder = new StringBuilder();
         boolean sampleRequired = false;
         for (EventMetaAttribute ema : emaList) {
-            sampleRequired |= ema.isSampleRequired();
-            if (ema.isSampleRequired()) {
-                if (listBuilder.length() > 0)
-                    listBuilder.append(",");
-                listBuilder.append(ema.getAttributeName());
+            if(ema.isSampleRequired() != null) {
+                sampleRequired |= ema.isSampleRequired();
+                if (ema.isSampleRequired()) {
+                    if (listBuilder.length() > 0)
+                        listBuilder.append(",");
+                    listBuilder.append(ema.getAttributeName());
+                }
             }
         }
 
