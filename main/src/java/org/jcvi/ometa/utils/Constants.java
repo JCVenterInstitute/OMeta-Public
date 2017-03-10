@@ -93,13 +93,13 @@ public class Constants {
     public final static String[] DATE_ALL_ALLOWED_FORMATS = {
             "yyyy",
             "yyyy-MM-dd",
-            "yyyy-MMM-DD",
+            "yyyy-MMM-dd",
             "yyyy-MMM"
     };
     public final static String[] DPCC_DATE_ALL_POSSIBLE_FORMATS = {
             "yyyy",
             "MMM-yyyy",
-            "DD-MMM-yyyy"
+            "dd-MMM-yyyy"
     };
 
     public static enum  serologyTestResult {P,N,U};
