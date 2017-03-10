@@ -30,10 +30,7 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A nexus of validation methods, to test all manner of inputs for validity.  Here, the rules are enforced, and
@@ -185,6 +182,7 @@ public class ModelValidator {
             combinedErrors.append(rowNum).append(":").append("project name is required but not given.\n");
             passed = false;
         } else {
+            if(projectNames == null)  projectNames = new ArrayList<>();
             projectNames.add(projectName);
         }
 
@@ -198,7 +196,7 @@ public class ModelValidator {
                 passed = false;
             }
         } else {
-            if (bean.getProjectLevel() > 1) {
+            if (bean.getProjectLevel() != null && bean.getProjectLevel() > 1) {
                 combinedErrors
                         .append("Project ")
                         .append(projectName)
@@ -313,17 +311,19 @@ public class ModelValidator {
 
     public static Object getModelValue(LookupValue lookupValue, AttributeModelBean model) {
         Object rtnValue = null;
-        String dataType = lookupValue.getDataType();
-        if(dataType.equals(DATE_DATA_TYPE)) {
-            rtnValue = model.getAttributeDateValue();
-        } else if(dataType.equals(INT_DATA_TYPE)) {
-            rtnValue = model.getAttributeIntValue();
-        } else if(dataType.equals(STRING_DATA_TYPE) || dataType.equals(FILE_DATA_TYPE)) {
-            rtnValue = model.getAttributeStringValue();
-        } else if (dataType.equals(URL_DATA_TYPE)) {
-            rtnValue = model.getAttributeStringValue();
-        } else {
-            rtnValue = model.getAttributeFloatValue();
+        if(lookupValue != null) {
+            String dataType = lookupValue.getDataType();
+            if (dataType.equals(DATE_DATA_TYPE)) {
+                rtnValue = model.getAttributeDateValue();
+            } else if (dataType.equals(INT_DATA_TYPE)) {
+                rtnValue = model.getAttributeIntValue();
+            } else if (dataType.equals(STRING_DATA_TYPE) || dataType.equals(FILE_DATA_TYPE)) {
+                rtnValue = model.getAttributeStringValue();
+            } else if (dataType.equals(URL_DATA_TYPE)) {
+                rtnValue = model.getAttributeStringValue();
+            } else {
+                rtnValue = model.getAttributeFloatValue();
+            }
         }
         return rtnValue;
     }
