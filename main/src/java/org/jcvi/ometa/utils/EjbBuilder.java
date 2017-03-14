@@ -120,7 +120,9 @@ public class EjbBuilder {
         Properties jndiProps = new Properties();
         jndiProps.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.remote.client.InitialContextFactory");
         jndiProps.put( Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming" );
-        jndiProps.put("org.jboss.ejb.client.scoped.context", true);
+        jndiProps.put("jboss.naming.client.ejb.context", true);
+        jndiProps.put("jboss.naming.client.connect.options.org.xnio.Options.SASL_POLICY_NOANONYMOUS", "false");
+        jndiProps.put("jboss.naming.client.connect.options.org.xnio.Options.SASL_POLICY_NOPLAINTEXT", "false");
         jndiProps.put(Context.PROVIDER_URL, ejbServerName);
 
         if ( username != null ) {
