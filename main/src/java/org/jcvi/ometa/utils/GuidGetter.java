@@ -64,8 +64,7 @@ public class GuidGetter {
                 }
 
                 String hostName = (guidHostName == null ? java.net.InetAddress.getLocalHost().getHostName() : guidHostName);
-                 hostName = "snap";
-                String port = (guidPort == null ? "8380" : guidPort);
+                String port = (guidPort == null ? "8080" : guidPort);
                 retVal = guidBlock.getGuidBlock(DEFAULT_GUID_NAMESPACE, String.format(DEFAULT_GUID_HTTP_PREFIX, hostName, port), 1);
             } catch ( Exception ex ) {
                 latestException = ex;
