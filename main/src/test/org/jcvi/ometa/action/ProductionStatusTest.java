@@ -43,7 +43,7 @@ public class ProductionStatusTest extends PSTTestAbstract {
     public void main() {
         //this.doStatus();
         //this.doExcel();
-        this.ajax();
+        //this.ajax();
     }
 
     private void ajax() {

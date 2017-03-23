@@ -73,8 +73,8 @@ public class LoadingEngineTest extends PSTTestAbstract {
     //building one big test to minimize user inputs
     @Test //(expected = FileNotFoundException.class)
     public void bigTest() throws Exception {
-        this.testProject();
-        this.testPMA();
+        //this.testProject();
+        //this.testPMA();
     }
 
     private void testProject() throws Exception {

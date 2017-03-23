@@ -25,7 +25,7 @@ public class EventLoaderTest extends PSTTestAbstract {
 
     @Test
     public void main() throws Exception {
-        this.template();
+        //this.template();
     }
 
     private void template() throws Exception {

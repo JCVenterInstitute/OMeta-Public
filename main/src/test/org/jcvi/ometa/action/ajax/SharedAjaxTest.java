@@ -25,7 +25,7 @@ public class SharedAjaxTest extends PSTTestAbstract {
 
     @Test
     public void main() throws Exception {
-        this.sa();
+        //this.sa();
     }
 
     private void project() {

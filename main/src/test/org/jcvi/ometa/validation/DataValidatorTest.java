@@ -2,6 +2,7 @@ package org.jcvi.ometa.validation;
 
 import org.jcvi.ometa.model.SampleAttribute;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.text.DateFormat;
@@ -17,10 +18,10 @@ import static org.junit.Assert.*;
  * Created by mkuscuog on 3/10/2017.
  */
 public class DataValidatorTest {
-    DataValidator dataValidator;
+    static DataValidator dataValidator;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUpBeforeAll() throws Exception {
         dataValidator = new DataValidator();
     }
 

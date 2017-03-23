@@ -13,6 +13,6 @@ public class LDAPHelperTest {
 
     @Test
     public void main() throws Exception {
-        helper.createNewUser("hkim1", "test", "test", "Play5888", "hkim500@yahoo.com", "410-000-0000", "some description");
+        //helper.createNewUser("hkim1", "test", "test", "Play5888", "hkim500@yahoo.com", "410-000-0000", "some description");
     }
 }

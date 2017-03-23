@@ -15,6 +15,6 @@ public class LDAPTest {
     @Test
     public void main() throws Exception {
         //ldap.updatePassword("taccount", "test123", "123123");
-        ldap.resetPassword("taccount", "Hyunsoo Kim", "hkim@jcvi.org");
+        //ldap.resetPassword("taccount", "Hyunsoo Kim", "hkim@jcvi.org");
     }
 }

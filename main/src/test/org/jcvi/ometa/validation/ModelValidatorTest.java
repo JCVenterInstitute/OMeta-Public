@@ -1,7 +1,7 @@
 package org.jcvi.ometa.validation;
 
 import org.jcvi.ometa.model.*;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
  * Created by mkuscuog on 3/10/2017.
  */
 public class ModelValidatorTest {
-    ModelValidator modelValidator;
+    static ModelValidator modelValidator;
     MessageFormat EXTRANEOUS_SAMPLE_ERR_MSG_FMT =
             new MessageFormat("Event {0} requires no sample, but sample was given.");
     MessageFormat NO_SAMPLE_ERR_MSG_FMT =
@@ -29,8 +29,8 @@ public class ModelValidatorTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUpBeforeAll() throws Exception {
         modelValidator = new ModelValidator();
     }
 

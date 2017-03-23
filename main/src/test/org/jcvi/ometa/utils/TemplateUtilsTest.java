@@ -16,6 +16,6 @@ public class TemplateUtilsTest {
     @Test
     public void main() throws Exception {
         String filePath = "/Users/movence/works/test/ometa/loader_app/dpcc/1135954704154_141001_Final-ReportNIH_Apr2014_Sep2014_ErasmusMC_Verhagen_org.csv";
-        utils.parseEventFile("some.csv", new File(filePath), null, false, true);
+        //utils.parseEventFile("some.csv", new File(filePath), null, false, true);
     }
 }
