@@ -73,6 +73,7 @@
             <url-pattern>/forceLoginForProductionStatus.action</url-pattern>
             <url-pattern>/forceLoginForEventDetails.action</url-pattern>
             <url-pattern>/forceLoginForEventHistory.action</url-pattern>
+            <url-pattern>/forceLoginForJsonManagement.action</url-pattern>
 
             <url-pattern>/eventDetail.action</url-pattern>
             <url-pattern>/JSP/EventDetail.jsp</url-pattern>
@@ -118,6 +119,9 @@
             <url-pattern>/projectdetail.action</url-pattern>
 
             <url-pattern>/gcidMetadata.action</url-pattern>
+
+            <url-pattern>/jsonManagement.action</url-pattern>
+            <url-pattern>/JSP/JsonManagement.jsp</url-pattern>
 
         </web-resource-collection>
         <auth-constraint>

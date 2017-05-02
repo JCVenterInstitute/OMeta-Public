@@ -94,6 +94,14 @@ var utils = {
       return valArr.indexOf($(this).text()) >= 0 || valArr.indexOf($(this).val()) >= 0;
     }).attr('selected', true);
   },
+  multiSelectWithNode: function($node, val) {
+    var valueArr = val.split(",");
+
+    for(var j in valueArr){
+      if(valueArr[j].charAt(0) == ' ') valueArr[j] = valueArr[j].replace(" ", "");
+      $node.find('select').multipleSelect('setSelects', valueArr);
+    }
+  },
   listToOptions: function(l, t, k, k2) {
     var os='', o=t==='vv'?vs.vvoption:vs.vnoption;
     $.each(l, function(i1,v1) {
