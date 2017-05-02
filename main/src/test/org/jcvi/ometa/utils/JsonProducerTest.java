@@ -34,7 +34,7 @@ public class JsonProducerTest extends PSTTestAbstract {
     JsonProducer producer = null;
 
     @Test
-    public void doJson() {
+    public void doJson() throws Exception{
         producer = new JsonProducer(this.getReadEjb("int"));
         this.whole();
         this.helper();
@@ -53,7 +53,7 @@ public class JsonProducerTest extends PSTTestAbstract {
         producer.jsonHelper(projectNames, attributes, screen, sorting, fileName, filePath, "some");
     }
 
-    private void whole() {
+    private void whole() throws Exception{
         producer.generateJson();
     }
 }

@@ -57,6 +57,9 @@ public class Constants {
     public static final String CONFIG_GCIDMETADATA_OUTPUTATTR_FILEPATH = "ometa.gcidmetadata.outputattr.filepath";
     public static final String CONFIG_GCIDMETADATA_BIOPROJECTFILE_FILEPATH = "ometa.gcidmetadata.bioprojectfile.filepath";
     public static final String CONFIG_GCIDMETADATA_ATTRMAPPING_FILEPATH = "ometa.gcidmetadata.attrmapping.filepath";
+    public static final String CONFIG_JSON_FILE_PATH = "json.file.path";
+    public static final String CONFIG_KINGDOM_FILE_PATH = "kingdom.file.path";
+
 
     public static final String PRODUCTION_DATABASE = "production";
     public static final String DEVELOPMENT_DATABASE = "development";

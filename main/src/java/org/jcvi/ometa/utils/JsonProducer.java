@@ -21,6 +21,11 @@
 
 package org.jcvi.ometa.utils;
 
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.builder.fluent.PropertiesBuilderParameters;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -36,6 +41,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -55,6 +62,8 @@ public class JsonProducer implements Runnable {
     private final String AIM = "Aim";
     private final String PROD_SERVER_ADDRESS = "https://projectsampletracking.jcvi.org";
 
+    private List<String> errorList;
+
     public JsonProducer() {
         pseEjb = new PresentationActionDelegate().initializeEjb(Logger.getLogger(ReadBeanPersister.class), null);
     }
@@ -72,59 +81,70 @@ public class JsonProducer implements Runnable {
         }
     }
 
-    public void generateJson() {
-        try {
-            logger.info("[JsonProducer-MBean] JsonProducer process is starting.");
+    public List<String> generateJson() throws ConfigurationException, Exception{
+        logger.info("[JsonProducer-MBean] JsonProducer process is starting.");
+        errorList = new ArrayList<>(0);
 
-            Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-            String jsonUrls = props.getProperty("JSON.Urls");
-            String kingdomUrls = props.getProperty("KINGDOM.Urls");
+        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
+        String jsonFilePath = props.getProperty(Constants.CONFIG_JSON_FILE_PATH);
+        String kingdomFilePath = props.getProperty(Constants.CONFIG_KINGDOM_FILE_PATH);
 
-            if (jsonUrls != null && !jsonUrls.isEmpty()) {
-                String[] urls = jsonUrls.trim().split("\\$"); //create String array of sample tracking URLs
-                if (urls.length > 0) {
-                    for (String url : urls) {
-                        String projectNames = null;
-                        String attributes = null;
-                        String screenAttributes = null;
-                        String sorting = null;
-                        String fileName = null;
-                        String filePath = null;
-                        String domain = null;
+        PropertiesBuilderParameters params = new Parameters().properties()
+                .setFileName(jsonFilePath)
+                .setThrowExceptionOnMissing(false)
+                .setListDelimiterHandler(null)
+                .setIncludesAllowed(false);
 
-                        String[] urlAttributes = url.trim().split("\\&"); //attribute seperator
-                        for (String urlAttribute : urlAttributes) {
-                            String urlAttributeVal = (urlAttribute.substring(urlAttribute.indexOf("=") + 1, urlAttribute.length())).replaceAll("\\+", " ");
-                            if (urlAttribute.contains("projectNames="))
-                                projectNames = urlAttributeVal;
-                            else if (urlAttribute.contains("attributes="))
-                                attributes = urlAttributeVal;
-                            else if (urlAttribute.contains("sorting="))
-                                sorting = urlAttributeVal;
-                            else if (urlAttribute.contains("fileName="))
-                                fileName = urlAttributeVal;
-                            else if (urlAttribute.contains("filePath="))
-                                filePath = urlAttributeVal;
-                            else if (urlAttribute.contains("screenAttributes="))
-                                screenAttributes = urlAttributeVal;
-                            else if (urlAttribute.contains("domain"))
-                                domain = urlAttributeVal;
-                        }
+        FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class)
+                .configure(params);
 
-                        if (projectNames != null && attributes != null && fileName != null && filePath != null)
-                            jsonHelper(projectNames, attributes, screenAttributes, sorting, fileName, filePath, domain);
-                    }
-                }
-            }
+        PropertiesConfiguration config = builder.getConfiguration();
 
-            if(kingdomUrls!=null && !kingdomUrls.isEmpty()) {
-                this.kingdomHelper(kingdomUrls);
-            }
+        Iterator<String> fileNameKeys = config.getKeys("fileName");
+        while(fileNameKeys.hasNext()) {
+            String fileNameKey = fileNameKeys.next();
+            String index = fileNameKey.split("\\.")[1];
 
-            logger.info("[JsonProducer-MBean] JsonProducer process is done.");
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            String projectNames = config.getString("projectNames." + index);
+            String attributes = config.getString("attributes." + index);
+            String sorting = config.getString("sorting." + index);
+            String fileName = config.getString("fileName." + index);
+            String filePath = config.getString("filePath." + index);
+            String screenAttributes = config.getString("screenAttributes." + index);
+            String domain = config.getString("domain." + index);
+
+            if (projectNames != null && attributes != null && fileName != null && filePath != null)
+                jsonHelper(projectNames, attributes, screenAttributes, sorting, fileName, filePath, domain);
         }
+
+        //Update config for kingdom
+        params.setFileName(kingdomFilePath);
+        builder = new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class)
+                .configure(params);
+        config = builder.getConfiguration();
+
+        if(!config.isEmpty()) {
+            String filePath = config.getString("filePath");
+            Map<String, List<String>> kingdomProjectMap = new HashMap<>(0);
+
+            Iterator<String> kingdoms = config.getKeys("kingdom");
+            while(kingdoms.hasNext()) {
+                String kingdom = kingdoms.next();
+                String index = kingdom.split("\\.")[1];
+
+                String kingdomName = config.getString("kingdom." + index);
+                String projectNames = config.getString("projectNames." + index);
+
+                if(kingdomName != null && projectNames != null)
+                    kingdomProjectMap.put(kingdomName, Arrays.asList(projectNames.split(",")));
+            }
+
+            if(filePath != null && kingdomProjectMap.size() > 0)
+                this.kingdomHelper(filePath, kingdomProjectMap);
+        }
+
+        logger.info("[JsonProducer-MBean] JsonProducer process is done.");
+        return errorList;
     }
 
     public void jsonHelper(String projectNames, String attributes, String screenAttributes, String sorting, String fileName, String filePath, String domain) {
@@ -136,8 +156,10 @@ public class JsonProducer implements Runnable {
             if (!directory.exists() || !directory.isDirectory()) {
                 if ((new File(directory.getParent())).canWrite())
                     directory.mkdir();
-                else
+                else {
+                    errorList.add("JSON: " + filePath + " does not exist or not writable!");
                     throw new Exception();
+                }
             }
             //Json file Creation
             File tempFile = new File(filePath + File.separator + fileName + "_temp.json");
@@ -414,18 +436,23 @@ public class JsonProducer implements Runnable {
             bufferedWriter.close();
 
             if (tempFile.exists() && tempFile.length() > 0) {
-                File dataFile = new File(filePath + File.separator + fileName + ".json");
+                String jsonPath = filePath + File.separator + fileName + ".json";
+                Files.deleteIfExists(Paths.get(jsonPath));
+                File dataFile = new File(jsonPath);
                 tempFile.renameTo(dataFile);
 
                 FileOutputStream fileOut = new FileOutputStream(filePath + File.separator + fileName + ".xls");
                 workBook.write(fileOut);
                 fileOut.close();
-            } else
+            } else {
+                errorList.add("JSON: Failure in retrieving data for " + fileName + ". File does not exist or file size is zero.");
                 throw new Exception("Failure in retrieving data for " + fileName + ". File does not exist or file size is zero.");
+            }
 
             logger.info("[JsonProducer-MBean] JsonProducer process succeeded for " + projectNames);
         } catch (Exception ex) {
             logger.info("[JsonProducer-MBean] JsonProducer failed for " + projectNames);
+            errorList.add("JSON: " + ex.getMessage());
             ex.printStackTrace();
 
             /*if( hostName.contains( "dmzweb" ) ) { //Send error notification for DMZs only
@@ -438,29 +465,8 @@ public class JsonProducer implements Runnable {
         }
     }
 
-    private void kingdomHelper(String kingdomUrl) {
+    private void kingdomHelper(String filePath, Map<String, List<String>> kingdomProjectMap) {
         try {
-            String filePath = null;
-            Map<String, List<String>> kingdomProjectMap = null;
-
-            String[] urls = kingdomUrl.trim().split("\\$");
-            if (urls.length > 0) {
-                kingdomProjectMap = new HashMap<String, List<String>>();
-                for (String url : urls) {
-                    String kingdom = null;
-                    String[] urlAttributes = url.trim().split("\\&"); //attribute seperator
-                    for (String urlAttribute : urlAttributes) {
-                        String urlAttributeVal = (urlAttribute.substring(urlAttribute.indexOf("=") + 1, urlAttribute.length())).replaceAll("\\+", " ");
-                        if(urlAttribute.contains("filePath="))
-                            filePath=urlAttributeVal;
-                        else if(urlAttribute.contains("kingdom="))
-                            kingdom=urlAttributeVal;
-                        else if(urlAttribute.contains("projectNames="))
-                            kingdomProjectMap.put(kingdom, Arrays.asList(urlAttributeVal.split(",")));
-                    }
-                }
-            }
-
             //Normal status data retrieval
             LookupValue tempLookupValue;
 
@@ -615,8 +621,10 @@ public class JsonProducer implements Runnable {
             if (!directory.exists() || !directory.isDirectory()) {
                 if ((new File(directory.getParent())).canWrite())
                     directory.mkdir();
-                else
+                else {
+                    errorList.add("KINGDOM: " + filePath + " does not exist or not writable!");
                     throw new Exception();
+                }
             }
             //Json file Creation
             File tempFile = new File(filePath + File.separator + "kingdom_temp.json");
@@ -634,6 +642,7 @@ public class JsonProducer implements Runnable {
             logger.info("[JsonProducer-MBean] kingdomHelper process finished");
         } catch(Exception ex) {
             logger.info("[JsonProducer-MBean] kingdomHelper failed.");
+            errorList.add("KINGDOM: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
