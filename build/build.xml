@@ -35,7 +35,7 @@
     <!--jboss location from user build file -->
     <property file="./user_build_properties/${user.name}-build.properties" />
     <property name="jboss.deploy.local.dir" value="${jboss.local.server}/deploy"/>
-    <property name="compile.target" value="1.7" />
+    <property name="compile.target" value="1.8" />
 
     <!-- set global properties for this build -->
     <property name="base.dir" value="${basedir}/.."/>
@@ -309,6 +309,9 @@
                 <exclude name="${package.name}/model/**/*.class" />
             </fileset>
             <zipgroupfileset dir="${JBoss-Client.lib.dir}" includes="**/jettison-1.3.3.jar" />
+            <zipgroupfileset dir="${struts.lib.dir}" includes="**/commons-lang3-3.4.jar" />
+            <zipgroupfileset dir="${struts.lib.dir}" includes="**/commons-configuration2-2.1.1.jar" />
+            <zipgroupfileset dir="${struts.lib.dir}" includes="**/commons-beanutils-1.9.3.jar" />
         </jar>
     </target>
 
