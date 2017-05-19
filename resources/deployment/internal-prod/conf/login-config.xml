@@ -1,0 +1,362 @@
+<?xml version='1.0'?>
+
+<!-- The XML based JAAS login configuration read by the
+org.jboss.security.auth.login.XMLLoginConfig mbean. Add
+an application-policy element for each security domain.
+
+The outline of the application-policy is:
+<application-policy name="security-domain-name">
+  <authentication>
+    <login-module code="login.module1.class.name" flag="control_flag">
+      <module-option name = "option1-name">option1-value</module-option>
+      <module-option name = "option2-name">option2-value</module-option>
+      ...
+    </login-module>
+
+    <login-module code="login.module2.class.name" flag="control_flag">
+      ...
+    </login-module>
+    ...
+  </authentication>
+</application-policy>
+
+$Id: login-config.xml 87078 2009-04-09 14:23:47Z bstansberry@jboss.com $
+$Revision: 87078 $
+-->
+
+<policy>
+  <!-- Used by clients within the application server VM such as
+  mbeans and servlets that access EJBs.
+  -->
+  <application-policy name="client-login">
+    <authentication>
+      <login-module code="org.jboss.security.ClientLoginModule"
+        flag="required">
+         <!-- Any existing security context will be restored on logout -->
+         <module-option name="restore-login-identity">true</module-option>
+      </login-module>
+    </authentication>
+  </application-policy>
+
+  <!-- Security domains for testing new jca framework -->
+  <application-policy name="HsqlDbRealm">
+    <authentication>
+      <login-module code="org.jboss.resource.security.ConfiguredIdentityLoginModule"
+        flag="required">
+        <module-option name="principal">sa</module-option>
+        <module-option name="userName">sa</module-option>
+        <module-option name="password"></module-option>
+        <module-option name="managedConnectionFactoryName">jboss.jca:service=LocalTxCM,name=DefaultDS</module-option>
+      </login-module>
+    </authentication>
+  </application-policy>
+
+  <application-policy name="JmsXARealm">
+    <authentication>
+      <login-module code="org.jboss.resource.security.ConfiguredIdentityLoginModule"
+        flag="required">
+        <module-option name="principal">guest</module-option>
+        <module-option name="userName">guest</module-option>
+        <module-option name="password">guest</module-option>
+        <module-option name="managedConnectionFactoryName">jboss.jca:service=TxCM,name=JmsXA</module-option>
+      </login-module>
+    </authentication>
+  </application-policy>
+
+  <!-- A template configuration for the jmx-console web application. This
+    defaults to the UsersRolesLoginModule the same as other and should be
+    changed to a stronger authentication mechanism as required.
+  -->
+  <application-policy name="jmx-console">
+    <authentication>
+      <login-module code="org.jboss.security.auth.spi.UsersRolesLoginModule"
+        flag="required">
+        <module-option name="usersProperties">props/jmx-console-users.properties</module-option>
+        <module-option name="rolesProperties">props/jmx-console-roles.properties</module-option>
+      </login-module>
+    </authentication>
+  </application-policy>
+
+  <!-- A template configuration for the web-console web application. This
+    defaults to the UsersRolesLoginModule the same as other and should be
+    changed to a stronger authentication mechanism as required.
+  -->
+  <application-policy name="web-console">
+    <authentication>
+      <login-module code="org.jboss.security.auth.spi.UsersRolesLoginModule"
+        flag="required">
+        <module-option name="usersProperties">web-console-users.properties</module-option>
+        <module-option name="rolesProperties">web-console-roles.properties</module-option>
+      </login-module>
+    </authentication>
+  </application-policy>
+
+  <!--
+    A template configuration for the JBossWS security domain.
+    This defaults to the UsersRolesLoginModule the same as other and should be
+    changed to a stronger authentication mechanism as required.
+  -->
+  <application-policy name="JBossWS">
+    <authentication>
+      <login-module code="org.jboss.security.auth.spi.UsersRolesLoginModule"
+        flag="required">
+        <module-option name="usersProperties">props/jbossws-users.properties</module-option>
+        <module-option name="rolesProperties">props/jbossws-roles.properties</module-option>
+        <module-option name="unauthenticatedIdentity">anonymous</module-option>
+      </login-module>
+    </authentication>
+  </application-policy>
+
+  <!-- Security domain for JTC LIMS -->
+  <application-policy name="JTC_LIMS_Secure_Login">
+    <authentication>
+      <login-module code="org.jboss.security.auth.spi.LdapExtLoginModule"
+                    flag="optional">
+        <module-option name="password-stacking">
+	  useFirstPass
+	</module-option>
+        <module-option name="allowEmptyPasswords">false</module-option>
+        <module-option name="java.naming.factory.initial">
+          com.sun.jndi.ldap.LdapCtxFactory
+        </module-option>
+        <module-option name="java.naming.provider.url">
+          ldap://ldap.tigr.org:389/
+        </module-option>
+        <module-option name="java.naming.security.authentication">
+          simple
+        </module-option>
+        <module-option name="bindDN">
+          uid=anonymous,ou=VI,ou=People,dc=tigr,dc=org
+        </module-option>
+        <module-option name="bindCredential"></module-option>
+        <module-option name="baseFilter">(uid={0})</module-option>
+        <module-option name="baseCtxDN">
+	  ou=People,dc=tigr,dc=org
+        </module-option>
+        <module-option name="roleAttributeID">cn</module-option>
+        <module-option name="rolesCtxDN">
+          ou=ApplicationRoles,dc=tigr,dc=org
+        </module-option>
+        <module-option name="roleFilter">
+	  (uniqueMember={1})
+	</module-option>
+        <module-option name="roleRecursion">-1</module-option>
+      </login-module>
+      <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule"
+                    flag="sufficient">
+        <module-option name="password-stacking">
+	  useFirstPass
+	</module-option>
+        <!-- 
+	<module-option name = "unauthenticatedIdentity">guest</module-option>
+	 -->
+        <module-option name="dsJndiName">
+	  java:/JlimsAppDBInterface_Oracle_DS
+	</module-option>
+        <module-option name="principalsQuery">
+	  SELECT a.actor_password
+	  FROM jlims.actor a
+	  WHERE lower(a.actor_uname)=lower(?)
+	</module-option>
+        <module-option name="rolesQuery">
+	  SELECT lv.lkuvl_value, 'Roles' 
+	  FROM jlims.actor a,jlims.actor_group ag,jlims.lookup_value lv
+	  WHERE lower(a.actor_uname)=lower(?) 
+	  AND a.actor_id=ag.acgrp_actor_id 
+	  AND ag.acgrp_group_name_lkuvl_id=lv.lkuvl_id
+	</module-option>
+        <module-option name = "hashAlgorithm">SHA-1</module-option>
+      </login-module>
+      <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule"
+                    flag="sufficient">
+        <module-option name="password-stacking">
+	  useFirstPass</module-option>
+        <module-option name="unauthenticatedIdentity">
+	  guest
+	</module-option>
+        <module-option name="dsJndiName">
+	  java:/JlimsAppDBInterface_Oracle_DS
+	</module-option>
+        <module-option name="principalsQuery">
+	  SELECT a.actor_password
+	  FROM jlims.actor a
+	  WHERE lower(a.actor_login_barcode)=lower(?)
+	</module-option>
+        <module-option name = "rolesQuery">
+	  SELECT lv.lkuvl_value, 'Roles'
+	  FROM jlims.actor a,jlims.actor_group ag,jlims.lookup_value lv
+	  WHERE lower(a.actor_login_barcode)=lower(?) 
+	  AND a.actor_id=ag.acgrp_actor_id 
+	  AND ag.acgrp_group_name_lkuvl_id=lv.lkuvl_id
+	</module-option>
+        <module-option name="hashAlgorithm">SHA-1</module-option>
+      </login-module>
+    </authentication>
+  </application-policy>
+
+  <!-- Security domain for SingleCell LIMS -->
+  <application-policy name="SingleCell_LIMS_Secure_Login">
+    <authentication>
+      <login-module code="org.jboss.security.auth.spi.LdapExtLoginModule"
+                    flag="optional">
+        <module-option name="password-stacking">
+	  useFirstPass
+	</module-option>
+        <module-option name="allowEmptyPasswords">false</module-option>
+        <module-option name="java.naming.factory.initial">
+          com.sun.jndi.ldap.LdapCtxFactory
+        </module-option>
+        <module-option name="java.naming.provider.url">
+          ldap://ldap.tigr.org:389/
+        </module-option>
+        <module-option name="java.naming.security.authentication">
+          simple
+        </module-option>
+        <module-option name="bindDN">
+          uid=anonymous,ou=VI,ou=People,dc=tigr,dc=org
+        </module-option>
+        <module-option name="bindCredential"></module-option>
+        <module-option name="baseFilter">(uid={0})</module-option>
+        <module-option name="baseCtxDN">
+	  ou=People,dc=tigr,dc=org
+        </module-option>
+        <module-option name="roleAttributeID">cn</module-option>
+        <module-option name="rolesCtxDN">
+          ou=ApplicationRoles,dc=tigr,dc=org
+        </module-option>
+        <module-option name="roleFilter">
+	  (uniqueMember={1})
+	</module-option>
+        <module-option name="roleRecursion">-1</module-option>
+      </login-module>
+      <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule"
+                    flag="sufficient">
+        <module-option name="password-stacking">
+	  useFirstPass
+	</module-option>
+        <!-- 
+	<module-option name = "unauthenticatedIdentity">guest</module-option>
+	 -->
+        <module-option name="dsJndiName">
+	  java:/JlimsAppDBInterface_MySql_DS
+	</module-option>
+        <module-option name="principalsQuery">
+	  SELECT a.actor_password
+	  FROM JLIMS.ACTOR a
+	  WHERE lower(a.actor_uname)=lower(?)
+	</module-option>
+        <module-option name="rolesQuery">
+	  SELECT lv.lkuvl_value, 'Roles' 
+	  FROM JLIMS.ACTOR a,JLIMS.ACTOR_GROUP ag,JLIMS.LOOKUP_VALUE lv
+	  WHERE lower(a.actor_uname)=lower(?) 
+	  AND a.actor_id=ag.acgrp_actor_id 
+	  AND ag.acgrp_group_name_lkuvl_id=lv.lkuvl_id
+	</module-option>
+        <module-option name = "hashAlgorithm">SHA-1</module-option>
+      </login-module>
+      <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule"
+                    flag="sufficient">
+        <module-option name="password-stacking">
+	  useFirstPass</module-option>
+        <module-option name="unauthenticatedIdentity">
+	  guest
+	</module-option>
+        <module-option name="dsJndiName">
+	  java:/JlimsAppDBInterface_MySql_DS
+	</module-option>
+        <module-option name="principalsQuery">
+	  SELECT a.actor_password
+	  FROM jlims.actor a
+	  WHERE lower(a.actor_login_barcode)=lower(?)
+	</module-option>
+        <module-option name = "rolesQuery">
+	  SELECT lv.lkuvl_value, 'Roles'
+	  FROM JLIMS.ACTOR a,JLIMS.ACTOR_GROUP ag,JLIMS.LOOKUP_VALUE lv
+	  WHERE lower(a.actor_login_barcode)=lower(?) 
+	  AND a.actor_id=ag.acgrp_actor_id 
+	  AND ag.acgrp_group_name_lkuvl_id=lv.lkuvl_id
+	</module-option>
+        <module-option name="hashAlgorithm">SHA-1</module-option>
+      </login-module>
+    </authentication>
+  </application-policy>
+
+    <!-- Used by transactional applications for Project Website -->
+    <application-policy name = "jcvi">
+       <authentication>
+          <login-module code="org.jboss.security.auth.spi.LdapExtLoginModule"
+                          flag="required">
+             <module-option name="java.naming.factory.initial">
+                    com.sun.jndi.ldap.LdapCtxFactory
+             </module-option>
+             <module-option name="java.naming.provider.url">
+                    ldap://ldap.tigr.org:389/
+             </module-option>
+             <module-option name="unauthenticatedIdentity">
+                    guest
+             </module-option>
+             <module-option name="java.naming.security.authentication">
+                    simple
+             </module-option>
+             <module-option name="bindDN">
+                        uid=anonymous,ou=VI,ou=People,dc=tigr,dc=org
+             </module-option>
+             <module-option name="bindCredential"></module-option>
+             <module-option name="baseFilter">(uid={0})</module-option>
+             <module-option name="baseCtxDN">ou=People,dc=tigr,dc=org
+             </module-option>
+             <module-option name="roleAttributeID">cn</module-option>
+             <module-option name="rolesCtxDN">
+                        ou=ApplicationRoles,dc=tigr,dc=org
+             </module-option>
+             <module-option name="roleFilter">(uniqueMember={1})</module-option>
+             <module-option name="roleRecursion">-1</module-option>
+             <module-option name="password-stacking">useFirstPass</module-option>
+             <!--   This breaks login.   <module-option name="hashAlgorithm">SHA-1</module-option>  -->
+          </login-module>
+      <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule"
+                    flag="sufficient">
+        <module-option name="password-stacking">
+          useFirstPass</module-option>
+        <module-option name="unauthenticatedIdentity">
+          guest
+        </module-option>
+        <module-option name="dsJndiName">
+          java:/PWS_DBInterface_MySQL_DS
+        </module-option>
+        <module-option name="principalsQuery">
+          select a.actor_id from ifx_projects.actor a where a.actor_username=?
+        </module-option>
+        <module-option name = "rolesQuery">
+          SELECT 'pstuser' as Role, 'Roles' as RoleGroup
+          FROM ifx_projects.actor a
+          WHERE a.actor_username=?
+        </module-option>
+      </login-module>
+
+       </authentication>
+    </application-policy>
+
+  <!-- The default login configuration used by any security domain that
+  does not have a application-policy entry with a matching name
+  -->
+  <application-policy name="other">
+    <!-- A simple server login module, which can be used when the number
+    of users is relatively small. It uses two properties files:
+    users.properties, which holds users (key) and their password (value).
+    roles.properties, which holds users (key) and a comma-separated list of
+    their roles (value).
+    The unauthenticatedIdentity property defines the name of the principal
+    that will be used when a null username and password are presented as is
+    the case for an unuathenticated web client or MDB. If you want to
+    allow such users to be authenticated add the property, e.g.,
+    unauthenticatedIdentity="nobody"
+    -->
+    <authentication>
+      <login-module code="org.jboss.security.auth.spi.UsersRolesLoginModule"
+        flag="required"/>
+    </authentication>
+  </application-policy>
+
+</policy>
+

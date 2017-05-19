@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
@@ -54,6 +55,8 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
     private Date traxStartDate;
     private String sessionFactoryName;
     private String cfgXml;
+    private boolean sessionIsUsed = false;
+
     Logger logger = Logger.getLogger(ContainerizedSessionAndTransactionManager.class);
 
     @PersistenceContext(unitName="OMETAPersistenceUnit")
@@ -85,7 +88,7 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
                 logger.warn("Transaction was null at commit time: TRAX ref: null");
                 new Exception().printStackTrace();
             }
-            if(transactionCanBeEnded(tx) && tx.isActive()) {
+            if(transactionCanBeEnded(tx) && tx.getStatus().isOneOf(TransactionStatus.ACTIVE)) {
                 tx.commit();
                 tx = null;  // Pushing this away, to guarantee won't be re-used.
             }
@@ -101,7 +104,7 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
                 logger.warn("Transaction was null at rollback time: TRAX ref: null");
                 new Exception().printStackTrace();
             }
-            if(transactionCanBeEnded(tx) && tx.isActive()) {
+            if(transactionCanBeEnded(tx) && tx.getStatus().isOneOf(TransactionStatus.ACTIVE)) {
                 tx.rollback();
                 tx = null;  // Pushing this away, to guarantee won't be re-used.
             }
@@ -116,6 +119,19 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
 
     @Override
     public void closeSession() {
+        Transaction transaction = session.getTransaction();
+        if(transactionCanBeEnded(transaction)  &&  transaction.getStatus().isOneOf(TransactionStatus.ACTIVE)) {
+           transaction.commit();
+            transaction = null;  // Pushing this away, to guarantee won't be re-used.
+        }
+        if(session != null  &&  session.isOpen()) {
+            try {
+               session.close();
+            } catch(Exception ex) {
+                logger.error("Failed to close session TRAX ref: " + ex.toString());
+                ex.printStackTrace();
+            }
+        }
         //        if(logger.isDebugEnabled()) {
         //            logger.debug("Close Session:: TRAX ref: " + transaction);
         //        }
@@ -159,6 +175,7 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
                 logger.error("Persistence unit JNDI name " + pu + " failed.");
             }
         }
+
         getHibernateSession();
         if(ex != null) {
             ex.printStackTrace();
@@ -170,10 +187,22 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
     private void getHibernateSession() {
         //import org.jboss.jpa.tx.TransactionScopedEntityManager;
 
+        try {
+            session = em.unwrap(Session.class);
+
+            if(!session.isOpen()){
+                session = session.getSessionFactory().openSession();
+            }
+        } catch(Exception ex) {
+            logger.error("Failed to invoke the getter to obtain the hibernate session " + ex.getMessage());
+            ex.printStackTrace();
+        }
+        /*
         // Find a method for getting a hibernate session.
         Method[] emMethods = em.getClass().getMethods();
+
         for(Method method: emMethods) {
-            if(method.getName().equals("getHibernateSession")) {
+            if(method.getName().equals("getDelegate")) {
                 // Once found, invoke the method.
                 try {
                     Object returnObj = method.invoke(em);
@@ -191,7 +220,7 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
                     ex.printStackTrace();
                 }
             }
-        }
+        }*/
 
         if(session == null) {
             logger.error("Failed to find hibernate session from " + em.toString());
@@ -270,7 +299,7 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
 
     /** Helper: determine whether transaction can be committed or rolled back. */
     private boolean transactionCanBeEnded(Transaction tx) {
-        return tx != null && !(tx.wasCommitted() || tx.wasRolledBack());
+        return tx != null && !(tx.getStatus().isOneOf(TransactionStatus.COMMITTED, TransactionStatus.ROLLED_BACK));
     }
 
 

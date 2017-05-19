@@ -55,7 +55,7 @@
                         <tr>
                             <s:iterator value="parameterizedAttributes" var="attrName">
                                 <td><p>
-                                    <s:property value="#element[#attrName]" escape="false"/>
+                                    <s:property value="#element[#attrName]" escapeHtml="false"/>
                                 </p></td>
                             </s:iterator>
 

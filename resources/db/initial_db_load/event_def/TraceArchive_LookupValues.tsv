@@ -1,0 +1,4 @@
+AttributeName	AttributeType	AttributeDataType
+Trace Archive	Event Type	string
+trace count	Event Attribute	int
+trace date	Event Attribute	date

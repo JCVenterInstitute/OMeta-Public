@@ -23,6 +23,7 @@ package org.jcvi.ometa.utils;
 
 import org.apache.log4j.Logger;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
+import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackRemote;
 
 import javax.naming.InitialContext;
 
@@ -35,7 +36,9 @@ import javax.naming.InitialContext;
  * Helper class for the upload/template actions.
  */
 public class UploadActionDelegate extends EjbBuilder {
-    public static final String EJB_NAME = Constants.SERVICE_NAME + "/OMETA.Writeback/remote"; //"PWS.Writeback";
+    //public static final String EJB_NAME = Constants.SERVICE_NAME + "/OMETA.Writeback/remote"; //"PWS.Writeback";
+    public static final String EJB_NAME = Constants.SERVICE_NAME +
+            "/ometa_ejb_server//OMETA.Writeback!org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackRemote";
     protected static final String EJB_FAILURE_MSG = "Failed to pickup EJB dependency.";
 
     /**
@@ -45,7 +48,7 @@ public class UploadActionDelegate extends EjbBuilder {
             Logger logger, ProjectSampleEventWritebackBusiness psew) {
         if ( psew == null ) {
             try {
-                psew = InitialContext.doLookup(EJB_NAME);
+                psew = (ProjectSampleEventWritebackRemote) InitialContext.doLookup("ejb:" + EJB_NAME);
                 logger.warn("Had to lookup pse tracker using initial context.");
             } catch ( Exception ex ) {
                 logger.error(EJB_FAILURE_MSG);

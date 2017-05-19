@@ -1,0 +1,5 @@
+AttributeName	AttributeType	AttributeDataType
+GrantMilestone	Event Attribute	string
+GrantAccountingStart	Event Attribute	date
+SampleMW	Event Attribute	float
+StrainName	Event Attribute	string

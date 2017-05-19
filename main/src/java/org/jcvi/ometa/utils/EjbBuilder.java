@@ -79,6 +79,33 @@ public class EjbBuilder {
         }
         return pseb;
     }
+    public <T> T getEjb(
+            Context ctx, String ejbName, String server, String username, String password, Logger logger) {
+        T pseb = null;
+        int i = 0;
+        for ( i = 0; i < NUM_RETRIES; i++ ) {
+            try {
+                logger.info("Getting EJB " + ejbName + " off server " + server + " for user " + username);
+
+                ctx = getContext( server, username, password, ejbName, logger );
+                pseb = (T)ctx.lookup( ejbName );
+                if ( pseb == null ) {
+                    throw new Exception(
+                            "Found null instead of EJB " + ejbName + " on server " + server + " after " + NUM_RETRIES );
+                }
+                else {
+                    logger.info("Found EJB " + ejbName + " on server " + server + " after " + i + " retries." );
+                }
+                if ( pseb != null ) {
+                    break;
+                }
+            } catch ( Exception ex ) {
+                logger.error("Failed to pickup EJB dependency: " + ejbName );
+                throw new RuntimeException(ex);
+            }
+        }
+        return pseb;
+    }
 
     /** Gets an initial context already setup to do server login. */
     public Context getContext(
@@ -90,7 +117,22 @@ public class EjbBuilder {
             jbossStyleLogin( username, password );
         }
 
-        Context ctx = new InitialContext();
+        Properties jndiProps = new Properties();
+        jndiProps.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.remote.client.InitialContextFactory");
+        jndiProps.put( Context.URL_PKG_PREFIXES, "org.jboss.ejb.client.naming" );
+        jndiProps.put("jboss.naming.client.ejb.context", true);
+        jndiProps.put("jboss.naming.client.connect.options.org.xnio.Options.SASL_POLICY_NOANONYMOUS", "false");
+        jndiProps.put("jboss.naming.client.connect.options.org.xnio.Options.SASL_POLICY_NOPLAINTEXT", "false");
+        jndiProps.put(Context.PROVIDER_URL, ejbServerName);
+
+        if ( username != null ) {
+            jndiProps.put( Context.SECURITY_PRINCIPAL, username );
+        }
+        if ( password != null ) {
+            jndiProps.put( Context.SECURITY_CREDENTIALS, password );
+        }
+
+        Context ctx = new InitialContext(jndiProps);
         String ejbServerProp = ejbName + ".Server";
         try {
             if ( ejbServerName == null  ||  ejbServerName.trim().length() == 0 ) {
@@ -100,17 +142,6 @@ public class EjbBuilder {
         } catch (Exception ex) {
             logger.error(ex);
             throw new NamingException("Property "+ejbServerProp+" could not be found. "+ex.getMessage());
-        }
-
-        ctx.addToEnvironment( Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.NamingContextFactory") ;
-        ctx.addToEnvironment( Context.URL_PKG_PREFIXES, "org.jboss.naming:org.jnp.interfaces" );
-        ctx.addToEnvironment( Context.PROVIDER_URL, ejbServerName );
-        // If u/p credentials given, use them.
-        if ( username != null ) {
-            ctx.addToEnvironment( Context.SECURITY_PRINCIPAL, username );
-        }
-        if ( password != null ) {
-            ctx.addToEnvironment( Context.SECURITY_CREDENTIALS, password );
         }
 
         return ctx;

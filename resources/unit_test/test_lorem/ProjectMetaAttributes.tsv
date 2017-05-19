@@ -1,0 +1,7 @@
+ProjectName	DataType	Required	AttributeName	AttributeDescription	PossibleValues
+Pellentesque loremipsumii	string	F	Category	NIAID Category	
+Pellentesque loremipsumii	int	T	Complete	Whether project is complete	0;1
+Pellentesque loremipsumii	string	T	Grant	Grant identifier.	
+Pellentesque loremipsumii	string	T	Project Group	Project group	
+Pellentesque loremipsumii	string	T	Project Leader	Name of person leading project	
+Pellentesque loremipsumii	string	T	Project Name	Full project name	

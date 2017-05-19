@@ -1,0 +1,30 @@
+AttributeName	AttributeType	AttributeDataType
+SampleDescription	Attribute	string
+ContactFirstName	Attribute	string
+ContactLastName	Attribute	string
+EstimatedGenomeSize	Attribute	int
+Genus	Attribute	string
+Species	Attribute	string
+Strain	Attribute	string
+OrganismName	Attribute	string
+NCBITaxonID	Attribute	string
+DataURL	Attribute	string
+Taxonomy	Attribute	string
+References	Attribute	string
+SequencingCenter	Attribute	string
+SequencingCenterURL	Attribute	string
+SequencingMethod	Attribute	string
+SequencingDepth	Attribute	int
+SequencingTechnology	Attribute	string
+SubmittingOrganization	Attribute	string
+SubmittingCenterURL	Attribute	string
+ConsortiumName	Attribute	string
+ConsortiumURL	Attribute	string
+SourceOfDNA	Attribute	string
+LocusTagPrefix	Attribute	string
+Replicon	Attribute	string
+NCBIProjectID	Attribute	string
+GrantName	Project Attribute	string
+GrantAccountingCode	Project Attribute	int
+AccessionNumber	Event Attribute	string
+reference	Event Attribute	string

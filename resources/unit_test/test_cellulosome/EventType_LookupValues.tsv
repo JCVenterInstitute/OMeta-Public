@@ -1,0 +1,4 @@
+AttributeName	AttributeType	AttributeDataType
+ProjectRegistration	Event Type	string
+SampleRegistration	Event Type	string
+Expiration	Event Type	string

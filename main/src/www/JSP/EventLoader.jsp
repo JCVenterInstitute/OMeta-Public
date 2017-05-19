@@ -486,8 +486,8 @@
     }
 
     //keep any existing data
-    <s:set name="oldGridList" value="gridList" />
-    <s:set name="oldBeanList" value="beanList" />
+    <s:set var="oldGridList" value="gridList" />
+    <s:set var="oldBeanList" value="beanList" />
 
     <s:if test="%{#oldGridList != null && #oldGridList.size() > 0}">
     //remove any existing dom elements
@@ -524,7 +524,9 @@
     </s:if>
     <s:elseif test="%{#oldBeanList != null && #oldBeanList.size() >0}">
     //preload form view
-    $("#interactive-submission-table tr:last").show(); //show sample name
+    if(oldEventName && oldEventName.indexOf("SampleRegistration") === -1) {
+      $("#interactive-submission-table tr:last").show(); //show sample name
+    }
 
     //remove any existing dom elements
     //$('[name^="beanList"]').remove();
@@ -605,16 +607,24 @@
 
         $("head").append("<style> #file_" + id + ":hover:after {width : " + ((fileNameCharCount + 1) * 7) + "px !important;}</style>");
       }
+    } else if($("select[id*='select_" + currAttributeName + "_f'][multiple]").length){
+      var valueArr = currAttributeValue.split(",");
+      var $node = $("select[id*='select_" + currAttributeName + "_f'][multiple]");
+
+      for(var j in valueArr){
+        if(valueArr[j].charAt(0) == ' ') valueArr[j] = valueArr[j].replace(" ", "");
+        $node.multipleSelect('setSelects', valueArr);
+      }
     }
     </s:iterator>
-    <s:set name="oldLoadingSample" value="loadingSample" />
+    <s:set var="oldLoadingSample" value="loadingSample" />
     <s:if test="%{#oldLoadingSample != null && #oldLoadingSample.getSampleName() != null}">
-    //$('#_sampleName').val('<s:property value="#oldLoadingSample.sampleName"/>');
+      $('#_sampleName').val('<s:property value="#oldLoadingSample.sampleName"/>');
     // utils.preSelect('_parentSampleSelect', '<s:property value="#oldLoadingSample.parentSampleName"/>');
     // utils.preSelect('_isSamplePublic', '<s:property value="#oldLoadingSample.isPublic"/>');
     </s:if>
     <s:else>
-    <s:set name="oldLoadingProject" value="loadingProject" />
+    <s:set var="oldLoadingProject" value="loadingProject" />
     <s:if test="%{#oldLoadingProject != null && #oldLoadingProject.getProjectName() != null}">
     $('#_projectName').val('<s:property value="#oldLoadingProject.projectName"/>');
     //utils.preSelect('_isProjectPublic', '<s:property value="#oldLoadingProject.isPublic"/>');

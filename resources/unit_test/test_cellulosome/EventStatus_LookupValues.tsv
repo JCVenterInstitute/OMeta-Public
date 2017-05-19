@@ -1,0 +1,3 @@
+AttributeName	AttributeType	AttributeDataType
+Active	Event Status	string
+Inactive	Event Status	string

@@ -34,8 +34,9 @@ public class Constants {
 
     public final static String TEXT_PATTERN = "^[a-zA-Z0-9><=_\\-(),\\s ]*$";
 
-    public static final String PROPERTIES_FILE_NAME = "resource/LoadingEngine";
+    public static final String PROPERTIES_FILE_NAME = "LoadingEngine";
     public static final String CONIFG_FILE_STORAGE_PATH = "ometa.fileStorage.path";
+    public static final String CONFIG_TEMP_FILE_STORAGE_PATH = "ometa.temp.fileStorage.path";
     public static final String CONFIG_TAREXCLUDE_PATH = "ometa.tarexclude.files.path";
     public static final String CONFIG_GUID_HOST = "ometa.guid.host";
     public static final String CONFIG_GUID_PORT = "ometa.guid.port";
@@ -65,6 +66,7 @@ public class Constants {
     public static final String DIRECTORY_USER_BULK = "users";
     public static final String DIRECTORY_PROCESSING_BULK = "processing";
     public static final String DIRECTORY_PROCESSED_BULK = "processed";
+    public static final String DIRECTORY_ERROR_BULK = "error";
 
     public static final String GROUP_GENERAL_EDIT = "General-Edit";
     public static final String GROUP_GENERAL_VIEW = "General-View";
@@ -91,13 +93,13 @@ public class Constants {
     public final static String[] DATE_ALL_ALLOWED_FORMATS = {
             "yyyy",
             "yyyy-MM-dd",
-            "yyyy-MMM-DD",
+            "yyyy-MMM-dd",
             "yyyy-MMM"
     };
     public final static String[] DPCC_DATE_ALL_POSSIBLE_FORMATS = {
             "yyyy",
             "MMM-yyyy",
-            "DD-MMM-yyyy"
+            "dd-MMM-yyyy"
     };
 
     public static enum  serologyTestResult {P,N,U};
@@ -190,6 +192,7 @@ public class Constants {
     public static final String DPCC_STATUS_SUBMITTED_FORM = "submit";
     public static final String DPCC_STATUS_SUBMITTED = "Data submitted to OMETA";
 
+    public static final String TEMPLATE_HEADER_MISSING = "File data template header is missing. Please do not change first three lines of template file because these are critical for processing the file.";
     public static final String TEMPLATE_COMMENT_INDICATOR = "#";
     public static final String TEMPLATE_EVENT_TYPE_IDENTIFIER = "DataTemplate";
     public static final Integer TEMPLATE_MAX_ROW_LIMIT = 50;

@@ -67,7 +67,7 @@
       float: left !important;
     }
 
-    #refreshDataBtn {position:absolute;height:24px;width:34px;margin-left:10px;border:1px solid #aed0ea;background:#d7ebf9;font-weight:bold;color:#2779aa;}
+    #refreshDataBtn {position:inherit;height:24px;width:34px;margin-left:10px;border:1px solid #aed0ea;background:#d7ebf9;font-weight:bold;color:#2779aa;}
     #columnFilterBtn:hover:after, #refreshDataBtn:hover:after{ background: #333; background: rgba(0,0,0,.8);
       border-radius: 5px; bottom: 0px; color: #fff; content: attr(data-tooltip);
       left: 140%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
@@ -235,7 +235,7 @@
         _table.fnClose(_row);
       } else {
         this.src = closeBtn;
-        _table.fnOpen(_row, subrow_html.replace(/\\$d\\$/, _table.fnGetData(_row)[(_is_event?6:5)]), '_details');
+        _table.fnOpen(_row, subrow_html.replace(/\$d\$/, _table.fnGetData(_row)[(_is_event?6:5)]), '_details');
         $('td._details').attr('colspan', 7); //fix misalignment issue in chrome by incresing colspan by 1
         $('td._details>div').css('width', $('#projectTableDiv').width()-90);
       }

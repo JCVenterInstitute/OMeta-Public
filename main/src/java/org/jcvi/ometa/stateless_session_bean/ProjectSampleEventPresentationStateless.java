@@ -172,7 +172,8 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
     }
 
     //-------------------------------------------------------------------PROJECT QUERIES
-    @WebMethod
+
+    @WebMethod(operationName = "getProjectWithName")
     public Project getProject( @JCVI_Project String projectName ) throws Exception {
         Project project;
         try {
@@ -189,6 +190,8 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         }
         return project;
     }
+
+    @WebMethod(operationName = "getProjectWithId")
     public Project getProject( @JCVI_Project Long projectId ) throws Exception {
         Project project;
         try {
@@ -277,10 +280,12 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
      *
      * @param projectName name of proj.
      */
+    @WebMethod(exclude=true)
     public List<ProjectMetaAttribute> getProjectMetaAttributes( @JCVI_Project String projectName ) throws Exception {
         return this.getProjectMetaAttributes(this.getProjectId(projectName));
     }
 
+    @WebMethod(exclude=true)
     public List<ProjectMetaAttribute> getProjectMetaAttributes( @JCVI_Project Long projectId ) throws Exception {
         Long[] projectIds = {projectId};
         return this.getProjectMetaAttributes(Arrays.asList(projectIds));
@@ -305,10 +310,12 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
     }
 
     @Override
+    @WebMethod(exclude=true)
     public List<ProjectAttribute> getProjectAttributes( @JCVI_Project String projectName ) throws Exception {
         return this.getProjectAttributes(this.getProjectId(projectName));
     }
 
+    @WebMethod(exclude=true)
     public List<ProjectAttribute> getProjectAttributes(Long projectId) throws Exception {
         Session session = startTransactedSession();
 
@@ -386,6 +393,7 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return sample;
     }
 
+    @WebMethod(exclude=true)
     public Sample getSample( @JCVI_Sample Long sampleId ) throws Exception {
         Sample sample;
         try {
@@ -402,6 +410,7 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return sample;
     }
 
+    @WebMethod(exclude=true)
     public Sample getSample( @JCVI_Project Long projectId, @JCVI_Sample String sampleName ) throws Exception {
         Sample sample;
         try {
@@ -424,6 +433,7 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return this.getSamplesForProject(this.getProjectId(projectName));
     }
 
+    @WebMethod(exclude=true)
     public List<Sample> getSamplesForProject( @JCVI_Project Long projectId ) throws Exception {
         Session session = startTransactedSession();
 
@@ -593,6 +603,7 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return smaBeans;
     }
 
+    @WebMethod(exclude=true)
     public List<SampleMetaAttribute> getSampleMetaAttributes( @JCVI_Project Long projectId ) throws Exception {
         List<SampleMetaAttribute> smaBeans = new ArrayList<SampleMetaAttribute>();
         try {
@@ -647,10 +658,12 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
     }
 
     @Override
+    @WebMethod(exclude=true)
     public List<SampleAttribute> getSampleAttributes( @JCVI_Sample String sampleName ) throws Exception {
         return this.getSampleAttributes(this.getSample(sampleName).getSampleId());
     }
 
+    @WebMethod(exclude=true)
     public List<SampleAttribute> getSampleAttributes(Long sampleId) throws Exception {
         Session session = startTransactedSession();
 
@@ -713,6 +726,7 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return this.getEventsForProject(this.getProjectId(projectName));
     }
 
+    @WebMethod(exclude=true)
     public List<Event> getEventsForProject(Long projectId) throws Exception {
         Session session = startTransactedSession();
 
@@ -924,6 +938,7 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return evtBeans;
     }
 
+    @WebMethod(exclude=true)
     public List<EventAttribute> getEventAttributes(Long eventId,  @JCVI_Project Long projectId ) throws Exception {
         Session session = startTransactedSession();
 
@@ -961,10 +976,12 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return eaBeans;
     }
 
+    @WebMethod(exclude=true)
     public List<EventMetaAttribute> getEventMetaAttributes( @JCVI_Project Long projectId ) throws Exception {
         return this.getEventMetaAttributes(projectId, null);
     }
 
+    @WebMethod(exclude=true)
     public List<EventMetaAttribute> getEventMetaAttributes( @JCVI_Project Long projectId, Long eventTypeId) throws Exception {
         Session session = startTransactedSession();
 
@@ -983,6 +1000,7 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return emaBeans;
     }
 
+    @WebMethod(exclude=true)
     public List<EventMetaAttribute> getEventMetaAttributes(@JCVI_Project String projectName, String eventTypeName ) throws Exception {
 
         List<EventMetaAttribute> emaBeans = new ArrayList<EventMetaAttribute>();

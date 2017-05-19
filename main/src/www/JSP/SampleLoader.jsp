@@ -93,10 +93,10 @@
                         </tr>
                     </table>
                 </div>
-                <s:div id="submitDiv" cssStyle="margin:15px 10px 5px 0;width:100%;">
+                <div id="submitDiv" cssStyle="margin:15px 10px 5px 0;width:100%;">
                     <input type="button" onclick="javascript:loadSample();" id="sampleLoadButton" value="Load Data"/>
                     <input type="button" onclick="javascript:doClear();" value="Clear" />
-                </s:div>
+                </div>
             </div>
         </div>
     </s:form>

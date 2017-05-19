@@ -85,45 +85,7 @@
                   </ul>
                 </div>
               </div>
-            </div>
 
-            <div class="col-sm-6">
-              <div class="panel panel-info">
-                <div class="panel-heading">
-                  <h3 class="panel-title">Knowledge Base</h3>
-                </div>
-                <div class="panel-body">
-                  <ul class="list-unstyled">
-                    <li>
-                      <h4><span class="fa fa-fw fa-files-o"></span> DPCC Data Standard Reference</h4>
-                      
-                      <table class="table">
-                        <tr>
-                          <th>Human Surveillance</th><td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/DPCC+Data+Standard+Reference+for+Human+Surveillance.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a></td><td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/DPCC+Data+Standard+Reference+for+Human+Surveillance.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
-                        </tr>
-                        <tr>
-                          <th>Non-Human Mammal Surveillance</th><td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/DPCC+Data+Standard+Reference+for+Non-Human+Mammal+Surveillance.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a></td><td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/DPCC+Data+Standard+Reference+for+Non-Human+Mammal+Surveillance.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
-                        </tr>
-                        <tr>
-                          <th>Avian Surveillance</th><td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/DPCC+Data+Standard+Reference+for+Wild+and+Domestic+Bird+Surveillance.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a></td><td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/DPCC+Data+Standard+Reference+for+Wild+and+Domestic+Bird+Surveillance.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
-                        </tr>
-                        <tr>
-                          <th>Serological Data</th><td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/DPCC+Data+Standard+Reference+for+Serological+Data.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a></td><td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/DPCC+Data+Standard+Reference+for+Serological+Data.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
-                        </tr>
-                        <tr>
-                          <th>Viral Isolate Data</th><td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/DPCC+Data+Standard+Reference+for+Viral+Isolate+Data.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a></td><td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/DPCC+Data+Standard+Reference+for+Viral+Isolate+Data.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
-                        </tr>
-                      </table>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-6">
               <div class="panel panel-info">
                 <div class="panel-heading">
                   <h3 class="panel-title">Training</h3>
@@ -140,45 +102,119 @@
                   </ul> -->
                 </div>
               </div>
+
             </div>
 
-            <!-- <div class="col-sm-6">
-              <div class="jarviswidget" role="widget">
-                <header role="heading">
-                  <span class="widget-icon"> <i class="fa fa-ticket"></i> </span>
-                  <h2>Support Tickets Summary</h2>
-                </header>
-                <div role="content">
-                  <div class="widget-body no-padding">
-                    <table class="table table-bordered">
-                      <thead>
+            <div class="col-sm-6">
+              <div class="panel panel-info">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Knowledge Base</h3>
+                </div>
+                <div class="panel-body">
+                  <ul class="list-unstyled">
+                    <li>
+                      <h4><span class="fa fa-fw fa-files-o"></span> DPCC Data Standard References &amp; Templates</h4>
+                      <h5>Surveillance</h5>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th width="50%">Submission Type</th>
+                            <th>Standard Reference</th>
+                            <th>Submission Template</th>
+                          </tr>
+                        </thead>
                         <tr>
-                          <th>Ticket #</th>
-                          <th>Issue Date</th>
-                          <th>Topic</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td><a href="#">SU-1234</a></td>
-                          <td>12/8/2014</td>
-                          <td>Data Submission</td>
-                          <td>Assigned</td>
+                          <td>Human Surveillance</td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Human_Surveillance_v1.0.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a><br><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Human_Surveillance_v1.0.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-template/DPCC_Data_Standard_Template_for_Human_Surveillance_v1.0.csv"><span class="fa fa-file-o" style="color:#009900"></span> CSV</a></td>
                         </tr>
                         <tr>
-                          <td><a href="#">SU-4567</a></td>
-                          <td>12/15/2014</td>
-                          <td>Username/Password</td>
-                          <td>Assigned</td>
+                          <td>Non-Human Mammal Surveillance</td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Non-Human_Mammal_Surveillance_v1.0.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a><br><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Non-Human_Mammal_Surveillance_v1.0.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-template/DPCC_Data_Standard_Template_for_Non-Human_Mammal_Surveillance_v1.0.csv"><span class="fa fa-file-o" style="color:#009900"></span> CSV</a></td>
                         </tr>
-                      </tbody>
+                        <tr>
+                          <td>Avian Surveillance</td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Wild_and_Domestic_Bird_Surveillance_v1.0.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a><br><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Wild_and_Domestic_Bird_Surveillance_v1.0.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-template/DPCC_Data_Standard_Template_for_Wild_and_Domestic_Bird_Surveillance_v1.0.csv"><span class="fa fa-file-o" style="color:#009900"></span> CSV</a></td>
+                        </tr>
                     </table>
-                  </div>
+                    <h5>Assays</h5>
+                    <table class="table">
+                        <thead>
+                          <tr>
+                            <th width="50%">Submission Type</th>
+                            <th>Standard Reference</th>
+                            <th>Submission Template</th>
+                          </tr>
+                        </thead>
+                        <tr>
+                          <td>Serological Data</td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Serological_Data_v1.0.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a><br><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Serological_Data_v1.0.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-template/DPCC_Data_Standard_Template_for_Serological_Data_v1.0.csv"><span class="fa fa-file-o" style="color:#009900"></span> CSV</a></td>
+                        </tr>
+                        <tr>
+                          <td>Viral Isolate Data</td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Viral_Isolate_Data_v1.0.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a><br><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Viral_Isolate_Data_v1.0.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-template/DPCC_Data_Standard_Template_for_Viral_Isolate_Data_v1.0.csv"><span class="fa fa-file-o" style="color:#009900"></span> CSV</a></td>
+                        </tr>
+                        <tr>
+                          <td>Sequence Data</td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_METADATA_Reference_for_Sequence_Submission_v1.0.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a><br><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_METADATA_Reference_for_Sequence_Submission_v1.0.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a><br><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_FASTA_Reference_for_Sequence_Submission_v1.0.xlsx"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> FASTA Excel</a><br><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_FASTA_Reference_for_Sequence_Submission_v1.0.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> FASTA PDF</a></td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/DPCC_Sequence_Submission_Template_v1.zip"><span class="fa fa-file-zip-o" style="color:#0000cc"></span> ZIP</a></td>
+                        </tr>
+                      </table>
+                      <h5>Reagents</h5>
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th width="50%">Submission Type</th>
+                            <th>Standard Reference</th>
+                            <th>Submission Template</th>
+                          </tr>
+                        </thead>
+                        <tr>
+                          <td>Clinical Study</td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Clinical_Study_Repository_v1.0.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a><br><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Clinical_Study_Repository_v1.0.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/reagents/DPCC_Data_Standard_Template_for_Clinical_Study_Repository_v1.0.csv"><span class="fa fa-file-o" style="color:#009900"></span> CSV</a></td>
+                        </tr>
+                        <tr>
+                          <td>Monoclonal Antibody</td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Monoclonal_Antibody_Repository_v1.0.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a><br><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Monoclonal_Antibody_Repository_v1.0.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/reagents/DPCC_Data_Standard_Template_for_Monoclonal_Antibody_Repository_v1.0.csv"><span class="fa fa-file-o" style="color:#009900"></span> CSV</a></td>
+                        </tr>
+                        <tr>
+                          <td>Plasmid</td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Plasmid_Repository_v1.0.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a><br><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Plasmid_Repository_v1.0.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/reagents/DPCC_Data_Standard_Template_for_Plasmid_Repository_v1.0.csv"><span class="fa fa-file-o" style="color:#009900"></span> CSV</a></td>
+                        </tr>
+                        <tr>
+                          <td>Protein</td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Protein_Repository_v1.0.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a><br><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Protein_Repository_v1.0.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/reagents/DPCC_Data_Standard_Template_for_Protein_Repository_v1.0.csv"><span class="fa fa-file-o" style="color:#009900"></span> CSV</a></td>
+                        </tr>
+                        <tr>
+                          <td>Reverse Genetic Virus</td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Reverse_Genetic_Virus_Repository_v1.0.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a><br><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Reverse_Genetic_Virus_Repository_v1.0.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/reagents/DPCC_Data_Standard_Template_for_Reverse_Genetic_Virus_Repository_v1.0.csv"><span class="fa fa-file-o" style="color:#009900"></span> CSV</a></td>
+                        </tr>
+                        <tr>
+                          <td>Sera and Polyclonal Antibody</td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Sera_and_Polyclonal_Antibody_Repository_v1.0.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a><br><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Sera_and_Polyclonal_Antibody_Repository_v1.0.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/reagents/DPCC_Data_Standard_Template_for_Sera_and_Polyclonal_Antibody_Repository_v1.0.csv"><span class="fa fa-file-o" style="color:#009900"></span> CSV</a></td>
+                        </tr>
+                        <tr>
+                          <td>Strain</td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Strain_Repository_v1.0.xlsx"><span class="fa fa-file-excel-o" style="color:green"></span> Excel</a><br><a href="https://s3.amazonaws.com/dpcc-docs/data-standard-reference/DPCC_Data_Standard_Reference_for_Strain_Repository_v1.0.pdf"><span class="fa fa-file-pdf-o" style="color:#cc0000"></span> PDF</a></td>
+                          <td><a href="https://s3.amazonaws.com/dpcc-docs/data-submission-templates/reagents/DPCC_Data_Standard_Template_for_Strain_Repository_v1.0.csv"><span class="fa fa-file-o" style="color:#009900"></span> CSV</a></td>
+                        </tr>
+                      </table>
+                    </li>
+                  </ul>
                 </div>
               </div>
-            </div> -->
 
+            </div>
           </div>
         </div>
       </div>

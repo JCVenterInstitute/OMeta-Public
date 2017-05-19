@@ -60,7 +60,7 @@ public class OntologyAjaxTest {
         System.out.printf("Searching every term matching '%s'%n", ajax.getSw());
         this.check();
         JSONUtil util = new JSONUtil();
-        util.serialize(ajax.getResult());
+        //util.serialize(ajax.getResult());
     }
 
     private void check() {

@@ -20,5 +20,5 @@
   --%>
 
 <script>
-  location.href="secureIndex.action";
+  location.href="/ometa/secureIndex.action";
 </script>

@@ -23,6 +23,7 @@ package org.jcvi.ometa.utils;
 
 import org.apache.log4j.Logger;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
+import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationRemote;
 
 import javax.naming.InitialContext;
 
@@ -35,7 +36,9 @@ import javax.naming.InitialContext;
  * Helper class for the presentation/reporting actions.
  */
 public class PresentationActionDelegate extends EjbBuilder {
-    public static final String EJB_NAME = Constants.SERVICE_NAME + "/OMETA.Presentation/remote"; //"PWS.Presentation";
+    //public static final String EJB_NAME = Constants.SERVICE_NAME + "/OMETA.Presentation/remote"; //"PWS.Presentation";
+    public static final String EJB_NAME = Constants.SERVICE_NAME +
+            "/ometa_ejb_server//OMETA.Presentation!org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationRemote";
 
     /**
      * Fallback method to load up the EJB, if injection fails.
@@ -44,7 +47,7 @@ public class PresentationActionDelegate extends EjbBuilder {
             Logger logger, ProjectSampleEventPresentationBusiness pseb) {
         if ( pseb == null ) {
             try {
-                pseb = InitialContext.doLookup(EJB_NAME);
+                pseb = (ProjectSampleEventPresentationRemote) InitialContext.doLookup("ejb:" + EJB_NAME);
                 logger.warn("Had to lookup pse presentation bean using initial context.");
             } catch ( Exception ex ) {
                 logger.error("Failed to pickup EJB dependency.");

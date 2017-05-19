@@ -1,0 +1,27 @@
+ProjectName	DataType	Required	AttributeName	AttributeDescription	PossibleValues
+Cellulosome	string	T	SampleDescription	Full description suitable for SRA upload
+Cellulosome	string	T	ContactFirstName	Contact this person as the principal
+Cellulosome	string	T	ContactLastName	Contact this person as the principal
+Cellulosome	string	T	Public	Show this site to all interested, or only internal	T;F
+Cellulosome	int	F	EstimatedGenomeSize	Estimate of bp in genome.
+Cellulosome	string	T	Genus	Taxonomy information - standard name
+Cellulosome	string	T	Species	Taxonomy information - standard name
+Cellulosome	string	F	Strain	Strain/isolate/breed
+Cellulosome	string	T	OrganismName	Full name of organism
+Cellulosome	string	F	NCBITaxonID	Number identifier good at NCBI for their Taxon database
+Cellulosome	string	F	DataURL	Where to find this data via web
+Cellulosome	string	F	Taxonomy	Colon-separated like NCBI:NNNN with namespace ID
+Cellulosome	string	F	References	References to papers
+Cellulosome	string	F	SequencingCenter	Who did the sequencing
+Cellulosome	string	F	SequencingCenterURL	Where was sequencing done
+Cellulosome	string	F	SequencingMethod	How was sequencing done
+Cellulosome	int	F	SequencingDepth	How many times coverage
+Cellulosome	string	F	SequencingTechnology	Which instrumentation	Titanium 454;GSFLX;ABI SOLID;Illumina;Sanger
+Cellulosome	string	F	SubmittingOrganization	Who submits data
+Cellulosome	string	F	SubmittingCenterURL	Where to find who submits data
+Cellulosome	string	F	ConsortiumName	Name of consortium, if one exists
+Cellulosome	string	F	ConsortiumURL	How to lookup the consortium on the web
+Cellulosome	string	F	SourceOfDNA	Where came from
+Cellulosome	string	F	LocusTagPrefix	For other references
+Cellulosome	string	F	Replicon	name, type and size separated by colons
+Cellulosome	string	F	NCBIProjectID	Genome Project identifier at NCBI

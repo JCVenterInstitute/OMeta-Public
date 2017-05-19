@@ -1,10 +1,12 @@
 package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.Preparable;
 import org.apache.log4j.Logger;
 import org.jcvi.ometa.action.ajax.IAjaxAction;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
+import org.jcvi.ometa.helper.LDAPHelper;
 import org.jcvi.ometa.model.Actor;
 import org.jcvi.ometa.model.ActorGroup;
 import org.jcvi.ometa.model.Group;
@@ -24,7 +26,7 @@ import java.util.*;
  * Time: 3:38 PM
  * org.jcvi.ometa.action
  */
-public class ActorRole extends ActionSupport implements IAjaxAction {
+public class ActorRole extends ActionSupport implements IAjaxAction, Preparable {
     private Logger logger = Logger.getLogger(ActorRole.class);
 
     private List<Actor> actors;
@@ -34,8 +36,8 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
     private List<String> groupIds;
 
     private List<ActorGroup> actorGroups;
-
     private List<String> roleTypes;
+    private String type;
 
     private String errorMsg;
 
@@ -51,60 +53,78 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
         this.readPersister = readPersister;
     }
 
+    @Override
+    public void prepare() throws Exception {
+        this.actors = this.readPersister.getAllActor();
+        this.groups = this.readPersister.getAllGroup();
+    }
+
     public String execute() {
         String rtnVal = INPUT;
         UserTransaction tx = null;
         try {
-            actors = readPersister.getAllActor();
-            groups = readPersister.getAllGroup();
 
-            if(actorId != null && groupIds != null) {
-                tx = (UserTransaction)new InitialContext().lookup("java:comp/UserTransaction");
-                tx.begin();
-
-                UploadActionDelegate udelegate = new UploadActionDelegate();
-                psewt = udelegate.initializeBusinessObject(logger, psewt);
-
-                List<ActorGroup> currentGroups = readPersister.getActorGroup(actorId);
-
-                List<Long> currentGroupsList = new ArrayList<Long>(currentGroups.size());
-                List<ActorGroup> removedActorGroups = new ArrayList<ActorGroup>();
-
-                for(ActorGroup actorGroup : currentGroups) {
-                    if(!groupIds.contains(Long.toString(actorGroup.getGroupId()))) { //actor groups to be removed
-                        removedActorGroups.add(actorGroup);
-                    } else {
-                        currentGroupsList.add(actorGroup.getGroupId());
+            if(this.actorId != null && this.groupIds != null) {
+                if(type != null && type.equals("reset")) {
+                    Actor currentActor = this.readPersister.getActor(this.actorId);
+                    if(currentActor != null) {
+                        LDAPHelper ldapHelper = new LDAPHelper();
+                        ldapHelper.resetPassword(
+                                currentActor.getUsername(),
+                                currentActor.getFirstName() + " " + currentActor.getLastName(),
+                                currentActor.getEmail()
+                        );
                     }
-                }
 
-                List<Group> availableGroups = readPersister.getAllGroup();
-                Map<Long, Group> availableGroupsMap = new HashMap<Long, Group>(availableGroups.size());
-                for(Group group : availableGroups) {
-                    availableGroupsMap.put(group.getGroupId(), group);
-                }
+                    addActionMessage("user password has been reset.");
+                } else {
+                    tx = (UserTransaction)new InitialContext().lookup("java:comp/UserTransaction");
+                    tx.begin();
 
-                List<ActorGroup> newActorGroups = new ArrayList<ActorGroup>();
-                for(String id : groupIds) {
-                    Long groupId = Long.parseLong(id);
-                    if(!currentGroupsList.contains(groupId)) {
-                        ActorGroup actorGroup = new ActorGroup();
-                        actorGroup.setActorId(actorId);
-                        actorGroup.setGroup(availableGroupsMap.get(groupId));
-                        actorGroup.setGroupId(groupId);
-                        newActorGroups.add(actorGroup);
+                    UploadActionDelegate udelegate = new UploadActionDelegate();
+                    psewt = udelegate.initializeBusinessObject(logger, psewt);
+
+                    List<ActorGroup> currentGroups = readPersister.getActorGroup(this.actorId);
+
+                    List<Long> currentGroupsList = new ArrayList<Long>(currentGroups.size());
+                    List<ActorGroup> removedActorGroups = new ArrayList<ActorGroup>();
+
+                    for(ActorGroup actorGroup : currentGroups) {
+                        if(!groupIds.contains(Long.toString(actorGroup.getGroupId()))) { //actor groups to be removed
+                            removedActorGroups.add(actorGroup);
+                        } else {
+                            currentGroupsList.add(actorGroup.getGroupId());
+                        }
                     }
-                }
 
-                if(removedActorGroups.size() > 0) {
-                    psewt.deleteActorGroup(removedActorGroups);
-                }
-                if(newActorGroups.size() > 0) {
-                    psewt.loadActorGroup(newActorGroups);
-                }
+                    List<Group> availableGroups = readPersister.getAllGroup();
+                    Map<Long, Group> availableGroupsMap = new HashMap<Long, Group>(availableGroups.size());
+                    for(Group group : availableGroups) {
+                        availableGroupsMap.put(group.getGroupId(), group);
+                    }
 
-                rtnVal = SUCCESS;
-                addActionMessage("Actor Roles have been updated.");
+                    List<ActorGroup> newActorGroups = new ArrayList<ActorGroup>();
+                    for(String id : groupIds) {
+                        Long groupId = Long.parseLong(id);
+                        if(!currentGroupsList.contains(groupId)) {
+                            ActorGroup actorGroup = new ActorGroup();
+                            actorGroup.setActorId(actorId);
+                            actorGroup.setGroup(availableGroupsMap.get(groupId));
+                            actorGroup.setGroupId(groupId);
+                            newActorGroups.add(actorGroup);
+                        }
+                    }
+
+                    if(removedActorGroups.size() > 0) {
+                        psewt.deleteActorGroup(removedActorGroups);
+                    }
+                    if(newActorGroups.size() > 0) {
+                        psewt.loadActorGroup(newActorGroups);
+                    }
+
+                    rtnVal = SUCCESS;
+                    addActionMessage("Actor Roles have been updated.");
+                }
             }
 
         } catch (Exception ex) {
@@ -181,5 +201,13 @@ public class ActorRole extends ActionSupport implements IAjaxAction {
 
     public List<String> getRoleTypes() {
         return roleTypes;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

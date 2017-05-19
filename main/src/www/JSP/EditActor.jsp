@@ -97,10 +97,10 @@
                   </tr>
                 </table>
               </div>
-              <s:div id="submitDiv" cssStyle="margin:15px 10px 5px 200px;width:100%;">
+              <div id="submitDiv" cssStyle="margin:15px 10px 5px 200px;width:100%;">
                 <input type="button" class="btn btn-primary" onclick="javascript:loadActor();" id="loadButton" value="Update"/>
-                <input type="button" class="btn btn-info" tyle="margin-left:15px;" onclick="self.close()" value="Cancel" />
-              </s:div>
+                <a href="actorRole.action" class="btn btn-info">Back</a>
+              </div>
             </div>
           </div>
         </s:form>

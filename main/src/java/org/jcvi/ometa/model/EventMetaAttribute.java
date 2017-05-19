@@ -42,7 +42,7 @@ public class EventMetaAttribute implements MetaAttributeModelBean, ProjectRefere
     private Long projectId;
 
     private boolean required;
-    private boolean active;
+    private boolean active = true;
     private Boolean sampleRequired;
     private String desc;
     private String options;
@@ -65,6 +65,8 @@ public class EventMetaAttribute implements MetaAttributeModelBean, ProjectRefere
     private String label;
     private String ontology;
     private Integer order;
+
+    private boolean dictionary;
 
 
     @Id
@@ -123,6 +125,16 @@ public class EventMetaAttribute implements MetaAttributeModelBean, ProjectRefere
     @JCVI_BeanPopulator_Column
     public void setRequired(Boolean required) {
         this.required = required;
+    }
+
+    @Transient
+    public boolean isDictionary() {
+        return dictionary;
+    }
+
+    @JCVI_BeanPopulator_Column
+    public void setDictionary(boolean dictionary) {
+        this.dictionary = dictionary;
     }
 
     /**

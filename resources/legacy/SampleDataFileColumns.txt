@@ -1,0 +1,135 @@
+Project tracking Setup
+	Project attributes
+		ProjectName,DataType,IsRequired,PossibleValues
+		ProjectDescription
+		ParentProjectName
+		GrantName
+		GrantAccountCode
+		ProjectGroup
+		PathogenCategory
+		Collaborator
+		ProjectStatus
+		ProjectURL
+		References
+
+
+	Sample attributes
+		ProjectID
+		SampleID
+		SampleName
+		SampleDescription
+		ContactFirstName
+		ContactLastName
+		IsPublic
+		EstimatedGenomeSize(Mb)
+		Genus
+		Species
+		Strain/isolate/breed
+		OrganismName(Required)
+		Taxonomy(colon as a seperator for name space and id like NCBI:204)
+		NCBITaxonID
+		DataURL
+		References
+		Sequencing Center
+		Sequencing Center URL
+		Sequencing Method
+		Sequencing Depth
+		Sequencing Technology
+		Submitting Organization
+		Submitting Center URL
+		Consortium Name
+		Consortium URL
+		Source of DNA 
+		Locus Tag Prefix
+		Replicons ( Replicon Name, type and Size will be seperated by colon)
+		NCBIProjectID
+
+	Event attributes	
+		 Project Loading
+			ProjectName
+			ProjectDescription
+			ParentProjectName
+			GrantName
+			GrantAccountCode
+			ProjectGroup
+			PathogenCategory
+			Collaborator
+			ProjectStatus
+			ProjectURL
+			References
+			
+		 Sample Loading
+
+		 Genbank registration
+			ProjectName (Required):
+			SampleIdentifier(Required):
+			Contact's First Name : 
+			Contact's Last Name : 
+			DataURL : 
+			SampleDescription : 
+			EstimatedGenomeSizeSample: 
+			LocusTagPrefix: 
+			OrganismName : 
+			ProjectID: 
+			ProjectStatus:  
+			ProjectURL: 
+			References
+			SequencingCenter: 
+			SequencingDepth: 
+			SequencingMethod: 
+			SequencingTechnology: 
+			SourceofDNA: 
+			Strain/isolate/breed: 
+			SubmittingOrganization: 
+			SubmittingOrganization URL: 
+			NCBITaxonID
+			NCBIProjectID
+
+		Trace Archive submission
+			ProjectName (Required)
+			SampleIdentifier(Required):
+			DataBankURL: like for SRA http://www.ncbi.nlm.nih.gov/sra http://eutils.ncbi.nih.gov/Traces/trace.cgi 
+			Filename
+			References
+			Submissioncount
+			Submissionname
+			Submissionprefix
+			Status: submitted
+			Submissiondate:
+			ReadCount
+			Accessionnumbers
+
+		Sequence Submission (WGS): (What about other kinds?) Use case captures Assembly archive data submission status and its accession numbers.
+			ProjectName (Required)
+			SampleIdentifier (Required):
+			DataBank URL:
+			Filename
+			Reference
+			AccessionNumbers
+		Assembly QC
+			ProjectName (Required)
+			SampleIdentifier (Required):
+			Coverage
+			N50Scaffolds
+			Contigs gr 500bp
+			Avg Read Length
+			Num Bases
+			Genome Size
+			N50Contig
+			Scaffolds
+			Totals of Reads
+			Assembler
+			FileLocation
+
+		Assembly Archive submission (Not required)
+
+		Annotation submission
+			ProjectName (Required)
+			SampleIdentifier (Required):
+			DataBankURL:
+			Accession ( start and end will be seperated by colon)
+			Reference
+			FileLocation
+
+Project event Loading
+	

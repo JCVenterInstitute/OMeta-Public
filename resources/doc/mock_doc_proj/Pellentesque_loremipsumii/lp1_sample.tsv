@@ -1,0 +1,26 @@
+Sample
+SampleName	ProjectName	Public
+lp1	Pellentesque loremipsumii	0
+
+SampleMetaAttributes
+ProjectName	DataType	Required	AttributeName	AttributeDescription	PossibleValues
+Pellentesque loremipsumii	string	T	Organism	Species and strain	
+Pellentesque loremipsumii	string	T	Species	Species	
+Pellentesque loremipsumii	string	T	Strain/isolate/breed	Just strain identifier	
+Pellentesque loremipsumii	int	F	Taxonomy ID	NCBI Taxon ID	
+Pellentesque loremipsumii	int	F	Project ID	NCBI Project ID	
+
+SampleRegistration_EventAttributes
+ProjectName	SampleName	AttributeName	AttributeValue
+Pellentesque loremipsumii	lp1	Organism	Nulla facilisii PF1550
+Pellentesque loremipsumii	lp1	Species	Nulla facilisii
+Pellentesque loremipsumii	lp1	Strain/isolate/breed	PF1550
+Pellentesque loremipsumii	lp1	Taxonomy ID	1010101
+
+SampleRegistration_LookupValues
+AttributeName	AttributeType	AttributeDataType
+Organism	Sample Attribute	string
+Species	Sample Attribute	string
+Strain/isolate/breed	Sample Attribute	string
+Taxonomy ID	Sample Attribute	int
+Project ID	Sample Attribute	int

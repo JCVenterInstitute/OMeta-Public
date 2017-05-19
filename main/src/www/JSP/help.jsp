@@ -63,10 +63,10 @@
           </tr>
         </table>
       </div>
-      <s:div id="submitDiv" cssStyle="margin:15px 10px 5px 200px;width:100%;">
+      <div id="submitDiv" cssStyle="margin:15px 10px 5px 200px;width:100%;">
         <input type="submit" id="sendButton" value="Submit"/>
         <input type="button" style="margin-left:15px;" onclick="javascript:_page.clear();" value="Clear" />
-      </s:div>
+      </div>
     </div>
   </div>
 </s:form>

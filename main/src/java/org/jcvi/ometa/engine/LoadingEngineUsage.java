@@ -49,6 +49,7 @@ public class LoadingEngineUsage {
     protected static final String BATCH_SIZE_PARAM_NAME = "b";
     protected static final String MAKE_EVENT_PARAM_NAME = "template";
     protected static final String BATCH_PARAM_NAME = "batch";
+    protected static final String JSON_PARAM_NAME = "json";
     protected static final String DOWNLOAD_DATA_PARAM_NAME = "dd";
     protected static final String DATABASE_ENVIRONMENT_PARAM_NAME = "server";
 
@@ -64,6 +65,7 @@ public class LoadingEngineUsage {
     private OptionParameter batchSizeParam;
     private FlagParameter makeTemplateFlag;
     private FlagParameter batchFlag;
+    private FlagParameter jsonFlag;
     private FlagParameter downloadDataFlag;
     private OptionParameter serverUrlParam;
     private StringBuilder errors;
@@ -75,8 +77,9 @@ public class LoadingEngineUsage {
     private int totalCount;
     private int successCount;
     private int failCount;
-    private String logFilePath;
-    private String failFilePath;
+    private String logFileName;
+    private String failFileName;
+    private String outputDirectory;
 
 
     /**
@@ -138,6 +141,9 @@ public class LoadingEngineUsage {
                     ++count;
                 }
                 if(!isEmpty(multiDirectoryParam)) {
+                    ++count;
+                }
+                if(isJson()){
                     ++count;
                 }
                 if(count > 1) { //only one
@@ -257,6 +263,8 @@ public class LoadingEngineUsage {
         makeTemplateFlag.setUsageInfo("flag for creating an event template.");
         batchFlag = commandLineHandler.addFlagParameter(BATCH_PARAM_NAME);
         batchFlag.setUsageInfo("flag for batch load.");
+        jsonFlag = commandLineHandler.addFlagParameter(JSON_PARAM_NAME);
+        jsonFlag.setUsageInfo("flag for json producer.");
         downloadDataFlag = commandLineHandler.addFlagParameter(DOWNLOAD_DATA_PARAM_NAME);
         downloadDataFlag.setUsageInfo("flag for download project data");
         serverUrlParam = commandLineHandler.addOptionParameter(DATABASE_ENVIRONMENT_PARAM_NAME);
@@ -401,6 +409,8 @@ public class LoadingEngineUsage {
         return batchFlag.getValue();
     }
 
+    public boolean isJson() { return jsonFlag.getValue(); }
+
     public boolean isDownloadData() {
         return downloadDataFlag.getValue();
     }
@@ -441,20 +451,28 @@ public class LoadingEngineUsage {
         this.failCount = failCount;
     }
 
-    public String getLogFilePath() {
-        return logFilePath;
+    public String getOutputDirectory() {
+        return outputDirectory;
     }
 
-    public void setLogFilePath(String logFilePath) {
-        this.logFilePath = logFilePath;
+    public void setOutputDirectory(String outputDirectory) {
+        this.outputDirectory = outputDirectory;
     }
 
-    public String getFailFilePath() {
-        return failFilePath;
+    public String getFailFileName() {
+        return failFileName;
     }
 
-    public void setFailFilePath(String failFilePath) {
-        this.failFilePath = failFilePath;
+    public void setFailFileName(String failFileName) {
+        this.failFileName = failFileName;
+    }
+
+    public String getLogFileName() {
+        return logFileName;
+    }
+
+    public void setLogFileName(String logFileName) {
+        this.logFileName = logFileName;
     }
 
     public String getSubmitterName() {

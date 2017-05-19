@@ -225,6 +225,7 @@ var _utils = {
             //options
             var isDesc = (_ma.desc && _ma.desc !== '');
             var isRequired = _ma.requiredDB;
+            var isDictionary = _ma.dictionary;
             var hasOntology = (_ma.ontology && _ma.ontology !== '');
             var $attributeTr = $('<tr class="gappedTr"/>');
 
@@ -284,9 +285,15 @@ var _utils = {
                   options = '<option>Select '+parentFieldName +' </option>';
                   hasDependantDict = true;
                 } else {
-                  $.each(givenOptions.split(';'), function (o_i, o_v) {
-                    options += '<option value="' + o_v.split(" - ")[0] + '">' + o_v + '</option>';
-                  });
+                  if(isDictionary) {
+                    $.each(givenOptions.split(';'), function (o_i, o_v) {
+                      options += '<option value="' + o_v.split(" - ")[0] + '">' + o_v + '</option>';
+                    });
+                  } else {
+                    $.each(givenOptions.split(';'), function (o_i, o_v) {
+                      options += '<option value="' + o_v + '">' + o_v + '</option>';
+                    });
+                  }
                 }
               }
 
@@ -499,10 +506,11 @@ var _utils = {
             var key = i;
             var value  = projAttrMap[i];
 
-            while(key.indexOf(" ") > -1) key = key.replace(" ", "_");
+            key = key.replace(/ /g, "_");
+            key = key.replace(/'/g, "\\'");
 
             //jquery regex for single quotation
-            var $input = $("input[id*='"+key.replace(/([ #;&,.+*~\':"!^$[\]()=>|\/@])/g,'\\$1')+"']");
+            var $input = $("input[id*='"+key.replace(/([ #;&,.+*~\':"!^$[\]()=>|\/@])/g,'\$1')+"']");
 
             if($input.length > 0) $input.val(value);
             else {
@@ -1341,6 +1349,7 @@ var button = {
             onOpen: function () {adjustParentDivHeight("open")},
             onClose: function () {adjustParentDivHeight("close")}
           });
+          if(bean != null) utils.multiSelectWithNode($inputNode, bean[1]);
         } else if(av_v.isRadio === true){
           $inputNode.find('select').multipleSelect({
             onOpen: function () {adjustParentDivHeight("open")},

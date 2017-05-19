@@ -221,7 +221,7 @@ public class MultiLoadParameter implements Serializable {
         }
     }
 
-    public class ProjectPair implements Serializable {
+    public static class ProjectPair implements Serializable {
         private Project project; //project or sample
         private List<FileReadAttributeBean> attributes; //attributes for project/sample registration event
         private List<ProjectMetaAttribute> pmas;
@@ -278,7 +278,7 @@ public class MultiLoadParameter implements Serializable {
         }
     }
 
-    public class SamplePair implements Serializable {
+    public static class SamplePair implements Serializable {
         private Sample sample;
         private List<FileReadAttributeBean> attributes;
         private int rowIndex;

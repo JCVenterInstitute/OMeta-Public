@@ -38,7 +38,8 @@ import java.util.Properties;
  */
 public class ProductionLoaderConnectionFactory {
     private static final String MYSQL_DRIVER_CLASSNAME = "com.mysql.jdbc.Driver";
-    protected final String CONFIG_LOADER_DB_PREFIX = "etl.target_db_";
+    protected final String CONFIG_TARGET_LOADER_DB_PREFIX = "etl.target_db_";
+    protected final String CONFIG_SOURCE_LOADER_DB_PREFIX = "etl.source_db_";
     protected final String CONFIG_LOADER_TABLE_LIST = "etl.table_list.";
     protected static final String TEST_DB_ENVIRONMENT = "test";
     protected static final String PRODUCTION_DB_ENVIRONMENT = "prod";
@@ -73,13 +74,13 @@ public class ProductionLoaderConnectionFactory {
         }
         this.setTargetEnvironment(dbEnvironment);
 
-        String tgtDbUrl = props.getProperty(CONFIG_LOADER_DB_PREFIX+"url." + dbEnvironment);
-        String tgtDbUser = props.getProperty(CONFIG_LOADER_DB_PREFIX+"username." + dbEnvironment);
-        String tgtDbPass = props.getProperty(CONFIG_LOADER_DB_PREFIX+"password." + dbEnvironment);
+        String tgtDbUrl = props.getProperty(CONFIG_TARGET_LOADER_DB_PREFIX+"url." + dbEnvironment);
+        String tgtDbUser = props.getProperty(CONFIG_TARGET_LOADER_DB_PREFIX+"username." + dbEnvironment);
+        String tgtDbPass = props.getProperty(CONFIG_TARGET_LOADER_DB_PREFIX+"password." + dbEnvironment);
 
-        String srcDbUrl = props.getProperty(CONFIG_LOADER_DB_PREFIX+"url." + dbEnvironment);
-        String srcDbUser = props.getProperty(CONFIG_LOADER_DB_PREFIX+"username." + dbEnvironment);
-        String srcDbPass = props.getProperty(CONFIG_LOADER_DB_PREFIX+"password." + dbEnvironment);
+        String srcDbUrl = props.getProperty(CONFIG_SOURCE_LOADER_DB_PREFIX+"url." + dbEnvironment);
+        String srcDbUser = props.getProperty(CONFIG_SOURCE_LOADER_DB_PREFIX+"username." + dbEnvironment);
+        String srcDbPass = props.getProperty(CONFIG_SOURCE_LOADER_DB_PREFIX+"password." + dbEnvironment);
         String tableListStr = props.getProperty(CONFIG_LOADER_TABLE_LIST + dbEnvironment);
         if (tableListStr == null) {
             tableListStr = props.getProperty(CONFIG_LOADER_TABLE_LIST+PRODUCTION_DB_ENVIRONMENT);  // Use production as default.

@@ -23,7 +23,7 @@ package org.jcvi.ometa.stateless_session_bean;
 
 import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.jboss.wsf.spi.annotation.WebContext;
+import org.jboss.ws.api.annotation.WebContext;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.configuration.JCVI_Project;
 import org.jcvi.ometa.db_interface.WritebackBeanPersister;

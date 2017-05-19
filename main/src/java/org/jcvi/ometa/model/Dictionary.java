@@ -3,6 +3,7 @@ package org.jcvi.ometa.model;
 import org.jcvi.ometa.configuration.JCVI_BeanPopulator_Column;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name="dictionary")
-public class Dictionary implements ModelBean {
+public class Dictionary implements ModelBean, Serializable {
 
     private Long dictionaryId;
     private String dictionaryType;

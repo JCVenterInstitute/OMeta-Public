@@ -194,8 +194,6 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
         } catch (Exception ex) {
             sessionAndTransactionManager.rollBackTransaction();
             throw ex;
-        } finally {
-            sessionAndTransactionManager.closeSession();
         }
     }
 
@@ -481,6 +479,10 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                     attribute.setActiveDB(1);
                 }
 
+                if(pmaDAO.getProjectMetaAttribute(attribute.getNameLookupId(), attribute.getProjectId(), session) != null) {
+                    continue;
+                }
+
                 if(attribute.getCreationDate()==null)
                     pmaDAO.write(attribute, sessionAndTransactionManager.getTransactionStartDate(), session);
                 else
@@ -501,6 +503,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
             Map<String, Long> projNameVsId = new HashMap<String, Long>();
             for (SampleMetaAttribute attribute : smaBeans) {
                 validateSampleMetaAttributeInput(attribute);
+
                 if (attribute.getProjectId() == null) {
                     String projectName = attribute.getProjectName();
                     Long projectId = getAndCacheProjectId(session, projNameVsId, projectName);
@@ -517,7 +520,11 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                     attribute.setActiveDB(1);
                 }
 
-                if(attribute.getCreationDate()==null)
+                if(smaDAO.getSampleMetaAttribute(attribute.getNameLookupId(), attribute.getProjectId(), session) != null) {
+                    continue; //skip for any existing SMA
+                }
+
+                if(attribute.getCreationDate() == null)
                     smaDAO.write(attribute, sessionAndTransactionManager.getTransactionStartDate(), session);
                 else
                     smaDAO.update(attribute, sessionAndTransactionManager.getTransactionStartDate(), session);
@@ -715,6 +722,12 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
 
                     helper.satisfyEmaRequirement(attribName, eventName, beanProjectName);
                     helper.checkControlledValue(attribName, value, EventPersistenceHelper.AttributeType.event);
+
+                    //Verify session is still open after value check
+                    if(!session.isOpen()) {
+                        this.open();
+                        helper.setSession(session);
+                    }
                     helper.writeBackAttribute(eventTypeLookupId, attribName, attributeNameLookupValueId, attribute);
 
                 } else {

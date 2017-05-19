@@ -26,7 +26,6 @@ import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.codehaus.jettison.json.JSONObject;
-import org.jboss.varia.scheduler.Schedulable;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.*;
@@ -47,7 +46,7 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 
-public class JsonProducer implements Schedulable {
+public class JsonProducer implements Runnable {
     private Logger logger = Logger.getLogger(JsonProducer.class);
     private ProjectSampleEventPresentationBusiness pseEjb;
 
@@ -64,7 +63,7 @@ public class JsonProducer implements Schedulable {
         pseEjb = ejb;
     }
 
-    public static void main(String[] args) {
+    public void run() {
         try {
             JsonProducer pro = new JsonProducer();
             pro.generateJson();
@@ -208,20 +207,23 @@ public class JsonProducer implements Schedulable {
             CellStyle style = workBook.createCellStyle();
             style.setFillBackgroundColor(IndexedColors.CORNFLOWER_BLUE.getIndex());
             style.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
-            style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             Font font = workBook.createFont();
-            font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+            font.setBold(true);
             font.setColor(IndexedColors.WHITE.getIndex());
             style.setFont(font);
             /*------------ XLS Part END ------------*/
 
             List<String> attributeList = new ArrayList<String>();
-
+            String bioSampleId = "BioSample ID";
             for (String tempAttribute : parameterizedAttributes) {
-                attributeList.add(tempAttribute);
-                headerCell = singleRow.createCell(cellIndex++);
-                headerCell.setCellValue(tempAttribute);
-                headerCell.setCellStyle(style);
+                tempAttribute = (tempAttribute.equals("BioSample_Accession") || tempAttribute.equals("BioSample Accession")) ? bioSampleId : tempAttribute;
+                if(!attributeList.contains(tempAttribute)) {
+                    attributeList.add(tempAttribute);
+                    headerCell = singleRow.createCell(cellIndex++);
+                    headerCell.setCellValue(tempAttribute);
+                    headerCell.setCellStyle(style);
+                }
             }
 
             if (screenAttributes == null || screenAttributes.equals("") || screenAttributes.equals("ALL")) {
@@ -314,13 +316,19 @@ public class JsonProducer implements Schedulable {
                             SampleMetaAttribute sampleMeta = sa.getMetaAttribute();
                             tempLookupValue = sampleMeta.getLookupValue();
                             Object sav = ModelValidator.getModelValue(tempLookupValue, sa);
-                            sampleAttrMap.put(tempLookupValue.getName(), sav);
+                            String tempLookupValueName = tempLookupValue.getName();
+
+                            //assign biosample_accession value to BioSample ID
+                            if(tempLookupValueName.equals("BioSample_Accession") || tempLookupValueName.equals("BioSample Accession"))
+                                tempLookupValueName = bioSampleId;
+
+                            sampleAttrMap.put(tempLookupValueName, sav);
 
                             if(sampleMeta.getLabel() != null) { //add another key-value pair for a labeled attribute
                                 sampleAttrMap.put(sampleMeta.getLabel(), sav);
                             }
 
-                            if(SAMPLE_STATUS.equals(tempLookupValue.getName())) {
+                            if(SAMPLE_STATUS.equals(tempLookupValueName)) {
                                 String currStatus = (String)sav;
                                 if(!statusList.contains(currStatus)) //add new status value
                                     statusList.add(currStatus);
@@ -706,7 +714,6 @@ public class JsonProducer implements Schedulable {
         return samplesForCurrentProject;
     }
 
-    @Override
     public void perform(Date date, long l) {
 
         try {

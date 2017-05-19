@@ -54,7 +54,7 @@
     ul.ui-autocomplete.ui-menu {
       width:300px
     }
-    #refreshDataBtn {position:absolute;height:24px;width:34px;margin-left:10px;border:1px solid #aed0ea;background:#d7ebf9;font-weight:bold;color:#2779aa;}
+    #refreshDataBtn {position:inherit;height:24px;width:34px;margin-left:10px;border:1px solid #aed0ea;background:#d7ebf9;font-weight:bold;color:#2779aa;}
     #refreshDataBtn:hover:after{ background: #333; background: rgba(0,0,0,.8);
       border-radius: 5px; bottom: 0px; color: #fff; content: attr(data-tooltip);
       left: 140%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
@@ -104,7 +104,7 @@
               <div id="tableTop">
                 <div class="row row_spacer">
                   <div class="col-md-1">Project Name</div>
-                  <div class="col-md-5 combobox">
+                  <div class="col-md-5 combobox" style="display: inline-flex;">
                     <s:select id="_projectSelect" list="projectList" name="projectId" headerKey="0" headerValue="" listValue="projectName" listKey="projectId" required="true" />
                     <button type="button" class="btn btn-default btn-xs" id="refreshDataBtn" onclick="refreshData();" data-tooltip="Refresh Project">
                       <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>

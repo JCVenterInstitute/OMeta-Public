@@ -78,7 +78,7 @@
                                 <td>
                                     <s:iterator value="eventAttr" var="eAttr">
                                         <s:if test="name!=null && value!=null">
-                                            <p><s:property value="name" /> - <s:property value="value" escape="false"/></p>
+                                            <p><s:property value="name" /> - <s:property value="value" escapeHtml="false"/></p>
                                         </s:if>
                                     </s:iterator>
                                 </td>

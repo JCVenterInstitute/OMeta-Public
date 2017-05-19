@@ -1,0 +1,180 @@
+Duration_SampleMetaAttributes.tsv
+ProjectName	DataType	Required	AttributeName	AttributeDescription	PossibleValues
+Cellulosome	date	T	Expected Duration	When will sample materials expire.	
+
+EventMetaAttributes.tsv
+ProjectName	EventName	Required	AttributeName	DataType	SampleRequired	AttributeDescription	PossibleValues
+Cellulosome	ProjectRegistration	T	GrantMilestone	string	0	What milesetone in the grant process is this?
+Cellulosome	ProjectRegistration	T	ProjectDescription	string	0	Project long description, suitable for upload to SRA, etc.
+Cellulosome	ProjectRegistration	T	GrantName	string	0	Name of the grant program.
+Cellulosome	ProjectRegistration	T	GrantAccountingStart	date	0	When does the accounting clock start ticking?
+Cellulosome	ProjectRegistration	T	GrantAccountingCode	int	0	Suitable for use on the Grid
+Cellulosome	ProjectRegistration	F	ProjectGroup	string	0	Any group of projects to which this project may belong.
+Cellulosome	ProjectRegistration	T	ProjectStatus	string	0	Where is the project now?	Started;Completed;Sequencing;Annotation;Finishing;Submitted to Genbank;Submitted to SRA
+Cellulosome	ProjectRegistration	T	ProjectURL	string	0	Web URL telling index page of project for status and other information.
+Cellulosome	ProjectRegistration	T	ProjectReferences	string	0	Other resources of value to this project.
+Cellulosome	ProjectRegistration	F	Collaborator	string	0	Other institutes or organizations contributing to this project.
+Cellulosome	SampleRegistration	F	SampleMW	float	1	Molecular weight of sample DNA.
+Cellulosome	SampleRegistration	T	SampleDescription	string	1	Full description suitable for SRA upload
+Cellulosome	SampleRegistration	T	StrainName	string	1	Full strain of this organism.
+Cellulosome	SampleRegistration	T	ContactFirstName	string	1	Contact this person as the principal
+Cellulosome	SampleRegistration	T	ContactLastName	string	1	Contact this person as the principal
+Cellulosome	SampleRegistration	T	Public	string	1	Show this site to all interested, or only internal	T;F
+Cellulosome	SampleRegistration	F	EstimatedGenomeSize	int	1	Estimate of bp in genome.
+Cellulosome	SampleRegistration	T	Genus	string	1	Taxonomy information - standard name
+Cellulosome	SampleRegistration	T	Species	string	1	Taxonomy information - standard name
+Cellulosome	SampleRegistration	F	Strain	string	1	Strain/isolate/breed
+Cellulosome	SampleRegistration	T	OrganismName	string	1	Full name of organism
+Cellulosome	SampleRegistration	F	Taxonomy	string	1	Colon-separated like NCBI:NNNN with namespace ID
+Cellulosome	Short Read Archive	T	sra accession	string	1	Accession number coming back from SRA after object registered.
+Cellulosome	WGS	T	reference	string	1	External reference.
+
+EventStatus_LookupValues.tsv
+AttributeName	AttributeType	AttributeDataType
+Active	Event Status	string
+Inactive	Event Status	string
+
+EventType_LookupValues.tsv
+AttributeName	AttributeType	AttributeDataType
+ProjectRegistration	Event Type	string
+SampleRegistration	Event Type	string
+Expiration	Event Type	string
+
+Event_LookupValues.tsv
+AttributeName	AttributeType	AttributeDataType
+GrantMilestone	Attribute	string
+GrantAccountingStart	Event Attribute	date
+SampleMW	Attribute	float
+StrainName	Event Attribute	string
+
+Expiration_EventAttributes.tsv
+ProjectName	SampleName	AttributeName	AttributeValue
+Cellulosome	Clostridium thermocellum	Expected Duration	06/06/2014 11:29:59
+Cellulosome	Clostridium thermocellum	Hard Date	0
+
+Expiration_EventMetaAttributes.tsv
+ProjectName	EventName	Required	AttributeName	DataType	SampleRequired	AttributeDescription
+Cellulosome	Expiration	T	Expected Duration	date	1	When good samples go bad.
+Cellulosome	Expiration	T	Hard Date	int	1	Can this be extended?
+
+LookupValues.tsv
+AttributeName	AttributeType	AttributeDataType
+SampleDescription	Attribute	string
+ContactFirstName	Attribute	string
+ContactLastName	Attribute	string
+EstimatedGenomeSize	Attribute	int
+Genus	Attribute	string
+Species	Attribute	string
+Strain	Attribute	string
+OrganismName	Attribute	string
+NCBITaxonID	Attribute	string
+DataURL	Attribute	string
+Taxonomy	Attribute	string
+References	Attribute	string
+SequencingCenter	Attribute	string
+SequencingCenterURL	Attribute	string
+SequencingMethod	Attribute	string
+SequencingDepth	Attribute	int
+SequencingTechnology	Attribute	string
+SubmittingOrganization	Attribute	string
+SubmittingCenterURL	Attribute	string
+ConsortiumName	Attribute	string
+ConsortiumURL	Attribute	string
+SourceOfDNA	Attribute	string
+LocusTagPrefix	Attribute	string
+Replicon	Attribute	string
+NCBIProjectID	Attribute	string
+GrantName	Project Attribute	string
+GrantAccountingCode	Project Attribute	int
+AccessionNumber	Event Attribute	string
+reference	Event Attribute	string
+
+Project.tsv
+ProjectName	ParentProjectName	ProjectLevel	Public
+Cellulosome		1	0
+
+ProjectMetaAttributes.tsv
+ProjectName	DataType	Required	AttributeName	AttributeDescription	PossibleValues
+Cellulosome	string	T	ProjectDescription	Project long description, suitable for upload to SRA, etc.
+Cellulosome	string	T	GrantName	Name of the grant program.
+Cellulosome	int	T	GrantAccountingCode	Suitable for use on the Grid
+Cellulosome	string	F	ProjectGroup	Any group of projects to which this project may belong.
+Cellulosome	string	F	Collaborator	Other institutes or organizations contributing to this project.
+Cellulosome	string	T	ProjectStatus	Where is the project now?	Started;Completed;Sequencing;Annotation;Finishing;Submitted to Genbank;Submitted to SRA
+Cellulosome	string	T	ProjectURL	Web URL telling index page of project for status and other information.
+Cellulosome	string	F	ProjectReferences	Other resources of value to this project.
+
+ProjectRegistration_EventAttributes.tsv
+ProjectName	AttributeName	AttributeValue
+Cellulosome	ProjectDescription	Mutation of cellulose-digesting organisms may increase specificity, or conversely may indicate gene necessity through knockouts.
+Cellulosome	GrantName	Alcohol For a Better Economy, Disinc.
+Cellulosome	GrantAccountingCode	101017
+Cellulosome	Collaborator	Brew-Put-Put,Inc.
+Cellulosome	ProjectStatus	Completed
+Cellulosome	ProjectURL	https://www.sitedoesnotexist.org/WhatsThatSmell.jsp?projid=101017
+Cellulosome	ProjectReferences	Cellulosome-Enhanced Conversion of Biomass: On the Road to Bioethanol, Bayer, et al., Bioenergy, 2008
+
+Sample.tsv
+SampleName	ProjectName	Public
+Clostridium thermocellum	Cellulosome	0
+
+SampleAttributes.tsv
+ProjectName	SampleName	AttributeName	AttributeValue
+Cellulosome	Clostridium thermocellum	SampleDescription	From under fingernails.
+Cellulosome	Clostridium thermocellum	SampleName	Clostridium thermocellum
+Cellulosome	Clostridium thermocellum	ProjectName	Cellulosome
+Cellulosome	Clostridium thermocellum	OrganismName	Common European Lycanthrope
+Cellulosome	Clostridium thermocellum	ContactLastName	Chaney
+Cellulosome	Clostridium thermocellum	Public	F
+Cellulosome	Clostridium thermocellum	EstimatedGenomeSize	3000000000
+Cellulosome	Clostridium thermocellum	Genus	Homo
+Cellulosome	Clostridium thermocellum	Species	sapiens lupus
+Cellulosome	Clostridium thermocellum	Taxonomy	NCBI:666
+
+SampleMetaAttributes.tsv
+ProjectName	DataType	Required	AttributeName	AttributeDescription	PossibleValues
+Cellulosome	string	T	SampleDescription	Full description suitable for SRA upload
+Cellulosome	string	F	NCBITaxonID	Number identifier good at NCBI for their Taxon database
+Cellulosome	string	F	DataURL	Where to find this data via web
+Cellulosome	string	T	ContactFirstName	Contact this person as the principal
+Cellulosome	string	T	ContactLastName	Contact this person as the principal
+Cellulosome	string	T	Public	Show this site to all interested, or only internal	T;F
+Cellulosome	int	F	EstimatedGenomeSize	Estimate of bp in genome.
+Cellulosome	string	T	Genus	Taxonomy information - standard name
+Cellulosome	string	T	Species	Taxonomy information - standard name
+Cellulosome	string	F	Strain	Strain/isolate/breed
+Cellulosome	string	T	OrganismName	Full name of organism
+Cellulosome	string	F	Taxonomy	Colon-separated like NCBI:NNNN with namespace ID
+Cellulosome	string	F	References	References to papers
+Cellulosome	string	F	SequencingCenter	Who did the sequencing
+Cellulosome	string	F	SequencingCenterURL	Where was sequencing done
+Cellulosome	string	F	SequencingMethod	How was sequencing done
+Cellulosome	int	F	SequencingDepth	How many times coverage
+Cellulosome	string	F	SequencingTechnology	Which instrumentation	Titanium 454;GSFLX;ABI SOLID;Illumina;Sanger
+Cellulosome	string	F	SubmittingOrganization	Who submits data
+Cellulosome	string	F	SubmittingCenterURL	Where to find who submits data
+Cellulosome	string	F	ConsortiumName	Name of consortium, if one exists
+Cellulosome	string	F	ConsortiumURL	How to lookup the consortium on the web
+Cellulosome	string	F	SourceOfDNA	Where came from
+Cellulosome	string	F	LocusTagPrefix	For other references
+Cellulosome	string	F	Replicon	name, type and size separated by colons
+Cellulosome	string	F	NCBIProjectID	Genome Project identifier at NCBI
+
+SampleRegistration_EventAttributes.tsv
+ProjectName	SampleName	AttributeName	AttributeValue
+Cellulosome	Clostridium thermocellum	SampleDescription	Stress mutants of C. thermocellum.
+Cellulosome	Clostridium thermocellum	OrganismName	C. thermocellum
+Cellulosome	Clostridium thermocellum	ContactLastName	Foster
+Cellulosome	Clostridium thermocellum	ContactFirstName	Les
+Cellulosome	Clostridium thermocellum	Public	T
+Cellulosome	Clostridium thermocellum	EstimatedGenomeSize	3843301
+Cellulosome	Clostridium thermocellum	Genus	Clostridium
+Cellulosome	Clostridium thermocellum	StrainName	Clostridium thermocellum ATCC 2244
+Cellulosome	Clostridium thermocellum	Species	thermocellum
+Cellulosome	Clostridium thermocellum	Taxonomy	NCBI:20502
+
+Scheduling_LookupValues.tsv
+AttributeName	AttributeType	AttributeDataType
+Expected Duration	Attribute	date
+Hard Date	Attribute	int
+

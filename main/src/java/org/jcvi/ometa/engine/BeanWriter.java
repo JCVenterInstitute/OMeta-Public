@@ -31,12 +31,10 @@ import org.jcvi.ometa.configuration.InputBeanType;
 import org.jcvi.ometa.helper.EventLoadHelper;
 import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.model.Dictionary;
-import org.jcvi.ometa.utils.Constants;
-import org.jcvi.ometa.utils.PresentationActionDelegate;
-import org.jcvi.ometa.utils.TemplatePreProcessingUtils;
-import org.jcvi.ometa.utils.UploadActionDelegate;
-import org.jcvi.ometa.validation.ModelValidator;
+import org.jcvi.ometa.utils.*;
 
+import javax.naming.Context;
+import javax.naming.NamingException;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.*;
@@ -52,6 +50,7 @@ import java.util.*;
 public class BeanWriter {
     private Logger logger = Logger.getLogger(BeanWriter.class);
 
+    private Context ctx = null;
     private ProjectSampleEventWritebackBusiness writeEjb;
     private ProjectSampleEventPresentationBusiness readEjb;
 
@@ -60,10 +59,20 @@ public class BeanWriter {
     /** Construct with all stuff needed for subsequent calls. */
     public BeanWriter(String server, String userName, String password) {
         UploadActionDelegate writeDelegate = new UploadActionDelegate();
-        writeEjb = (ProjectSampleEventWritebackRemote)writeDelegate.getEjb(UploadActionDelegate.EJB_NAME, server, userName, password, logger);
+        writeEjb = (ProjectSampleEventWritebackRemote)writeDelegate.getEjb(ctx, UploadActionDelegate.EJB_NAME, server, userName, password, logger);
 
         PresentationActionDelegate readDelegate = new PresentationActionDelegate();
-        readEjb = (ProjectSampleEventPresentationRemote)readDelegate.getEjb(PresentationActionDelegate.EJB_NAME, server, userName, password, logger);
+        readEjb = (ProjectSampleEventPresentationRemote)readDelegate.getEjb(ctx, PresentationActionDelegate.EJB_NAME, server, userName, password, logger);
+    }
+
+    public void closeContext() throws Exception {
+        if(ctx != null) {
+            try {
+                ctx.close();
+            } catch (NamingException ex) {
+                throw new Exception("Ejb context cannot be closed : " + ex.getMessage());
+            }
+        }
     }
 
     public void writePMAs(File... files) throws Exception {
@@ -141,6 +150,12 @@ public class BeanWriter {
         return lastSampleName;
     }
 
+    public void setSubmitter(String submitterId) throws Exception {
+        if(submitterId != null && !submitterId.isEmpty()) { //manually set createdBy for bulk load
+            this.submitter = this.readEjb.getActorByUserName(submitterId);
+        }
+    }
+
     /**
      * Writes back multiple objects of assorted type, rather than a single type of file.
      *
@@ -151,6 +166,11 @@ public class BeanWriter {
         MultiLoadParameter parameterObject = this.createMultiLoadParameterWithCollector(collector);
         List<String> projectsToSecure = this.getProjectsToSecure(parameterObject);
         writeEjb.loadAll(projectsToSecure, parameterObject);
+    }
+
+    public void runJsonProducer() throws Exception {
+        JsonProducer jsonProducerBean = new JsonProducer(readEjb);
+        jsonProducerBean.generateJson();
     }
 
     public void readProjectData(String filePath, String projectName, String eventName) throws  Exception{

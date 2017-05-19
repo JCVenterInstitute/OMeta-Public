@@ -28,6 +28,7 @@ import org.jcvi.ometa.exception.LoginRequiredException;
 import org.jcvi.ometa.hibernate.dao.SecurityDAO;
 import org.jcvi.ometa.interceptor.InterceptorHelper;
 import org.jcvi.ometa.utils.Constants;
+import org.jcvi.ometa.validation.ErrorMessages;
 import org.jtc.common.util.property.PropertyHelper;
 
 import javax.annotation.Resource;
@@ -93,14 +94,14 @@ public class ReadOnlyAllOrNothingAuthInterceptor {
             rtnVal = invocationContext.proceed();
         }
         else if ( user == null  ||  user.equals( SecurityDAO.UNLOGGED_IN_USER ) ) {
-            String message = "A requested resource is protected, but user has not yet logged in.";
+            String message = ErrorMessages.LOGIN_REQUIRED_MESSAGE;
             logger.debug( message );
             throw new LoginRequiredException( message );
         }
         else {
             String systemError = "One or more projects have been denied to user " + user;
             logger.debug(systemError);
-            throw new IllegalAccessError("You do not have permission to the project or the project does not exist.");
+            throw new IllegalAccessError(ErrorMessages.DENIED_USER_VIEW_MESSAGE);
         }
 
         return rtnVal;

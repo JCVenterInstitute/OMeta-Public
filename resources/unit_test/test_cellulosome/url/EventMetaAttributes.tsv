@@ -1,0 +1,2 @@
+ProjectName	EventName	Required	AttributeName	DataType	AttributeDescription
+Cellulosome	MockForum	T	MockForumURL	url	External reference.

@@ -27,6 +27,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.jcvi.ometa.utils.Constants;
 
 import javax.naming.Context;
@@ -90,7 +91,7 @@ public class StandaloneSessionAndTransactionManager implements SessionAndTransac
                 logger.warn("Transaction was null at commit time: TRAX ref: null");
                 new Exception().printStackTrace();
             }
-            if(transactionCanBeEnded(tx) && tx.isActive()) {
+            if(transactionCanBeEnded(tx) && tx.getStatus().isOneOf(TransactionStatus.ACTIVE)) {
                 tx.commit();
                 tx = null;  // Pushing this away, to guarantee won't be re-used.
             }
@@ -106,7 +107,7 @@ public class StandaloneSessionAndTransactionManager implements SessionAndTransac
                 logger.warn("Transaction was null at rollback time: TRAX ref: null");
                 new Exception().printStackTrace();
             }
-            if(transactionCanBeEnded(tx) && tx.isActive()) {
+            if(transactionCanBeEnded(tx) && tx.getStatus().isOneOf(TransactionStatus.ACTIVE)) {
                 tx.rollback();
                 tx = null;  // Pushing this away, to guarantee won't be re-used.
             }
@@ -222,7 +223,7 @@ public class StandaloneSessionAndTransactionManager implements SessionAndTransac
     }
 
     private boolean transactionCanBeEnded(Transaction tx) {
-        return tx != null && !(tx.wasCommitted() || tx.wasRolledBack());
+        return tx != null && !(tx.getStatus().isOneOf(TransactionStatus.COMMITTED, TransactionStatus.ROLLED_BACK));
     }
 
 }

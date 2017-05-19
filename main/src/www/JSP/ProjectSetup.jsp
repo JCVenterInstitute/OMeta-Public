@@ -62,14 +62,20 @@
             <h1>Create Project</h1>
           </div>
 
-          <div id="HeaderPane">
-            <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+          <div id="HeaderPane" style="margin:15px 0 0 30px;">
+            <div id="errorMessagesPanel" style="margin-top:15px;margin-bottom: 15px;"></div>
             <s:if test="hasActionErrors()">
-              <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
+              <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
+                <div class="alert_info" onclick="$('.alert_info').remove();">
+                  <strong style="color: #ffffff;background-color: #a90329;padding: 3px;border-color: #900323;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionErrors'><s:property/></s:iterator></strong>
+                </div>
+              </div>
             </s:if>
             <s:if test="hasActionMessages()">
-              <div class="alert_info" onclick="$('.alert_info').remove();">
-                <strong><s:iterator value='actionMessages'><s:property/><br/></s:iterator></strong>
+              <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
+                <div class="alert_info" onclick="$('.alert_info').remove();">
+                  <strong style="color: #31708f;background-color: #d9edf7;padding: 3px;border-color: #bce8f1;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
+                </div>
               </div>
             </s:if>
           </div>
@@ -128,13 +134,13 @@
 
                 </table>
               </div>
-              <s:div id="submitDiv" cssStyle="margin:15px 10px 5px 0;width:100%;">
+              <div id="submitDiv" cssStyle="margin:15px 10px 5px 0;width:100%;">
                 <input type="button" class="btn btn-success" onclick="loadProject();" id="projectLoadButton" value="Create Project"/>
                 <!--<input type="button" onclick="addAttribute();" id="attributeAddButton" value="Add Project Attribute" />
                 <input type="button" onclick="newAttribute('a');" id="newAttributeButton" value="New Attribute" />-->
                 <input type="button" class="btn btn-info" onclick="doClear();" value="Clear" />
                 <input type="button" class="btn" tyle="margin-left:15px;" onclick="self.close()" value="Cancel" />
-              </s:div>
+              </div>
             </div>
           </div>
         </s:form>
@@ -170,7 +176,7 @@
           pmaOptions += vs.empty;
           $.each(res.dataMap.a, function(i1,v1) {
             if(v1 && v1.lookupValueId && v1.name) {
-              pmaOptions += vs.vvoption.replace(/\\$v\\$/g, v1.name);
+              pmaOptions += vs.vvoption.replace(/\$v\$/g, v1.name);
             }
           });
         }
@@ -183,7 +189,7 @@
   function comboBoxChanged(option, id) { return; }
 
   function addAttribute() {
-    $("tbody#pmaTbody").append(attrHtml.replace(/\\$cnt\\$/g,attrCnt).replace("$o$",pmaOptions));
+    $("tbody#pmaTbody").append(attrHtml.replace(/\$cnt\$/g,attrCnt).replace("$o$",pmaOptions));
     attrCnt++;
     $('tbody#pmaTbody select:last').combobox();
   }

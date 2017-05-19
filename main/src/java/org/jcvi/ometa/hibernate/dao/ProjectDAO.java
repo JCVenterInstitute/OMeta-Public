@@ -27,6 +27,7 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StandardBasicTypes;
 import org.jcvi.ometa.model.Group;
 import org.jcvi.ometa.model.LookupValue;
 import org.jcvi.ometa.model.Project;
@@ -191,7 +192,7 @@ public class ProjectDAO extends HibernateDAO {
         List<String> returnVal = new ArrayList<String>();
         try {
             SQLQuery query = session.createSQLQuery(SECURED_PROJECTS_SQL_QUERY);
-            query.addScalar(RTN_PROJECT_NAME, Hibernate.STRING);
+            query.addScalar(RTN_PROJECT_NAME, StandardBasicTypes.STRING);
             returnVal.addAll( query.list() );
 
         } catch ( Exception ex ) {

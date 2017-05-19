@@ -241,6 +241,7 @@ public class CommonTool {
                     }
 
                     if (options.startsWith("Dictionary:")) {
+                        ema.setDictionary(true);
                         String dictType = options.replace("Dictionary:", "");
                         boolean hasParent = dictType.contains("Parent:");
 
@@ -371,6 +372,6 @@ public class CommonTool {
     }
 
     public static String currentDateToDefaultFormat() {
-        return new SimpleDateFormat(Constants.DATE_DEFAULT_FORMAT).format(Calendar.getInstance().getTime());
+        return new SimpleDateFormat(Constants.DATE_USER_ENTER_FORMAT).format(Calendar.getInstance().getTime());
     }
 }

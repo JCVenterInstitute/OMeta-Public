@@ -26,6 +26,7 @@ import org.jcvi.ometa.configuration.AccessLevel;
 import org.jcvi.ometa.configuration.ResponseToFailedAuthorization;
 import org.jcvi.ometa.interceptor.InterceptorHelper;
 import org.jcvi.ometa.utils.Constants;
+import org.jcvi.ometa.validation.ErrorMessages;
 import org.jtc.common.util.property.PropertyHelper;
 
 import javax.annotation.Resource;
@@ -85,7 +86,7 @@ public class WriteableAllOrNothingAuthInterceptor {
         else {
             String systemError = "One or more projects have been denied to user " + user;
             logger.debug(systemError);
-            throw new IllegalAccessError("You do not have permission to the project or the project does not exist.");
+            throw new IllegalAccessError(ErrorMessages.DENIED_USER_EDIT_MESSAGE);
         }
 
         return rtnVal;

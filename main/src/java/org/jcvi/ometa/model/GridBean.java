@@ -36,11 +36,13 @@ public class GridBean {
     private String samplePublic;
     private String parentSampleName;
     private List<FileReadAttributeBean> beanList;
+    private String sequenceFileName;
+    private String[] parsedRowData;
+    private int hasAccessionNumber;
 
     public String getProjectName() {
         return projectName;
     }
-
     public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
@@ -48,7 +50,6 @@ public class GridBean {
     public String getProjectPublic() {
         return projectPublic;
     }
-
     public void setProjectPublic(String projectPublic) {
         this.projectPublic = projectPublic;
     }
@@ -56,7 +57,6 @@ public class GridBean {
     public String getSampleName() {
         return sampleName;
     }
-
     public void setSampleName(String sampleName) {
         this.sampleName = sampleName;
     }
@@ -64,7 +64,6 @@ public class GridBean {
     public String getSamplePublic() {
         return samplePublic;
     }
-
     public void setSamplePublic(String samplePublic) {
         this.samplePublic = samplePublic;
     }
@@ -72,7 +71,6 @@ public class GridBean {
     public String getParentSampleName() {
         return parentSampleName;
     }
-
     public void setParentSampleName(String parentSampleName) {
         this.parentSampleName = parentSampleName;
     }
@@ -80,8 +78,21 @@ public class GridBean {
     public List<FileReadAttributeBean> getBeanList() {
         return beanList;
     }
-
     public void setBeanList(List<FileReadAttributeBean> beanList) {
         this.beanList = beanList;
+    }
+
+    public String getSequenceFileName() { return sequenceFileName; }
+    public void setSequenceFileName(String sequenceFileName) { this.sequenceFileName = sequenceFileName; }
+
+    public String[] getParsedRowData() { return parsedRowData;}
+    public void setParsedRowData(String[] parsedRowData) { this.parsedRowData = parsedRowData; }
+
+    public int getHasAccessionNumber() {
+        return hasAccessionNumber;
+    }
+
+    public void setHasAccessionNumber(int hasAccessionNumber) {
+        this.hasAccessionNumber = hasAccessionNumber;
     }
 }

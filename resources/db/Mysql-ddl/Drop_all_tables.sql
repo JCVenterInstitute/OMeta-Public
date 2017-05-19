@@ -1,0 +1,14 @@
+SET foreign_key_checks = 0;
+drop table actor_group;
+drop table actor;
+drop table event;
+drop table event_meta_attribute;
+drop table event_attribute;
+drop table lookup_value;
+drop table project_attribute;
+drop table project_meta_attribute;
+drop table project;
+drop table sample_attribute;
+drop table sample_meta_attribute;
+drop table sample;
+SET foreign_key_checks = 1;

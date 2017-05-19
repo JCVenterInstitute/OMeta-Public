@@ -265,7 +265,8 @@ public class SampleDAO extends HibernateDAO {
             crit.add(Restrictions.eq("projectId", projectId));
             crit.add( Restrictions.ilike("sampleName", sampleVal, MatchMode.ANYWHERE));
             crit.setProjection(Projections.rowCount());
-            totalSampleCount = (Integer) crit.uniqueResult();
+            Long count = (Long) crit.uniqueResult();
+            totalSampleCount = count.intValue();
         } catch (Exception ex) {
             throw new DAOException(ex);
         }

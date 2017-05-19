@@ -1,0 +1,7 @@
+AttributeName	AttributeType	AttributeDataType
+Category	Project Attribute	string
+Complete	Project Attribute	int
+Grant	Project Attribute	string
+Project Group	Project Attribute	string
+Project Leader	Project Attribute	string
+Project Name	Project Attribute	string

@@ -64,7 +64,7 @@
               <s:hidden name="attributesOnScreen" id="attributesOnScreen"/>
               <s:hidden name="attributes" />
               <div class="row">
-                <div id="HeaderPane" style="margin:15px 0 0 30px;">
+                <div id="HeaderPane">
                   <div class="panelHeader" style="margin:0;">Project Status</div>
                   <div id="errorMessagesPanel" style="float:left;margin-top:15px;"></div>
                   <s:if test="hasActionErrors()">

@@ -1,0 +1,11 @@
+ProjectName	SampleName	AttributeName	AttributeValue
+Cellulosome	Clostridium thermocellum	SampleDescription	Stress mutants of C. thermocellum.
+Cellulosome	Clostridium thermocellum	OrganismName	C. thermocellum
+Cellulosome	Clostridium thermocellum	ContactLastName	Foster
+Cellulosome	Clostridium thermocellum	ContactFirstName	Les
+Cellulosome	Clostridium thermocellum	Public	T
+Cellulosome	Clostridium thermocellum	EstimatedGenomeSize	3843301
+Cellulosome	Clostridium thermocellum	Genus	Clostridium
+Cellulosome	Clostridium thermocellum	StrainName	Clostridium thermocellum ATCC 2244
+Cellulosome	Clostridium thermocellum	Species	thermocellum
+Cellulosome	Clostridium thermocellum	Taxonomy	NCBI:20502

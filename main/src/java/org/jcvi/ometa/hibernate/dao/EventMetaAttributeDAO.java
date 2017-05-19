@@ -24,6 +24,7 @@ package org.jcvi.ometa.hibernate.dao;
 import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.jcvi.ometa.model.EventMetaAttribute;
 import org.jcvi.ometa.validation.ModelValidator;
@@ -98,6 +99,9 @@ public class EventMetaAttributeDAO extends HibernateDAO {
             crit.add( Restrictions.eq( "projectId", projectId ) );
             if(eventTypeLookupId != null)
                 crit.add( Restrictions.eq( "eventTypeLookupId", eventTypeLookupId ) );
+
+            crit.addOrder(Order.asc("order")); //order by position value
+
             List results = crit.list();
 
             if ( results != null ) {

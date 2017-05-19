@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.type.StandardBasicTypes;
 import org.jcvi.ometa.configuration.AccessLevel;
 import org.jcvi.ometa.configuration.QueryEntityType;
 import org.jcvi.ometa.configuration.ResponseToFailedAuthorization;
@@ -222,7 +223,7 @@ public class SecurityDAO extends HibernateDAO {
             queryStr = securedIdsQuery.replace( PROJ_GRP_SUBST_STR, EDIT_PROJECT_GROUP_FIELD );
         }
         SQLQuery query = session.createSQLQuery( queryStr );
-        query.addScalar( returnVarName, Hibernate.STRING );
+        query.addScalar( returnVarName, StandardBasicTypes.STRING );
         if ( accessLevel == AccessLevel.View  ) {
             query.setParameterList( openParamListName, ids );
         }
@@ -271,7 +272,7 @@ public class SecurityDAO extends HibernateDAO {
             queryStr = securedQuery.replace( PROJ_GRP_SUBST_STR, EDIT_PROJECT_GROUP_FIELD );
         }
         SQLQuery query = session.createSQLQuery(queryStr);
-        query.addScalar(returnVarName, Hibernate.STRING );
+        query.addScalar(returnVarName, StandardBasicTypes.STRING );
 
         query.setParameterList( securedParamListName, names );
         if ( accessLevel == AccessLevel.View  ) {

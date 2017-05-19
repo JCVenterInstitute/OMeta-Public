@@ -592,7 +592,7 @@
                           downloadAllButton = "<button type='button' class='btn btn-success' onclick='downloadFile(\"DOWNLOADALL\",\"" + rowData.sampleName + "\",\"" + ai + "\");'>Download All</button>";
                         }
 
-                        values += '<td><button type="button" id="file_' + id + '"  class="btn btn-default btn-xs table-tooltip" data-tooltip="'+ fileNameList +'" style="white-space: pre-line;" value="FILE MANAGEMENT" onclick="showFMPopup(this.id)">File Store</button>' + _html.fm.replace(/\\$id\\$/g,id).replace(/\\$existingFileField\\$/g, existingFileField).replace(/\\$downloadallbutton\\$/g, downloadAllButton) + '</td>';
+                        values += '<td><button type="button" id="file_' + id + '"  class="btn btn-default btn-xs table-tooltip" data-tooltip="'+ fileNameList +'" style="white-space: pre-line;" value="FILE MANAGEMENT" onclick="showFMPopup(this.id)">File Store</button>' + _html.fm.replace(/\$id\$/g,id).replace(/\$existingFileField\$/g, existingFileField).replace(/\$downloadallbutton\$/g, downloadAllButton) + '</td>';
                         $("head").append("<style> #file_" + id + ":hover:after {width : " + ((fileNameCharCount + 1) * 7) + "px !important;}</style>");
                       } else {
                         values += '<td>' + av + '</td>';
@@ -671,7 +671,7 @@
         _table.fnClose(_row);
       } else {
         this.src = closeBtn;
-        _table.fnOpen(_row, subrow_html.replace(/\\$d\\$/, _table.fnGetData(_row)[5]), '_details');
+        _table.fnOpen(_row, subrow_html.replace(/\$d\$/, _table.fnGetData(_row)[5]), '_details');
         $('td._details').attr('colspan', 6); //fix misalignment issue in chrome by incresing colspan by 1
         $('td._details>div').css('width', $('#statusTableDiv').width()-90);
       }

@@ -285,7 +285,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                                 Sample currSample = pair.getSample();
                                 dataBuffer.append(currSample.getSampleName() + ",");
                                 if(isSampleRegistration) {
-                                    dataBuffer.append(currSample.getParentSampleName() + ",");
+                                    dataBuffer.append((currSample.getParentSampleName() == null) ? "," : currSample.getParentSampleName() + ",");
                                     dataBuffer.append(currSample.getIsPublic() + ",");
                                 }
                                 List<FileReadAttributeBean> attributeList = pair.getAttributeList();

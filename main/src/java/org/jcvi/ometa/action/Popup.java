@@ -1,7 +1,6 @@
 package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.sun.tools.jxc.apt.Const;
 import org.apache.log4j.Logger;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.Event;

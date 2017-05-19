@@ -1,0 +1,3 @@
+./projectsampletracking-jboss-instance/log/server*
+./projectsampletracking-jboss-instance/deploy/pws_appdbinterface_MySQL-ds.xml
+./projectsampletracking-jboss-instance/deploy/external_prod_pws_appdbinterface_MySQL-ds.xml

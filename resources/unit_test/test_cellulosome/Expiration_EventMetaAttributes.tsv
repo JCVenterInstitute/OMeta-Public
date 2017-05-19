@@ -1,0 +1,3 @@
+ProjectName	EventName	Required	AttributeName	DataType	AttributeDescription
+Cellulosome	Expiration	T	Expected Duration	date	When good samples go bad.
+Cellulosome	Expiration	T	Hard Date	int	Can this be extended?

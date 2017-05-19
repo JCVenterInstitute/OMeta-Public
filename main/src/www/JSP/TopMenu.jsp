@@ -133,6 +133,9 @@
       }
     });
   </script>
+  <script type="text/javascript">
+  (function() {};)();
+  </script>
 </head>
 <body>
 <div id="header">

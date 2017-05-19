@@ -1,0 +1,29 @@
+Project
+ProjectName	ParentProjectName	ProjectLevel	Public
+Pellentesque loremipsumii		1	0
+
+ProjectMetaAttributes
+ProjectName	DataType	Required	AttributeName	AttributeDescription	PossibleValues
+Pellentesque loremipsumii	string	F	Category	NIAID Category	
+Pellentesque loremipsumii	int	T	Complete	Whether project is complete	0;1
+Pellentesque loremipsumii	string	T	Grant	Grant identifier.	
+Pellentesque loremipsumii	string	T	Project Group	Project group	
+Pellentesque loremipsumii	string	T	Project Leader	Name of person leading project	
+Pellentesque loremipsumii	string	T	Project Name	Full project name	
+
+ProjectRegistration_EventAttributes
+ProjectName	AttributeName	AttributeValue
+Pellentesque loremipsumii	Complete	1
+Pellentesque loremipsumii	Grant	Pellentesque_loremipsumii
+Pellentesque loremipsumii	Project Group	LoremIpsum
+Pellentesque loremipsumii	Project Leader	Dolores Sit Amet;Maurice Fermentum
+Pellentesque loremipsumii	Project Name	Pellentesque loremipsumii
+
+ProjectRegistration_LookupValues
+AttributeName	AttributeType	AttributeDataType
+Category	Project Attribute	string
+Complete	Project Attribute	int
+Grant	Project Attribute	string
+Project Group	Project Attribute	string
+Project Leader	Project Attribute	string
+Project Name	Project Attribute	string

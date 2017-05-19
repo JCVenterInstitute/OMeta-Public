@@ -48,7 +48,7 @@ public class FileDownloader extends ActionSupport {
 
     private final String PROJECT_FILE_STORAGE;
 
-    private String filePath;
+    private String fp;
 
     private InputStream fileInputStream;
     private String fileType;
@@ -70,7 +70,7 @@ public class FileDownloader extends ActionSupport {
             Actor actor = this.readPersister.getActorByUserName(userName);
             List<ActorGroup> actorGroups = this.readPersister.getActorGroup(actor.getLoginId());
 
-            String currProjectId = this.filePath.substring(0, this.filePath.indexOf(File.separator));
+            String currProjectId = this.fp.substring(0, this.fp.indexOf(File.separator));
             Project currProject = this.readPersister.getProject(Long.parseLong(currProjectId));
             Long projectViewGroup= currProject.getViewGroup();
 
@@ -83,12 +83,14 @@ public class FileDownloader extends ActionSupport {
                 }
             }
 
-            File file = new File(this.PROJECT_FILE_STORAGE + File.separator + fileName);
-            if(file.exists() && file.canRead()) {
-                fileInputStream = new FileInputStream(file);
-                fileName = file.getName();
-                this.fileType = "application/octet-stream";
-                rtnVal = SUCCESS;
+            if(hasAccess) {
+                File file = new File(this.PROJECT_FILE_STORAGE + File.separator + this.fp);
+                if(file.exists() && file.canRead()) {
+                    this.fileInputStream = new FileInputStream(file);
+                    this.fileName = file.getName();
+                    this.fileType = "application/octet-stream";
+                    rtnVal = SUCCESS;
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -96,12 +98,12 @@ public class FileDownloader extends ActionSupport {
         return rtnVal;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getFp() {
+        return fp;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setFp(String fp) {
+        this.fp = fp;
     }
 
     public InputStream getFileInputStream() {

@@ -23,7 +23,7 @@ package org.jcvi.ometa.interceptor.struts2;
 
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.ValidationAware;
+import com.opensymphony.xwork2.interceptor.ValidationAware;
 import com.opensymphony.xwork2.interceptor.Interceptor;
 import org.apache.log4j.Logger;
 import org.apache.struts2.interceptor.ServletConfigInterceptor;

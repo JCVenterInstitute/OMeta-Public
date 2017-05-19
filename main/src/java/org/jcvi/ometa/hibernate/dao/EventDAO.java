@@ -23,6 +23,7 @@ package org.jcvi.ometa.hibernate.dao;
 
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.type.StandardBasicTypes;
 import org.jcvi.ometa.model.Event;
 import org.jcvi.ometa.model.EventAttribute;
 import org.jcvi.ometa.model.LookupValue;
@@ -420,7 +421,7 @@ public class EventDAO extends HibernateDAO {
         SQLQuery query = session.createSQLQuery(SAMPLE_REQUIRED_QUERY);
         query.setParameter(PROJECT_NAME_PARAM, projectName);
         query.setParameter(EVENT_NAME_PARAM, eventName);
-        query.addScalar(RETURN_VAL_PARAM, Hibernate.STRING);
+        query.addScalar(RETURN_VAL_PARAM, StandardBasicTypes.STRING);
         if (logger.isDebugEnabled()) {
             logger.debug("Query is " + query.toString());
         }

@@ -1,3 +1,6 @@
+
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+
 <style>
   #userNameDropdown {
     padding: 3px !important;
@@ -12,7 +15,7 @@
     <div class="inner-header container max-container">
       <div class="top-links clearfix" style="float:left;margin-bottom:12px;">
         <a data-nav="home" href="/ometa/secureIndex.action">
-          <img class="headerImage" src="images/ometa_logo.png" alt="Ontology based Metadata Tracking">
+          <img class="headerImage" src="<c:url value='/images/ometa_logo.png' />" alt="Ontology based Metadata Tracking">
         </a>
       </div>
       <div class="navbar-header">

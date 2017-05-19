@@ -2,7 +2,6 @@ package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.Logger;
-import org.codehaus.jettison.json.JSONObject;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.exception.ForbiddenResourceException;
 import org.jcvi.ometa.exception.LoginRequiredException;

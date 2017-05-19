@@ -157,7 +157,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                         List<MetadataSetupReadBean> unordered = new ArrayList<MetadataSetupReadBean>();
                         for(MetadataSetupReadBean bean : groupedList.get(et)) {
                             String order = bean.getOrder();
-                            if(order==null || order.trim().length()==0) {
+                            if(order == null || order.trim().length() == 0 || order.equals("0")) {
                                 unordered.add(bean);
                             } else {
                                 if(treeMap.containsKey(Integer.parseInt(order))) {
@@ -411,7 +411,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                     emas = new ArrayList<EventMetaAttribute>(emas.size());
                     for(String et : groupedList.keySet()) {
                         List<EventMetaAttribute> sortedList = groupedList.get(et);
-                        CommonTool.sortEventMetaAttributeByOrder(sortedList);
+                        //CommonTool.sortEventMetaAttributeByOrder(sortedList);
                         emas.addAll(sortedList);
                     }
 

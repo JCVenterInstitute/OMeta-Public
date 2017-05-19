@@ -24,14 +24,11 @@ package org.jcvi.ometa.action;
 import org.jcvi.ometa.PSTTestAbstract;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.Project;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -40,8 +37,24 @@ import static org.junit.Assert.assertTrue;
  * Time: 3:59 PM
  */
 public class ProductionStatusTest extends PSTTestAbstract {
-    @Ignore
-    public void doStatus() {
+    ProductionStatus action = new ProductionStatus(this.getReadBean("dev"));
+
+    @Test
+    public void main() {
+        //this.doStatus();
+        //this.doExcel();
+        //this.ajax();
+    }
+
+    private void ajax() {
+        action.setProjectNames("DPCC_1000");
+        action.setAttributes("attributes:Project Name,Collecting_Institution,Project_Code,Project_ID,Project_Title,Project_Description,Project_PI_1 First_Name,Project_PI_1 Last_Name,Project_PI_2 First_Name,Project_PI_2 Last_Name,");
+        action.setiSortCol_0("2");
+        action.setsSortDir_0("asc");
+        action.runAjax();
+    }
+
+    private void doStatus() {
         ProductionStatus action = new ProductionStatus(this.getReadBean("dev"));
         action.setProjectNames("GATES-test");
         action.setAttributes("ALL");
@@ -49,8 +62,7 @@ public class ProductionStatusTest extends PSTTestAbstract {
         assertTrue(1==1);
     }
 
-    @Test
-    public void doExcel() throws Exception {
+    private void doExcel() throws Exception {
         String projectName = "GSC";
         ReadBeanPersister readBeanPersister = this.getReadBean("prod");
 
