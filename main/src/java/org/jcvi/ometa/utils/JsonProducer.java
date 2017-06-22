@@ -151,7 +151,7 @@ public class JsonProducer implements Runnable {
         String PROJECT_STATUS = "Project Status";
         try {
             JSONObject json = new JSONObject();
-
+            
             File directory = new File(filePath);
             if (!directory.exists() || !directory.isDirectory()) {
                 if ((new File(directory.getParent())).canWrite())
@@ -165,7 +165,7 @@ public class JsonProducer implements Runnable {
             File tempFile = new File(filePath + File.separator + fileName + "_temp.json");
             FileWriter fileWriter = new FileWriter(tempFile);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
+            
             //Normal status data retrieval
             LookupValue tempLookupValue;
 
@@ -424,18 +424,34 @@ public class JsonProducer implements Runnable {
                 }
                 sumList.add(currSum);
             }
-
+            
+                       
             JSONObject sumMap = new JSONObject();
             sumMap.put("s_l", statusList);
             sumMap.put("data", sumList);
             json.put("sums", sumMap);
-
             json.put("samples", sampleList);
-            //bufferedWriter.write("]");
             bufferedWriter.write(json.toString());
-            bufferedWriter.close();
+    		bufferedWriter.close();
+            
+            if(fileName.equalsIgnoreCase("gscmsc")){
+            	if(tempFile.exists() && tempFile.length()>0){
+            		JSONObject jsonSummary;
+            		File summary;
+            		FileWriter summaryFileWriter;
+            		BufferedWriter summaryBufferedWriter;
+            		jsonSummary = new JSONObject();
+            		summary = new File(filePath + File.separator + fileName + "_summary.json");
+            		summaryFileWriter = new FileWriter(summary);
+            		summaryBufferedWriter = new BufferedWriter(summaryFileWriter);
+            		jsonSummary.put("sums",sumMap);
+            		summaryBufferedWriter.write(jsonSummary.toString());
+            		summaryBufferedWriter.close();
+            	}
+            }
 
-            if (tempFile.exists() && tempFile.length() > 0) {
+                if (tempFile.exists() && tempFile.length() > 0) {
+                               
                 String jsonPath = filePath + File.separator + fileName + ".json";
                 Files.deleteIfExists(Paths.get(jsonPath));
                 File dataFile = new File(jsonPath);
