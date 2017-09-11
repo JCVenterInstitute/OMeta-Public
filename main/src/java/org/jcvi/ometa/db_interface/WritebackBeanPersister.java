@@ -709,6 +709,10 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
                 }
 
                 String value = bean.getAttributeValue();
+                if(dataTypeExpected.equalsIgnoreCase("date")) {
+                    value = helper.verifyDate(value);
+                    bean.setAttributeValue(value);
+                }
 
                 if (lvType.equals(ModelValidator.ATTRIBUTE_LV_TYPE_NAME)) {
 

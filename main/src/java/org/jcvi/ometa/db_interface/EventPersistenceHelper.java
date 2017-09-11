@@ -262,6 +262,14 @@ public class EventPersistenceHelper {
         }
     }
 
+    public String verifyDate(String date) {
+        String[] splittedDate = date.split("-", 2);
+        if(splittedDate != null && splittedDate[0].length() == 2)
+            return "20" + date;
+        else
+            return date;
+    }
+
     /** Check that the value given is within the control set, if a control set was given. */
     public void checkControlledValue( String attributeName, String attributeValue, AttributeType aType )
             throws Exception {
