@@ -665,23 +665,32 @@
 
     //add click listener on row expander
     $('tbody td #rowDetail_openBtn').live('click', function () {
-      var _row = this.parentNode.parentNode, _is_event=(_row.parentNode.id.indexOf('event')>=0), _table=_is_event?eDT:sDT;
-      if(this.src.indexOf('details_close')>=0){
-        this.src = openBtn;
-        _table.fnClose(_row);
-      } else {
-        this.src = closeBtn;
-        _table.fnOpen(_row, subrow_html.replace(/\$d\$/, _table.fnGetData(_row)[5]), '_details');
-        $('td._details').attr('colspan', 6); //fix misalignment issue in chrome by incresing colspan by 1
-        $('td._details>div').css('width', $('#statusTableDiv').width()-90);
-      }
+      if(this.src.indexOf('details_close')>=0) toggleRow(this,'close')
+      else toggleRow(this,'open')
     });
 
     $('thead #table_openBtn').live('click', function () {
-      var _is_event=this.parentNode.parentNode.parentNode.id.indexOf('event')>=0;
-      $('#eventTable #rowDetail_openBtn').click();
-      buttonSwitch(this);
+      if(this.src.match('details_close')){
+        this.src = openBtn;
+        $('#eventTable #rowDetail_openBtn').each(function(){toggleRow(this,'close')});
+      } else {
+        this.src = closeBtn;
+        $('#eventTable #rowDetail_openBtn').each(function(){toggleRow(this,'open')});
+      }
     });
+
+    function toggleRow(item, action) {
+      var _row = item.parentNode.parentNode, _is_event=(_row.parentNode.id.indexOf('event')>=0), _table=_is_event?eDT:sDT;
+      if(action == 'open'){
+        item.src = closeBtn;
+        _table.fnOpen(_row, subrow_html.replace(/\$d\$/, _table.fnGetData(_row)[5]), '_details');
+        $('td._details').attr('colspan', 6); //fix misalignment issue in chrome by incresing colspan by 1
+        $('td._details>div').css('width', $('#statusTableDiv').width()-90);
+      } else {
+        item.src = openBtn;
+        _table.fnClose(_row);
+      }
+    }
 
     //preload page with data if available
     var projectId = '${projectId}', sampleId='${sampleId}';
