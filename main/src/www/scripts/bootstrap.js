@@ -1273,7 +1273,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
                 .addClass(placement)
                 .data('bs.' + this.type, this)
 
-            this.options.container ? $tip.appendTo(this.options.container) : $tip.insertAfter(this.$element)
+          this.options.container ? $tip.appendTo(this.options.container) : this.$element.parents('#eventTable').length ? $tip.insertBefore($('#eventTable')) : $tip.insertAfter(this.$element)
 
             var pos          = this.getPosition()
             var actualWidth  = $tip[0].offsetWidth

@@ -327,7 +327,7 @@ var _utils = {
 
             $gridHeaders.append(
                 $('<th/>').addClass('tableHeaderNoBG resizable-header').attr('style','border-right: 2px solid #7D7878;')
-                    .attr('data-tooltip', (isDesc ? _ma.desc : '')).append(
+                    .attr('title', (isDesc ? _ma.desc : '')).attr('data-toggle','tooltip').attr('data-placement','top').append(
                     isRequired ? '<small class="text-danger">*</small>' : '',
                     (_ma.label ? _ma.label : _ma.lookupValue.name) + '<br/>',
                     isDesc ? requireImgHtml : ''
@@ -378,6 +378,7 @@ var _utils = {
         //add attribut headers to the grid view and add empty rows
         $('thead#gridHeader').append($gridHeaders);
         $("#gridBody").append($autofillLine);
+        $('[data-toggle="tooltip"]').tooltip();
         _utils.addGridRows(null, en);
 
         if(hasDependantDict){
