@@ -46,6 +46,7 @@
               <li><a href="actorRole.action">User Management</a></li>
               <li><a href="projectManagement.action">Project Management</a></li>
               <li><a href="dictionaryManagement.action">Dictionary Management</a></li>
+              <li><a href="jsonManagement.action">Json Management</a></li>
             </ul>
           </li>
           <li class="dropdown">

@@ -106,6 +106,12 @@
             </result>
         </action>
 
+        <action name="forceLoginForJsonManagement" class="org.jcvi.ometa.action.ForceLogin" method="silentRedirect">
+            <result name="success" type="redirectAction">
+                <param name="actionName">jsonManagement</param>
+            </result>
+        </action>
+
         <action name="productionStatus" class="org.jcvi.ometa.action.ProductionStatus" method="statusPage">
             <result name="success">/JSP/ProductionStatus.jsp</result>
             <result name="error">/JSP/ProductionStatus.jsp</result>
@@ -245,6 +251,45 @@
             <result name="success" type="redirectAction">dictionaryManagement</result>
             <result name="none" type="redirectAction">dictionaryManagement</result>
             <result name="error" type="redirectAction">dictionaryManagement</result>
+        </action>
+
+        <action name="jsonManagement" class="org.jcvi.ometa.action.JsonManagement" method="execute">
+            <result name="login" type="redirectAction">
+                <param name="actionName">forceLoginForJsonManagement</param>
+            </result>
+            <result name="success">/JSP/JsonManagement.jsp</result>
+            <result name="none">/JSP/JsonManagement.jsp</result>
+            <result name="error">/JSP/JsonManagement.jsp</result>
+        </action>
+
+        <action name="generateJson" class="org.jcvi.ometa.action.JsonManagement" method="generate">
+            <result name="login" type="redirectAction">
+                <param name="actionName">forceLoginForJsonManagement</param>
+            </result>
+            <result name="success" type="redirectAction">
+                <param name="actionName">jsonManagement</param>
+                <param name="actionMessages">${actionMessages}</param>
+            </result>
+            <result name="error" type="redirectAction">
+                <param name="actionName">jsonManagement</param>
+                <param name="errorMessages">${errorMessages}</param>
+            </result>
+        </action>
+
+        <action name="updateJsonProducer" class="org.jcvi.ometa.action.JsonManagement" method="updateJsonProducer">
+            <result name="login" type="redirectAction">
+                <param name="actionName">forceLoginForJsonManagement</param>
+            </result>
+            <result name="success" type="redirectAction">
+                <param name="actionName">jsonManagement</param>
+                <param name="fileName">${fileName}</param>
+                <param name="actionMessages">${actionMessages}</param>
+            </result>
+            <result name="error" type="redirectAction">
+                <param name="actionName">jsonManagement</param>
+                <param name="fileName">${fileName}</param>
+                <param name="errorMessages">${errorMessages}</param>
+            </result>
         </action>
 
         <action name="eventDetail" class="org.jcvi.ometa.action.EventDetail" method="eventDetail">
@@ -525,6 +570,10 @@
             <result name="error" type="json"/>
         </action>
         <action name="actorRoleAjax" class="org.jcvi.ometa.action.ActorRole" method="runAjax">
+            <result name="success" type="json"/>
+            <result name="error" type="json"/>
+        </action>
+        <action name="getJsonInfo" class="org.jcvi.ometa.action.JsonManagement" method="runAjax">
             <result name="success" type="json"/>
             <result name="error" type="json"/>
         </action>
