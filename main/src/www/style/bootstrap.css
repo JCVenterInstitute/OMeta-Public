@@ -2105,6 +2105,7 @@ table {
     background-color: transparent;
 }
 th {
+    vertical-align: top;
     text-align: left;
 }
 .table {
