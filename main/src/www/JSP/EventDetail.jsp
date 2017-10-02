@@ -82,6 +82,9 @@
     .select_column, .select_operation, .filter_text, .removeColumnFilter{margin-left: 4px;}
     .select_logicgate{width: 59px;}
     .scrollButton{padding:10px;text-align:center;font-weight: bold;color: #FFFAFA;text-decoration: none;position:fixed;right:40px;background: rgb(0, 129, 179);display: none;}
+
+    #sampleTable th, #sampleTable td {border: 1px solid #dddddd;}
+    .sorting, .sorting_asc, .sorting_desc { background-image : none; } /*hide sorting arrows on datatable*/
   </style>
 </head>
 
@@ -170,7 +173,7 @@
                 <h2 class="csc-firstHeader middle-header">Sample Details</h2>
               </div>
               <div id="sampleTableDiv" style="margin:0 10px 5px 0;clear:both;">
-                <table name="sampleTable" id="sampleTable" class="contenttable" style="min-width: 2000px;">
+                <table name="sampleTable" id="sampleTable" class="contenttable hover" style="min-width: 2000px;">
                   <thead id="sampleTableHeader">
                   <tr>
                   </tr>
