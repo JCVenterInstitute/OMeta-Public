@@ -336,6 +336,7 @@ var _utils = {
     }
   },
   submit: function() {
+    utils.processing(true);
     $("form").submit();
   }
 };
