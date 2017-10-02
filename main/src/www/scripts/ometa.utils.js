@@ -172,6 +172,15 @@ var utils = {
     if(bytes === 0) { return "0.00 B"; }
     var e = Math.floor(Math.log(bytes) / Math.log(1024));
     return (bytes/Math.pow(1024, e)).toFixed(2)+' '+' KMGTP'.charAt(e)+'B';
+  },
+  processing: function (isProcessing) {
+    if (isProcessing) {
+      $("#popupLayerScreenLocker").show();
+      $("#processingDiv").show();
+    } else {
+      $("#popupLayerScreenLocker").hide();
+      $("#processingDiv").hide();
+    }
   }
 };
 
@@ -353,7 +362,7 @@ var vs = {
             });
         }
     }
-    
+
     function hideScreenLocker(popupName) {
         if (openedPopups.length == 0) {
             screenlocker = false;
@@ -361,7 +370,7 @@ var vs = {
         } else {
             $('#popupLayerScreenLocker').css("z-index",parseInt($("#popupLayer_" + openedPopups[openedPopups.length - 1].name).css("z-index")) - 1);
         }
-   
+
         if ($.browser.msie && $.browser.version < 7) {
             $("select.hidden-by-" + popupName).removeClass("hidden-by-jmp hidden-by-" + popupName).css("visibility","visible");
         }

@@ -388,7 +388,7 @@
   function fileNameChange(fileName) {
     var val = fileName.value;
     $.ajax({
-      beforeSend: processing(true),
+      beforeSend: utils.processing(true),
       url: 'getJsonInfo.action',
       data: "fileName="+val,
       success: function(html) {
@@ -417,13 +417,13 @@
         $("input[name='filePath']").val(html.filePath);
         $("input[name='domain']").val(html.domain);
 
-        processing(false);
+        utils.processing(false);
       }
     });
   }
 
   function updateJson() {
-    processing(true);
+    utils.processing(true);
     //Clear filter
     $.each($("input[id*='defilter']"), function( index, value ) {
       $(this).val('');
@@ -492,16 +492,6 @@
 
     $('body').append($jsonForm);
     $jsonForm.submit();
-  }
-
-  function processing(isProcessing){
-    if(isProcessing){
-      $("#popupLayerScreenLocker").show();
-      $("#processingDiv").show();
-    } else{
-      $("#popupLayerScreenLocker").hide();
-      $("#processingDiv").hide();
-    }
   }
 
   jQuery.fn.filterByText = function(textbox) {
