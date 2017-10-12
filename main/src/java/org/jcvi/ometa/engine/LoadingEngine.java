@@ -389,6 +389,7 @@ public class LoadingEngine {
         File scratchLoc = ScratchUtils.getScratchLocation(new Date().getTime(), "LoadingEngine__" + eventFile.getName());
 
         int processedLineCount = 0;
+        BeanWriter writer = null;
         try {
             LineIterator lineIterator = FileUtils.lineIterator(eventFile);
             int lineCount = 0;
@@ -397,8 +398,8 @@ public class LoadingEngine {
             String eventName = null;
             String headerLine = null;
             Actor submitter = null;
+            writer = new BeanWriter(serverUrl, userName, passWord);
             while(lineIterator.hasNext()) {
-                BeanWriter writer = new BeanWriter(serverUrl, userName, passWord);
                 ++lineCount;
                 String currLine = lineIterator.nextLine();
 
@@ -474,9 +475,8 @@ public class LoadingEngine {
                     }
                 }
 
-                writer.closeContext();
                 if(submitter == null) submitter = writer.getSubmitter();
-                Thread.sleep(1000);
+                //Thread.sleep(1000);
             }
             usage.setTotalCount(processedLineCount);
             usage.setSuccessCount(successCount);
@@ -516,6 +516,7 @@ public class LoadingEngine {
             failedWriter.close();
             System.out.printf("total: %d, processed: %d, failed: %d\n", processedLineCount, successCount, failedCount);
             System.out.println("log file: " + logFile.getAbsolutePath());
+            if(writer != null) writer.closeContext();
         }
 
         return success;

@@ -87,7 +87,6 @@ public class EjbBuilder {
             try {
                 logger.info("Getting EJB " + ejbName + " off server " + server + " for user " + username);
 
-                ctx = getContext( server, username, password, ejbName, logger );
                 pseb = (T)ctx.lookup( ejbName );
                 if ( pseb == null ) {
                     throw new Exception(

@@ -50,7 +50,8 @@ import java.util.*;
 public class BeanWriter {
     private Logger logger = Logger.getLogger(BeanWriter.class);
 
-    private Context ctx = null;
+    private Context writeDelegateContext  = null;
+    private Context readDelegateContext  = null;
     private ProjectSampleEventWritebackBusiness writeEjb;
     private ProjectSampleEventPresentationBusiness readEjb;
 
@@ -58,20 +59,28 @@ public class BeanWriter {
 
     /** Construct with all stuff needed for subsequent calls. */
     public BeanWriter(String server, String userName, String password) {
-        UploadActionDelegate writeDelegate = new UploadActionDelegate();
-        writeEjb = (ProjectSampleEventWritebackRemote)writeDelegate.getEjb(ctx, UploadActionDelegate.EJB_NAME, server, userName, password, logger);
+        try {
+            UploadActionDelegate writeDelegate = new UploadActionDelegate();
+            writeDelegateContext  = writeDelegate.getContext(server, userName, password, UploadActionDelegate.EJB_NAME, logger);
+            writeEjb = (ProjectSampleEventWritebackRemote)writeDelegate.getEjb(writeDelegateContext, UploadActionDelegate.EJB_NAME, server, userName, password, logger);
 
-        PresentationActionDelegate readDelegate = new PresentationActionDelegate();
-        readEjb = (ProjectSampleEventPresentationRemote)readDelegate.getEjb(ctx, PresentationActionDelegate.EJB_NAME, server, userName, password, logger);
+            PresentationActionDelegate readDelegate = new PresentationActionDelegate();
+            readDelegateContext = readDelegate.getContext(server, userName, password, PresentationActionDelegate.EJB_NAME, logger);
+            readEjb = (ProjectSampleEventPresentationRemote)readDelegate.getEjb(readDelegateContext, PresentationActionDelegate.EJB_NAME, server, userName, password, logger);
+        } catch (Exception ex) {
+            logger.error("Failed to pickup EJB dependency:" + ex.getMessage());
+            throw new RuntimeException(ex);
+        }
     }
 
     public void closeContext() throws Exception {
-        if(ctx != null) {
-            try {
-                ctx.close();
-            } catch (NamingException ex) {
-                throw new Exception("Ejb context cannot be closed : " + ex.getMessage());
-            }
+        if(writeDelegateContext != null) {
+            writeDelegateContext.close();
+            writeDelegateContext = null;
+        }
+        if(readDelegateContext != null) {
+            readDelegateContext.close();
+            readDelegateContext = null;
         }
     }
 
