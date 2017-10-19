@@ -381,7 +381,6 @@
 
         <action name="popup" class="org.jcvi.ometa.action.Popup" method="run">
             <result name="SELECT_TEMPLATE">/JSP/popup/LPopupTemplateSelect.jsp</result>
-            <result name="SELECT_EXPORT">/JSP/popup/LPopupExportSelect.jsp</result>
             <result name="PROJECT_DETAIL_POP">/JSP/popup/LPopupProjectDetails.jsp</result>
             <result name="PROJECT_DETAIL" type="redirectAction">
                 <param name="actionName">projectdetail</param>
@@ -591,6 +590,9 @@
         <action name="getChildDictionary" class="org.jcvi.ometa.action.DictionaryManagement" method="getChildDictionary">
             <result name="success" type="json"/>
             <result name="error" type="json"/>
+        </action>
+        <action name="getEventTypes" class="org.jcvi.ometa.action.Popup" method="run">
+            <result name="SELECT_EXPORT" type="json"/>
         </action>
     </package>
 

@@ -130,13 +130,60 @@ var _page = {
           if(sampleIds.length === 0) {
             utils.error.baloon("Please select sample to export!");
           } else {
-            $.openPopupLayer({
-              name: "LPopupExportSelect",
-              width: 450,
-              url: "popup.action?t=sel_e&projectName=" + $("#_projectSelect option:selected").text() +
-              "&projectId=" + $("#_projectSelect").val() + "&ids=" + sampleIds
+            $.ajax({
+              url: 'getEventTypes.action',
+              cache: false,
+              async: false,
+              data: "t=sel_e&projectId=" + $("#_projectSelect").val(),
+              success: function(html){
+                if(html.eventTypeList) {
+                  var eventTypes = html.eventTypeList;
+                  $("#eventName").html('');
+                  for(var i=0; i<eventTypes.length; i++) {
+                    $("#eventName").append($("<option/>")
+                        .attr("value", eventTypes[i].lookupValueId)
+                        .text(eventTypes[i].name))
+                  }
+                }
+              }
             });
+            $("#ids").val(sampleIds);
+            $('#export-samples-modal').modal('show');
           }
+        },
+        submitExportSample: function () {
+          $("<form action='eventLoader.action'/>")
+              .append($("<input/>").attr({
+                type: 'hidden',
+                name: 'jobType',
+                value: 'export'
+              }))
+              .append($("<input/>").attr({
+                type: 'hidden',
+                name: 'projectId',
+                value: $("#_projectSelect").val()
+              }))
+              .append($("<input/>").attr({
+                type: 'hidden',
+                name: 'projectName',
+                value: $("#_projectSelect option:selected").text()
+              }))
+              .append($("<input/>").attr({
+                type: 'hidden',
+                name: 'ids',
+                value: $("#ids").val()
+              }))
+              .append($("<input/>").attr({
+                type: 'hidden',
+                name: 'eventId',
+                value: $("#eventName").val()
+              }))
+              .append($("<input/>").attr({
+                type: 'hidden',
+                name: 'eventName',
+                value: $("#eventName option:selected").text()
+              })).appendTo('body').submit();
+          $('#export-samples-modal').modal('hide');
         },
         submit: function(type) {
           if (!$('input[name="label"]').length){

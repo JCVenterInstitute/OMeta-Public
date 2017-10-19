@@ -109,6 +109,34 @@
           </ol>
         </div>
 
+        <!-- Modal -->
+        <div class="modal fade" id="export-samples-modal" role="dialog">
+          <div class="modal-dialog" style="max-width: 450px;">
+
+            <!-- Modal content-->
+            <div class="modal-content" >
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-angle-right"></i> <strong>Select Project Event</strong></h4>
+              </div>
+              <div class="modal-body">
+                <div style="display: flex;align-items: center;">
+                  <label class="col-sm-4 control-label"><strong>Event Name</strong></label>
+                  <div class="col-sm-8 input-group">
+                    <input type="hidden" id="ids" name="ids"/>
+                    <select id="eventName" name="eventName" class="form-control"></select>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-info" onclick="_page.edit.submitExportSample();">Download</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
         <s:form id="eventDetailPage" name="eventDetailPage" namespace="/" action="eventDetail" method="post" theme="simple">
           <s:hidden id="editable" name="editable" value="0" />
           <div class="page-header">
