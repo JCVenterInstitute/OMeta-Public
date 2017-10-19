@@ -28,6 +28,31 @@ var utils = {
     var pnode = $("#_projectSelect option:selected");
     return pnode.val();
   },
+  getProjectDetailsIntoModal: function (projectId, tableId) {
+    $.ajax({
+      url: 'getproject.action',
+      cache: false,
+      async: false,
+      data: "type=project&projectId="+projectId,
+      success: function(html){
+        if(html.aaData) {
+          $(html.aaData).each(function(i1,v1) {
+            if(v1 && i1 == 0) {
+              var table = $(tableId);
+              table.html('');
+              $.each(v1, function(i2,v2) {
+                if (v2 && i2 != 'editable') {
+                  if(i2 == 'ProjectName') $(".modal-title strong").html(v2);
+                  else table.append('<tr><td><strong>'+i2+'</strong></td><td>'+v2+'</td></tr>');
+                }
+              });
+            }
+          });
+        }
+      }
+    });
+
+  },
   getEventName: function(en) {
     var enode = $("#_eventSelect option:selected");
     return en || (enode.val() === '0' ? null : enode.text());

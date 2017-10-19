@@ -139,7 +139,7 @@
                 <h4 class="modal-title"><i class="fa fa-angle-right"></i> <strong></strong></h4>
               </div>
               <div class="modal-body">
-                <table id="project-detail-table" class="table table-bordered table-striped"></table>
+                <table id="project-detail-table" class="table table-bordered table-striped table-responsive table-hover table-condensed"></table>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
