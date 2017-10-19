@@ -195,7 +195,6 @@ var _page = {
       if(node.src.match('details_close')){ node.src = openBtn; } else { node.src = closeBtn; }
     };
 
-
 function comboBoxChanged(option, id) {
   if(id==='_projectSelect') {
     //document.getElementById('sampleTable').getElementsByTagName('img')[0].src = openBtn;
@@ -255,7 +254,8 @@ function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
               $footer.empty();
               headerList = [];
 
-              $header.append("<th class='tableHeaderStyle'>Sample Name</th>")
+              $header.append("<th class='tableHeaderStyle'><input type='checkbox' id='selectAllSamples' onchange='selectSamples();'/></th>")
+                  .append("<th class='tableHeaderStyle'>Sample Name</th>")
                   .append("<th class='tableHeaderStyle'>Parent</th>")
                   .append("<th class='tableHeaderStyle'>User</th>")
                   .append("<th class='tableHeaderStyle'>Date</th>");
@@ -350,7 +350,8 @@ function createSampleDataTable(){
               $.each(json.aaData, function(ri,rowData) {
                 var row = [], attributes;
                 row.push(
-                    "<input type='checkbox' style='margin-right:6px;' id='sampleCB_" + rowData.sample.sampleId + "'/>" + rowData.sampleName,
+                    "<input type='checkbox' id='sampleCB_" + rowData.sample.sampleId + "' class='sampleCB'/>",
+                    rowData.sampleName,
                     rowData.parentSampleName,
                     rowData.actor,
                     rowData.createdOn
@@ -624,10 +625,11 @@ function triggerSearch(){
 function aoColumns() {
   var ao = [];
   var totalWidth = 410;
-  ao.push({"sWidth": "160px", "aTargets":[0]},
-      {"sWidth": "100px", "aTargets":[1]},
+  ao.push({"aTargets":[0], "bSortable": false},
+      {"sWidth": "160px", "aTargets":[1]},
       {"sWidth": "100px", "aTargets":[2]},
-      {"sWidth": "100px", "aTargets":[3]}
+      {"sWidth": "100px", "aTargets":[3]},
+      {"sWidth": "100px", "aTargets":[4]}
   );
   for(var i=0; i<headerList.length; i++){
     var index = i+4;
@@ -652,4 +654,9 @@ function aoColumns() {
 
   $("#sampleTable").css('width', totalWidth);
   return ao;
+}
+
+function selectSamples() {
+  if($('#selectAllSamples').is(':checked')) $('.sampleCB').attr('checked', true);
+  else $('.sampleCB').attr('checked', false);
 }

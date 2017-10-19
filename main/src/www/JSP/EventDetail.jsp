@@ -85,6 +85,7 @@
 
     #sampleTable th, #sampleTable td {border: 1px solid #dddddd;}
     .sorting, .sorting_asc, .sorting_desc { background-image : none; } /*hide sorting arrows on datatable*/
+    .sorting_disabled {background-color: #B6B6B6;}
   </style>
 </head>
 
