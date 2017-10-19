@@ -1474,14 +1474,30 @@ var button = {
       return;
     } else{
       var selectedProjectId = utils.getProjectId();
-      var whs = $(window).width()*3/4;
-      whs = whs < 550 ? 550 : whs;
-      $.openPopupLayer({
-        name: "LPopupProjectDetails",
-        width: whs,
-        height: 50,
-        url: "popup.action?t=projectDetails_pop&projectName=" + selectedProject +"&projectId="+selectedProjectId
+      $.ajax({
+        url: 'getproject.action',
+        cache: false,
+        async: false,
+        data: "type=project&projectId="+selectedProjectId,
+        success: function(html){
+          if(html.aaData) {
+            $(html.aaData).each(function(i1,v1) {
+              if(v1 && i1 == 0) {
+                var table = $("#project-detail-table");
+                table.html('');
+                $.each(v1, function(i2,v2) {
+                  if (v2) {
+                    if(i2 == 'ProjectName') $(".modal-title strong").html(v2);
+                    else table.append('<tr><td>'+i2+'</td><td>'+v2+'</td></tr>');
+                  }
+                });
+              }
+            });
+          }
+        }
       });
+
+      $('#project-details').modal('show');
     }
   }
 };

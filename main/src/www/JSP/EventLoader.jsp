@@ -101,9 +101,6 @@
           </ol>
         </div>
 
-        <%--<div class="page-header">
-            <h1>Submit Data</h1>
-        </div>--%>
         <div class="page-header">
           <h1>Submit Data</h1>
         </div>
@@ -128,6 +125,27 @@
             <div class="container" style="padding-left:5px;">
               <img src="images/loading.gif" />
             </div>
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="project-details" role="dialog">
+          <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content" >
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-angle-right"></i> <strong></strong></h4>
+              </div>
+              <div class="modal-body">
+                <table id="project-detail-table" class="table table-bordered table-striped"></table>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+
           </div>
         </div>
 
