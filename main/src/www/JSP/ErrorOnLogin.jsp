@@ -18,6 +18,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
 <!doctype html>
 <head>
@@ -26,18 +27,13 @@
 
 <body class="smart-style-2">
 <div id="container">
-
-  <jsp:include page="top.jsp"/>
-
   <div id="main">
     <div id="content" class="container max-container" role="main">
-      <div class="page-header">
-        <h1>OMETA Login</h1>
+      <div class="page-header text-center">
+        <img class="headerImage" src="<c:url value='/images/ometa_logo.png' />" alt="Ontology based Metadata Tracking">
       </div>
       <div class="row">
-
-        <div class="col-12-xs col-sm-4 col-md-4">
-
+        <div class="col-sm-4 col-sm-offset-4">
           <div class="panel panel-primary">
             <div class="panel-heading">
               <h3 class="panel-title">Sign In</h3>
@@ -58,42 +54,15 @@
                   <input type="text" class="form-control" name="j_username" placeholder="Enter username">
                 </div>
                 <div class="form-group">
-                  <!-- <a class="pull-right" href="#">Forgot Password?</a> -->
-                  
                   <label for="passwordInput">Password</label>
                   <input type="password" class="form-control" name="j_password" id="password" placeholder="Password">
                 </div>
                 <button id="loginButton" type="submit" class="btn btn-block btn-lg btn-primary">Sign in</button>
-                <!-- <button type="submit" disabled="disabled" class="btn btn-sm btn-default">Sign in</button> -->
                 <hr>
-                <%--<div class="row">
-                  <div class="col-sm-12">
-                    <p><strong>Don't have an account?</strong> <a href="access.action">Request Access</a></p>
-                  </div>
-                  <div class="col-sm-12">
-                    <p><strong>Need help?</strong> <a href="support.action">Send a support request</a> or email <a href="mailto:support@niaidceirs.org">support@niaidceirs.org</a></p>
-                  </div>
-                </div>--%>
               </form>
             </div>
           </div>
-
         </div>
-
-        <div class="col-sm-8 col-md-8 hidden-xs">
-          <%--<h4>Welcome to the CEIRS Data Processing and Coordinating Center site.</h4>
-
-          <p style="margin-top:20px;">Here, members of the CEIRS network can:</p>
-          <ol>
-            <li>Submit data to the DPCC for processing and re-distribution to public databases</li>
-            <li>Retrieve data submission metrics for their Center</li>
-            <li>Request technical support</li>
-            <li>Access training and education materials</li>
-          </ol>
-
-          <p>Please login to access these features or <a href="access.action">Request Access</a> if this is your first time here.</p>--%>
-        </div>
-
       </div>
     </div>
   </div>
