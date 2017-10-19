@@ -99,16 +99,6 @@
     <a href="#" class="scrollButton scrollToBottom" style="top:125px;"><i class="glyphicon glyphicon-chevron-down"></i></a>
     <div id="inner-content" class="">
       <div id="content" class="container max-container" role="main">
-        <div id="ribbon">
-          <ol class="breadcrumb">
-            <li>
-              <a href="/ometa/secureIndex.action">Dashboard</a>
-            </li>
-            <li>Data Submission</li>
-            <li>Search and Edit Data</li>
-          </ol>
-        </div>
-
         <!-- Modal -->
         <div class="modal fade" id="export-samples-modal" role="dialog">
           <div class="modal-dialog" style="max-width: 450px;">
@@ -236,6 +226,8 @@
 <script src="scripts/page/event.detail.js"></script>
 <script>
   $(document).ready(function() {
+    $('.navbar-nav li').removeClass('active');
+    $('.navbar-nav > li:nth-child(3)').addClass('active');
     $('#projectTableDivHeader').hide();
     $('#projectTableDiv').hide();
     $('#sampleTableDivHeader').hide();

@@ -9,13 +9,13 @@
 </style>
 <!-- top menu starts -->
 
-<header id="header" class="header clearfix" role="banner">
+<header id="header" class="header clearfix" role="banner" style="background-color: #f8f8f8">
   <div class="navbar navbar-default navbar-inherit-top" role="navigation" style="border-color: transparent">
     <div class="site-title"></div>
     <div class="inner-header container max-container">
-      <div class="top-links clearfix" style="float:left;margin-bottom:12px;">
+      <div class="top-links clearfix" style="float:left;">
         <a data-nav="home" href="/ometa/secureIndex.action">
-          <img class="headerImage" src="<c:url value='/images/ometa_logo.png' />" alt="Ontology based Metadata Tracking">
+          <img class="headerImage" src="<c:url value='/images/ometa_logo.png' />" alt="Ontology based Metadata Tracking" style="height: 45px;">
         </a>
       </div>
       <div class="navbar-header">
@@ -27,17 +27,13 @@
         </button>
       </div>
       <div class="navbar-collapse collapse" style="height: 0px;">
-        <ul class="nav navbar-nav navbar-right" id="menu-the-main-menu" style="margin-top: 10px;">
-          <li class="dropdown">
-            <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Data Submission <b class="caret"></b></a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="eventLoader.action">Submit Data</a></li>
-              <li><a href="eventDetail.action">Search and Edit Data</a></li>
-              <li><a href="eventHistory.action">Event History</a></li>
-              <li><a href="eventReport.action">Report</a></li>
-              <li><a href="dictionary.action">Dictionary</a></li>
-            </ul>
-          </li>
+        <ul class="nav navbar-nav navbar-right" id="menu-the-main-menu">
+          <li><a href="secureIndex.action">Dashboard</a></li>
+          <li><a href="eventLoader.action">Submit Data</a></li>
+          <li><a href="eventDetail.action">Search and Edit Data</a></li>
+          <li><a href="eventHistory.action">Event History</a></li>
+          <li><a href="eventReport.action">Report</a></li>
+          <li><a href="dictionary.action">Dictionary</a></li>
           <li class="dropdown" id="admin_li">
             <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true">Admin <span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
@@ -50,7 +46,7 @@
             </ul>
           </li>
           <li class="dropdown">
-            <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true"><span class="glyphicon glyphicon-user" style="margin-right:5px;background-color:#C2C2C2;padding:3px"></span><div class="HeaderLink" id="currUserName" style="display:inline-block"></div><span class="caret"></span></a>
+            <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true"><i class="fa fa-user" style="margin-right: 5px;"></i><div class="HeaderLink" id="currUserName" style="display:inline-block"></div><span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="logout.action"><span class="glyphicon glyphicon-log-out" style="margin-right:5px;padding:3px"></span>Log Out</a></li>
             </ul>

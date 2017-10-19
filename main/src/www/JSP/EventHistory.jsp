@@ -84,16 +84,6 @@
   <div id="main" class="">
     <div id="inner-content" class="">
       <div id="content" class="container max-container" role="main">
-        <div id="ribbon">
-          <ol class="breadcrumb">
-            <li>
-              <a href="/ometa/secureIndex.action">Dashboard</a>
-            </li>
-            <li>Data Submission</li>
-            <li>Event History</li>
-          </ol>
-        </div>
-
         <s:form id="eventHistoryPage" name="eventHistoryPage" namespace="/" action="eventHistory" method="post" theme="simple">
           <s:hidden id="editable" name="editable" value="0" />
           <div class="page-header">
@@ -196,6 +186,8 @@
   var eDT; //event detail table
 
   $(document).ready(function() {
+    $('.navbar-nav li').removeClass('active');
+    $('.navbar-nav > li:nth-child(4)').addClass('active');
     $('#eventDetailsSection').hide();
   });
 

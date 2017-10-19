@@ -91,16 +91,6 @@
     <a href="#" class="scrollButton scrollToBottom" style="top:125px;"><i class="glyphicon glyphicon-chevron-down"></i></a>
     <div id="inner-content" class="">
       <div id="content" class="container max-container" role="main">
-        <div id="ribbon">
-          <ol class="breadcrumb">
-            <li>
-              <a href="/ometa/secureIndex.action">Dashboard</a>
-            </li>
-            <li id="breadcrumb2">Data Submission</li>
-            <li>Submit Data</li>
-          </ol>
-        </div>
-
         <div class="page-header">
           <h1>Submit Data</h1>
         </div>
@@ -408,6 +398,9 @@
   }
 
   $(document).ready(function() {
+    $('.navbar-nav li').removeClass('active');
+    if(filter !== 'pr') $('.navbar-nav > li:nth-child(2)').addClass('active');
+
     $('#dataSubmissionScope').hide();
 
     $('input[name="submissionType"]').change(function() {

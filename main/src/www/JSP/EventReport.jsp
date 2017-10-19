@@ -50,16 +50,6 @@
   <div id="main" class="">
     <div id="inner-content" class="">
       <div id="content" class="container max-container" role="main">
-        <div id="ribbon">
-          <ol class="breadcrumb">
-            <li>
-              <a href="/ometa/secureIndex.action">Dashboard</a>
-            </li>
-            <li>Data Submission</li>
-            <li>Event Report</li>
-          </ol>
-        </div>
-
         <s:form id="eventReportPage" name="eventReportPage" namespace="/" action="eventReport" method="post" theme="simple">
           <div class="page-header">
             <h1>Event Report</h1>
@@ -134,6 +124,9 @@
 <script src="scripts/jquery/jquery.dataTables.js"></script>
 <script>
   $(document).ready(function() {
+    $('.navbar-nav li').removeClass('active');
+    $('.navbar-nav > li:nth-child(5)').addClass('active');
+
     utils.initDatePicker();
     $( "#_projectSelect" ).combobox();
     utils.error.check();
