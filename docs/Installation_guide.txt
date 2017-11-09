@@ -8,6 +8,7 @@ OMETA Developer's Guide
 	- Wildfly 10.0.0.Final (http://wildfly.org/downloads/) We will reference the wildfly instance location as WILDFLYLoc
  1.2 Untar the downloaded archive target.tar file. Moving forward we will reference the location as OMETALoc
 	After untar you should see following directory in OMETALoc
+		drwxr-xr-x  8 isingh tigr 4096 May 21 09:20 modules
 		drwxr-xr-x  8 isingh tigr 4096 May 21 09:20 standalone-ometa
 		drwxr-xr-x  8 isingh tigr 4096 May 21 09:20 scripts
 
@@ -42,6 +43,8 @@ OMETA Developer's Guide
 	- If you want to replace the security name (jcvi), don't forget to update related fields under security realm in <OMETALoc>/standalone-ometa/configuration/standalone.xml and in <OMETALoc>/deployments/ometa.ear/ometa.war/WEB-INF/jboss-web.xml.
 
 6. Configure Wildfly for OMETA
+  - Copy modules to Wildfly instance (Adding mysql module and updating sun.jdk module).
+    cp -R <OMETALoc>/modules/* <WILDFLYLoc>/modules/
 	- Update default host in <OMETALoc>/standalone-ometa/configuration/standalone.xml. Replace [DEFAULT_HOST] fields with your host.
 	- Copy standalone-ometa folder into your Wildfly instance
 	  cp -R <OMETALoc>/standalone-ometa <WILDFLYLoc>
