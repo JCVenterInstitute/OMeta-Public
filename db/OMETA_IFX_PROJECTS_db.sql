@@ -726,6 +726,44 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 
+--
+-- Table structure for table `dictionary`
+--
+
+
+DROP TABLE IF EXISTS `dictionary`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dictionary` (
+  `dict_id` bigint(20) NOT NULL,
+  `dict_type` varchar(255) NOT NULL,
+  `dict_code` varchar(255) NOT NULL,
+  `dict_value` varchar(255) DEFAULT NULL,
+  `dict_is_active` int(1) DEFAULT NULL,
+  `dict_create_date` datetime DEFAULT NULL,
+  `dict_modify_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`dict_id`),
+  CONSTRAINT unique_dict_value UNIQUE (dict_type, dict_value)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+--
+-- Table structure for table `dictionary_dependency`
+--
+
+
+DROP TABLE IF EXISTS `dictionary_dependency`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dictionary_dependency` (
+  `dict_dpcy_id` bigint(20) NOT NULL,
+  `dict_id` bigint(20) NOT NULL,
+  `parent_id` bigint(20) NOT NULL,
+  `dict_dpcy_create_date` datetime DEFAULT NULL,
+  `dict_dpcy_modify_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`dict_dpcy_id`),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 /*
   DEFAULT LOOKUP VALUES AND ACTOR GROUPS
