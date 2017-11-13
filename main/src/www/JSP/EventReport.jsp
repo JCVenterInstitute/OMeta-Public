@@ -421,6 +421,7 @@
 
   function doClear() {
     $("#_projectSelect").val(0);
+    $("input.ui-autocomplete-input").val('');
     $("#projectMetaAttributesTD").html('');
     $("#sampleMetaAttributesTD").html('');
     $("#eventMetaAttributesTD").html('');
