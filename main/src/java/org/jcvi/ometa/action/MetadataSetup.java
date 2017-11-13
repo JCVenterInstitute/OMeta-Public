@@ -599,23 +599,6 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
         return SUCCESS;
     }
 
-    public String addDictionary() {
-        boolean isError = false;
-        try {
-            List<Object[]> typeCodePairs = psept.getAllDictionaryTypeCodePairs();
-            types = new ArrayList<String>(typeCodePairs.size());
-
-            for(Object[] pair : typeCodePairs){
-             types.add((String) pair[0] + " - " + (String) pair[1]);
-            }
-        } catch (Exception ex) {
-            logger.error("Exception in runAjax of MetadataSetup : " + ex.toString());
-            isError = true;
-        }
-
-        return (!isError) ? SUCCESS : ERROR ;
-    }
-
     private boolean isUnchanged(MetadataSetupReadBean b1, MetaAttributeModelBean b2) {
         return b1.getActiveDB().equals(b2.getActiveDB())
                 && b1.getRequiredDB().equals(b2.getRequiredDB())

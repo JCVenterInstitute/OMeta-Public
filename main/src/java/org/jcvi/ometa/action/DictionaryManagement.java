@@ -25,6 +25,7 @@ public class DictionaryManagement extends ActionSupport {
     private String errorMsg;
     private boolean active;
     private Long dictionaryId;
+    private List<String> types;
 
     private String parentDictType;
     private String parentDictCode;
@@ -42,7 +43,7 @@ public class DictionaryManagement extends ActionSupport {
             this.dictionaryList = readPersister.getDictionaries(true);
             List<DictionaryDependency> dictionaryDependencyList = readPersister.getDictionaryDependencies();
 
-            dependencyMap = new HashMap<Long, Long>(dictionaryDependencyList.size());
+            dependencyMap = new HashMap<>(dictionaryDependencyList.size());
 
             for(DictionaryDependency dictDependency : dictionaryDependencyList){
                 this.dependencyMap.put(dictDependency.getDictionaryId(), dictDependency.getParentId());
@@ -71,10 +72,17 @@ public class DictionaryManagement extends ActionSupport {
             this.dictionaryList = readPersister.getDictionaries(true);
             List<DictionaryDependency> dictionaryDependencyList = readPersister.getDictionaryDependencies();
 
-            dependencyMap = new HashMap<Long, Long>(dictionaryDependencyList.size());
+            dependencyMap = new HashMap<>(dictionaryDependencyList.size());
 
             for(DictionaryDependency dictDependency : dictionaryDependencyList){
                 this.dependencyMap.put(dictDependency.getDictionaryId(), dictDependency.getParentId());
+            }
+
+            List<Object[]> typeCodePairs = readPersister.getAllDictionaryTypeCodePairs();
+            types = new ArrayList<>(typeCodePairs.size());
+
+            for(Object[] pair : typeCodePairs){
+                types.add((String) pair[0] + " - " + (String) pair[1]);
             }
         } catch (ForbiddenResourceException fre ) {
             logger.info( Constants.DENIED_USER_EDIT_MESSAGE );
@@ -121,8 +129,8 @@ public class DictionaryManagement extends ActionSupport {
         String returnValue = NONE;
 
         try {
-            aaData = new ArrayList<String>();
             List<Dictionary> childList = readPersister.getDictionaryDependenciesByType(parentDictType, parentDictCode);
+            aaData = new ArrayList<String>(childList.size());
 
             for (Dictionary dictionary : childList) {
                 String code = dictionary.getDictionaryCode();
@@ -211,5 +219,13 @@ public class DictionaryManagement extends ActionSupport {
 
     public void setAaData(List aaData) {
         this.aaData = aaData;
+    }
+
+    public List<String> getTypes() {
+        return types;
+    }
+
+    public void setTypes(List<String> types) {
+        this.types = types;
     }
 }

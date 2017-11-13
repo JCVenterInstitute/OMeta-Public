@@ -347,6 +347,10 @@ public class ReadBeanPersister implements WebDataFacadeI {
         return pseb.getDictionaryDependenciesByType(dictType, dictCode);
     }
 
+    public List<Object[]> getAllDictionaryTypeCodePairs() throws Exception {
+        return pseb.getAllDictionaryTypeCodePairs();
+    }
+
     public void updateDictionary(Long dictionaryId, boolean active) throws Exception{
         pseb.updateDictionary(dictionaryId, active);
     }

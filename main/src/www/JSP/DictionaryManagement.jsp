@@ -75,6 +75,59 @@
           </ol>
         </div>
 
+        <!-- Modal -->
+        <div class="modal fade" id="add-dictionary" role="dialog">
+          <div class="modal-dialog" style="max-width:450px;">
+
+            <!-- Modal content-->
+            <div class="modal-content" >
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-angle-right"></i> <strong>Add Dictionary</strong></h4>
+              </div>
+              <div class="modal-body">
+                <div class="alert alert-danger" style="display: none;"></div>
+                <div class="alert alert-success" style="display: none;"></div>
+                <div class="form-group" style="display: flex;align-items: center;">
+                  <label class="col-sm-4 control-label"><strong>Type</strong></label>
+                  <div class="col-sm-8 input-group">
+                    <input type="text" name="dictType" size="30" id="dictType" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group" style="display: flex;align-items: center;">
+                  <label class="col-sm-4 control-label"><strong>Value</strong></label>
+                  <div class="col-sm-8 input-group">
+                    <input type="text" name="dictValue" size="30" id="dictValue" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group" style="display: flex;align-items: center;">
+                  <label class="col-sm-4 control-label"><strong>Code</strong></label>
+                  <div class="col-sm-8 input-group">
+                    <input type="text" name="dictCode" size="30" id="dictCode" class="form-control">
+                  </div>
+                </div>
+                <div class="form-group" style="display: flex;align-items: center;">
+                  <label class="col-sm-4 control-label"></label>
+                  <div class="col-sm-8 input-group">
+                    <input type="checkbox" id="hasDependency" name="hasDependency" size="30" style="margin-right: 5px;"/>Dependant
+                  </div>
+                </div>
+                <div id="parentDictTypeCodeTR" class="form-group" style="display: none;align-items: center;" >
+                  <label class="col-sm-4 control-label"><strong>Parent Type</strong></label>
+                  <div class="col-sm-8 input-group">
+                    <s:select list="types" name="parentDictTypeCode" id="parentDictTypeCode" class="form-control"/>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-info" onclick="_popup.add();">Add</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
         <s:form id="infoDictionaryPage" name="infoDictionaryPage" theme="simple">
           <div class="page-header">
             <h1>Dictionary Management</h1>
@@ -166,6 +219,14 @@
         {"sWidth": "5%", "aTargets":[5]}
       ]
     });
+
+    $('#hasDependency').change(function() {
+      if($(this).is(":checked")) {
+        $('#parentDictTypeCodeTR').css('display', 'flex');
+      } else{
+        $("#parentDictTypeCodeTR").hide();
+      }
+    });
   });
 
   function generateParentDependencyInfo(){
@@ -182,11 +243,7 @@
   }
 
   function newDictionaryPopup() {
-    $.openPopupLayer({
-      name: "LPopupAddDictionary",
-      width: 450,
-      url: "addDictionary.action"
-    });
+    $('#add-dictionary').modal('show');
   }
 
   function activateDictionary(activate, id){
@@ -211,6 +268,47 @@
     $('body').append($updateDictionaryForm);
     $updateDictionaryForm.submit();
   }
+
+  var _popup = {
+    add: function() {
+      var dictionaryType = $('input[name="dictType"]').val();
+      var dictionaryValue = $('input[name="dictValue"]').val();
+      var dictionaryCode = $('input[name="dictCode"]').val();
+      var dictionaryParentType;
+      if(!dictionaryType) {
+        $('.modal-body .alert-danger').text("Type field is empty!").show();
+      } else if(!dictionaryValue){
+        $('.modal-body .alert-danger').text("Value field is empty!").show();
+      } else {
+        if($("#hasDependency").is(':checked')){
+          dictionaryParentType = $('select[name="parentDictTypeCode"]').val();
+          if(!dictionaryParentType){
+            $('.modal-body .alert-danger').text("Parent Type field is empty!").show();
+          }
+        }
+        $.ajax({
+          url: 'metadataSetupAjax.action',
+          cache: false,
+          async: false,
+          data: 'type=dict&dictType='+dictionaryType+'&dictValue='+dictionaryValue+'&dictCode='+dictionaryCode+'&parentDictTypeCode='+dictionaryParentType,
+          success: function(res){
+            if(res.dataMap) {
+              var dataMap = res.dataMap;
+              if(dataMap.isError && dataMap.isError === true) {
+                $('.modal-body .alert-danger').text(dataMap.errorMsg).show();
+              } else {
+                $('.modal-body .alert-danger').hide();
+                $('.modal-body .alert-success').text("Dictionary added succesfully! Page will be reloaded in 5 seconds.").show();
+
+                setTimeout(location.reload.bind(location), 5000);
+              }
+            }
+          }
+        });
+      }
+    },
+    closeError: function() {$('#errorMsg').remove();}
+  };
 </script>
 </body>
 </html>
