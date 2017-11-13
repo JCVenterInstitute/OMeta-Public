@@ -99,7 +99,7 @@
             <div id="statusTableDiv">
               <div id="tableTop">
                 <div class="row">
-                  <input type="button" class="btn btn-success" onclick="window.open('projectSetup.action')" id="addNewProject" value="Project Setup"/>
+                  <input type="button" class="btn btn-success" onclick="window.location.href='projectSetup.action'" id="addNewProject" value="Project Setup"/>
                   <table id="project-information-table" style="width: 80%">
                     <thead>
                     <tr>
@@ -172,7 +172,6 @@
     var $editProjectForm = $('<form>').attr({
       id: 'editProjectForm',
       method: 'POST',
-      target: '_blank',
       action: 'editProject.action'
     }).css('display', 'none');
 

@@ -111,7 +111,7 @@
                 <td></td>
                 <td><div class="col-md-11">
                   <input type="submit" class="btn btn-warning" id="_updateProject" value="Update Project"/>
-                  <input type="button" class="btn btn-info" tyle="margin-left:15px;" onclick="self.close()" value="Back" />
+                  <input type="button" class="btn btn-info" tyle="margin-left:15px;" onclick="window.location.href='projectManagement.action'" value="Back to Project Management" />
                 </div>
                 </td>
               </tr>

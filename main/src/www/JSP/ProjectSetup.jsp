@@ -139,7 +139,7 @@
                 <!--<input type="button" onclick="addAttribute();" id="attributeAddButton" value="Add Project Attribute" />
                 <input type="button" onclick="newAttribute('a');" id="newAttributeButton" value="New Attribute" />-->
                 <input type="button" class="btn btn-info" onclick="doClear();" value="Clear" />
-                <input type="button" class="btn" tyle="margin-left:15px;" onclick="self.close()" value="Cancel" />
+                <input type="button" class="btn" tyle="margin-left:15px;" onclick="window.location.href='projectManagement.action'" value="Back to Project Management" />
               </div>
             </div>
           </div>
