@@ -48,9 +48,7 @@ public class Popup extends ActionSupport {
     public String run() {
         String rtnVal = SUCCESS;
 
-        if(t.equals("sel_t")) {
-            rtnVal = "SELECT_TEMPLATE";
-        } else if(t.equals("sel_e")) {
+        if(t.equals("sel_e")) {
             try {
                 this.eventTypeList = readPersister.getEventTypesForProject(this.projectId);
             }  catch (Exception ex) {

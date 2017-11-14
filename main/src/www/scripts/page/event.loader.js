@@ -110,6 +110,40 @@ var _utils = {
           valid = false;
         }
         return valid;
+      },
+      downloadTemplate: function () {
+        $("<form action='eventLoader.action'/>")
+            .append($("<input/>").attr({
+              type: 'hidden',
+              name: 'jobType',
+              value: $("#jobType").val()
+            }))
+            .append($("<input/>").attr({
+              type: 'hidden',
+              name: 'projectId',
+              value: $("#_projectSelect").val()
+            }))
+            .append($("<input/>").attr({
+              type: 'hidden',
+              name: 'projectName',
+              value: $("#_projectSelect option:selected").text()
+            }))
+            .append($("<input/>").attr({
+              type: 'hidden',
+              name: 'ids',
+              value: (g_sampleIds ? g_sampleIds : "")
+            }))
+            .append($("<input/>").attr({
+              type: 'hidden',
+              name: 'eventId',
+              value: $("#_eventSelect").val()
+            }))
+            .append($("<input/>").attr({
+              type: 'hidden',
+              name: 'eventName',
+              value: $("#_eventSelect option:selected").text()
+            })).appendTo('body').submit();
+        $('#download-template').modal('hide');
       }
     },
     callbacks = {
@@ -1013,14 +1047,7 @@ var button = {
   },
   template: function() {
     if(_utils.validation()) {
-      $.openPopupLayer({
-        name: "LPopupTemplateSelect",
-        width: 450,
-        url: "popup.action?t=sel_t&projectName=" + $("#_projectSelect option:selected").text() +
-        "&projectId=" + $("#_projectSelect").val() + "&eventName=" + $("#_eventSelect option:selected").text() +
-        "&eventId=" + $("#_eventSelect").val() + "&ids=" + (g_sampleIds ? g_sampleIds : "")
-      });
-      //this.submit_form("template");
+      $('#download-template').modal('show');
     }
   },
   exportSample: function() {

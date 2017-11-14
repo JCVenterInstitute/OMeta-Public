@@ -139,6 +139,32 @@
           </div>
         </div>
 
+        <div class="modal fade" id="download-template" role="dialog">
+          <div class="modal-dialog" style="max-width:450px;">
+
+            <!-- Modal content-->
+            <div class="modal-content" >
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"><i class="fa fa-angle-right"></i> <strong>Select Template Format</strong></h4>
+              </div>
+              <div class="modal-body">
+                <div style="display: flex;align-items: center;">
+                  <label class="col-sm-4 control-label"><strong>Format</strong></label>
+                  <div class="col-sm-8 input-group">
+                    <select name="jobType" id="jobType" class="form-control"><option value="template_c">CSV</option></select>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-info" onclick="_utils.downloadTemplate();">Download</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
         <div id="popupLayerScreenLocker" style="position: fixed; left: 0; top: 0; opacity: 0.5; height: 100%; width: 100%; z-index: 1000; display: none; background: rgb(0, 0, 0);"><!-- --></div>
         <div id="processingDiv" class="show_processing" style="display: none;position: fixed;">Processing your request. Please wait...</div>
 
