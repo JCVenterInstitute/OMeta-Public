@@ -152,7 +152,7 @@
                 <div style="display: flex;align-items: center;">
                   <label class="col-sm-4 control-label"><strong>Format</strong></label>
                   <div class="col-sm-8 input-group">
-                    <select name="jobType" id="jobType" class="form-control"><option value="template_c">CSV</option></select>
+                    <select name="jobType" id="templateJobType" class="form-control"><option value="template_c">CSV</option></select>
                   </div>
                 </div>
               </div>

@@ -116,7 +116,7 @@ var _utils = {
             .append($("<input/>").attr({
               type: 'hidden',
               name: 'jobType',
-              value: $("#jobType").val()
+              value: $("#templateJobType").val()
             }))
             .append($("<input/>").attr({
               type: 'hidden',
