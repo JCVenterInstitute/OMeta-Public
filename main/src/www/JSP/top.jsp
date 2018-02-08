@@ -9,8 +9,8 @@
 </style>
 <!-- top menu starts -->
 
-<header id="header" class="header clearfix" role="banner" style="background-color: #f8f8f8">
-  <div class="navbar navbar-default navbar-inherit-top" role="navigation" style="border-color: transparent">
+<header id="header" class="header clearfix" role="banner">
+  <div class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="site-title"></div>
     <div class="inner-header container max-container">
       <div class="top-links clearfix" style="float:left;">
@@ -46,7 +46,7 @@
             </ul>
           </li>
           <li class="dropdown">
-            <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true"><i class="fa fa-user" style="margin-right: 5px;"></i><div class="HeaderLink" id="currUserName" style="display:inline-block"></div><span class="caret"></span></a>
+            <a href="#" data-toggle="dropdown" class="dropdown-toggle" aria-haspopup="true"><i class="fa fa-user" style="margin-right: 5px;color: #3276b19e;"></i><div class="HeaderLink" id="currUserName" style="display:inline-block"></div><span class="caret"></span></a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="logout.action"><span class="glyphicon glyphicon-log-out" style="margin-right:5px;padding:3px"></span>Log Out</a></li>
             </ul>
@@ -54,7 +54,6 @@
         </ul>
       </div><!--/.nav-collapse-->
     </div>
-    <div id="header-border"></div>
   </div>
 </header>
 
