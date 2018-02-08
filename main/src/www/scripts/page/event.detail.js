@@ -208,6 +208,7 @@ var _page = {
       },
       select: {
         all: function() {
+          $("#selectAllSamples").attr('checked', true);
           $('#sampleTableBody > tr ').each(function() {
             $(this).find("td:first > input").attr('checked', true);
           });
@@ -215,6 +216,7 @@ var _page = {
       },
       deselect: {
         all: function() {
+          $("#selectAllSamples").attr('checked', false);
           $('#sampleTableBody > tr ').each(function() {
             $(this).find("td:first > input").attr('checked', false);
           });
@@ -269,7 +271,7 @@ var attributeTypeMap = [];
 
 <!-- Generate html content using Ajax by type -->
 function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
-  $("#loadingImg").show();
+  utils.processing(true);
 
   var content = '', rtnVal = false;
   $.ajax({
@@ -350,6 +352,7 @@ function createSampleDataTable(){
   if(typeof sDT !== 'undefined') {
     sDT.fnDestroy();
     $("#sampleTableBody").empty();
+    utils.processing(false);
   }
 
   <!-- SAMPLE TABLE -->
@@ -457,7 +460,7 @@ function createSampleDataTable(){
             $('#sampleTableDivHeader').show();
             $('#sampleTableDiv').show();
             $('#refreshDataBtn').show();
-            $("#loadingImg").hide();
+            utils.processing(false);
             utils.error.remove();
           }
         });

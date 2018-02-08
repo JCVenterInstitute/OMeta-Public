@@ -53,6 +53,7 @@
       float: left !important;
     }
     label{font-weight: normal !important;}
+    .sorting, .sorting_asc, .sorting_desc { background-image : none; } /*hide sorting arrows on datatable*/
   </style>
 </head>
 

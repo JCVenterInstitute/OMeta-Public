@@ -113,7 +113,6 @@
                 <div style="display: flex;align-items: center;">
                   <label class="col-sm-4 control-label"><strong>Event Name</strong></label>
                   <div class="col-sm-8 input-group">
-                    <input type="hidden" id="ids" name="ids"/>
                     <select id="eventName" name="eventName" class="form-control"></select>
                   </div>
                 </div>
@@ -128,6 +127,7 @@
         </div>
 
         <s:form id="eventDetailPage" name="eventDetailPage" namespace="/" action="eventDetail" method="post" theme="simple">
+          <input type="hidden" id="ids" name="ids"/>
           <s:hidden id="editable" name="editable" value="0" />
           <div class="page-header">
             <h1>Search and Edit Data</h1>
@@ -146,7 +146,10 @@
             </s:if>
           </div>
           <div id="mainContent">
-            <!--<div id="columnsTable"></div>  for column listing-->
+
+            <div id="popupLayerScreenLocker" style="position: fixed; left: 0; top: 0; opacity: 0.5; height: 100%; width: 100%; z-index: 1000; display: none; background: rgb(0, 0, 0);"><!-- --></div>
+            <div id="processingDiv" class="show_processing" style="display: none;position: fixed;">Processing your request. Please wait...</div>
+
             <div id="statusTableDiv">
               <div id="tableTop">
                 <div class="row">
@@ -159,19 +162,7 @@
                       <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
                     </button>
                   </div>
-                  <div id="loadingImg" style="display: none;">
-                    <div class="container">
-                      <img src="images/loading.gif" style="width: 24px;"/>
-                    </div>
-                  </div>
                 </div>
-                  <%--<div class="row row_spacer">
-                    <div class="col-md-2">Sample</div>
-                    <div class="col-md-10 combobox">
-                      <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':'Select by Sample'}"
-                                name="selectedSampleId" required="true"/>
-                    </div>
-                  </div>--%>
               </div>
 
               <!-- project -->
@@ -180,11 +171,10 @@
               </div>
 
               <div id="projectTableDiv" style="margin:0 10px 5px 0;">
-                <table name="projectTable" id="projectTable" class="contenttable" style="width:95%;">
+                <table name="projectTable" id="projectTable" class="table table-bordered table-striped">
                   <tbody id="projectTableBody">
                   </tbody>
                 </table>
-                <!-- <input onclick="_page.edit.project();" style="margin-top:10px;" disabled="true" type="button" value="Edit Project" id="editProjectBtn" /> -->
               </div>
 
               <!-- sample -->

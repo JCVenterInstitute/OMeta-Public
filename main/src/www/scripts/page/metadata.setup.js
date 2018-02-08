@@ -329,10 +329,10 @@ var _utils = {
   },
   loading: {
     show: function() {
-      $('#loadingImg').show();
+      utils.processing(true);
     },
     hide: function() {
-      $('#loadingImg').hide();
+      utils.processing(false);
     }
   },
   submit: function() {

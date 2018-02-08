@@ -110,12 +110,6 @@
               </div>
             </div>
           </s:if>
-
-          <div class="row" id="loadingImg">
-            <div class="container" style="padding-left:5px;">
-              <img src="images/loading.gif" />
-            </div>
-          </div>
         </div>
 
         <!-- Modal -->
@@ -440,7 +434,7 @@
   });
 
   $(function() {
-    $('#loadingImg').show();
+    utils.processing(true);
 
     $('#dropBoxDiv').hide();
     $('select[id$="Select"]').combobox();
@@ -512,7 +506,7 @@
         g_transferType = transferType;
       }
       if(oldEventName !== '') {
-          $("#loadingImg").show();
+          utils.processing(true);
           utils.preSelect("_eventSelect", oldEventName);
           changes.event(oldEventName, $('#_eventSelect').val());
       }
@@ -711,7 +705,7 @@
       $("#autofill-option-button").hide();
     });
 
-    $('#loadingImg').hide();
+    utils.processing(false);
 
     var offset = 250;
     var duration = 300;
