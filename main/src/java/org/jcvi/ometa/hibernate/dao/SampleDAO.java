@@ -240,6 +240,27 @@ public class SampleDAO extends HibernateDAO {
         return sampleList;
     }
 
+    public List<String[]> getSampleStatusForProject(Long projectId, Session session) throws DAOException {
+        List<String[]> sampleStatusList = new ArrayList<>();
+        try {
+            String sql = "select distinct count(s.sample_name), sa.sampla_attribute_str from ifx_projects.sample s" +
+                    " join ifx_projects.sample_attribute sa on sa.sampla_sample_id = s.sample_id" +
+                    " join ifx_projects.lookup_value lv on lv.lkuvlu_id = sa.sampla_lkuvlu_attribute_id" +
+                    " where s.sample_projet_id = :projectId" +
+                    " and (lv.lkuvlu_name = 'Sample Status' or  lv.lkuvlu_name = 'Sample_Status')" +
+                    " group by sa.sampla_attribute_str";
+
+            SQLQuery query = session.createSQLQuery( sql );
+            query.setParameter("projectId", projectId);
+            List<String[]> results = query.list();
+            sampleStatusList.addAll(results);
+        } catch (Exception ex) {
+            throw new DAOException(ex);
+        }
+
+        return sampleStatusList;
+    }
+
     public List<Sample> getAllSamplesBySearch(Long projectId, String sampleVal, int firstResult, int maxResult, Session session) throws DAOException {
         List<Sample> sampleList = new ArrayList<Sample>();
         try {

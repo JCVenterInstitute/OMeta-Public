@@ -100,6 +100,8 @@ public interface ProjectSampleEventPresentationBusiness {
 
     public List<Sample> getSamplesForProject(Long projectId) throws Exception;
 
+    public List<String[]> getSampleStatusForProject(Long projectId) throws Exception;
+
     public List<Sample> getSamplesForProjectBySearch(Long projectId, String sampleVal,int firstResult, int maxResult) throws Exception;
 
     public Integer getSampleCountForProjectBySearch(Long projectId, String sampleVal) throws Exception;
@@ -169,6 +171,8 @@ public interface ProjectSampleEventPresentationBusiness {
     public List<String> getAuthorizedProjectNames( List<String> names, String username, ResponseToFailedAuthorization failureResponse, AccessLevel accessLevel, QueryEntityType queryEntityType ) throws Exception;
 
     public List<Project> getAuthorizedProjects( String username, AccessLevel accessLevel ) throws Exception;
+
+    public List<Project> getLastUpdatedProjects( String username, int size, AccessLevel accessLevel) throws Exception;
 
     public List<Project> getChildProjects( Long projectId ) throws Exception;
 

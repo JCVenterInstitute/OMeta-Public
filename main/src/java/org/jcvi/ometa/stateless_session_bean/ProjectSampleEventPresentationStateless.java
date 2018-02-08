@@ -451,6 +451,23 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
 
         return sBeans;
     }
+    public List<String[]> getSampleStatusForProject( @JCVI_Project Long projectId ) throws Exception {
+        Session session = startTransactedSession();
+
+        List<String[]> sampleStatusList;
+        try {
+            SampleDAO sDao = daoFactory.getSampleDAO();
+            sampleStatusList = sDao.getSampleStatusForProject(projectId, session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+
+        return sampleStatusList;
+    }
 
     public List<Sample> getSamplesForProjectBySearch( @JCVI_Project Long projectId, String sampleVal, int firstResult, int maxResult ) throws Exception {
         Session session = startTransactedSession();
@@ -1146,6 +1163,24 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
             Session session = this.startTransactedSession();
             SecurityDAO securityDAO = daoFactory.getSecurityDAO();
             rtnVal = securityDAO.getListOfAuthorizedProjects( username, accessLevel, session);
+
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        } finally {
+            sessionAndTransactionManager.closeSession();
+        }
+        return rtnVal;
+    }
+
+    public List<Project> getLastUpdatedProjects( String username, int size, AccessLevel accessLevel) throws Exception {
+        List<Project> rtnVal;
+
+        try {
+            Session session = this.startTransactedSession();
+            SecurityDAO securityDAO = daoFactory.getSecurityDAO();
+            rtnVal = securityDAO.getLastUpdatedAuthorizedProjects( username, size, accessLevel, session);
 
             sessionAndTransactionManager.commitTransaction();
         } catch (Exception ex) {

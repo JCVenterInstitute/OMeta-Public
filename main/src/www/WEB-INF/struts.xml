@@ -26,6 +26,7 @@
 
 <struts>
 
+    <constant name="struts.action.excludePattern" value="/api/.*,/ometa/api/.*" />
     <constant name="struts.action.extension" value="action" />
     <!--<constant name="struts.devMode" value="true" />-->
     <constant name="struts.enable.DynamicMethodInvocation" value="false" />
@@ -456,8 +457,9 @@
             <result>/JSP/ErrorOnLogin.jsp</result>
         </action>
 
-        <action name="secureIndex">
-            <result>/JSP/securedIndex.jsp</result>
+        <action name="secureIndex" class="org.jcvi.ometa.action.Dashboard" method="process">
+            <result name="success">/JSP/securedIndex.jsp</result>
+            <result name="error">/JSP/securedIndex.jsp</result>
         </action>
         <action name="unsecureIndex">
             <result>/JSP/index.jsp</result>

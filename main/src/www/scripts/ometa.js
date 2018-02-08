@@ -28,6 +28,31 @@ var utils = {
     var pnode = $("#_projectSelect option:selected");
     return pnode.val();
   },
+  getProjectDetailsIntoModal: function (projectId, tableId) {
+    $.ajax({
+      url: 'getproject.action',
+      cache: false,
+      async: false,
+      data: "type=project&projectId="+projectId,
+      success: function(html){
+        if(html.aaData) {
+          $(html.aaData).each(function(i1,v1) {
+            if(v1 && i1 == 0) {
+              var table = $(tableId);
+              table.html('');
+              $.each(v1, function(i2,v2) {
+                if (v2 && i2 != 'editable') {
+                  if(i2 == 'ProjectName') $(".modal-title strong").html(v2);
+                  else table.append('<tr><td><strong>'+i2+'</strong></td><td>'+v2+'</td></tr>');
+                }
+              });
+            }
+          });
+        }
+      }
+    });
+
+  },
   getEventName: function(en) {
     var enode = $("#_eventSelect option:selected");
     return en || (enode.val() === '0' ? null : enode.text());
@@ -172,6 +197,15 @@ var utils = {
     if(bytes === 0) { return "0.00 B"; }
     var e = Math.floor(Math.log(bytes) / Math.log(1024));
     return (bytes/Math.pow(1024, e)).toFixed(2)+' '+' KMGTP'.charAt(e)+'B';
+  },
+  processing: function (isProcessing) {
+    if (isProcessing) {
+      $("#popupLayerScreenLocker").show();
+      $("#processingDiv").show();
+    } else {
+      $("#popupLayerScreenLocker").hide();
+      $("#processingDiv").hide();
+    }
   }
 };
 
@@ -353,7 +387,7 @@ var vs = {
             });
         }
     }
-    
+
     function hideScreenLocker(popupName) {
         if (openedPopups.length == 0) {
             screenlocker = false;
@@ -361,7 +395,7 @@ var vs = {
         } else {
             $('#popupLayerScreenLocker').css("z-index",parseInt($("#popupLayer_" + openedPopups[openedPopups.length - 1].name).css("z-index")) - 1);
         }
-   
+
         if ($.browser.msie && $.browser.version < 7) {
             $("select.hidden-by-" + popupName).removeClass("hidden-by-jmp hidden-by-" + popupName).css("visibility","visible");
         }
@@ -1777,7 +1811,7 @@ if (typeof jQuery === 'undefined') { throw new Error('Bootstrap\'s JavaScript re
                 .addClass(placement)
                 .data('bs.' + this.type, this)
 
-            this.options.container ? $tip.appendTo(this.options.container) : $tip.insertAfter(this.$element)
+          this.options.container ? $tip.appendTo(this.options.container) : this.$element.parents('#eventTable').length ? $tip.insertBefore($('#eventTable')) : $tip.insertAfter(this.$element)
 
             var pos          = this.getPosition()
             var actualWidth  = $tip[0].offsetWidth

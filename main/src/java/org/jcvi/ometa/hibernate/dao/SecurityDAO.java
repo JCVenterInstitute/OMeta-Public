@@ -47,6 +47,7 @@ public class SecurityDAO extends HibernateDAO {
 
     private static final String PROJ_GRP_SUBST_STR = "{project_group_field}";
     private static final String USERNAME_PARAM = "userName";
+    private static final String LIMIT_PARAM = "limit";
 
     private static final String VIEW_PROJECT_GROUP_FIELD = "P.projet_view_group_id";
     private static final String EDIT_PROJECT_GROUP_FIELD = "P.projet_edit_group_id";
@@ -92,6 +93,19 @@ public class SecurityDAO extends HibernateDAO {
                     "   select actgrp_group_id from actor a, actor_group ag where a.actor_username =:"+ USERNAME_PARAM +
                     "   and a.actor_id = ag.actgrp_actor_id)" +
                     " order by P.projet_name";
+
+    private static final String LATEST_AUTHORIZED_FOR_USER_SQL_QUERY =
+            "select P.*, sa.sampla_create_date, sa.sampla_modified_date from ifx_projects.project P" +
+                    " join ifx_projects.sample_attribute sa on sa.sampla_projet_id = P.projet_id" +
+                    " join ifx_projects.actor a on a.actor_id = sa.sampla_actor_modified_by" +
+                    " where a.actor_username =:" + USERNAME_PARAM +
+                    " and (" + PROJ_GRP_SUBST_STR + " is null " +
+                    "    or " + PROJ_GRP_SUBST_STR + " in (" +
+                    "    select actgrp_group_id from actor a, actor_group ag where a.actor_username =:" + USERNAME_PARAM + " and a.actor_id = ag.actgrp_actor_id)" +
+                    "    )" +
+                    " group by P.projet_name" +
+                    " order by GREATEST(sa.sampla_modified_date, sa.sampla_create_date) desc" +
+                    " limit :" + LIMIT_PARAM;
 
     //-------------------------------SAMPLE SECTION
     private static final String SECURED_SAMPLES_SQL_QUERY =
@@ -315,6 +329,30 @@ public class SecurityDAO extends HibernateDAO {
         SQLQuery query = session.createSQLQuery(queryStr);
         String queryUsername = username == null ? UNLOGGED_IN_USER : username;
         query.setParameter( USERNAME_PARAM, queryUsername );
+        query.addEntity("P", Project.class);
+        List<Project> rtnVal = query.list();
+        return rtnVal;
+
+    }
+    public List<Project> getLastUpdatedAuthorizedProjects(
+            String username,
+            int size,
+            AccessLevel accessLevel,
+            Session session ) throws Exception {
+
+        String queryStr = LATEST_AUTHORIZED_FOR_USER_SQL_QUERY;
+
+        if ( accessLevel == AccessLevel.View  ) {
+            queryStr = queryStr.replace( PROJ_GRP_SUBST_STR, VIEW_PROJECT_GROUP_FIELD );
+        }
+        else {
+            queryStr = queryStr.replace( PROJ_GRP_SUBST_STR, EDIT_PROJECT_GROUP_FIELD );
+        }
+
+        SQLQuery query = session.createSQLQuery(queryStr);
+        String queryUsername = username == null ? UNLOGGED_IN_USER : username;
+        query.setParameter( USERNAME_PARAM, queryUsername );
+        query.setParameter( LIMIT_PARAM, size);
         query.addEntity("P", Project.class);
         List<Project> rtnVal = query.list();
         return rtnVal;

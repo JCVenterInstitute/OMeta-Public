@@ -177,6 +177,10 @@ public class ReadBeanPersister implements WebDataFacadeI {
         return pseb.getSamplesForProject(projectId);
     }
 
+    public List<String[]> getSampleStatusForProject(Long projectId) throws Exception {
+        return pseb.getSampleStatusForProject(projectId);
+    }
+
     public List<Sample> getSamplesForProjectBySearch(Long projectId, String sampleVal,int firstResult, int maxResult) throws Exception {
         return pseb.getSamplesForProjectBySearch(projectId, sampleVal, firstResult, maxResult);
     }
@@ -317,6 +321,10 @@ public class ReadBeanPersister implements WebDataFacadeI {
 
     public List<Project> getAuthorizedProjects( String username, AccessLevel accessLevel ) throws Exception {
         return pseb.getAuthorizedProjects( username, accessLevel );
+    }
+
+    public List<Project> getLastUpdatedProjects( String username, int size, AccessLevel accessLevel) throws Exception {
+        return  pseb.getLastUpdatedProjects(username, size, accessLevel);
     }
 
     public List<Group> getAllGroup() throws Exception {
