@@ -264,6 +264,7 @@
               },
               edt: function(projectId, sampleId, eventId) {
                 var dates = "&fd="+$('#fromDate').val()+"&td="+$('#toDate').val();
+                if(typeof sampleId === "undefined") sampleId = 0;
                 eDT.fnNewAjax("eventDetailAjax.action?type=edt&projectId="+projectId+"&sampleId="+sampleId+"&eventId=0"+dates);
               }
             },
