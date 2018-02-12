@@ -136,8 +136,8 @@
   });
 
   var event_types = [];
-  var openBtn = "images/dataTables/details_open.png",
-          closeBtn = "images/dataTables/details_close.png";
+  var openBtn = "glyphicon-plus-sign",
+      closeBtn = "glyphicon-minus-sign";
   var _selAllEventHtml = '';
 
   var h_s = {
@@ -160,7 +160,7 @@
                         $.each(values, function(et, attrs) {
                           var et_us = et.replace(/ /g, "_");
                           event_types.push(et_us.toLowerCase());
-                          _html+='<sort><a href="javascript:buttonSwitch(null, \'expand_'+et_us.toLowerCase()+'\');"><img name="expandEvents" id="expand_'+et_us.toLowerCase()+'" src="images/dataTables/details_open.png"/></a><strong>'+et+'</strong>' +
+                          _html+='<sort><a href="javascript:buttonSwitch(null, \'expand_'+et_us.toLowerCase()+'\');"><span name="expandEvents" id="expand_'+et_us.toLowerCase()+'" class="glyphicon glyphicon-plus-sign" aria-hidden="true" style="color:green;cursor: pointer;"></span></a><strong>'+et+'</strong>' +
                           '<input class="chkbox ev_attr" type="checkbox" name="sAll" id="'+et_us.toLowerCase()+'" value="'+et+'"/><div class="hidden_event" name="'+et_us.toLowerCase()+'" id="'+et_us+'"><table><tr>';
                           $.each(attrs, function(a_i, a) {
                             _html+= '<td>' + h_s.cb.replace('$g$',k).replace(/\$v\$/g, a) + '</td>';
@@ -339,12 +339,16 @@
   function buttonSwitch(node, id) {
     if(node==null) { node = document.getElementById(id); }
     var attr_name = id.replace("expand_", "");
-    if(node.src.match('details_close')){
-      $('[name="'+attr_name+'"]').hide();
-      node.src = openBtn;
-    } else {
+    if(node.classList.contains(openBtn)){
       $('[name="'+attr_name+'"]').show();
-      node.src = closeBtn;
+      node.classList.remove(openBtn);
+      node.classList.add(closeBtn);
+      node.style.color = "red";
+    } else {
+      $('[name="'+attr_name+'"]').hide();
+      node.classList.remove(closeBtn);
+      node.classList.add(openBtn);
+      node.style.color = "green";
     }
   }
 

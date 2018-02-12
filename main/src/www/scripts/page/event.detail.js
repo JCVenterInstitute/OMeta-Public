@@ -5,8 +5,8 @@ var _html = {
   '<div class="buttons" style="float: right">$downloadallbutton$<button type="button" class="btn btn-primary" id="attach-file-done-$id$" style="margin: 10px;">Done</button></div></div></div>'
 }
 
-var openBtn = "images/dataTables/details_open.png",
-    closeBtn = "images/dataTables/details_close.png",
+var openBtn = "glyphicon-plus-sign",
+    closeBtn = "glyphicon-minus-sign",
     subrow_html='<div><table cellpadding="6" cellspacing="0">$d$</table></div>';
 
 var sDT, //sample detail table
@@ -241,12 +241,19 @@ var _page = {
     },
     buttonSwitch = function(node, name) {
       if(node==null) { node = document.getElementById(name); }
-      if(node.src.match('details_close')){ node.src = openBtn; } else { node.src = closeBtn; }
+      if(node.classList.contains(openBtn)){
+        node.classList.remove(openBtn);
+        node.classList.add(closeBtn);
+        node.style.color = "red";
+      } else {
+        node.classList.remove(closeBtn);
+        node.classList.add(openBtn);
+        node.style.color = "green";
+      }
     };
 
 function comboBoxChanged(option, id) {
   if(id==='_projectSelect') {
-    //document.getElementById('sampleTable').getElementsByTagName('img')[0].src = openBtn;
     if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
       _page.change.project(option.value, 0);
       $('.ui-autocomplete-input').val('');
@@ -585,7 +592,7 @@ function generateColumnFilter(){
 }
 
 function addNewFilter(i){
-  var $addMoreBtn = $("<img>").attr({'src':'images/dataTables/details_open.png', 'id':'addMoreColumnFilter', 'onclick':'addNewFilter('+ ++i +');'});
+  var $addMoreBtn = $("<span>").attr({'class':'glyphicon glyphicon-plus-sign', 'style':'color:green;cursor: pointer;', 'id':'addMoreColumnFilter', 'onclick':'addNewFilter('+ ++i +');'});
   var $columnFilterBox = $("<div>", {'class': 'column_filter_box'});
   var $columnFilterSelect = $("<select>", {class:"select_column", id: "select_column_"+i, name:"column_name", 'onchange':'updateOperation(this.value,'+ i + ')'});
   var $columnFilterOperation = $("<select>", {class:"select_operation", id: "select_operation_"+i, name:"operation"});
@@ -624,7 +631,7 @@ function addNewFilter(i){
   $columnFilterBox.append($columnFilterOperation);
   $columnFilterBox.append($("<input>").attr({'type':'text', 'class':'filter_text', 'id':'filter_text_'+i, 'name':'filter_text', 'style':'height: 22px;'}));
   if(i != 0) {
-    $columnFilterBox.append($("<img>").attr({'src':'images/dataTables/details_close.png', 'class':'removeColumnFilter'})
+    $columnFilterBox.append($("<span>").attr({'class':'removeColumnFilter glyphicon glyphicon-minus-sign', 'style':'color:red;cursor: pointer;'})
         .click(function(){
           var $columnFilterBox = $(this).parent();
 

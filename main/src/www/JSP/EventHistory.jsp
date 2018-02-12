@@ -154,7 +154,7 @@
                   <table name="eventTable" id="eventTable" class="contenttable" style="width:95%;">
                     <thead id="eventTableHeader">
                     <tr>
-                      <th style="width:23px !important;text-align:center"><img id="table_openBtn"/></th>
+                      <th style="width:23px !important;"><span id="table_openBtn" class="glyphicon glyphicon-plus-sign" aria-hidden="true" style="color:green;cursor: pointer;"></span></th>
                       <th class="tableHeaderStyle">Event Type</th>
                       <th class="tableHeaderStyle">Sample Name</th>
                       <th class="tableHeaderStyle">Date</th>
@@ -179,9 +179,9 @@
 
 <script src="scripts/jquery/jquery.dataTables.js"></script>
 <script>
-  var openBtn = "images/dataTables/details_open.png",
-          closeBtn = "images/dataTables/details_close.png",
-          subrow_html='<div><table cellpadding="6" cellspacing="0">$d$</table></div>';
+  var openBtn = "glyphicon-plus-sign",
+      closeBtn = "glyphicon-minus-sign",
+      subrow_html='<div><table cellpadding="6" cellspacing="0">$d$</table></div>';
 
   var eDT; //event detail table
 
@@ -311,12 +311,19 @@
           },
           buttonSwitch = function(node, name) {
             if(node==null) { node = document.getElementById(name); }
-            if(node.src.match('details_close')){ node.src = openBtn; } else { node.src = closeBtn; }
+            if(node.classList.contains(openBtn)){
+              node.classList.remove(openBtn);
+              node.classList.add(closeBtn);
+              node.style.color = "red";
+            } else {
+              node.classList.remove(closeBtn);
+              node.classList.add(openBtn);
+              node.style.color = "green";
+            }
           };
 
   function comboBoxChanged(option, id) {
     if(id==='_projectSelect') {
-      document.getElementById('eventTable').getElementsByTagName('img')[0].src = openBtn;
       if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
         _page.change.project(option.value, 0);
         $('.ui-autocomplete-input').val('');
@@ -405,7 +412,7 @@
   }
 
   function addNewFilter(i){
-    var $addMoreBtn = $("<img>").attr({'src':'images/dataTables/details_open.png', 'id':'addMoreColumnFilter', 'onclick':'addNewFilter('+ ++i +');'});
+    var $addMoreBtn = $("<span>").attr({'class':'glyphicon glyphicon-plus-sign', 'style':'color:green;cursor: pointer;', 'id':'addMoreColumnFilter', 'onclick':'addNewFilter('+ ++i +');'});
     var $columnFilterBox = $("<div>", {'class': 'column_filter_box'});
     var $columnFilterSelect = $("<select>", {class:"select_column", id: "select_column_"+i, name:"column_name", 'onchange':'updateOperation(this.value,'+ i + ')'});
     var $columnFilterOperation = $("<select>", {class:"select_operation", id: "select_operation_"+i, name:"operation"});
@@ -439,7 +446,7 @@
     $columnFilterBox.append($columnFilterOperation);
     $columnFilterBox.append($("<input>").attr({'type':'text', 'class':'filter_text', 'id':'filter_text_'+i, 'name':'filter_text', 'style':'height: 22px;'}));
     if(i != 0) {
-      $columnFilterBox.append($("<img>").attr({'src':'images/dataTables/details_close.png', 'class':'removeColumnFilter'})
+      $columnFilterBox.append($("<span>").attr({'class':'removeColumnFilter glyphicon glyphicon-minus-sign', 'style':'color:red;cursor: pointer;'})
               .click(function(){
                 var $columnFilterBox = $(this).parent();
 
@@ -545,7 +552,7 @@
                 $.each(json.aaData, function(ri,rowData) {
                   var row = [], attributes;
                   row.push(
-                          "<img src='images/dataTables/details_open.png' id='rowDetail_openBtn'/>",
+                          "<span id='rowDetail_openBtn' class='glyphicon glyphicon-plus-sign' aria-hidden='true' style='color:green;cursor: pointer;'></span>",
                           rowData.eventName,
                           rowData.sampleName,
                           rowData.createdOn,
@@ -657,16 +664,20 @@
 
     //add click listener on row expander
     $('tbody td #rowDetail_openBtn').live('click', function () {
-      if(this.src.indexOf('details_close')>=0) toggleRow(this,'close')
+      if(this.classList.contains(closeBtn)) toggleRow(this,'close')
       else toggleRow(this,'open')
     });
 
     $('thead #table_openBtn').live('click', function () {
-      if(this.src.match('details_close')){
-        this.src = openBtn;
+      if(this.classList.contains(closeBtn)){
+        this.classList.remove(closeBtn);
+        this.classList.add(openBtn);
+        this.style.color = "green";
         $('#eventTable #rowDetail_openBtn').each(function(){toggleRow(this,'close')});
       } else {
-        this.src = closeBtn;
+        this.classList.remove(openBtn);
+        this.classList.add(closeBtn);
+        this.style.color = "red";
         $('#eventTable #rowDetail_openBtn').each(function(){toggleRow(this,'open')});
       }
     });
@@ -674,12 +685,16 @@
     function toggleRow(item, action) {
       var _row = item.parentNode.parentNode, _is_event=(_row.parentNode.id.indexOf('event')>=0), _table=_is_event?eDT:sDT;
       if(action == 'open'){
-        item.src = closeBtn;
+        item.classList.remove(openBtn);
+        item.classList.add(closeBtn);
+        item.style.color = "red";
         _table.fnOpen(_row, subrow_html.replace(/\$d\$/, _table.fnGetData(_row)[5]), '_details');
         $('td._details').attr('colspan', 6); //fix misalignment issue in chrome by incresing colspan by 1
         $('td._details>div').css('width', $('#statusTableDiv').width()-90);
       } else {
-        item.src = openBtn;
+        item.classList.remove(closeBtn);
+        item.classList.add(openBtn);
+        item.style.color = "green";
         _table.fnClose(_row);
       }
     }

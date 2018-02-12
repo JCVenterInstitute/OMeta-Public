@@ -167,7 +167,7 @@
 
               <!-- project -->
               <div id="projectTableDivHeader" style="margin:25px 10px 0 0;">
-                <h2 class="csc-firstHeader middle-header">Project Details <img id="toggleProjectDetails" src="images/dataTables/details_open.png"></h2>
+                <h2 class="csc-firstHeader middle-header">Project Details <small><span id="toggleProjectDetails" class="glyphicon glyphicon-plus-sign" aria-hidden="true" style="color:green;cursor: pointer;"></span></small></h2>
               </div>
 
               <div id="projectTableDiv" style="margin:0 10px 5px 0;">
