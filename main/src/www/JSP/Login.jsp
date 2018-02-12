@@ -30,7 +30,7 @@
   <div id="main">
     <div id="content" class="container max-container" role="main">
       <div class="page-header text-center">
-        <img class="headerImage" src="<c:url value='/images/ometa_logo.png' />" alt="Ontology based Metadata Tracking">
+        <img class="headerImage" src="<c:url value='/images/ometa_logo.png' />" alt="Ontology based Metadata Tracking" style="height: 65px;">
       </div>
       <div class="row">
         <div class="col-sm-4 col-sm-offset-4">
