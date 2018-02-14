@@ -52,6 +52,8 @@
       font-style: normal;font-weight: normal;line-height: 1;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;}
     .glyphicon-filter:before {content: "\e138";}
     .glyphicon-search:before {content: "\e003";}
+    .glyphicon-plus-sign:before {content: "\e081";}
+    .glyphicon-minus-sign:before {content: "\e082";}
     #columnFilterBtn:hover:after{ background: #333; background: rgba(0,0,0,.8);
       border-radius: 5px; bottom: 0px; color: #fff; content: attr(data-tooltip);
       left: 140%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
@@ -63,7 +65,6 @@
     .column_filter_box{margin: 5px 0 5px 15px;}
     #columnSearchBtn{margin:10px 0 0 15px;width: 59px;}
     .select_column, .select_operation, .filter_text, .removeColumnFilter{margin-left: 4px;}
-    .removeColumnFilter, #addMoreColumnFilter{height: 17px;top: 4px;position: relative;}
     .select_logicgate{width: 59px;}
   </style>
 </head>
@@ -257,7 +258,7 @@
   }
 
   function addNewFilter(i){
-    var $addMoreBtn = $("<img>").attr({'src':'images/dataTables/details_open.png', 'id':'addMoreColumnFilter', 'onclick':'addNewFilter('+ ++i +');'});
+    var $addMoreBtn = $("<span>").attr({'class':'glyphicon glyphicon-plus-sign', 'style':'color:green;cursor: pointer;', 'id':'addMoreColumnFilter', 'onclick':'addNewFilter('+ ++i +');'});
     var $columnFilterBox = $("<div>", {'class': 'column_filter_box'});
     var $columnFilterSelect = $("<select>", {class:"select_column", id: "select_column_"+i, name:"column_name", 'onchange':'updateOperation(this.value,'+ i + ')'});
     var $columnFilterOperation = $("<select>", {class:"select_operation", id: "select_operation_"+i, name:"operation"});
@@ -291,7 +292,7 @@
     $columnFilterBox.append($columnFilterOperation);
     $columnFilterBox.append($("<input>").attr({'type':'text', 'class':'filter_text', 'id':'filter_text_'+i, 'name':'filter_text'}));
     if(i != 0) {
-      $columnFilterBox.append($("<img>").attr({'src':'images/dataTables/details_close.png', 'class':'removeColumnFilter'})
+      $columnFilterBox.append($("<span>").attr({'class':'removeColumnFilter glyphicon glyphicon-minus-sign', 'style':'color:red;cursor: pointer;'})
               .click(function(){
                 var $columnFilterBox = $(this).parent();
 
@@ -336,7 +337,6 @@
 
   function comboBoxChanged(option, id) {
     if(id==='_projectSelect') {
-      document.getElementById('eventTable').getElementsByTagName('img')[0].src = openBtn;
       if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
         _page.change.project(option.value, 0);
         $('.ui-autocomplete-input').val('');
