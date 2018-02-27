@@ -132,8 +132,8 @@
           <div class="page-header">
             <h1>Search and Edit Data</h1>
           </div>
-          <div id="HeaderPane">
-            <div id="errorMessagesPanel" style="margin-top:15px;margin-bottom: 15px;display: inline-block;"></div>
+          <div id="HeaderPane" style="margin-top:15px;margin-bottom: 15px;">
+            <div id="errorMessagesPanel"></div>
             <s:if test="hasActionErrors()">
               <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
             </s:if>
@@ -171,7 +171,7 @@
               </div>
 
               <div id="projectTableDiv" style="margin:0 10px 5px 0;">
-                <table name="projectTable" id="projectTable" class="table table-bordered table-striped">
+                <table name="projectTable" id="projectTable" class="table table-bordered table-striped table-hover">
                   <tbody id="projectTableBody">
                   </tbody>
                 </table>
