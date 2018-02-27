@@ -27,53 +27,17 @@
 
 <head>
   <jsp:include page="header.jsp" />
-  <link rel="stylesheet" href="style/dataTables.css" type='text/css' media='all' />
+  <link rel="stylesheet" href="datatables/datatables.css" type='text/css' media='all' />
+  <link rel="stylesheet" href="datatables/Buttons-1.4.2/css/buttons.bootstrap.css" type='text/css' media='all' />
   <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
-
-  <%--<link rel="stylesheet" href="style/version01.css" />--%>
   <style>
-    td._details {
-      text-align:left;
-      padding:0 0 0 35px;
-      border: 1px gray dotted;
-    }
-    td._details div {
-      /*position: relative;*/
-      overflow: auto;
-      /*overflow-y: hidden;*/
-    }
-    td._details table td {
-      border:1px solid white;
-    }
-
-    .datatable_top, .datatable_table, .datatable_bottom {
-      float:left;
-      clear:both;
-      width:100%;
-    }
-    .dataTables_length {
-      height: 29px;
-      vertical-align: middle;
-      min-width: 165px !important;
-      margin-top: 2px;
-    }
-    .dataTables_filter {
-      width: 260px !important;
-    }
-    .dataTables_info {
-      padding-top: 0 !important;
-    }
-    .dataTables_paginate {
-      float: left !important;
-    }
-
-    #column_filter{padding-bottom: 8px;margin: 10px 0 18px;}
-    #col_filter_border_l{border-left: 2px solid #333333;position: absolute;margin-left: 5px;left: 0;top: 45px;bottom: 0;}
-    #col_filter_border_b{border-bottom: 2px solid #333333;position: absolute;right: 95.1%;margin-left: 5px;left: 0;bottom: 0;}
+    .row-details-table tr.even{font-weight: bold;}
+    #column_filter{margin: 5px 0 18px;float: left;}
+    #col_filter_border_l{border-left: 2px solid #333333;position: absolute;margin-left: 18px;left: 0;top: 55px;bottom: 0;}
+    #col_filter_border_b{border-bottom: 2px solid #333333;position: absolute;right: 90%;margin-left: 18px;left: 0;bottom: 0;}
     .column_filter_box{margin: 5px 0 5px 15px;}
-    #columnSearchBtn{margin:10px 0 0 15px;width: 59px;}
-    .select_column, .select_operation, .filter_text, .removeColumnFilter{margin-left: 4px;}
-    .select_logicgate{width: 59px;}
+    #columnSearchBtn{margin:10px 0 0 15px;}
+    .select_column, .select_operation, .filter_text, .removeColumnFilter, #addMoreColumnFilter{margin-left: 4px;}
   </style>
 </head>
 
@@ -89,8 +53,8 @@
           <div class="page-header">
             <h1>Event History</h1>
           </div>
-          <div id="HeaderPane">
-            <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+          <div id="HeaderPane" style="margin-top:15px;margin-bottom: 15px;">
+            <div id="errorMessagesPanel"></div>
             <s:if test="hasActionErrors()">
               <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
             </s:if>
@@ -107,33 +71,26 @@
             <div id="statusTableDiv">
               <div id="tableTop">
                 <div class="row">
-                  <div class="col-lg-1 col-md-2">Project Name</div>
-                  <div class="col-lg-11 col-md-10 combobox">
+                  <div class="col-lg-2 col-md-4">Project Name</div>
+                  <div class="col-lg-10 col-md-10 combobox">
                     <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
                               list="projectList" name="projectId" headerKey="0" headerValue="Select by Project Name"
                               listValue="projectName" listKey="projectId" required="true"/>
                   </div>
                 </div>
-                  <%--<div class="row row_spacer">
-                    <div class="col-lg-1 col-md-2">Sample</div>
-                    <div class="col-lg-11 col-md-10 combobox">
-                      <s:select id="_sampleSelect" cssStyle="margin:0 5 0 10;" list="#{'0':'Select by Sample'}"
-                                name="selectedSampleId" required="true"/>
-                    </div>
-                  </div>--%>
               </div>
 
               <!-- event -->
-              <div id="eventDetailsSection">
+              <div id="eventDetailsSection" style="display: none;">
                 <div style="margin:25px 10px 0 0;">
                   <h1 class="csc-firstHeader middle-header">Event Details</h1>
                 </div>
                 <div id="eventDateDiv" style="margin:3px 10px 0 0;" class="row">
                   <fieldset class="row">
-                    <div class="col-sm-1" style="padding-top:7px;">Date Range:</div>
+                    <div class="col-sm-1" style="padding-top:7px;">Date Range</div>
                     <div class="col-sm-2">
                       <div class="input-group col-sm-12">
-                        <input id="fromDate" type="text" class="form-control"  style="position: initial"/>
+                        <input id="fromDate" type="text" class="form-control"  style="position: initial" placeholder="from"/>
                         <label for="fromDate" class="input-group-addon">
                           <span class=""><i class="fa fa-calendar"></i></span>
                         </label>
@@ -142,7 +99,7 @@
                     <div class="col-sm-1" style="width:auto;padding-top:7px;">~</div>
                     <div class="col-sm-2">
                       <div class="input-group col-sm-11">
-                        <input id="toDate" type="text" class="form-control"  style="position: initial"/>
+                        <input id="toDate" type="text" class="form-control"  style="position: initial" placeholder="to"/>
                         <label for="toDate" class="input-group-addon">
                           <span class=""><i class="fa fa-calendar"></i></span>
                         </label>
@@ -151,19 +108,18 @@
                   </fieldset>
                 </div>
                 <div id="eventTableDiveventTableDiv" style="margin:10px 10px 5px 0;clear:both">
-                  <table name="eventTable" id="eventTable" class="contenttable" style="width:95%;">
-                    <thead id="eventTableHeader">
+                  <table name="eventTable" id="eventTable" class="table table-bordered table-striped table-condensed table-hover">
+                    <thead>
                     <tr>
-                      <th style="width:23px !important;"><span id="table_openBtn" class="glyphicon glyphicon-plus-sign" aria-hidden="true" style="color:green;cursor: pointer;"></span></th>
-                      <th class="tableHeaderStyle">Event Type</th>
-                      <th class="tableHeaderStyle">Sample Name</th>
-                      <th class="tableHeaderStyle">Date</th>
-                      <th class="tableHeaderStyle">User</th>
-                      <!-- <th class="tableHeaderStyle">Status</th> -->
+                      <th style="padding-right: 0"><span id="table_openBtn" class="glyphicon glyphicon-plus-sign" aria-hidden="true" style="color:green;cursor: pointer;"></span></th>
+                      <th>Event Type</th>
+                      <th>Sample Name</th>
+                      <th>Date</th>
+                      <th>User</th>
                       <th>Hidden</th>
                     </tr>
                     </thead>
-                    <tbody id="eventTableBody" />
+                    <tbody/>
                   </table>
                 </div>
               </div>
@@ -173,22 +129,20 @@
       </div>
     </div>
   </div>
-  <div class="row row_spacer" style="margin-bottom:30px;"></div>
 </div>
 <jsp:include page="../html/footer.html" />
 
-<script src="scripts/jquery/jquery.dataTables.js"></script>
+<script src="datatables/datatables.js"></script>
 <script>
   var openBtn = "glyphicon-plus-sign",
       closeBtn = "glyphicon-minus-sign",
-      subrow_html='<div><table cellpadding="6" cellspacing="0">$d$</table></div>';
+      subrow_html='<table class="table table-bordered table-striped table-condensed table-hover row-details-table">$d$</table>';
 
   var eDT; //event detail table
 
   $(document).ready(function() {
     $('.navbar-nav li').removeClass('active');
     $('.navbar-nav > li:nth-child(4)').addClass('active');
-    $('#eventDetailsSection').hide();
   });
 
   //dataTables functions
@@ -303,7 +257,7 @@
                 }
               },
               isActive: function () {
-                return $("#columnFilterBtn").attr("name").indexOf("hide") > -1;
+                return $("#columnFilterBtn").attr("name") != null && $("#columnFilterBtn").attr("name").indexOf("hide") > -1;
               }
             }
           },
@@ -404,9 +358,9 @@
     var $columnFilterDiv = $("<div>", {id: "column_filter", style:"display:none;"}).append(
             $('<span/>').attr({'class': 'glyphicon glyphicon-filter','aria-hidden': 'true'})).append(
             $("<div>", {id: "col_filter_border_l"})).append($("<div>", {id: "col_filter_border_b"}));
-    $columnFilterDiv.insertAfter($(".datatable_top"));
+    $columnFilterDiv.insertAfter($(".dataTables_filter"));
     $columnFilterDiv.append($("<button>")
-            .attr({'type':'button', 'class':'btn btn-default btn-xs', 'id':'columnSearchBtn', 'name':'columnSearchBtn', 'onclick':'triggerSearch()'})
+            .attr({'type':'button', 'class':'btn btn-default btn-sm', 'id':'columnSearchBtn', 'name':'columnSearchBtn', 'onclick':'triggerSearch()'})
             .html('Apply'));
 
     addNewFilter(-1);
@@ -416,7 +370,7 @@
     var $addMoreBtn = $("<span>").attr({'class':'glyphicon glyphicon-plus-sign', 'style':'color:green;cursor: pointer;', 'id':'addMoreColumnFilter', 'onclick':'addNewFilter('+ ++i +');'});
     var $columnFilterBox = $("<div>", {'class': 'column_filter_box'});
     var $columnFilterSelect = $("<select>", {class:"select_column", id: "select_column_"+i, name:"column_name", 'onchange':'updateOperation(this.value,'+ i + ')'});
-    var $columnFilterOperation = $("<select>", {class:"select_operation", id: "select_operation_"+i, name:"operation"});
+    var $columnFilterOperation = $("<select>", {class:"select_operation form-control input-sm", id: "select_operation_"+i, name:"operation"});
 
     $.each(headerList, function(i2,v2) {
       $columnFilterSelect.append($("<option></option>").attr("value", v2).text(v2));
@@ -429,10 +383,10 @@
     //Automatically add "AND" gate to first column filter
     if(i == 0){
       $columnFilterBox.append($("<input>").attr({'type':'hidden', class: "select_logicgate", id: "select_logicgate_0", name: "logicgate", value:"and"}))
-              .append($("<label>").attr({'id':'first_filter_label','style':'width: 59px;text-align: center;'}).text('AND'));
+              .append($("<label>").attr({'id':'first_filter_label','style':'width: 69px;text-align: center;'}).text('AND'));
     } else {
       var $columnFilterLogicGate = $("<select>", {
-        class: "select_logicgate",
+        class: "select_logicgate form-control input-sm",
         id: "select_logicgate_" + i,
         name: "logicgate"
       });
@@ -445,7 +399,7 @@
 
     $columnFilterBox.append($columnFilterSelect);
     $columnFilterBox.append($columnFilterOperation);
-    $columnFilterBox.append($("<input>").attr({'type':'text', 'class':'filter_text', 'id':'filter_text_'+i, 'name':'filter_text', 'style':'height: 22px;'}));
+    $columnFilterBox.append($("<input>").attr({'type':'text', 'class':'filter_text form-control input-sm', 'id':'filter_text_'+i, 'name':'filter_text', 'style':'width: 150px; '}));
     if(i != 0) {
       $columnFilterBox.append($("<span>").attr({'class':'removeColumnFilter glyphicon glyphicon-minus-sign', 'style':'color:red;cursor: pointer;'})
               .click(function(){
@@ -469,9 +423,9 @@
       }
     });
     var $autocompleteInput = $currentSelectInput.next();
-    $autocompleteInput.removeClass();
-    $autocompleteInput.css("width", "200px").css("margin-left", "4px");
-    $autocompleteInput.next().css("top", "6px");
+    $autocompleteInput.attr("class", "form-control");
+    $autocompleteInput.css("margin-left", "4px");
+    $autocompleteInput.next().css({"top":"12px", "height":"32px"});
   }
 
   function updateOperation(val,i){
@@ -516,7 +470,9 @@
 
     <!-- EVENT TABLE -->
     eDT =  $("#eventTable").dataTable({
-      "sDom": '<"datatable_top"lf><"datatable_table"rt><"datatable_bottom"ip>',
+      "language": {
+        "processing": "Processing your request. Please wait..."
+      },
       "bProcessing": true,
       "bServerSide": true,
       "sPaginationType": "full_numbers",
@@ -526,7 +482,7 @@
         if(_page.columnfilter.isActive()) {
           var index = 0;  // keep count to have an accurate list size in case of empty filter values
           $('.column_filter_box').each(function (i, elem) {
-            var $filterText = $(this).children('input:text[class="filter_text"]');
+            var $filterText = $(this).children('input:text[class="filter_text form-control input-sm"]');
             var filterTextVal = $filterText.val();
 
             if (index == 0 || (filterTextVal && filterTextVal != '')) {
@@ -553,7 +509,7 @@
                 $.each(json.aaData, function(ri,rowData) {
                   var row = [], attributes;
                   row.push(
-                          "<span id='rowDetail_openBtn' class='glyphicon glyphicon-plus-sign' aria-hidden='true' style='color:green;cursor: pointer;'></span>",
+                          "<span id='rowDetail_openBtn' class='glyphicon glyphicon-plus-sign' aria-hidden='true' style='color:green;cursor: pointer;margin-left: 2px;'></span>",
                           rowData.eventName,
                           rowData.sampleName,
                           rowData.createdOn,
@@ -612,33 +568,32 @@
               fnCallback(json);
 
               $('#eventDetailsSection').show();
+              $('#eventTable th:first').removeClass('sorting_asc');
+              $('#eventTable_filter').parent("div.col-sm-6").attr('class', 'col-sm-8').insertBefore($('#eventTable_length').parent("div.col-sm-6"));
+              $('#eventTable_length').parent("div.col-sm-6").attr('class', 'col-sm-4').css("text-align", "right")
+              $('#eventTable_filter').css("float", "left")
             }
           });
         }
       },
       "bAutoWidth" : false,
-      "aoColumnDefs": [
-        {"sWidth": "23px", "bSortable": false, "aTargets": [ 0 ]},
-        {"sWidth": "30%", "aTargets":[1]},
-        {"sWidth": "30%", "aTargets":[2]},
-        {"sWidth": "20%", "aTargets":[3]},
-        {"sWidth": "20%", "aTargets":[4]},
-        {"bSearchable": true, "bVisible": false, "aTargets": [ 5 ]}
-        // {"sWidth": "10%", "aTargets":[5]},
-        // {"bSearchable": true, "bVisible": false, "aTargets": [ 6 ]}
+      columnDefs: [
+        {"orderable": false, "targets": 0},
+        {width: "30%", targets:1},
+        {width: "30%", targets:2},
+        {width: "20%", targets:3},
+        {width: "20%", targets:4},
+        {"bSearchable": true, "bVisible": false, targets: 5}
       ]
     }).fnFilterOnReturn();
 
-    $(".datatable_top").append(
-            $('<span/>').attr({
-              'class': 'input-group-btn'
-            }).append(
+    $(".dataTables_filter").append(
+            $('<span/>').append(
                     $('<button/>').attr({
                       'type': 'button',
-                      'class': 'btn btn-default btn-xs',
+                      'class': 'btn btn-default btn-sm',
                       'id': 'triggerSearchBtn',
                       'onclick': 'triggerSearch();',
-                      'style': 'height: 24px;'
                     }).append(
                             $('<span/>').attr({
                               'class': 'glyphicon glyphicon-search',
@@ -648,12 +603,12 @@
             ).append(
                     $('<button/>').attr({
                       'type': 'button',
-                      'class': 'btn btn-default btn-xs',
+                      'class': 'btn btn-default btn-sm',
                       'id': 'columnFilterBtn',
                       'data-tooltip': 'Column Filter',
                       'name': 'showColumnFilter',
                       'onclick': '_page.columnfilter.toggle(this);',
-                      'style': 'margin-left:10px;height: 24px;'
+                      'style': 'margin-left:10px;'
                     }).append(
                             $('<span/>').attr({
                               'class': 'glyphicon glyphicon-filter',
@@ -684,19 +639,19 @@
     });
 
     function toggleRow(item, action) {
-      var _row = item.parentNode.parentNode, _is_event=(_row.parentNode.id.indexOf('event')>=0), _table=_is_event?eDT:sDT;
+      var _row = item.parentNode.parentNode;
       if(action == 'open'){
         item.classList.remove(openBtn);
         item.classList.add(closeBtn);
         item.style.color = "red";
-        _table.fnOpen(_row, subrow_html.replace(/\$d\$/, _table.fnGetData(_row)[5]), '_details');
+        eDT.fnOpen(_row, subrow_html.replace(/\$d\$/, eDT.fnGetData(_row)[5]), '_details');
         $('td._details').attr('colspan', 6); //fix misalignment issue in chrome by incresing colspan by 1
         $('td._details>div').css('width', $('#statusTableDiv').width()-90);
       } else {
         item.classList.remove(closeBtn);
         item.classList.add(openBtn);
         item.style.color = "green";
-        _table.fnClose(_row);
+        eDT.fnClose(_row);
       }
     }
 
