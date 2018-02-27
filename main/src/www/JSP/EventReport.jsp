@@ -30,17 +30,11 @@
   <link rel="stylesheet" href="style/dataTables.css" type='text/css' media='all' />
   <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
 
-  <%--<link rel="stylesheet" href="style/version01.css" />--%>
   <style>
-    tr.even { padding: 2px; background-color: #e9e9e9; }
-    tr.odd { padding: 2px; background-color: #f5f5f5; }
     tr.odd td, tr.even td { padding: 6px 8px; margin: 0; vertical-align: top; }
-    .chkbox { margin:5px 5px 5px 15px !important; }
-    .selection { width:200px;height:100px }
-    #attributesTableBody > tr > td:first-child {
-      border-right: 1px solid white;
-    }
+    .checkbox{margin-top: 0px;}
     .hidden_event { display: none; }
+    .border-bottom { border-bottom: 1px solid #abb2b9; margin-bottom: 5px; width: 95%;}
   </style>
 </head>
 <body class="smart-style-2">
@@ -74,14 +68,8 @@
               <div id="tableTop">
                 <div class="row">
                   <div class="col-md-1">Project</div>
-                  <div class="col-md-11 combobox">
+                  <div class="col-md-11">
                     <s:select id="_projectSelect" list="projectList" name="selectedProjectId" headerKey="0" headerValue="" listValue="projectName" listKey="projectId" required="true"/>
-                  </div>
-                </div>
-                <div class="row row_spacer">
-                  <div class="col-md-1">Date Range</div>
-                  <div class="col-md-11 combobox">
-                    <s:textfield id="fromDate" name="fromDate" label="from"/> ~ <s:textfield id="toDate" name = "toDate" label="to"/>
                   </div>
                 </div>
               </div>
@@ -90,19 +78,39 @@
                 <h1 class="csc-firstHeader middle-header">Attributes</h1>
               </div>
               <div id="attributesTableDiv">
+                <div class="row" style="margin-bottom:25px;">
+                  <div class="col-sm-1" style="padding-top:7px;">Date Range</div>
+                  <div class="col-sm-2">
+                    <div class="input-group col-sm-12">
+                      <input id="fromDate" name="fromDate" type="text" class="form-control" style="position: initial" placeholder="from"/>
+                      <label for="fromDate" class="input-group-addon">
+                        <span class=""><i class="fa fa-calendar"></i></span>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-sm-1" style="width:auto;padding-top:7px;">~</div>
+                  <div class="col-sm-2">
+                    <div class="input-group col-sm-11">
+                      <input id="toDate" name="toDate" type="text" class="form-control"  style="position: initial" placeholder="to"/>
+                      <label for="toDate" class="input-group-addon">
+                        <span class=""><i class="fa fa-calendar"></i></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
                 <table name="attributesTable" id="attributesTable" class="contenttable" style="width:95%;">
                   <tbody id="attributesTableBody">
                   <tr class="even">
-                    <td width="5%" style="padding:5px 0 5px 5px;text-align: center;font-weight: bold;">Project</td>
-                    <td style="padding:5px 0 5px 20px;" colspan="2" id="projectMetaAttributesTD"></td>
+                    <td width="5%"><label>Project</label></td>
+                    <td colspan="2" id="projectMetaAttributesTD"></td>
                   </tr>
                   <tr class="odd">
-                    <td width="5%" style="padding:5px 0 5px 5px;text-align: center;font-weight: bold;">Sample</td>
-                    <td style="padding:5px 0 5px 20px;" colspan="2" id="sampleMetaAttributesTD"></td>
+                    <td width="5%"><label>Sample</label></td>
+                    <td colspan="2" id="sampleMetaAttributesTD"></td>
                   </tr>
                   <tr class="even">
-                    <td width="5%" style="padding:5px 0 5px 5px;text-align: center;font-weight: bold;">Event</td>
-                    <td style="padding:5px 0 5px 20px;" id="eventMetaAttributesTD" ></td>
+                    <td width="5%"><label>Event</label></td>
+                    <td id="eventMetaAttributesTD" ></td>
                   </tr>
                   </tbody>
                 </table>
@@ -127,7 +135,7 @@
     $('.navbar-nav li').removeClass('active');
     $('.navbar-nav > li:nth-child(5)').addClass('active');
 
-    utils.initDatePicker();
+    $('#fromDate, #toDate').datepicker({ dateFormat: 'yy-mm-dd' });
     $( "#_projectSelect" ).combobox();
     utils.error.check();
     $("#submitDiv").hide();
@@ -141,12 +149,13 @@
   var _selAllEventHtml = '';
 
   var h_s = {
-            bt: '<input type="button" name="selection" value=">" id="$a$SelOne"/><input type="button" name="selection" value=">>" id="$b$SelAll"/><br><br>' +
-            '<input type="button" name="selection" value="<" id="$c$DeOne"/><input type="button" name="selection" value="<<" id="$d$DeAll"/>',
-            fl: '<tr><td><input class="filter" id="filter$f$" type="text"/><img src="images/search.png"></td><td></td><td><input class="filter" id="defilter$g$" type="text"/><img src="images/search.png"></td></tr>',
-            sl: '<select class="selection" name="$s$" id="$g$" size="5" multiple="multiple">',
+            bt: '<button name="selection" class="btn btn-default" id="$a$SelOne" type="button"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button><button name="selection" class="btn btn-default" id="$b$SelAll" type="button"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button><br><br>' +
+                '<button name="selection" class="btn btn-default" id="$c$DeOne" type="button"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button><button name="selection" class="btn btn-default" id="$d$DeAll" type="button"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>',
+            fl: '<tr><td><div class="input-group"><input type="text" class="form-control" id="filter$f$" placeholder="Type for attribute..." style="position: initial" ><span class="input-group-btn"><button class="btn btn-default" type="button" disabled=""><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button></span></div></td><td></td>' +
+                '<td><div class="input-group"><input type="text" class="form-control" id="defilter$f$" placeholder="Type for attribute..." style="position: initial" ><span class="input-group-btn"><button class="btn btn-default" type="button" disabled=""><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button></span></div></td></tr>',
+            sl: '<select class="form-control" name="$s$" id="$g$" size="5" multiple="multiple">',
             opt: '<option value="$v$">$v$</option>',
-            cb: '<input class="chkbox" type="checkbox" name="$g$Attr" value="$v$"/><label class="checkboxLabel">$v$</label>'
+            cb: '<div class="checkbox"><label><input type="checkbox" name="$g$Attr" value="$v$">$v$</label></div>'
           },
           callbacks = {
             meta: function(data) {
@@ -160,8 +169,9 @@
                         $.each(values, function(et, attrs) {
                           var et_us = et.replace(/ /g, "_");
                           event_types.push(et_us.toLowerCase());
-                          _html+='<sort><a href="javascript:buttonSwitch(null, \'expand_'+et_us.toLowerCase()+'\');"><span name="expandEvents" id="expand_'+et_us.toLowerCase()+'" class="glyphicon glyphicon-plus-sign" aria-hidden="true" style="color:green;cursor: pointer;"></span></a><strong>'+et+'</strong>' +
-                          '<input class="chkbox ev_attr" type="checkbox" name="sAll" id="'+et_us.toLowerCase()+'" value="'+et+'"/><div class="hidden_event" name="'+et_us.toLowerCase()+'" id="'+et_us+'"><table><tr>';
+                          _html+='<sort><a href="javascript:buttonSwitch(null, \'expand_'+et_us.toLowerCase()+'\');" class="col-sm-1" style="width: 4%"><span name="expandEvents" id="expand_'+et_us.toLowerCase()+'" class="glyphicon glyphicon-plus-sign" aria-hidden="true" style="color:green;cursor: pointer;"></span></a>' +
+                              '<div class="checkbox col-sm-11"><label><input class="ev_attr" type="checkbox" name="sAll" id="'+et_us.toLowerCase()+'" value="'+et+'">'+et+'</label></div>' +
+                              '<div class="hidden_event col-sm-12" name="'+et_us.toLowerCase()+'" id="'+et_us+'"><table><tr>';
                           $.each(attrs, function(a_i, a) {
                             _html+= '<td>' + h_s.cb.replace('$g$',k).replace(/\$v\$/g, a) + '</td>';
                             if(a_i!=0 && a_i%4==0) {
@@ -173,20 +183,19 @@
 
                         if(_html.length>0) {
                           /*Will be added after sorting*/
-                          _selAllEventHtml ='<sort><br><input class="chkbox" type="checkbox" name="sAll" value="'+k+'"/>'
-                          +'<label class="checkboxLabel"><b>Select All '+k+'</b></label></br><sort>';
+                          _selAllEventHtml ='<div class="row"><sort><br><div class="checkbox col-sm-11"><label><input type="checkbox" name="sAll" value="'+k+'">Select All '+k+'</label></div></sort></div>';
                         }
                       } else {
                         _html += '<table>';
                         _html += h_s.fl.replace('$f$',k).replace('$g$',k);
-                        _html += '<tr><td style="padding: 0px 8px 6px 8px">';
+                        _html += '<tr><td>';
                         _html += h_s.sl.replace('$s$', 'select').replace('$g$', '_' + k);
                         $.each(values, function(a_i,a) {
                           _html += h_s.opt.replace(/\$v\$/g, a);
                         });
                         _html += '</select></td><td style="padding-top: 25px;padding-right: 25px;">';
                         _html += h_s.bt.replace('$a$',k).replace('$b$',k).replace('$c$',k).replace('$d$',k);
-                        _html += '</td><td style="padding: 0px 8px 6px 8px">';
+                        _html += '</td><td>';
                         _html += h_s.sl.replace('$s$', 'selected').replace('$g$', 'selected_' + k) + '</select></td></tr></table>';
                       }
 
@@ -228,7 +237,7 @@
                 }
               });
 
-              $('input:button[name=selection]').click(function(){
+              $('button[name=selection]').click(function(){
                 var id = $(this).attr('id');
                 var cObj = '', pObj = '';
                 var type = (id.indexOf('project') >  -1) ? 'project' : 'sample';
@@ -251,7 +260,6 @@
               $('#selected_project').filterByText($('#defilterproject'));
               $('#selected_sample').filterByText($('#defiltersample'));
 
-              $('.filter').css("margin", "0").css("padding", "1px").css("width", "200").css("vertical-align", "top").css("border", "1px solid #dddddd").css("border-radius","5px");
               $("#submitDiv").show();
               $("#attributesTableDiv").show();
               $("#attributesTableHeader").show();
@@ -331,7 +339,7 @@
             });
 
     $.each(sorted, function(idx, itm) {
-      eventGroup.append(itm);
+      eventGroup.append($("<div/>").attr({"class": "row border-bottom"}).append(itm));
     });
     eventGroup.append(_selAllEventHtml);
   }
@@ -394,7 +402,7 @@
 
     $.each($('input:checkbox'), function() {
       if($(this).is(':checked') && $(this).val()!=='project' && $(this).val()!=='sample' && $(this).val()!=='event'
-              && $(this).attr('class') !== 'chkbox ev_attr')
+              && $(this).attr('class') !== 'ev_attr')
         attributesValue+=$(this).val()+',';
     });
 

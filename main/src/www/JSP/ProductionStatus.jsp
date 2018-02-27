@@ -6,107 +6,70 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
+  <title>O-META | Ontologies Based Metadata Tracking Application</title>
+  <link rel="icon" href="images/ometa_icon.png">
   <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
-  <link rel="stylesheet" href="style/main.css" />
-  <link rel="stylesheet" href="style/version01.css" />
-  <link rel="stylesheet" href="style/rte.css" />
-  <link rel="stylesheet" href="style/dataTables.css" />
-  <link rel="stylesheet" href="style/tableTools.css" />
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans%3A300italic%2C400italic%2C600italic%2C300%2C400%2C600&#038;subset=latin%2Clatin-ext' type='text/css' media='all' />
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans%3A400italic%2C700italic%2C300%2C400%2C700' type='text/css' media='screen' />
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato&#038;subset=latin%2Clatin-ext' type='text/css' media='screen' />
+  <link rel='stylesheet' href="style/bootstrap.css" type='text/css' media='all' />
+  <link rel='stylesheet' href="style/font-awesome.css" type='text/css' media='all' />
+  <!--[if lt IE 9]>
+  <link rel='stylesheet' href='css/ie.css' type='text/css' media='all' />
+  <![endif]-->
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato%3A400%2C700%2C400italic%2C700italic' type='text/css' media='all' />
+
+  <link rel="stylesheet" href="datatables/datatables.css" type='text/css' media='all' />
+  <link rel="stylesheet" href="datatables/Buttons-1.4.2/css/buttons.bootstrap.css" type='text/css' media='all' />
   <style>
-    fieldset legend:hover { cursor: pointer; }
-    fieldset { padding: 5px 10px 5px 10px; }
-    .collapsed { border-width: 1px 0px 0px 0px; padding: 5px 12px 0px 12px; }
-    .headerContainer {width: 100%;}
-    .dataTables_processing{height: 50px !important;}
-    .dataTables_length { padding-left: 25px; }
-    .DTTT_container { float: left !important; }
-    button {font-family: inherit;font-size: inherit;line-height: inherit;color: inherit;
-      font: inherit;margin: 0;overflow: visible;-webkit-appearance: button;cursor: pointer;
-    }input[type="button"].btn-block {width: 100%;}
-    .btn {display: inline-block;margin-bottom: 0;font-weight: normal;text-align: center;
-      vertical-align: middle;cursor: pointer;background-image: none;border: 1px solid transparent;
-      white-space: nowrap;padding: 6px 12px;font-size: 13px;line-height: 1.42857143;
-      border-radius: 2px;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;
-    }
-    .btn:focus,.btn:active:focus,.btn.active:focus {outline: thin dotted;outline: 5px auto -webkit-focus-ring-color;outline-offset: -2px;}
-    .btn:hover,.btn:focus {color: #333333;text-decoration: none;}
-    .btn:active,.btn.active {outline: 0;background-image: none;-webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-      box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);}
-    .btn-default {color: #333333;background-color: #ffffff;border-color: #cccccc;}
-    .btn-default:hover,.btn-default:focus,.btn-default:active,.btn-default.active,.open > .dropdown-toggle.btn-default {
-      color: #333333; background-color: #e6e6e6;border-color: #adadad;}
-    .btn-default:active,.btn-default.active,.open > .dropdown-toggle.btn-default {background-image: none;}
-    .btn-default.disabled,.btn-default[disabled],fieldset[disabled] .btn-default,.btn-default.disabled:hover,
-    .btn-default[disabled]:hover,fieldset[disabled] .btn-default:hover,.btn-default.disabled:focus,
-    .btn-default[disabled]:focus,fieldset[disabled] .btn-default:focus,.btn-default.disabled:active,
-    .btn-default[disabled]:active,fieldset[disabled] .btn-default:active,.btn-default.disabled.active,
-    .btn-default[disabled].active,fieldset[disabled] .btn-default.active {background-color: #ffffff;border-color: #cccccc;}
-    .btn-default .badge {color: #ffffff;background-color: #333333;}
-    .btn-xs,.btn-group-xs > .btn {padding: 1px 5px;font-size: 12px;line-height: 1.5;border-radius: 2px;}
-    .navbar-btn.btn-xs {margin-top: 14px;margin-bottom: 14px;}
-    .btn-xs .badge {top: 0;padding: 1px 5px;}
-    @font-face {font-family: 'Glyphicons Halflings';src: url('/ometa/fonts/glyphicons-halflings-regular.eot');
-      src: url('/ometa/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('/ometa/fonts/glyphicons-halflings-regular.woff') format('woff'), url('/ometa/fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('/ometa/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
-    }
-    .glyphicon {position: relative;top: 1px;display: inline-block;font-family: 'Glyphicons Halflings';
-      font-style: normal;font-weight: normal;line-height: 1;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;}
-    .glyphicon-filter:before {content: "\e138";}
-    .glyphicon-search:before {content: "\e003";}
-    .glyphicon-plus-sign:before {content: "\e081";}
-    .glyphicon-minus-sign:before {content: "\e082";}
-    #columnFilterBtn:hover:after{ background: #333; background: rgba(0,0,0,.8);
-      border-radius: 5px; bottom: 0px; color: #fff; content: attr(data-tooltip);
-      left: 140%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
-    #columnFilterBtn:hover:before{border: solid; border-color: transparent #333;border-width: 6px 6px 6px 0px;
-      bottom: 8px; content: ""; left: 125%; position: absolute; z-index: 99;}
-    #column_filter{padding-bottom: 8px;margin: 10px 0 18px;}
-    #col_filter_border_l{border-left: 2px solid #333333;position: absolute;margin-left: 4.4px;left: 0;top: 48px;bottom: 0;}
-    #col_filter_border_b{border-bottom: 2px solid #333333;position: absolute;right: 95.1%;margin-left: 5px;left: 0;bottom: 0;}
+    #statusTable_info, #statusTable_filter {float:left;}
+    .dt-buttons {float:right;}
+    #statusTable_processing {width: 400px;border: 1px solid #aed0ea;background: #d7ebf9;font-weight: bold;color: #2779aa;}
+    #column_filter{margin: 5px 0 18px;float: left;border-left: 2px solid rgb(51, 51, 51);}
     .column_filter_box{margin: 5px 0 5px 15px;}
-    #columnSearchBtn{margin:10px 0 0 15px;width: 59px;}
-    .select_column, .select_operation, .filter_text, .removeColumnFilter{margin-left: 4px;}
-    .select_logicgate{width: 59px;}
+    #columnSearchBtn{margin:10px 0 0 15px;}
+    .select_column, .select_operation, .filter_text, .removeColumnFilter, #addMoreColumnFilter{margin-left: 4px;}
+    #statusTable_filter label, #statusTable_filter button.btn {float:left;}
   </style>
 </head>
 <body>
-<s:form id="statusPage" name="statusPage"
-        namespace="/"
-        action="productionStatus"
-        method="post" theme="simple">
+<div id="content" class="container-fluid" role="main">
+  <s:form id="statusPage" name="statusPage" namespace="/" action="productionStatus" method="post" theme="simple">
   <s:hidden name="projectNames" />
   <s:hidden name="attributesOnScreen" id="attributesOnScreen"/>
   <s:hidden name="attributes" />
-  <div id="HeaderPane" style="margin:15px 0 0 30px;">
-    <div class="panelHeader" style="margin:0;">Project Status</div>
+  <div class="page-header">
+    <h1>Project Status</h1>
+  </div>
+  <div id="HeaderPane">
     <div id="errorMessagesPanel" style="margin-top:15px;"></div>
     <s:if test="hasActionErrors()">
       <input type="hidden" id="error_messages" value="<s:iterator value='actionErrors'><s:property/><br/></s:iterator>"/>
     </s:if>
+    <s:if test="hasActionMessages()">
+      <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
+        <div class="alert_info" onclick="$('.alert_info').remove();">
+          <strong style="color: #31708f;background-color: #d9edf7;padding: 3px;border-color: #bce8f1;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
+        </div>
+      </div>
+    </s:if>
   </div>
   <div id="middle_content_template">
-    <p>An Excel version of this data is also available for download
-      <s:submit type="input" value="here"
-                onclick="document.statusPage.action='productionStatusExcel.action';javascript:getDisplayedAttributes();"/>.</p>
-    <!--<div id="columnsTable"></div>  for column listing-->
-    <fieldset>
-      <legend> Show / Hide Columns </legend>
-      <div id="statusTableColumnToggler"></div>
-    </fieldset>
     <div id="statusTableDiv">
-      <table id="statusTable" style="float:left;width:100%"></table>
+      <table id="statusTable" class="table table-bordered table-striped table-condensed table-hover" style="width:100%"></table>
     </div>
   </div>
 
 </s:form>
+</div>
 <script src="scripts/jquery/jquery-1.7.2.js"></script>
 <script src="scripts/jquery/jquery-ui.js"></script>
 <script src="scripts/ometa.utils.js"></script>
 <script type='text/javascript' src='scripts/bootstrap.js'></script>
-<script src="scripts/jquery/jquery.tablesorter.js"></script>
-<script src="scripts/jquery/jquery.columnDisplay.js"></script>
-<script src="scripts/jquery/jquery.dataTables.js"></script>
-<script src="scripts/jquery/jquery.tableTools.js"></script>
-<script src="scripts/jquery/jquery.colReorderWithResize.js"></script>
+<script src="datatables/datatables.js"></script>
+<script src="datatables/pdfmake-0.1.32/pdfmake.js"></script>
+<script src="datatables/pdfmake-0.1.32/vfs_fonts.js"></script>
+<script src="datatables/Buttons-1.4.2/js/buttons.colVis.js"></script>
 
 <script type="text/javascript">
   var headerList = [], pDT, attributeTypeMap = {};
@@ -139,7 +102,7 @@
     }
     var attrs = '${attributes}', aoColumns=[];
     attrs=attrs.split(',');
-    var header='<thead><tr>', hd="<th class='tableHeaderStyle'><p style='color:#FFFFFF;'>$hd$</th>";;
+    var header='<thead><tr>', hd="<th class='tableHeaderStyle'>$hd$";;
     headerList = [];
     $.each(attrs, function(i,v) {
       if(v!=='') {
@@ -152,7 +115,16 @@
     $('#statusTable').html(header);
 
     pDT = $("#statusTable").dataTable({
-      "sDom": '<"statusTop"Tlf><"statusMain"rt><"statusBottom"ip>Rlfrtip',
+      "scrollX": true,
+      dom: 'fBrtip',
+      buttons: [ 'copyHtml5',
+        {extend: 'excelHtml5', title: 'OMETA - Production Status'},
+        {extend: 'csvHtml5', title: 'OMETA - Production Status'},
+        {extend: 'pdfHtml5', title: 'OMETA - Production Status'},
+        'colvis' ],
+      "language": {
+        "processing": "Processing your request. Please wait..."
+      },
       "sPaginationType": "full_numbers",
       "bProcessing": true,
       "bServerSide": true,
@@ -179,29 +151,15 @@
           });
         }
       },
-      "aaSorting": [],
-      "oTableTools": {
-        "sSwfPath": "media/copy_csv_xls_pdf.swf",
-        "sRowSelect": "multi",
-        "aButtons": [
-          {"sExtends":"csv", "bSelectedOnly":true},
-          {"sExtends":"xls", "bSelectedOnly":true},
-          {"sExtends":"pdf", "bSelectedOnly":true},
-          {"sExtends":"copy", "bSelectedOnly":true},
-          "select_all", "select_none"]
-
-      }
+      "aaSorting": []
     });
-
-    generateColumnFilter();
 
     $(".dataTables_filter").append(
             $('<button/>').attr({
               'type': 'button',
-              'class': 'btn btn-default btn-xs',
+              'class': 'btn btn-default btn-sm',
               'id': 'triggerSearchBtn',
-              'onclick': 'triggerSearch();',
-              'style': 'height: 17px;margin-top: -4px;'
+              'onclick': 'triggerSearch();'
             }).append(
                     $('<span/>').attr({
                       'class': 'glyphicon glyphicon-search',
@@ -213,12 +171,12 @@
     $(".dataTables_filter:first").append(
             $('<button/>').attr({
               'type': 'button',
-              'class': 'btn btn-default btn-xs',
+              'class': 'btn btn-default btn-sm',
               'id': 'columnFilterBtn',
               'data-tooltip': 'Column Filter',
               'name':'showColumnFilter',
               'onclick': '_page.columnfilter.toggle(this);',
-              'style': 'margin-left:10px;height: 24px;'
+              'style': 'margin-left:10px;'
             }).append(
                     $('<span/>').attr({
                       'class': 'glyphicon glyphicon-filter',
@@ -226,32 +184,18 @@
                     })
             )
     );
-    var $colTable = $('#statusTable').columnDisplay({
-      checkBoxContainer: '#statusTableColumnToggler',
-      checkBoxDivClass: 'jcvi-cd-cbox-container',
-      checkBoxDivDisabledClass: 'jcvi-cd-cbox-container-disabled',
-      checkBoxClass: 'jcvi-cd-cbox',
-      checkBoxLabelClass: 'jcvi-cd-cbox-label'
-    });
 
-    $('fieldset').fieldCollapse({
-      collapseClass: 'collapsed',
-      contentSelector: 'div',
-      startCollapsed: true
-    });
+    generateColumnFilter();
 
     utils.error.check();
   });
 
   function generateColumnFilter(){
-    var $statusTop = $(".statusTop");
-    var $columnFilterDiv = $("<div>", {id: "column_filter", style:"display:none;"}).append(
-            $('<span/>').attr({'class': 'glyphicon glyphicon-filter','aria-hidden': 'true'})).append(
-            $("<div>", {id: "col_filter_border_l"})).append($("<div>", {id: "col_filter_border_b"}));
-    $columnFilterDiv.insertAfter($statusTop);
-    $statusTop.after("<br/>").after("<br/>");
+    var $statusTop = $(".dataTables_filter");
+    var $columnFilterDiv = $("<div>", {id: "column_filter", style:"display:none;"});
+    $statusTop.append("<br/>").append("<br/>").append($columnFilterDiv);
     $columnFilterDiv.append($("<button>")
-            .attr({'type':'button', 'class':'btn btn-default btn-xs', 'id':'columnSearchBtn', 'name':'columnSearchBtn', 'onclick':'triggerSearch()'})
+            .attr({'type':'button', 'class':'btn btn-default btn-sm', 'id':'columnSearchBtn', 'name':'columnSearchBtn', 'onclick':'triggerSearch()'})
             .html('Apply'));
 
     addNewFilter(-1);
@@ -261,7 +205,7 @@
     var $addMoreBtn = $("<span>").attr({'class':'glyphicon glyphicon-plus-sign', 'style':'color:green;cursor: pointer;', 'id':'addMoreColumnFilter', 'onclick':'addNewFilter('+ ++i +');'});
     var $columnFilterBox = $("<div>", {'class': 'column_filter_box'});
     var $columnFilterSelect = $("<select>", {class:"select_column", id: "select_column_"+i, name:"column_name", 'onchange':'updateOperation(this.value,'+ i + ')'});
-    var $columnFilterOperation = $("<select>", {class:"select_operation", id: "select_operation_"+i, name:"operation"});
+    var $columnFilterOperation = $("<select>", {class:"select_operation form-control input-sm", id: "select_operation_"+i, name:"operation"});
 
     $.each(headerList, function(i2,v2) {
       $columnFilterSelect.append($("<option></option>").attr("value", v2).text(v2));
@@ -274,10 +218,10 @@
     //Automatically add "AND" gate to first column filter
     if(i == 0){
       $columnFilterBox.append($("<input>").attr({'type':'hidden', class: "select_logicgate", id: "select_logicgate_0", name: "logicgate", value:"and"}))
-              .append($("<label>").attr({'id':'first_filter_label','style':'width: 59px;text-align: center;display: inline-block;font-weight: bold;'}).text('AND'));
+              .append($("<label>").attr({'id':'first_filter_label','style':'width: 69px;text-align: center;'}).text('AND'));
     } else {
       var $columnFilterLogicGate = $("<select>", {
-        class: "select_logicgate",
+        class: "select_logicgate form-control input-sm",
         id: "select_logicgate_" + i,
         name: "logicgate"
       });
@@ -290,7 +234,7 @@
 
     $columnFilterBox.append($columnFilterSelect);
     $columnFilterBox.append($columnFilterOperation);
-    $columnFilterBox.append($("<input>").attr({'type':'text', 'class':'filter_text', 'id':'filter_text_'+i, 'name':'filter_text'}));
+    $columnFilterBox.append($("<input>").attr({'type':'text', 'class':'filter_text form-control input-sm', 'id':'filter_text_'+i, 'name':'filter_text', 'style':'width: 150px; '}));
     if(i != 0) {
       $columnFilterBox.append($("<span>").attr({'class':'removeColumnFilter glyphicon glyphicon-minus-sign', 'style':'color:red;cursor: pointer;'})
               .click(function(){
@@ -314,9 +258,9 @@
       }
     });
     var $autocompleteInput = $currentSelectInput.next();
-    $autocompleteInput.removeClass();
-    $autocompleteInput.css("width", "200px").css("margin-left", "4px");
-    $autocompleteInput.next().css("top", "3px").css("height", "17px");
+    $autocompleteInput.attr("class", "form-control");
+    $autocompleteInput.css("margin-left", "4px");
+    $autocompleteInput.next().css({"top":"12px", "height":"32px"});
   }
 
   function updateOperation(val,i){
