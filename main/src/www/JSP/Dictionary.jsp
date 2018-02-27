@@ -13,49 +13,12 @@
 
 <head>
   <jsp:include page="header.jsp" />
-  <link rel="stylesheet" href="style/dataTables.css" type='text/css' media='all' />
-  <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
-  <link rel="stylesheet" href="style/chosen.css" />
-  <style>
-    #addNewProject{float: right;margin-right: 300px;margin-bottom: 20px;}
-    td._details {
-      text-align:left;
-      padding:0 0 0 35px;
-      border: 1px gray dotted;
-    }
-    td._details div {
-      position: relative; overflow: auto; overflow-y: hidden;
-    }
-    td._details table td {
-      border:1px solid white;
-    }
-
-    .datatable_top, .datatable_table, .datatable_bottom {
-      float:left;
-      clear:both;
-      width:100%;
-      min-width: 165px;
-    }
-    .datatable_bottom {margin-top: 10px}
-    .dataTables_length {
-      height: 29px;
-      vertical-align: middle;
-      min-width: 165px !important;
-      margin-top: 2px;
-    }
-    .dataTables_filter {
-      width: 260px !important;
-    }
-    .dataTables_info {
-      padding-top: 0 !important;
-    }
-    .dataTables_paginate {
-      float: left !important;
-    }
-    label{font-weight: normal !important;}
-    .sorting, .sorting_asc, .sorting_desc { background-image : none; } /*hide sorting arrows on datatable*/
-  </style>
+  <link rel="stylesheet" href="datatables/datatables.css" type='text/css' media='all' />
+  <link rel="stylesheet" href="datatables/Buttons-1.4.2/css/buttons.bootstrap.css" type='text/css' media='all' />
 </head>
+<style>
+  label { font-weight: normal !important;}
+</style>
 
 <body class="smart-style-2">
 <div id="container">
@@ -91,7 +54,7 @@
             <div id="statusTableDiv">
               <div id="tableTop">
                 <div class="row">
-                  <table id="dictionary-information-table" style="width: 80%">
+                  <table id="dictionary-information-table" class="table table-bordered table-striped table-condensed table-hover">
                     <thead>
                     <tr>
                       <th>Dictionary Type</th>
@@ -123,9 +86,14 @@
 
 <jsp:include page="../html/footer.html" />
 
-<script src="scripts/jquery/chosen.jquery.min.js"></script>
-<script src="scripts/jquery/jquery.dataTables.js"></script>
-<script src="scripts/jquery/jquery.colReorderWithResize.js"></script>
+
+<script src="datatables/datatables.js"></script>
+<script src="datatables/Buttons-1.4.2/js/dataTables.buttons.js"></script>
+<script src="datatables/Buttons-1.4.2/js/buttons.colVis.js"></script>
+<script src="datatables/JSZip-2.5.0/jszip.js"></script>
+<script src="datatables/pdfmake-0.1.32/pdfmake.js"></script>
+<script src="datatables/pdfmake-0.1.32/vfs_fonts.js"></script>
+<script src="datatables/Buttons-1.4.2/js/buttons.bootstrap.js"></script>
 
 <script type="text/javascript">
   $(document).ready(function() {
@@ -133,17 +101,13 @@
     $('.navbar-nav > li:nth-child(6)').addClass('active');
     generateParentDependencyInfo();
 
-    $('#dictionary-information-table').dataTable({
-      "sDom": '<"datatable_top"lf><"datatable_table"rt><"datatable_bottom"ip>',
-      "sPaginationType": "full_numbers",
-      "bAutoWidth" : true,
-      "aoColumnDefs": [
-        {"sWidth": "32.5%", "aTargets": [ 0 ]},
-        {"sWidth": "15%", "aTargets":[1]},
-        {"sWidth": "32.5%", "aTargets":[2]},
-        {"sWidth": "20%", "aTargets":[3]}
-      ]
-    });
+    var table = $('#dictionary-information-table').DataTable( {
+      lengthChange: false,
+      buttons: [ 'copy', 'excel', 'pdf', 'csv', 'colvis']
+    } );
+
+    table.buttons().container()
+        .appendTo( '#dictionary-information-table_wrapper .col-sm-6:eq(0)' );
   });
 
   function generateParentDependencyInfo(){
