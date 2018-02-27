@@ -525,7 +525,7 @@ var _utils = {
             }
           });
         }
-        $('#loadingImg').hide();
+        utils.processing(false);
         $("#sample-pagination-nav").show();
         $("#pagination-loadingImg").hide();
         $("#gridInputDiv").show();
@@ -705,7 +705,7 @@ var _utils = {
       },
       sample: function(){ /*nothing to do when sample changes*/ },
       event: function(eventName, eventId) {
-        $('#loadingImg').show();
+        utils.processing(true);
         _utils.hidePS();
         $("#confirmDiv").empty(); // Clean autofill confirmation dialogs
 
@@ -769,7 +769,7 @@ var _utils = {
 
           initializeFileManagementFunctions();
         } else{
-          $('#loadingImg').hide();
+          utils.processing(false);
         }
       }
     };
