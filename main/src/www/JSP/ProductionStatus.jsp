@@ -135,7 +135,7 @@
         if(_page.columnfilter.isActive()) {
           var index = 0;  // keep count to have an accurate list size in case of empty filter values
           $('.column_filter_box').each(function (i, elem) {
-            var $filterText = $(this).children('input:text[class="filter_text"]');
+            var $filterText = $(this).children('input:text[class="filter_text form-control input-sm"]');
             var filterTextVal = $filterText.val();
 
             if (index == 0 || (filterTextVal && filterTextVal != '')) {
