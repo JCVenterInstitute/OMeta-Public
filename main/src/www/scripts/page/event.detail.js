@@ -235,7 +235,7 @@ var _page = {
           }
         },
         isActive: function () {
-          return $("#columnFilterBtn").attr("name").indexOf("hide") > -1;
+          return $("#columnFilterBtn").attr("name") != null && $("#columnFilterBtn").attr("name").indexOf("hide") > -1;
         }
       }
     },
@@ -306,25 +306,17 @@ function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
             } else if(v1 && i1 == 1){  //create dynamic table header based on sample meta attributes
               var $header = $("#sampleTableHeader tr");
               $header.empty();
-              var $footer = $("#sampleTableFooter tr");
-              $footer.empty();
               headerList = [];
 
-              $header.append("<th class='tableHeaderStyle'><input type='checkbox' id='selectAllSamples' onchange='selectSamples();'/></th>")
-                  .append("<th class='tableHeaderStyle'>Sample Name</th>")
-                  .append("<th class='tableHeaderStyle'>Parent</th>")
-                  .append("<th class='tableHeaderStyle'>User</th>")
-                  .append("<th class='tableHeaderStyle'>Date</th>");
-
-              $footer.append("<th class='tableHeaderStyle'>Sample Name</th>")
-                  .append("<th class='tableHeaderStyle'>Parent</th>")
-                  .append("<th class='tableHeaderStyle'>User</th>")
-                  .append("<th class='tableHeaderStyle'>Date</th>");
+              $header.append("<th><input type='checkbox' id='selectAllSamples' onchange='selectSamples();'/></th>")
+                  .append("<th>Sample Name</th>")
+                  .append("<th>Parent</th>")
+                  .append("<th>User</th>")
+                  .append("<th>Date</th>");
 
               $.each(v1, function(i2,v2) {
                 if(v2) {
-                  $header.append("<th class='tableHeaderStyle'>" + v2 + "</th>");
-                  $footer.append("<th>" + v2 + "</th>");
+                  $header.append("<th>" + v2 + "</th>");
                 }
                 headerList.push(v2);
               });
@@ -364,7 +356,10 @@ function createSampleDataTable(){
 
   <!-- SAMPLE TABLE -->
   sDT = $("#sampleTable").dataTable({
-    "sDom": '<"datatable_top"Tlf><"datatable_table"rt><"datatable_bottom"ip>R',
+    "language": {
+      "processing": "Processing your request. Please wait..."
+    },
+    "scrollX": true,
     "bProcessing": true,
     "bServerSide": true,
     "bDestroy": true,
@@ -375,7 +370,7 @@ function createSampleDataTable(){
       if(_page.columnfilter.isActive()) {
         var index = 0;  // keep count to have an accurate list size in case of empty filter values
         $('.column_filter_box').each(function (i, elem) {
-          var $filterText = $(this).children('input:text[class="filter_text"]');
+          var $filterText = $(this).children('input:text[class="filter_text form-control input-sm"]');
           var filterTextVal = $filterText.val();
 
           if (index == 0 || (filterTextVal && filterTextVal != '')) {
@@ -463,35 +458,35 @@ function createSampleDataTable(){
             json.aaData = rows;
             fnCallback(json);
 
-            $('#projectTableDivHeader').show();
-            $('#sampleTableDivHeader').show();
-            $('#sampleTableDiv').show();
-            $('#refreshDataBtn').show();
+            $('#sampleTable_filter').parent("div.col-sm-6").attr('class', 'col-sm-8').insertBefore($('#sampleTable_length').parent("div.col-sm-6"));
+            $('#sampleTable_length').parent("div.col-sm-6").attr('class', 'col-sm-4').css("text-align", "right")
+            $('#sampleTable_filter').css("float", "left")
+
+            $('#projectTableDivHeader, #sampleTableDivHeader, #sampleTableDiv, refreshDataBtn').show();
             utils.processing(false);
             utils.error.remove();
           }
         });
       }
     },
-    "aaSorting": [[3,'asc']],
+    "aaSorting": [[4,'asc']],
     "bAutoWidth" : false,
     "aoColumnDefs": aoColumns()
-  }).fnFilterOnReturn().columnFilter();
+  }).fnFilterOnReturn();
 
-  generateColumnFilter();
+  var buttons = new $.fn.dataTable.Buttons(sDT, {
+    buttons: [  'copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5', 'colvis' ]
+  }).container().appendTo($('#buttons'));
 
-  $("#sampleTableFooter").hide();
-
-  $(".datatable_top").append(
+  $(".dataTables_filter").append(
       $('<span/>').attr({
         'class': 'input-group-btn'
       }).append(
           $('<button/>').attr({
             'type': 'button',
-            'class': 'btn btn-default btn-xs',
+            'class': 'btn btn-default btn-sm',
             'id': 'triggerSearchBtn',
-            'onclick': 'triggerSearch();',
-            'style': 'height: 24px;'
+            'onclick': 'triggerSearch();'
           }).append(
               $('<span/>').attr({
                 'class': 'glyphicon glyphicon-search',
@@ -501,28 +496,28 @@ function createSampleDataTable(){
       ).append(
           $('<button/>').attr({
             'type': 'button',
-            'class': 'btn btn-default btn-xs',
+            'class': 'btn btn-default btn-sm',
             'id': 'selectAllBtn',
             'onclick': '_page.select.all();',
-            'style': 'margin-left:10px;height: 24px;'
+            'style': 'margin-left:10px;'
           }).text("Select All")
       ).append(
           $('<button/>').attr({
             'type': 'button',
-            'class': 'btn btn-default btn-xs',
+            'class': 'btn btn-default btn-sm',
             'id': 'deSelectAllBtn',
             'onclick': '_page.deselect.all();',
-            'style': 'margin-left:10px;height: 24px;'
+            'style': 'margin-left:10px;'
           }).text("Deselect All")
       ).append(
           $('<button/>').attr({
             'type': 'button',
-            'class': 'btn btn-default btn-xs',
+            'class': 'btn btn-default btn-sm',
             'id': 'columnFilterBtn',
             'data-tooltip': 'Column Filter',
             'name':'showColumnFilter',
             'onclick': '_page.columnfilter.toggle(this);',
-            'style': 'margin-left:10px;height: 24px;'
+            'style': 'margin-left:10px;'
           }).append(
               $('<span/>').attr({
                 'class': 'glyphicon glyphicon-filter',
@@ -531,6 +526,8 @@ function createSampleDataTable(){
           )
       )
   );
+
+  generateColumnFilter();
 }
 
 function showFMPopup(id){
@@ -583,9 +580,9 @@ function generateColumnFilter(){
   var $columnFilterDiv = $("<div>", {id: "column_filter", style:"display:none;"}).append(
       $('<span/>').attr({'class': 'glyphicon glyphicon-filter','aria-hidden': 'true'})).append(
       $("<div>", {id: "col_filter_border_l"})).append($("<div>", {id: "col_filter_border_b"}));
-  $columnFilterDiv.insertAfter($(".datatable_top"));
+  $columnFilterDiv.insertAfter($(".dataTables_filter"));
   $columnFilterDiv.append($("<button>")
-      .attr({'type':'button', 'class':'btn btn-default btn-xs', 'id':'columnSearchBtn', 'name':'columnSearchBtn', 'onclick':'triggerSearch()'})
+      .attr({'type':'button', 'class':'btn btn-default btn-sm', 'id':'columnSearchBtn', 'name':'columnSearchBtn', 'onclick':'triggerSearch()'})
       .html('Apply'));
 
   addNewFilter(-1);
@@ -595,7 +592,7 @@ function addNewFilter(i){
   var $addMoreBtn = $("<span>").attr({'class':'glyphicon glyphicon-plus-sign', 'style':'color:green;cursor: pointer;', 'id':'addMoreColumnFilter', 'onclick':'addNewFilter('+ ++i +');'});
   var $columnFilterBox = $("<div>", {'class': 'column_filter_box'});
   var $columnFilterSelect = $("<select>", {class:"select_column", id: "select_column_"+i, name:"column_name", 'onchange':'updateOperation(this.value,'+ i + ')'});
-  var $columnFilterOperation = $("<select>", {class:"select_operation", id: "select_operation_"+i, name:"operation"});
+  var $columnFilterOperation = $("<select>", {class:"select_operation form-control input-sm", id: "select_operation_"+i, name:"operation"});
 
   $columnFilterSelect.append($("<option></option>").attr("value", "Sample Name").text("Sample Name"));
   $columnFilterSelect.append($("<option></option>").attr("value", "Parent").text("Parent"));
@@ -613,10 +610,10 @@ function addNewFilter(i){
   //Automatically add "AND" gate to first column filter
   if(i == 0){
     $columnFilterBox.append($("<input>").attr({'type':'hidden', class: "select_logicgate", id: "select_logicgate_0", name: "logicgate", value:"and"}))
-        .append($("<label>").attr({'id':'first_filter_label','style':'width: 59px;text-align: center;'}).text('AND'));
+        .append($("<label>").attr({'id':'first_filter_label','style':'width: 69px;text-align: center;'}).text('AND'));
   } else {
     var $columnFilterLogicGate = $("<select>", {
-      class: "select_logicgate",
+      class: "select_logicgate form-control input-sm",
       id: "select_logicgate_" + i,
       name: "logicgate"
     });
@@ -629,7 +626,7 @@ function addNewFilter(i){
 
   $columnFilterBox.append($columnFilterSelect);
   $columnFilterBox.append($columnFilterOperation);
-  $columnFilterBox.append($("<input>").attr({'type':'text', 'class':'filter_text', 'id':'filter_text_'+i, 'name':'filter_text', 'style':'height: 22px;'}));
+  $columnFilterBox.append($("<input>").attr({'type':'text', 'class':'filter_text form-control input-sm', 'id':'filter_text_'+i, 'name':'filter_text', 'style':'width: 150px; '}));
   if(i != 0) {
     $columnFilterBox.append($("<span>").attr({'class':'removeColumnFilter glyphicon glyphicon-minus-sign', 'style':'color:red;cursor: pointer;'})
         .click(function(){
@@ -653,9 +650,9 @@ function addNewFilter(i){
     }
   });
   var $autocompleteInput = $currentSelectInput.next();
-  $autocompleteInput.removeClass();
-  $autocompleteInput.css("width", "200px").css("margin-left", "4px");
-  $autocompleteInput.next().css("top", "6px");
+  $autocompleteInput.attr("class", "form-control");
+  $autocompleteInput.css("margin-left", "4px");
+  $autocompleteInput.next().css({"top":"12px", "height":"32px"});
 }
 
 function updateOperation(val,i){

@@ -27,65 +27,23 @@
 
 <head>
   <jsp:include page="header.jsp" />
-  <link rel="stylesheet" href="style/dataTables.css" type='text/css' media='all' />
+  <link rel="stylesheet" href="datatables/datatables.css" type='text/css' media='all' />
   <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
-  <%--
-  <link rel="stylesheet" href="style/version01.css" />--%>
   <style>
-    td._details {
-      text-align:left;
-      padding:0 0 0 35px;
-      border: 1px gray dotted;
-    }
-    td._details div {
-      position: relative; overflow: auto; overflow-y: hidden;
-    }
-    td._details table td {
-      border:1px solid white;
-    }
-
-    .datatable_top, .datatable_table, .datatable_bottom {
-      float:left;
-      clear:both;
-      width:100%;
-      min-width: 165px;
-    }
-    .datatable_table{width: 1500px;overflow-x: scroll;}
-    .dataTables_length {
-      height: 29px;
-      vertical-align: middle;
-      min-width: 165px !important;
-      margin-top: 2px;
-    }
-    .dataTables_filter {
-      width: 260px !important;
-    }
-    .dataTables_info {
-      padding-top: 0 !important;
-    }
-    .dataTables_paginate {
-      float: left !important;
-    }
-
     #refreshDataBtn {position:inherit;height:24px;width:34px;margin-left:10px;border:1px solid #aed0ea;background:#d7ebf9;font-weight:bold;color:#2779aa;}
     #columnFilterBtn:hover:after, #refreshDataBtn:hover:after{ background: #333; background: rgba(0,0,0,.8);
       border-radius: 5px; bottom: 0px; color: #fff; content: attr(data-tooltip);
       left: 140%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
     #columnFilterBtn:hover:before, #refreshDataBtn:hover:before{border: solid; border-color: transparent #333;border-width: 6px 6px 6px 0px;
       bottom: 8px; content: ""; left: 125%; position: absolute; z-index: 99;}
-
-    #column_filter{padding-bottom: 8px;margin: 10px 0 18px;}
-    #col_filter_border_l{border-left: 2px solid #333333;position: absolute;margin-left: 5px;left: 0;top: 45px;bottom: 0;}
-    #col_filter_border_b{border-bottom: 2px solid #333333;position: absolute;right: 95.1%;margin-left: 5px;left: 0;bottom: 0;}
+    #column_filter{margin: 5px 0 18px;float: left;}
     .column_filter_box{margin: 5px 0 5px 15px;}
-    #columnSearchBtn{margin:10px 0 0 15px;width: 59px;}
-    .select_column, .select_operation, .filter_text, .removeColumnFilter{margin-left: 4px;}
-    .select_logicgate{width: 59px;}
+    #columnSearchBtn{margin:10px 0 0 15px;float:left;}
+    .select_column, .select_operation, .filter_text, .removeColumnFilter, #addMoreColumnFilter{margin-left: 4px;}
     .scrollButton{padding:10px;text-align:center;font-weight: bold;color: #FFFAFA;text-decoration: none;position:fixed;right:40px;background: rgb(0, 129, 179);display: none;}
-
-    #sampleTable th, #sampleTable td {border: 1px solid #dddddd;}
-    .sorting, .sorting_asc, .sorting_desc { background-image : none; } /*hide sorting arrows on datatable*/
-    .sorting_disabled {background-color: #B6B6B6;}
+    #sampleTable_filter label, #sampleTable_filter .input-group-btn {float:left;}
+    #col_filter_border_l{border-left: 2px solid #333333;position: absolute;margin-left: 18px;left: 0;top: 55px;bottom: 0;}
+    #col_filter_border_b{border-bottom: 2px solid #333333;position: absolute;right: 90%;margin-left: 18px;left: 0;bottom: 0;}
   </style>
 </head>
 
@@ -158,7 +116,7 @@
                     <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
                               list="projectList" name="projectId" headerKey="0" headerValue="Select by Project Name"
                               listValue="projectName" listKey="projectId" required="true"/>
-                    <button type="button" class="btn btn-default btn-xs" id="refreshDataBtn" onclick="refreshData();" data-tooltip="Refresh Data">
+                    <button type="button" class="btn btn-default btn-xs" id="refreshDataBtn" onclick="refreshData();" data-tooltip="Refresh Data" style="display: none;">
                       <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
                     </button>
                   </div>
@@ -166,11 +124,11 @@
               </div>
 
               <!-- project -->
-              <div id="projectTableDivHeader" style="margin:25px 10px 0 0;">
+              <div id="projectTableDivHeader" style="margin:25px 0 0 0;display: none;">
                 <h2 class="csc-firstHeader middle-header">Project Details <small><span id="toggleProjectDetails" class="glyphicon glyphicon-plus-sign" aria-hidden="true" style="color:green;cursor: pointer;"></span></small></h2>
               </div>
 
-              <div id="projectTableDiv" style="margin:0 10px 5px 0;">
+              <div id="projectTableDiv" style="margin:0 10px 5px 0;display: none;">
                 <table name="projectTable" id="projectTable" class="table table-bordered table-striped table-hover">
                   <tbody id="projectTableBody">
                   </tbody>
@@ -178,21 +136,15 @@
               </div>
 
               <!-- sample -->
-              <div id="sampleTableDivHeader" style="margin:25px 10px 0 0;">
+              <div id="sampleTableDivHeader" style="display: none;">
                 <h2 class="csc-firstHeader middle-header">Sample Details</h2>
               </div>
-              <div id="sampleTableDiv" style="margin:0 10px 5px 0;clear:both;">
-                <table name="sampleTable" id="sampleTable" class="contenttable hover" style="min-width: 2000px;">
-                  <thead id="sampleTableHeader">
-                  <tr>
-                  </tr>
-                  </thead>
-                  <tfoot id="sampleTableFooter" style="display: none;">
-                  <tr>
-                  </tr>
-                  </tfoot>
+              <div id="sampleTableDiv" style="display: none;">
+                <table name="sampleTable" id="sampleTable" class="table table-bordered table-striped table-condensed table-hover">
+                  <thead id="sampleTableHeader"><tr></tr></thead>
                   <tbody id="sampleTableBody"/>
                 </table>
+                <div id="buttons"></div>
                 <input onclick="_page.edit.sampleEvent();" class="btn btn-primary" disabled="true" type="button" value="Edit Sample" id="editSampleBtn" style="margin-top: 20px;" />
                 <input onclick="_page.edit.exportSample();" class="btn btn-primary" type="button" value="Export Sample(s)" id="exportSampleBtn" style="margin-top: 20px;" />
               </div>
@@ -209,20 +161,15 @@
 
 <jsp:include page="../html/footer.html" />
 
-<script src="scripts/jquery/jquery.dataTables.js"></script>
-<script src="scripts/jquery/jquery.dataTables.columnFilter.js"></script>
-<%--<script src="scripts/jquery/jquery.tableTools.js"></script>--%>
-<script src="scripts/jquery/jquery.colReorderWithResize.js"></script>
+<script src="datatables/datatables.js"></script>
+<script src="datatables/pdfmake-0.1.32/pdfmake.js"></script>
+<script src="datatables/pdfmake-0.1.32/vfs_fonts.js"></script>
+<script src="datatables/Buttons-1.4.2/js/buttons.colVis.js"></script>
 <script src="scripts/page/event.detail.js"></script>
 <script>
   $(document).ready(function() {
     $('.navbar-nav li').removeClass('active');
     $('.navbar-nav > li:nth-child(3)').addClass('active');
-    $('#projectTableDivHeader').hide();
-    $('#projectTableDiv').hide();
-    $('#sampleTableDivHeader').hide();
-    $('#sampleTableDiv').hide();
-    $('#refreshDataBtn').hide();
 
     utils.combonize('statusTableDiv');
     utils.initDatePicker();
