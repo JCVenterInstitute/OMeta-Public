@@ -397,8 +397,7 @@
       $columnFilterBox.append($columnFilterLogicGate)
     }
 
-    $columnFilterBox.append($columnFilterSelect);
-    $columnFilterBox.append($columnFilterOperation);
+    $columnFilterBox.append($("<div>").attr({'class':'input-group', 'style':'margin-left:4px;'}).append($columnFilterSelect).append($columnFilterOperation));
     $columnFilterBox.append($("<input>").attr({'type':'text', 'class':'filter_text form-control input-sm', 'id':'filter_text_'+i, 'name':'filter_text', 'style':'width: 150px; '}));
     if(i != 0) {
       $columnFilterBox.append($("<span>").attr({'class':'removeColumnFilter glyphicon glyphicon-minus-sign', 'style':'color:red;cursor: pointer;'})
@@ -424,8 +423,6 @@
     });
     var $autocompleteInput = $currentSelectInput.next();
     $autocompleteInput.attr("class", "form-control");
-    $autocompleteInput.css("margin-left", "4px");
-    $autocompleteInput.next().css({"top":"12px", "height":"32px"});
   }
 
   function updateOperation(val,i){

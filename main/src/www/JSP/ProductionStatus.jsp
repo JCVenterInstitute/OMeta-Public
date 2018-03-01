@@ -25,11 +25,13 @@
     #statusTable_info, #statusTable_filter {float:left;}
     .dt-buttons {float:right;}
     #statusTable_processing {width: 400px;border: 1px solid #aed0ea;background: #d7ebf9;font-weight: bold;color: #2779aa;}
-    #column_filter{margin: 5px 0 18px;float: left;border-left: 2px solid rgb(51, 51, 51);}
+    #column_filter{margin: 5px 0 18px;float: left;}
     .column_filter_box{margin: 5px 0 5px 15px;}
     #columnSearchBtn{margin:10px 0 0 15px;}
     .select_column, .select_operation, .filter_text, .removeColumnFilter, #addMoreColumnFilter{margin-left: 4px;}
     #statusTable_filter label, #statusTable_filter button.btn {float:left;}
+    #col_filter_border_l{border-left: 2px solid #333333;position: absolute;margin-left: 18px;left: 0;top: 55px;bottom: 0;}
+    #col_filter_border_b{border-bottom: 2px solid #333333;position: absolute;right: 90%;margin-left: 18px;left: 0;bottom: 0;}
   </style>
 </head>
 <body>
@@ -57,6 +59,7 @@
   <div id="middle_content_template">
     <div id="statusTableDiv">
       <table id="statusTable" class="table table-bordered table-striped table-condensed table-hover" style="width:100%"></table>
+      <div id="buttons"></div>
     </div>
   </div>
 
@@ -116,12 +119,6 @@
 
     pDT = $("#statusTable").dataTable({
       "scrollX": true,
-      dom: 'fBrtip',
-      buttons: [ 'copyHtml5',
-        {extend: 'excelHtml5', title: 'OMETA - Production Status'},
-        {extend: 'csvHtml5', title: 'OMETA - Production Status'},
-        {extend: 'pdfHtml5', title: 'OMETA - Production Status'},
-        'colvis' ],
       "language": {
         "processing": "Processing your request. Please wait..."
       },
@@ -150,9 +147,16 @@
             }
           });
         }
+        $('#statusTable_filter').parent("div.col-sm-6").insertBefore($('#statusTable_length').parent("div.col-sm-6"));
+        $('#statusTable_length').parent("div.col-sm-6").css("text-align", "right")
+        $('#statusTable_filter').css("float", "left")
       },
       "aaSorting": []
     });
+
+    var buttons = new $.fn.dataTable.Buttons(pDT, {
+      buttons: [  'copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5', 'colvis' ]
+    }).container().appendTo($('#buttons'));
 
     $(".dataTables_filter").append(
             $('<button/>').attr({
@@ -191,12 +195,13 @@
   });
 
   function generateColumnFilter(){
-    var $statusTop = $(".dataTables_filter");
-    var $columnFilterDiv = $("<div>", {id: "column_filter", style:"display:none;"});
-    $statusTop.append("<br/>").append("<br/>").append($columnFilterDiv);
+    var $columnFilterDiv = $("<div>", {id: "column_filter", style:"display:none;"}).append(
+        $('<span/>').attr({'class': 'glyphicon glyphicon-filter','aria-hidden': 'true'})).append(
+        $("<div>", {id: "col_filter_border_l"})).append($("<div>", {id: "col_filter_border_b"}));
+    $columnFilterDiv.insertAfter($(".dataTables_filter"));
     $columnFilterDiv.append($("<button>")
-            .attr({'type':'button', 'class':'btn btn-default btn-sm', 'id':'columnSearchBtn', 'name':'columnSearchBtn', 'onclick':'triggerSearch()'})
-            .html('Apply'));
+        .attr({'type':'button', 'class':'btn btn-default btn-sm', 'id':'columnSearchBtn', 'name':'columnSearchBtn', 'onclick':'triggerSearch()'})
+        .html('Apply'));
 
     addNewFilter(-1);
   }
@@ -232,8 +237,7 @@
       $columnFilterBox.append($columnFilterLogicGate)
     }
 
-    $columnFilterBox.append($columnFilterSelect);
-    $columnFilterBox.append($columnFilterOperation);
+    $columnFilterBox.append($("<div>").attr({'class':'input-group', 'style':'margin-left:4px;'}).append($columnFilterSelect).append($columnFilterOperation));
     $columnFilterBox.append($("<input>").attr({'type':'text', 'class':'filter_text form-control input-sm', 'id':'filter_text_'+i, 'name':'filter_text', 'style':'width: 150px; '}));
     if(i != 0) {
       $columnFilterBox.append($("<span>").attr({'class':'removeColumnFilter glyphicon glyphicon-minus-sign', 'style':'color:red;cursor: pointer;'})
@@ -259,8 +263,6 @@
     });
     var $autocompleteInput = $currentSelectInput.next();
     $autocompleteInput.attr("class", "form-control");
-    $autocompleteInput.css("margin-left", "4px");
-    $autocompleteInput.next().css({"top":"12px", "height":"32px"});
   }
 
   function updateOperation(val,i){

@@ -67,8 +67,8 @@
             <div id="statusTableDiv">
               <div id="tableTop">
                 <div class="row">
-                  <div class="col-md-1">Project</div>
-                  <div class="col-md-11">
+                  <div class="col-md-2">Project Name</div>
+                  <div class="col-lg-5 input-group">
                     <s:select id="_projectSelect" list="projectList" name="selectedProjectId" headerKey="0" headerValue="" listValue="projectName" listKey="projectId" required="true"/>
                   </div>
                 </div>
