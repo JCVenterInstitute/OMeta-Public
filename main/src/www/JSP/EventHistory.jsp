@@ -72,7 +72,7 @@
               <div id="tableTop">
                 <div class="row">
                   <div class="col-lg-2 col-md-4">Project Name</div>
-                  <div class="col-lg-10 col-md-10 combobox">
+                  <div class="col-lg-5 input-group">
                     <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
                               list="projectList" name="projectId" headerKey="0" headerValue="Select by Project Name"
                               listValue="projectName" listKey="projectId" required="true"/>

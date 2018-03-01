@@ -78,6 +78,10 @@
       left: 140%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
     #autofill-control:hover:before{border: solid; border-color: transparent #333;border-width: 6px 6px 6px 0px;
       bottom: 8px; content: ""; left: 125%; position: absolute; z-index: 99;}
+
+    .input-group[class*="col-"], .col-md-6 {
+      padding-left: 0;
+    }
   </style>
 </head>
 
@@ -182,7 +186,7 @@
                       <tr>
                         <td style="width: 136px;">Submit Data For</td>
                         <td>
-                          <div class="btn-group" data-toggle="buttons" style="margin-left: 15px">
+                          <div class="btn-group" data-toggle="buttons">
                             <label class="btn btn-default active">
                               <input type="radio" name="loadType" class="loadRadio" value="form" id="r_sw"> Single Sample
                             </label>
@@ -201,28 +205,28 @@
                       </tr>
                       <tr class="interactiveTableInfo">
                         <td>Project Name</td>
-                        <td><div class="col-lg-11 col-md-11 combobox">
-                          <s:select label="Project" id="_projectSelect" cssStyle="width:150px;margin:0 5 0 10;"
+                        <td><div class="col-lg-11 col-md-11 input-group">
+                          <s:select label="Project" id="_projectSelect" cssClass="form-control"
                                     list="projectList" name="projectId" headerKey="0" headerValue="Select by Project Name"
                                     listValue="projectName" listKey="projectId" required="true"/>
                         </div></td>
-                        <td><button type="button" class="btn btn-xs btn-info" id="projectPopupBtn" onclick="button.projectPopup();">Display Project Details</button></td>
+                        <td><button type="button" class="btn btn-info" id="projectPopupBtn" onclick="button.projectPopup();">Display Project Details</button></td>
                       </tr>
                       <tr class="interactiveTableInfo">
                         <td>Event</td>
-                        <td><div class="col-md-11 combobox">
+                        <td><div class="col-md-11 input-group">
                           <s:select id="_eventSelect" list="#{0:'Select by Event Name'}" name="eventId" required="true" disabled="true"/>
                         </div></td>
                         <td></td>
                       </tr>
                       <tr class="interactiveTableInfo">
                         <td>Sample</td>
-                        <td><div class="col-md-5" style="width: 530px;"><div class="input-group">
-                          <s:textfield id="sampleSelect" placeholder="Select by Sample Name" name="sampleName"  required="true" cssClass="form-control search-box"/>
-                          <span class="input-group-btn" id="basic-addon2"><button type="button" class="btn btn-default btn-xs search-button" id="searchSample" onclick="searchSamples(this.id);">
+                        <td><div class="col-md-11 input-group">
+                          <s:textfield id="sampleSelect" placeholder="Select by Sample Name" name="sampleName"  required="true" cssClass="form-control"/>
+                          <span class="input-group-btn" id="basic-addon2"><button type="button" class="btn btn-primary" id="searchSample" onclick="searchSamples(this.id);">
                             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                           </button></span>
-                        </div></div><img src="images/loading.gif" id="sampleLoadingImg" style="height: 23px;display: none" >
+                        </div><img src="images/loading.gif" id="sampleLoadingImg" style="height: 23px;display: none" >
                         </td>
                         <td></td>
                       </tr>
@@ -256,23 +260,23 @@
                   </div>
                   <div id="sampleDetailSubDiv">
                     <div class="row row_spacer" style="margin-bottom: 3px;">
-                      <div class="col-md-1">Sample Name</div>
-                      <div class="col-md-11">
-                        <input type="text" id="_sampleName" name="loadingSample.sampleName" style="width: 470px;"/>
+                      <div class="col-md-2">Sample Name</div>
+                      <div class="col-md-6">
+                        <input type="text" id="_sampleName" name="loadingSample.sampleName" class="form-control"/>
                       </div>
                     </div>
                     <div class="row row_spacer" style="margin-bottom: 3px;">
-                      <div class="col-md-1">Parent Sample</div>
-                      <div class="col-md-5" style="width: 530px;"><div class="input-group">
-                        <s:textfield id="parentSelect"  name="loadingSample.parentSampleName"  required="true" cssClass="form-control search-box"/>
-                          <span class="input-group-btn" id="basic-addon2"><button type="button" class="btn btn-default btn-xs search-button" id="searchParentSample" onclick="searchSamples(this.id);">
+                      <div class="col-md-2">Parent Sample</div>
+                      <div class="col-md-6"><div class="input-group">
+                        <s:textfield id="parentSelect"  name="loadingSample.parentSampleName"  required="true" cssClass="form-control"/>
+                          <span class="input-group-btn" id="basic-addon2"><button type="button" class="btn btn-primary" id="searchParentSample" onclick="searchSamples(this.id);">
                             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                           </button></span>
                       </div></div>
                     </div>
                     <div class="row row_spacer">
-                      <div class="col-md-1">Public</div>
-                      <div class="col-md-11">
+                      <div class="col-md-2">Public</div>
+                      <div class="col-md-2 input-group">
                         <s:select id="_isSamplePublic" list="#{0:'No', 1:'Yes'}" name="loadingSample.isPublic" required="true" />
                       </div>
                     </div>

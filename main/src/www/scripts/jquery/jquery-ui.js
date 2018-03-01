@@ -437,7 +437,7 @@
               }
             }
           })
-          .addClass( "ui-widget ui-widget-content ui-corner-left" )
+          .addClass( "ui-widget ui-widget-content ui-corner-left form-control" )
           .attr({'placeholder': value});
 
       input.data( "autocomplete" )._renderItem = function( ul, item ) {
@@ -447,19 +447,13 @@
             .appendTo( ul );
       };
 
-      this.button = $( "<button type='button'></button>" )
+      var button = this.button = $( "<button type='button'></button>" )
           .attr( "tabIndex", -1 )
           .attr( "title", "Show All Items" )
           .insertAfter( input )
-          .button({
-            icons: {
-              primary: "ui-icon-triangle-1-s"
-            },
-            text: false
-          })
           .removeClass( "ui-corner-all" )
-          .addClass( "ui-button ui-widget ui-state-default ui-button-icon-only ui-corner-right ui-button-icon" )
-          .append('<span class="ui-button-icon-primary ui-icon ui-icon-triangle-1-s"></span><span class="ui-button-text"></span>')
+          .addClass( "btn btn-primary" )
+          .append('<span class="glyphicon glyphicon-chevron-down"></span>')
           .click(function() {
             // close if already visible
             if ( input.autocomplete( "widget" ).is( ":visible" ) ) {
@@ -474,11 +468,16 @@
             input.autocomplete( "search", "" );
             input.focus();
           });
+
+      this.span = $( "<span>" )
+          .addClass( "input-group-btn" )
+          .insertAfter( input )
+          .append( button );
     },
 
     destroy: function() {
       this.input.remove();
-      this.button.remove();
+      this.span.remove();
       this.element.show();
       $.Widget.prototype.destroy.call( this );
     }
