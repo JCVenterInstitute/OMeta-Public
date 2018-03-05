@@ -34,7 +34,7 @@ var _utils = {
         $('#sampleSelectRow').hide();
         if(utils.checkSR(eventName)) { // triggers sample loader
           $('#sampleDetailInputDiv').show();
-          $("#interactive-submission-table tr:last").hide();
+          $('#sampleSelect, #searchSample').prop("disabled", true);$('#form-sample-name').hide();
         } else if(utils.checkPR(eventName)) {
           $('#projectDetailInputDiv').show();
         } else {
@@ -45,7 +45,7 @@ var _utils = {
       },
       hidePS: function() {
         $('#sampleDetailInputDiv, #projectDetailInputDiv').hide();
-        $("#interactive-submission-table tr:last").hide();
+        $('#sampleSelect, #searchSample').prop("disabled", true);$('#form-sample-name').hide();
       },
       ontologify: function(desc, $inputNode) {
         var ontologyInfo = desc.substring(desc.lastIndexOf('[')+1, desc.length-1).split(',');
@@ -222,17 +222,17 @@ var _utils = {
 
         // //add table headers for grid view
         var gridHeaders = '', $gridHeaders = $('<tr/>');
-        $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG gridIndex').append('#')); //grid row index
+        $gridHeaders.append($('<th/>').addClass('gridIndex').append('#')); //grid row index
         if(utils.checkNP(en)) {
           if(!utils.checkSR(en)) {
-            $gridHeaders.append($('<th/>').addClass('tableHeaderNoBG resizable-header').attr('style','border-right: 2px solid #7D7878;').append('<small class="text-danger">*</small>Sample Name'));
+            $gridHeaders.append($('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>Sample Name'));
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '135').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
             autofill_no+=1;
           } else {
             $gridHeaders.append(
-                $('<th/>').addClass('tableHeaderNoBG resizable-header').attr('style','border-right: 2px solid #7D7878;').append('<small class="text-danger">*</small>Sample Name<br/>'),
-                $('<th/>').addClass('tableHeaderNoBG resizable-header').attr('style','border-right: 2px solid #7D7878;').append('Parent Sample'),
-                $('<th/>').addClass('tableHeaderNoBG resizable-header').attr('style','border-right: 2px solid #7D7878;').append('Public<br/>')
+                $('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>Sample Name<br/>'),
+                $('<th/>').addClass('resizable-header').append('Parent Sample'),
+                $('<th/>').addClass('resizable-header').append('Public<br/>')
             );
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '95').replace('$a$', 2).replace('$b$', 2).replace('$c$', 2)));
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '190').replace('$a$', 3).replace('$b$', 3).replace('$c$', 3)));
@@ -242,8 +242,8 @@ var _utils = {
         } else {
           if(utils.checkPR(en)) {
             $gridHeaders.append(
-                $('<th/>').addClass('tableHeaderNoBG resizable-header').attr('style','border-right: 2px solid #7D7878;').append('<small class="text-danger">*</small>Project Name<br/>', requireImgHtml),
-                $('<th/>').addClass('tableHeaderNoBG resizable-header').attr('style','border-right: 2px solid #7D7878;').append('Public<br/>', requireImgHtml)
+                $('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>Project Name<br/>', requireImgHtml),
+                $('<th/>').addClass('resizable-header').append('Public<br/>', requireImgHtml)
             );
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '145').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
             $autofillLine.append($('<td/>')); // empty for Public
@@ -261,7 +261,7 @@ var _utils = {
             var isRequired = _ma.requiredDB;
             var isDictionary = _ma.dictionary;
             var hasOntology = (_ma.ontology && _ma.ontology !== '');
-            var $attributeTr = $('<tr class="gappedTr"/>');
+            var $attributeTr = $('<tr/>');
 
             $attributeTr.append(//icons and hover over information
                 $('<td align="right"/>').attr('class', (isDesc ? 'table-tooltip' : '')).attr(
@@ -331,28 +331,26 @@ var _utils = {
                 }
               }
 
-              inputElement += '<select id="'  + (isRequired ? 'req_' : '') + 'select_$id$" name="$lt$attributeValue" style="min-width:35px;width:200px;" ' + (isMulti || isRadio ? 'multiple="multiple"':'') + '>' + options + '</select>';
+              inputElement += '<select id="'  + (isRequired ? 'req_' : '') + 'select_$id$" name="$lt$attributeValue" style="width:200px;" ' + (isMulti || isRadio ? 'multiple="multiple"':'class="form-control"') + '>' + options + '</select>';
 
               $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '130').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
             } else {
               var maDatatype = _ma.lookupValue.dataType;
               if(maDatatype === 'file') { //file
-                // inputElement += '<input type="file" id="' + maDatatype + '_$id$" name="$lt$upload" style="width:253px;"/>';
-                //inputElement += '<input type="button"  id="' + maDatatype + '_$id$" style="width:253px;" value="FILE MANAGEMENT" onclick="showFMPopup(this.id)"/>';
-                inputElement += '<button type="button" id="' + maDatatype + '_$id$"  class="btn btn-default btn-xs table-tooltip" data-tooltip="FILE MANAGEMENT" value="FILE MANAGEMENT" onclick="showFMPopup(this.id)">File Store</button>'
+                inputElement += '<button type="button" id="' + maDatatype + '_$id$"  class="btn btn-default table-tooltip" data-tooltip="FILE MANAGEMENT" value="FILE MANAGEMENT" onclick="showFMPopup(this.id)">File Store</button>'
                 inputElement += _html.fm;
                 $autofillLine.append($('<td/>'));
               } else if(maDatatype ==='date') {
                 inputElement +=
                     '<div class="input-group col-sm-5">'+
-                    '  <input type="text" id="' + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" style="width:160px;"/>' +
-                    '  <label for="' + maDatatype + '_$id$" class="input-group-addon" style="padding:4px;"><span><i class="fa fa-calendar"></i></span></label>' +
+                    '  <input type="text" id="' + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" class="form-control" style="min-width:160px;"/>' +
+                    '  <label for="' + maDatatype + '_$id$" class="input-group-addon"><span><i class="fa fa-calendar"></i></span></label>' +
                     '</div>';
 
                 $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '110').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
               } else { //text input
                 isText = true;
-                inputElement += '<input type="text" id="' + (isRequired ? 'req_' : '') + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" style="width:160px;"/> ';
+                inputElement += '<input type="text" id="' + (isRequired ? 'req_' : '') + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" class="form-control" style="min-width:160px;"/> ';
 
                 $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '94').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
               }
@@ -360,7 +358,7 @@ var _utils = {
             inputElement = inputElement.replace(/\$id\$/g,_ma.lookupValue.name.replace(/ /g,"_") + "_$id$");
 
             $gridHeaders.append(
-                $('<th/>').addClass('tableHeaderNoBG resizable-header').attr('style','border-right: 2px solid #7D7878;')
+                $('<th/>').addClass('resizable-header')
                     .attr('title', (isDesc ? _ma.desc : '')).attr('data-toggle','tooltip').attr('data-placement','top').append(
                     isRequired ? '<small class="text-danger">*</small>' : '',
                     (_ma.label ? _ma.label : _ma.lookupValue.name) + '<br/>',
@@ -496,7 +494,6 @@ var _utils = {
               });
             }
             $(this).removeAttr('style');
-            $(this).css("border-right", "2px solid #7D7878");
           }
         });
 
@@ -1167,21 +1164,22 @@ var button = {
               $('<td/>').append($('<input/>').attr({
                     'type': 'text',
                     'name': 'gridList[' + g_gridLineCount + '].sampleName',
+                    'class': 'form-control',
                     'id': '_sampleName' + g_gridLineCount,
-                    'style' : 'width:160px'
+                    'style' : 'min-width:160px'
                   })
               )
           );
           $eventLine.append(
               $('<td/>').append(
                   $('<div/>').attr({
-                    'class': 'input-group'
+                    'class': 'input-group',
+                    'style': 'width: 205px;'
                   }).append(
                       $('<input/>').attr({
                         'name': 'gridList[' + g_gridLineCount + '].parentSampleName',
                         'id': '_parentSelect' + g_gridLineCount,
-                        'class': 'form-control search-box',
-                        'style': 'width: 168px;'
+                        'class': 'form-control'
                       })
                   ).append(
                       $('<span/>').attr({
@@ -1189,7 +1187,7 @@ var button = {
                       }).append(
                           $('<button/>').attr({
                             'type': 'button',
-                            'class': 'btn btn-default btn-xs search-button',
+                            'class': 'btn btn-primary',
                             'id': '_searchParentSample' + g_gridLineCount,
                             'onclick': 'searchSamples(this.id);'
                           }).append(
@@ -1206,22 +1204,23 @@ var button = {
               $('<td/>').append(
                   $('<select/>').attr({
                     'name': 'gridList[' + g_gridLineCount + '].samplePublic',
-                    'style': 'width:52px'
+                    'class': 'form-control',
+                    'style': 'width:70px'
                   }).append(vs.nyoption)
               )
           );
         } else {
           $eventLine.append(
-              $('<td/>').attr({'style': 'width: 205px;'}).append(
+              $('<td/>').append(
                   $('<div/>').attr({
-                    'class': 'input-group'
+                    'class': 'input-group',
+                    'style': 'width: 205px;'
                   }).append(
                       $('<input/>').attr({
                         'type': 'text',
                         'name': 'gridList[' + g_gridLineCount + '].sampleName',
                         'id': '_sampleSelect' + g_gridLineCount,
-                        'class': 'form-control search-box',
-                        'style': 'width: 168px;'
+                        'class': 'form-control'
                       })
                   ).append(
                       $('<span/>').attr({
@@ -1229,7 +1228,7 @@ var button = {
                       }).append(
                           $('<button/>').attr({
                             'type': 'button',
-                            'class': 'btn btn-default btn-xs search-button',
+                            'class': 'btn btn-primary',
                             'id': '_searchSample' + g_gridLineCount,
                             'onclick': 'searchSamples(this.id);'
                           }).append(
@@ -1250,18 +1249,17 @@ var button = {
                     'type': 'text',
                     'name': 'gridList[' + g_gridLineCount + '].projectName',
                     'id': '_projectName' + g_gridLineCount,
-                    'style' : 'width:160px'
+                    'class': 'form-control',
+                    'style' : 'min-width:160px'
                   })
-              )/*.append($('<hidden/>').attr({
-               'name': 'gridList[' + g_gridLineCount + '].projectPublic',
-               'value': '1'
-               }))*/
+              )
           );
           $eventLine.append(
               $('<td/>').append(
                   $('<select/>').attr({
                     'name': 'gridList[' + g_gridLineCount + '].projectPublic',
-                    'style': 'width:52px'
+                    'class': 'form-control',
+                    'style': 'width:70px'
                   }).append(vs.nyoption)
               )
           );
@@ -1531,9 +1529,9 @@ function comboBoxChanged(option, id) {
       var _selectedType = $('input[name="loadType"]:checked').val();
       var _eventName = option.text;
       if(utils.checkSR(_eventName) || _selectedType === 'grid') {
-        $("#interactive-submission-table tr:last").hide();
+        $('#sampleSelect, #searchSample').prop("disabled", true);$('#form-sample-name').hide();
       } else{
-        if(!utils.checkPR(_eventName) && utils.getEventName(_eventName).toLowerCase().indexOf('project') < 0) $("#interactive-submission-table tr:last").show();
+        if(!utils.checkPR(_eventName) && utils.getEventName(_eventName).toLowerCase().indexOf('project') < 0) $('#sampleSelect, #searchSample').prop("disabled", false);$('#form-sample-name').show();
       }
 
       if(utils.checkPU(_eventName)){

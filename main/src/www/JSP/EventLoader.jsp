@@ -30,13 +30,7 @@
   <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
   <link rel="stylesheet" href="style/multiple-select.css" type='text/css' media='all' />
 
-  <%--<link rel="stylesheet" href="style/version01.css" />--%>
   <style>
-    .loadRadio {
-      margin-left: 10px;
-      margin-right: 3px;
-    }
-    .submission-radio{margin-right: 5px !important;}
     #gridBody .ui-autocomplete-input {
       width: 150px;
     }
@@ -44,12 +38,6 @@
       max-width: 20px !important;
       min-width: 15px;
       text-align: center;
-    }
-    .ms-choice {
-      line-height: 20px;
-    }
-    .ms-choice, .ms-choice > div {
-      height: 20px;
     }
 
     /* dropbox */
@@ -62,13 +50,6 @@
     .bar {
       height: 18px;
       background: green;
-    }
-    .search-button{
-      border: 1px solid #aed0ea;background: #d7ebf9;font-weight: bold;color: #2779aa;height: 24px; width: 34px;
-    }
-    .search-box{
-      position:initial !important;position: static\0 !important;height: 24px;color: #362b36;border-top-left-radius:6px;border-bottom-left-radius:6px;
-      font-family: Lucida Grande, Lucida Sans, Arial, sans-serif;font-size: 1.1em;margin: 0;padding: 1px;vertical-align: top;padding-left: 5px;
     }
 
     .scrollButton{padding:10px;text-align:center;font-weight: bold;color: #FFFAFA;text-decoration: none;position:fixed;right:40px;background: rgb(0, 129, 179);display: none;}
@@ -177,107 +158,109 @@
             <s:hidden name="projectName" id="projectName" />
             <s:hidden name="sampleName" id="sampleName" />
             <input type="hidden" value="<s:property value="%{gridList.size}"/>" id="gridListSize" />
-            <div id="interactiveDiv" style="float:left;width:100%;">
+            <div id="interactiveDiv">
               <div id="statusTableDiv">
-                <div class="row"></div>
-                <div id="tableTop">
-                  <div class="row col-md-12">
-                    <table id="interactive-submission-table" style="min-width: 80%">
-                      <tr>
-                        <td style="width: 136px;">Submit Data For</td>
-                        <td>
-                          <div class="btn-group" data-toggle="buttons">
-                            <label class="btn btn-default active">
-                              <input type="radio" name="loadType" class="loadRadio" value="form" id="r_sw"> Single Sample
-                            </label>
-                            <label class="btn btn-default">
-                              <input type="radio" name="loadType" class="loadRadio" value="grid" id="r_mw" > Multiple Samples (Web Form)
-                            </label>
-                            <label class="btn btn-default">
-                              <input type="radio" name="loadType" class="loadRadio" value="file" id="r_mf"> Multiple Samples (Excel Template)
-                            </label>
-                            <label class="btn btn-default">
-                              <input type="radio" name="loadType" class="loadRadio" value="bulk" id="r_bs"> Bulk Submission
-                            </label>
-                          </div>
-                        </td>
-                        <td></td>
-                      </tr>
-                      <tr class="interactiveTableInfo">
-                        <td>Project Name</td>
-                        <td><div class="col-lg-11 col-md-11 input-group">
-                          <s:select label="Project" id="_projectSelect" cssClass="form-control"
-                                    list="projectList" name="projectId" headerKey="0" headerValue="Select by Project Name"
-                                    listValue="projectName" listKey="projectId" required="true"/>
-                        </div></td>
-                        <td><button type="button" class="btn btn-info" id="projectPopupBtn" onclick="button.projectPopup();">Display Project Details</button></td>
-                      </tr>
-                      <tr class="interactiveTableInfo">
-                        <td>Event</td>
-                        <td><div class="col-md-11 input-group">
-                          <s:select id="_eventSelect" list="#{0:'Select by Event Name'}" name="eventId" required="true" disabled="true"/>
-                        </div></td>
-                        <td></td>
-                      </tr>
-                      <tr class="interactiveTableInfo">
-                        <td>Sample</td>
-                        <td><div class="col-md-11 input-group">
-                          <s:textfield id="sampleSelect" placeholder="Select by Sample Name" name="sampleName"  required="true" cssClass="form-control"/>
-                          <span class="input-group-btn" id="basic-addon2"><button type="button" class="btn btn-primary" id="searchSample" onclick="searchSamples(this.id);">
-                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                          </button></span>
-                        </div><img src="images/loading.gif" id="sampleLoadingImg" style="height: 23px;display: none" >
-                        </td>
-                        <td></td>
-                      </tr>
-                    </table>
+                <div id="interactive-submission-group" class="form-group">
+                  <div class="btn-group btn-group-justified" data-toggle="buttons">
+                    <label class="btn btn-default active"><input type="radio" name="loadType" value="form">Single Sample</label>
+                    <label class="btn btn-default"><input type="radio" name="loadType" value="grid">Multiple Samples (Web Form)</label>
+                    <label class="btn btn-default"><input type="radio" name="loadType" value="file">Multiple Samples (Excel Template)</label>
+                    <label class="btn btn-default"><input type="radio" name="loadType" value="bulk">Bulk Submission</label>
                   </div>
                 </div>
-                <div class="row"></div>
-                <div id="projectDetailInputDiv" style="display:none;margin-top: 25px;">
+                <div class="row form-group">
+                  <div class="col-sm-2">
+                    <label class="control-label">Project Name</label>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="input-group">
+                      <s:select label="Project" id="_projectSelect" cssClass="form-control"
+                              list="projectList" name="projectId" headerKey="0" headerValue="Select by Project Name"
+                              listValue="projectName" listKey="projectId" required="true"/>
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <button type="button" class="btn btn-info" id="projectPopupBtn" onclick="button.projectPopup();">Display Project Details</button>
+                  </div>
+                </div>
+                <div class="row form-group">
+                  <div class="col-sm-2">
+                    <label class="control-label">Event Name</label>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="input-group">
+                      <s:select id="_eventSelect" list="#{0:'Select by Event Name'}" name="eventId" required="true"/>
+                    </div>
+                  </div>
+                </div>
+                <div id="form-sample-name" class="row form-group" style="display: none;">
+                  <div class="col-sm-2">
+                    <label class="control-label">Sample Name</label>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="input-group">
+                      <s:textfield id="sampleSelect" placeholder="Select by Sample Name" name="sampleName"
+                                   required="true" cssClass="form-control sample-element" disabled="true"/>
+                      <span class="input-group-btn">
+                          <button type="button" class="btn btn-primary sample-element" id="searchSample" onclick="searchSamples(this.id);" disabled="true">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                          </button>
+                        </span>
+                    </div>
+                  </div>
+                </div>
+                <div id="projectDetailInputDiv" style="display:none;">
                   <div class="middle-header">
                     <h4>Project Information</h4>
                   </div>
                   <div id="projectDetailSubDiv">
-                    <div class="row row_spacer" style="margin-bottom: 3px;">
-                      <div class="col-md-1">Project Name</div>
-                      <div class="col-md-11">
-                        <input type="text" id="_projectName" name="loadingProject.projectName" style="width: 470px;"/>
+                    <div class="row form-group">
+                      <div class="col-sm-2">Project Name</div>
+                      <div class="col-sm-4">
+                        <input type="text" id="_projectName" name="loadingProject.projectName" class="form-control"/>
                       </div>
                     </div>
-                    <div class="row row_spacer">
-                      <div class="col-md-1">Public</div>
-                      <div class="col-md-11">
-                        <s:select id="_isProjectPublic" list="#{0:'No', 1:'Yes'}" name="loadingProject.isPublic" required="true" />
+                    <div class="row form-group">
+                      <div class="col-sm-2">Public</div>
+                      <div class="col-sm-2">
+                        <div class="input-group">
+                          <s:select id="_isProjectPublic" list="#{0:'No', 1:'Yes'}" name="loadingProject.isPublic" required="true" />
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div id="sampleDetailInputDiv" style="display:none;">
-                  <div style="margin:25px 10px 0 0;">
-                    <h1 class="csc-firstHeader middle-header">Sample Information</h1>
+                  <div class="middle-header">
+                    <h4>Sample Information</h4>
                   </div>
                   <div id="sampleDetailSubDiv">
-                    <div class="row row_spacer" style="margin-bottom: 3px;">
-                      <div class="col-md-2">Sample Name</div>
-                      <div class="col-md-6">
+                    <div class="row form-group">
+                      <div class="col-sm-2">Sample Name</div>
+                      <div class="col-sm-4">
                         <input type="text" id="_sampleName" name="loadingSample.sampleName" class="form-control"/>
                       </div>
                     </div>
-                    <div class="row row_spacer" style="margin-bottom: 3px;">
-                      <div class="col-md-2">Parent Sample</div>
-                      <div class="col-md-6"><div class="input-group">
-                        <s:textfield id="parentSelect"  name="loadingSample.parentSampleName"  required="true" cssClass="form-control"/>
-                          <span class="input-group-btn" id="basic-addon2"><button type="button" class="btn btn-primary" id="searchParentSample" onclick="searchSamples(this.id);">
-                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                          </button></span>
-                      </div></div>
+                    <div class="row form-group">
+                      <div class="col-sm-2">Parent Sample</div>
+                      <div class="col-sm-4">
+                        <div class="input-group">
+                          <s:textfield id="parentSelect"  name="loadingSample.parentSampleName"  required="true" cssClass="form-control"/>
+                          <span class="input-group-btn" id="basic-addon2">
+                            <button type="button" class="btn btn-primary" id="searchParentSample" onclick="searchSamples(this.id);">
+                              <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div class="row row_spacer">
-                      <div class="col-md-2">Public</div>
-                      <div class="col-md-2 input-group">
-                        <s:select id="_isSamplePublic" list="#{0:'No', 1:'Yes'}" name="loadingSample.isPublic" required="true" />
+                    <div class="row form-group">
+                      <div class="col-sm-2">Public</div>
+                      <div class="col-sm-2">
+                        <div class="input-group">
+                          <s:select id="_isSamplePublic" list="#{0:'No', 1:'Yes'}" name="loadingSample.isPublic" required="true" />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -310,8 +293,8 @@
                   </s:if>
                 </div>
                 <div id="gridInputDiv" style="margin:25px 10px 0 0 ;overflow-x: auto;display:none;">
-                  <table name="eventTable" id="eventTable" class="contenttable">
-                    <thead id="gridHeader" style="background-color: #B6B6B6"></thead>
+                  <table name="eventTable" id="eventTable" class="table table-bordered table-striped table-hover">
+                    <thead id="gridHeader"></thead>
                     <tbody id="gridBody"></tbody>
                   </table>
                 </div>
@@ -340,8 +323,6 @@
                 </div>
 
                 <div id="submitDiv" style="margin:15px 10px 5px 0;width:100%;padding-top: 15px;border-top: 1px solid #eeeeee;">
-                    <%--<input type="button" class="btn btn-info" onclick="javascript:button.submit('save');" id="saveButton" value="Save Progress" disabled="true" title="Saves the data currently entered in the form to the DPCC database. This does not submit data to the DPCC but allows the user to complete the data submission task at a later time. A temporary submission ID will be generated for later retrieval."/>
-                    <input type="button" class="btn btn-primary" onclick="javascript:button.submit('validate');" id="validateButton" value="Validate Submission" disabled="true" title="Performs validation of the data currently entered in the form and ensures compliance with the CEIRS data standards. Returns a list of validation errors encountered, if any. This does not submit the data to the DPCC."/>--%>
                   <input type="button" class="btn btn-success" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to OMETA" disabled="true"/>
                   <input type="button" class="btn btn-info" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Row" style="display:none;"/>
                   <input type="button" class="btn btn-info" onclick="javascript:button.remove_event();" id="gridRemoveLineButton" value="Remove Row" style="display:none;"/>
@@ -449,29 +430,32 @@
 
     //load type radio button change event
     $('input[name="loadType"]').change(function() {
-      $('div[id$="InputDiv"], #gridAddLineButton, #gridRemoveLineButton, #sampleSelectRow, #dropBoxDiv, #toInteractiveP, #confirmDiv, #autofill-control').hide();
+      $('div[id$="InputDiv"], #gridAddLineButton, #gridRemoveLineButton, #dropBoxDiv, #toInteractiveP, #confirmDiv, #autofill-control').hide();
       if(dataSubmissionDisplay) $('#dataSubmissionScope').show();
-      $('.interactiveTableInfo').show();
+      $('div.row.form-group').show();
       utils.preSelect('_sampleSelect', '');
       var _selectedType = $(this).val();
       if(_selectedType === 'grid') {
         $('#gridInputDiv, #gridAddLineButton, #gridRemoveLineButton, #confirmDiv, #autofill-control').show();
-        $("#interactive-submission-table tr:last").hide();
+        $('#sampleSelect, #searchSample').prop("disabled", true);$('#form-sample-name').hide();
         _utils.addGridRows(utils.getProjectName(), utils.getEventName());
         $("#autofill-option").width($('thead#gridHeader').width() + 70);
       } else if(_selectedType==='file') {
         $('#fileInputDiv').show();
-        $("#interactive-submission-table tr:last").hide();
+        $('#sampleSelect, #searchSample').prop("disabled", true);$('#form-sample-name').hide();
       } else if(_selectedType==='bulk') {
         if($('#dataSubmissionScope').css('display') != 'none') dataSubmissionDisplay = true;
         else dataSubmissionDisplay = false;
-        $('.interactiveTableInfo, #dataSubmissionScope').hide();
+        $('div.row.form-group, #dataSubmissionScope').hide();
         toBulk();
-      } else{
-        $('#attributeInputDiv, #sampleSelectRow').show();
-        if(utils.checkSR($("#_eventSelect").val()) || $("#_eventSelect option:selected").text().toLowerCase().indexOf('project') > -1)
-          $("#interactive-submission-table tr:last").hide();
-        else $("#interactive-submission-table tr:last").show();
+      } else {
+        $('#attributeInputDiv').show();
+        if (utils.checkSR($("#_eventSelect").val()) || $("#_eventSelect option:selected").text().toLowerCase().indexOf('project') > -1) {
+          $('#sampleSelect, #searchSample').prop("disabled", true);
+          $('#form-sample-name').hide();
+        } else {
+          $('#sampleSelect, #searchSample').prop("disabled", false);$('#form-sample-name').show();
+        }
         _utils.showPS();
       }
     });
@@ -560,7 +544,7 @@
     <s:elseif test="%{#oldBeanList != null && #oldBeanList.size() >0}">
     //preload form view
     if(oldEventName && oldEventName.indexOf("SampleRegistration") === -1) {
-      $("#interactive-submission-table tr:last").show(); //show sample name
+      $('#sampleSelect, #searchSample').prop("disabled", false);$('#form-sample-name').show(); //show sample name
     }
 
     //remove any existing dom elements
@@ -681,12 +665,10 @@
         $label.textContent = $label.textContent.replace('Sample', 'Project');
       })
       $('#breadcrumb2').text('Admin');
-      $('#interactive-submission-table tbody tr:last').hide(); //Hide sample select for project registration
-      //$('#interactive-submission-table tbody tr:first td:nth-child(2) label:not(:first)').hide(); //Hide multiple data submit for project registration
+      $('#sampleSelect, #searchSample').prop("disabled", true);$('#form-sample-name').hide(); //Hide sample select for project registration
     } else if(filter === 'su') { //edit data redirected from search and edit page
       $('.page-header h1').html('Edit Data');
-      $('#interactive-submission-table tbody tr td:first').html('Edit Data For');
-      $('#interactive-submission-table tbody tr:first td:nth-child(2) label:not(:nth-child(2))').addClass('disabled'); //Disable data submits except web form
+      $('#interactive-submission-group label:not(:nth-child(2))').addClass('disabled'); //Disable data submits except web form
       $('#exportButton').show(); //show export samples button
     }
 
