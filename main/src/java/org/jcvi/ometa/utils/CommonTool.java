@@ -240,6 +240,13 @@ public class CommonTool {
                         ema.setOptions(strippedOption);
                     }
 
+                    if (options.startsWith("{"))
+                        options = options.substring(1);
+                    if (options.endsWith("}"))
+                        options = options.substring(0, options.length() - 1);
+
+                    ema.setOptions(options);
+
                     if (options.startsWith("Dictionary:")) {
                         ema.setDictionary(true);
                         String dictType = options.replace("Dictionary:", "");
