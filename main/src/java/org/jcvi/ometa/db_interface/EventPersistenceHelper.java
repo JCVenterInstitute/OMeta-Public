@@ -294,7 +294,7 @@ public class EventPersistenceHelper {
 
         // Not all values are controlled.  Some may have empty control values.
         if ( controlValues != null  &&  controlValues.trim().length() > 0 ) {
-            String multiplePrefix = "multi(";
+            String multiplePrefix = "multi-dropdown(";
             String radioPrefix = "radio(";
             String dictionaryPrefix = "Dictionary:";
             String validationPrefix = "{validate:";

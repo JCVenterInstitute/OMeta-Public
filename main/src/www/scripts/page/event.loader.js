@@ -199,7 +199,7 @@ var _utils = {
       meta: function(data, en) {
         var content = '';
         var count= 0;
-        var multiSelectPrefix='multi(';
+        var multiSelectPrefix='multi-dropdown(';
         var radioSelectPrefix='radio(';
         var hasDependantDict = false;
 
