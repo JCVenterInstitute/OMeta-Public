@@ -255,14 +255,7 @@
                         </div>
                       </div>
                     </div>
-                    <div class="row form-group">
-                      <div class="col-sm-2">Public</div>
-                      <div class="col-sm-2">
-                        <div class="input-group">
-                          <s:select id="_isSamplePublic" list="#{0:'No', 1:'Yes'}" name="loadingSample.isPublic" required="true" />
-                        </div>
-                      </div>
-                    </div>
+                    <s:hidden name="loadingSample.isPublic" value="0" />
                   </div>
                 </div>
               </div>
