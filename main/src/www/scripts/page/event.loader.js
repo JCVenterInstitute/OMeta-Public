@@ -280,6 +280,7 @@ var _utils = {
                 _ma.options.indexOf(';') > 0 || _ma.options.indexOf("[{") === 0));
             var isMulti = false, isRadio = false;
             var isText = false;
+            var isReadOnly = (_ma.options.indexOf('ReadOnly:') >= 0),
 
             inputElement = '<input type="hidden" value="' + utils.getProjectName() + '" name="$lt$projectName"/>';
             inputElement += '<input type="hidden" value="' + _ma.lookupValue.name + '" name="$lt$attributeName"/>';
@@ -354,7 +355,8 @@ var _utils = {
                 $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '110').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
               } else { //text input
                 isText = true;
-                inputElement += '<input type="text" id="' + (isRequired ? 'req_' : '') + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" class="form-control" style="min-width:160px;"/> ';
+                inputElement += '<input type="text" id="' + (isRequired ? 'req_' : '') + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" ' +
+                    'class="form-control" style="min-width:160px;" ' + (isReadOnly ? 'readonly' : '') + '/> ';
 
                 $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '94').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
               }

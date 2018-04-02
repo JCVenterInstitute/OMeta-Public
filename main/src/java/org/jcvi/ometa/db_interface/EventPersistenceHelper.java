@@ -304,6 +304,7 @@ public class EventPersistenceHelper {
             String radioPrefix = "radio(";
             String dictionaryPrefix = "Dictionary:";
             String validationPrefix = "validate:";
+            String readOnlyPrefix = "ReadOnly:";
             boolean valid = true, unique = true;
             String validationFailedMessage = "";
 
@@ -370,6 +371,8 @@ public class EventPersistenceHelper {
                         controlValues = controlValues.substring(multiplePrefix.length(), controlValues.length() - 1);
                     } else if (controlValues.startsWith(radioPrefix) && controlValues.endsWith(")")) {
                         controlValues = controlValues.substring(radioPrefix.length(), controlValues.length() - 1);
+                    } else if(controlValues.startsWith(readOnlyPrefix)) {
+                        controlValues = controlValues.substring(readOnlyPrefix.length());
                     } else if (controlValues.startsWith(dictionaryPrefix)) {
                         String dictType = controlValues.replace(dictionaryPrefix, "");
                         boolean hasParent = dictType.contains("Parent:");
