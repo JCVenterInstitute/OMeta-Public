@@ -299,6 +299,7 @@ public class EventPersistenceHelper {
             if(controlValues.endsWith("}"))
                 controlValues = controlValues.substring(0, controlValues.length() - 1);
 
+            String selectPrefix = "dropdown(";
             String multiplePrefix = "multi-dropdown(";
             String radioPrefix = "radio(";
             String dictionaryPrefix = "Dictionary:";
@@ -363,8 +364,9 @@ public class EventPersistenceHelper {
 
             if(valid) {
                 if(!controlValues.equals("")) {
-                    //trim multiple select for validation
-                    if (controlValues.startsWith(multiplePrefix) && controlValues.endsWith(")")) {
+                    if (controlValues.startsWith(selectPrefix) && controlValues.endsWith(")")) {
+                        controlValues = controlValues.substring(selectPrefix.length(), controlValues.length() - 1);
+                    } else if (controlValues.startsWith(multiplePrefix) && controlValues.endsWith(")")) {
                         controlValues = controlValues.substring(multiplePrefix.length(), controlValues.length() - 1);
                     } else if (controlValues.startsWith(radioPrefix) && controlValues.endsWith(")")) {
                         controlValues = controlValues.substring(radioPrefix.length(), controlValues.length() - 1);

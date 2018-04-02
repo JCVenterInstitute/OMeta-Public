@@ -199,6 +199,7 @@ var _utils = {
       meta: function(data, en) {
         var content = '';
         var count= 0;
+        var selectPrefix='dropdown(';
         var multiSelectPrefix='multi-dropdown(';
         var radioSelectPrefix='radio(';
         var hasDependantDict = false;
@@ -275,7 +276,8 @@ var _utils = {
             );
 
             var inputElement='';
-            var isSelect = (_ma.options && _ma.options !== '' && (_ma.options.indexOf(';') > 0 || _ma.options.indexOf("[{") === 0));
+            var isSelect = (_ma.options && _ma.options !== '' && ((_ma.options.substring(0, selectPrefix.length)===selectPrefix) ||
+                _ma.options.indexOf(';') > 0 || _ma.options.indexOf("[{") === 0));
             var isMulti = false, isRadio = false;
             var isText = false;
 
@@ -294,6 +296,8 @@ var _utils = {
                 givenOptions = givenOptions.substring(multiSelectPrefix.length, givenOptions.length-1);
               } else if(isRadio){
                 givenOptions = givenOptions.substring(radioSelectPrefix.length, givenOptions.length-1);
+              } else if(_ma.options.substring(0, selectPrefix.length)===selectPrefix) {
+                givenOptions = givenOptions.substring(selectPrefix.length, givenOptions.length-1);
               }
 
               //convert 0 or 1 options to yes/no
