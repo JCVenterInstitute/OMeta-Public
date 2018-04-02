@@ -1,1 +1,98 @@
- OMeta documentation
+OMeta Installation Guide
+
+1. Prerequisites
+	- Linux
+	- MySql 5.6 
+	- LDAP for user login
+	- Java 1.8 (http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+	- Wildfly 10.0.0.Final (http://wildfly.org/downloads/) We will reference the wildfly instance location as WILDFLYLoc
+ 1.2 Untar the downloaded archive target.tar file. Moving forward we will reference the location as OMETALoc
+	After untar you should see following directory in OMETALoc
+		drwxr-xr-x  8 isingh tigr 4096 May 21 09:20 modules
+		drwxr-xr-x  8 isingh tigr 4096 May 21 09:20 standalone-ometa
+		drwxr-xr-x  8 isingh tigr 4096 May 21 09:20 scripts
+
+2. Database
+	- Create database and database objects for OMETA and GUID application
+		1. Login to Mysql with user who has adminstrative privileges to create database and users.
+	    $mysql -h <Mysql-host> -u <user> -p
+		2. run script OMETA_IFX_PROJECTS_db.sql to set database and users. Script will create ifx_projects database, and ifx_projects_app and ifx_projects_adm users. Default password is 'welcome',and it should be changed before production use.
+		  $mysql> source <OMETALoc>/scripts/db/OMETA_IFX_PROJECTS_db.sql
+		 
+		  2.1 To cleanup database ifx_projects and its users, you can run OMETA_IFX_PROJECTS_db_Cleanup.sql script.
+		    $mysql> source <OMETALoc>/scripts/db/OMETA_IFX_PROJECTS_db_Cleanup.sql
+		   
+		3.run script OMETA_GUID_db.sql. Script will create database jcvi_guid, and users jcvi_guid and jcvi_admin. Default password is 'welcome',and it should be changed before production use.
+		  $mysql> source <OMETALoc>/scripts/db/OMETA_GUID_db.sql
+		 
+		  3.1 To cleanup database jcvi_guid and its users, you can run OMETA_GUID_db_Cleanup.sql script.
+		    $mysql> source <OMETALoc>/scripts/db/OMETA_GUID_db_Cleanup.sql
+		 
+3. GUID Generator. OMETA uses GUID generator to generate unique IDs. 
+	- Update mysql server name under GUID_DS jndi in <OMETALoc>/standalone-ometa/configuration/standalone.xml. Replace [GUID_SERVER_URL] with connection url.
+		e.g. jdbc:mysql://mysql56-lan-cms:3306/jcvi_guid, port is optional if database is running on default port.
+	- Update security credentials in <OMETALoc>/standalone-ometa/configuration/standalone.xml. Replace [GUID_SERVER_USERNAME] with username and [GUID_SERVER_PASSWORD] with password.
+
+4. Deploy OMETA application (EAR file) to the ometa server in Jboss. 
+	- Update mysql server name under PWS_DBInterface_MySQL_DS jndi in <OMETALoc>/standalone-ometa/configuration/standalone.xml. Replace [OMETA_SERVER_URL] with connection url.
+		e.g. jdbc:mysql://mysql56-lan-cms:3306/ifx_projects, port is optional if database is running on default port.
+	- Update security credentials in <OMETALoc>/standalone-ometa/configuration/standalone.xml. Replace [OMETA_SERVER_USERNAME] with username and [OMETA_SERVER_PASSWORD] with password.
+
+5.	Configure LDAP for users� authentication.
+	- Update jcvi security domain in <OMETALoc>/standalone-ometa/configuration/standalone.xml with your LDAP configuration. Replace [LDAP_URL] with your LDAP host, and change [COMPANY_DOMAIN] with your company domain. Edit related module options if your LDAP configuration is different.
+	- If you want to replace the security name (jcvi), don't forget to update related fields under security realm in <OMETALoc>/standalone-ometa/configuration/standalone.xml and in <OMETALoc>/deployments/ometa.ear/ometa.war/WEB-INF/jboss-web.xml.
+
+6. Configure Wildfly for OMETA
+  - Copy modules to Wildfly instance (Adding mysql module and updating sun.jdk module).
+    cp -R <OMETALoc>/modules/* <WILDFLYLoc>/modules/
+	- Update default host in <OMETALoc>/standalone-ometa/configuration/standalone.xml. Replace [DEFAULT_HOST] fields with your host.
+	- Copy standalone-ometa folder into your Wildfly instance
+	  cp -R <OMETALoc>/standalone-ometa <WILDFLYLoc>
+
+5. start/stop Wildfly
+	- start: 
+		<WILDFLYLoc>/bin/standalone.sh -Djboss.server.base.dir=<WILDFLYLoc>/standalone-ometa
+	- stop: 
+		<WILDFLYLoc>/bin/jboss-cli.sh -Djboss.server.base.dir=<WILDFLYLoc>/standalone-ometa --connect controller=<HOST>:9990 command=:shutdown
+	- debug:
+		<WILDFLYLoc>/bin/standalone.sh -Djboss.server.base.dir=<WILDFLYLoc>/standalone-ometa --debug 8787
+		
+  6.1 Now you can access the application using URL
+
+   http://<hostname>:8080/ometa
+   
+   1. You can register your user self-registration page.
+   2. If you want to grant General_admin role required for project configuration then follow step 6.2.
+
+6. Actor Group Management (The supports of user management through the web interface is in progress.)
+	- A guid can be obtained by accessing 'http://[server]:8080/guid/GuidClientServer?Request=GET&Size=1'
+	6.1 Create new actor group
+		- View group
+			INSERT INTO `lookup_value` (`lkuvlu_id`, `lkuvlu_name`, `lkuvlu_type`, `lkuvlu_data_type`, `lkuvlu_create_date`, `lkuvlu_modify_date`) 
+				VALUES ([guid], '[group name]', 'Access Group', 'string', NOW(), null);
+			INSERT INTO `groups` (`group_id`, `group_name_lkuvl_id`) VALUES ([guid],[lookup_value id from previous sql]);
+		- Edit group
+			INSERT INTO `lookup_value` (`lkuvlu_id`, `lkuvlu_name`, `lkuvlu_type`, `lkuvlu_data_type`, `lkuvlu_create_date`, `lkuvlu_modify_date`) 
+				VALUES ([guid], '[group name]', 'Edit Group', 'string', NOW(), null);
+			INSERT INTO `groups` (`group_id`, `group_name_lkuvl_id`) VALUES ([guid],[lookup_value id from previous sql]);
+	6.2 Grant Admin role to an actor
+		- ONLY users with Admin role can create projects, setup events for a project
+		-- Change the user id for variable v_userid and run following script to add new user to General-Admin Role
+		-- Only grant admin role to administrators.
+			
+			set @v_userid='isingh';
+			select @maxid := max(actgrp_id)+1 from ifx_projects.actor_group;
+			INSERT INTO `actor_group` (`actgrp_id`, `actgrp_create_date`, `actgrp_modify_date`, `actgrp_actor_id`, `actgrp_group_id`) 
+						VALUES ( @maxid, NOW() , NULL, (select actor_id from ifx_projects.actor a where a.actor_username=@v_userid) 
+						,(select g.group_id from ifx_projects.groups g,ifx_projects.lookup_value lv where g.group_name_lkuvl_id=lv.lkuvlu_id
+						 and lv.lkuvlu_name='General-Admin')
+						 );
+
+7. CLI
+   - Create a main directory for CLI [TARGET_DIRECTORY]
+   - Copy jar files from Wildfly modules into lib directory under CLI directory.
+      find <WILDFLYLoc>/modules/ -name "*.jar" -exec cp {} [TARGET_DIRECTORY]/lib \;
+   - Replace following parts based on your directory in script files (<OMETALoc>/scripts/cli/) and move them into your CLI directory [TARGET_DIRECTORY].
+      [JAVA_DIRECTORY]: Path to your java (ex. /java/1.8.0/bin/java)
+      [CLI_DIRECTORY]: . or [TARGET_DIRECTORY]
+      [SERVER]: Specify your remoting server to connect (ex. http-remoting://[HOSTNAME]:8080)
