@@ -17,12 +17,12 @@ var _html = {
   '<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].sampleMeta" id="sampleMeta$cnt$"/>' +
   '<td><input type="text" name="beanList[$cnt$].order" id="order$cnt$" size="2"/></td>',
   ma:
-      '<td class="fix172"><select name="beanList[$cnt$].name" id="ma$cnt$">$o$</select></td>',
+      '<td class="fix172"><div class="input-group"><select name="beanList[$cnt$].name" id="ma$cnt$">$o$</select></div></td>',
   ema:
   //'<td><select name="beanList[$cnt$].et" id="et$cnt$">$et$</select></td>' +
-  '<td id="etTD$cnt$" class="fix172">$etTD$</td>' +
+  '<td id="etTD$cnt$" class="fix172"><div class="input-group">$etTD$</div></td>' +
   '<td class="fix172">'+
-  '  <select name="beanList[$cnt$].name" id="ema$cnt$">$ema$</select>' +
+  '  <div class="input-group"><select name="beanList[$cnt$].name" id="ema$cnt$">$ema$</select></div>' +
   '</td>',
   etTD_c:
   '<div><table cellpadding="0" cellspacing="0">' +
