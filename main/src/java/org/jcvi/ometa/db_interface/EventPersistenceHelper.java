@@ -750,7 +750,7 @@ public class EventPersistenceHelper {
         List<EventMetaAttribute> emaList = getEventMetaAttributes( projectName, eventType );
         for ( EventMetaAttribute ema: emaList ) {
             attributeNamesPermitted.add( ema.getAttributeName() );
-            if ( ema.isRequired() ) {
+            if ( ema.isActive() && ema.isRequired() ) {
                 requiredEmaToSatisfied.put( ema.getAttributeName(), Boolean.FALSE );
             }
 
