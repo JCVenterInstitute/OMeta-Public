@@ -135,6 +135,7 @@ public class Constants {
     public static final String EVENT_SAMPLE_UPDATE = "SampleUpdate";
     public static final String EVENT_CORE_SAMPLE_UPDATE = "Core Sample-Update";
     public static final String EVENT_SEQUENCE_SUBMISSION = "Sequence Submission";
+    public static final String EVENT_META_ATTRIBUTE_LIST = "emaList";
 
     public static final String ATTR_PROJECT_NAME = "ProjectName";
     public static final String ATTR_SAMPLE_NAME = "SampleName";
@@ -165,6 +166,8 @@ public class Constants {
     public static final String ATTR_GENBANK_XREF_CHROMOSOMES = "GenBank_Xref_Chromosomes";
     public static final String ATTR_GENBANK_XREF_PLASMIDS = "GenBank_Xref_Plasmids";
     public static final String ATTR_GENBANK_XREF_WGS = "GenBank_Xref_WGS";
+    public static final String ATTR_IS_PUBLIC = "isPublic";
+    public static final String ATTR_PARENT_RELATIONSHIP = "parent_relationship";
     public static final String[] READ_ONLY_ATTRIBUTES = {
             Constants.ATTR_SUBMISSION_ID,
             Constants.ATTR_SAMPLE_STATUS

@@ -225,14 +225,25 @@ public class CommonTool {
         return formattedDate;
     }
 
-    public static List<EventMetaAttribute> filterEventMetaAttribute(List<EventMetaAttribute> list, String action) {
+    public static Map<String, Object> filterEventMetaAttribute(List<EventMetaAttribute> list, String action, String eventName) {
+        Map<String, Object> map = new HashMap<>(3);
         List<EventMetaAttribute> filtered = new ArrayList<EventMetaAttribute>(list.size());
 
         List<String> hiddenAttributes = Arrays.asList(Constants.HIDDEN_ATTRIBUTES);
+        boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);
         Map<String, String> dictTypeMap = new HashMap<String, String>(0);
 
         for(EventMetaAttribute ema : list) {
-            if(ema.isActive() && !hiddenAttributes.contains(ema.getLookupValue().getName())) {
+            String emaName = ema.getLookupValue().getName();
+            if(isSampleRegistration){
+                if(emaName.equals(Constants.ATTR_IS_PUBLIC)) {
+                    map.put(Constants.ATTR_IS_PUBLIC, ema.isRequired());
+                }
+                if(emaName.equals(Constants.ATTR_PARENT_RELATIONSHIP)) {
+                    map.put(Constants.ATTR_PARENT_RELATIONSHIP, ema.isRequired());
+                }
+            }
+            if(ema.isActive() && !hiddenAttributes.contains(emaName)) {
                 String options = ema.getOptions();
                 if(options != null) {
                     if (options.contains("validate")) {
@@ -286,7 +297,7 @@ public class CommonTool {
                                 }
                             } else {
                                 List<Dictionary> dictList = readPersister.getDictionaryByType(dictType);
-                                dictTypeMap.put(ema.getLookupValue().getName(), dictType);
+                                dictTypeMap.put(emaName, dictType);
 
                                 StringBuilder sb = new StringBuilder();
                                 String delim = "";
@@ -314,7 +325,8 @@ public class CommonTool {
                 filtered.add(ema);
             }
         }
-        return filtered;
+        map.put(Constants.EVENT_META_ATTRIBUTE_LIST, filtered);
+        return map;
     }
 
     public static void sortEventAttributeByOrder(List<EventAttribute> eaList) {

@@ -34,6 +34,8 @@ var _utils = {
         $('#sampleSelectRow').hide();
         if(utils.checkSR(eventName)) { // triggers sample loader
           $('#sampleDetailInputDiv').show();
+          if(typeof publicEnabled !== 'undefined'  && !publicEnabled) $("#publicSampleRow").hide(); // hide public from form view
+          if(typeof parentEnabled !== 'undefined'  && !parentEnabled) $("#parentSampleRow").hide(); // hide parent sample from form view
           $('#sampleSelect, #searchSample').prop("disabled", true);$('#form-sample-name').hide();
         } else if(utils.checkPR(eventName)) {
           $('#projectDetailInputDiv').show();
@@ -203,6 +205,8 @@ var _utils = {
         var multiSelectPrefix='multi-dropdown(';
         var radioSelectPrefix='radio(';
         var hasDependantDict = false;
+        publicEnabled = data.publicEnabled;
+        parentEnabled = data.parentEnabled;
 
         var $attributeDiv = $("#attributeInputDiv"); //where attributes are placed
         $attributeDiv.empty(); //empty any existing contents
@@ -230,15 +234,26 @@ var _utils = {
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '135').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
             autofill_no+=1;
           } else {
-            $gridHeaders.append(
-                $('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>Sample Name<br/>'),
-                $('<th/>').addClass('resizable-header').append('Parent Sample'),
-                $('<th/>').addClass('resizable-header').append('Public<br/>')
-            );
-            $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '95').replace('$a$', 2).replace('$b$', 2).replace('$c$', 2)));
-            $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '190').replace('$a$', 3).replace('$b$', 3).replace('$c$', 3)));
-            $autofillLine.append($('<td/>')); // empty for Public
-            autofill_no = 5; //set to 5 to pass Public column
+            $gridHeaders.append($('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>Sample Name<br/>'));
+            $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '95').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
+            autofill_no+=1;
+
+            if(parentEnabled) {
+              $gridHeaders.append($('<th/>').addClass('resizable-header').append('Parent Sample'));
+              $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '190').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
+              autofill_no+=1;
+            } else {
+              $("#parentSampleRow").hide(); // hide public from form view
+            }
+
+            if(publicEnabled) {
+              $gridHeaders.append($('<th/>').addClass('resizable-header').append('Public<br/>'));
+              $autofillLine.append($('<td/>')); // empty for Public
+              $("#publicSampleRow").show(); // hide public from form view
+              autofill_no+=1; //set to 5 to pass Public column
+            } else {
+              $("#publicSampleRow").hide(); // hide public from form view
+            }
           }
         } else {
           if(utils.checkPR(en)) {
@@ -280,7 +295,7 @@ var _utils = {
                 _ma.options.indexOf(';') > 0 || _ma.options.indexOf("[{") === 0));
             var isMulti = false, isRadio = false;
             var isText = false;
-            var isReadOnly = (_ma.options.indexOf('ReadOnly:') >= 0),
+            var isReadOnly = (_ma.options && _ma.options !== '' && (_ma.options.indexOf('ReadOnly:') >= 0)),
 
             inputElement = '<input type="hidden" value="' + utils.getProjectName() + '" name="$lt$projectName"/>';
             inputElement += '<input type="hidden" value="' + _ma.lookupValue.name + '" name="$lt$attributeName"/>';
@@ -1177,7 +1192,9 @@ var button = {
               )
           );
           $eventLine.append(
-              $('<td/>').append(
+              $('<td/>').attr({
+                'style': (parentEnabled) ? '' : 'display:none;'
+              }).append(
                   $('<div/>').attr({
                     'class': 'input-group',
                     'style': 'width: 205px;'
@@ -1206,14 +1223,15 @@ var button = {
                   )
               )
           );
+
           $eventLine.append(
-              $('<td/>').append(
-                  $('<select/>').attr({
-                    'name': 'gridList[' + g_gridLineCount + '].samplePublic',
-                    'class': 'form-control',
-                    'style': 'width:70px'
-                  }).append(vs.nyoption)
-              )
+              $('<td/>').attr({
+                'style': (publicEnabled) ? '' : 'display:none;'
+              }).append($('<select/>').attr({
+                'name': 'gridList[' + g_gridLineCount + '].samplePublic',
+                'class': 'form-control',
+                'style': 'width:70px'
+              }).append(vs.nyoption))
           );
         } else {
           $eventLine.append(

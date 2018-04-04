@@ -241,7 +241,8 @@ public class EventLoader extends ActionSupport implements Preparable {
 
                 } else if(jobType.startsWith(TEMPLATE_DOWNLOAD)) { //download template
                     List<EventMetaAttribute> emaList = this.readPersister.getEventMetaAttributes(this.projectName, this.eventName);
-                    emaList = CommonTool.filterEventMetaAttribute(emaList, "template");
+                    Map<String, Object> map = CommonTool.filterEventMetaAttribute(emaList, "template", this.eventName);
+                    emaList = (List<EventMetaAttribute>) map.get(Constants.EVENT_META_ATTRIBUTE_LIST);
                     //CommonTool.sortEventMetaAttributeByOrder(emaList);
 
                     /*
@@ -262,7 +263,8 @@ public class EventLoader extends ActionSupport implements Preparable {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     ZipOutputStream zos = new ZipOutputStream(baos);
                     List<EventMetaAttribute> emaList = this.readPersister.getEventMetaAttributes(this.projectName, this.eventName);
-                    emaList = CommonTool.filterEventMetaAttribute(emaList, "template");
+                    Map<String, Object> map = CommonTool.filterEventMetaAttribute(emaList, "template", this.eventName);
+                    emaList = (List<EventMetaAttribute>) map.get(Constants.EVENT_META_ATTRIBUTE_LIST);
 
                     TemplatePreProcessingUtils templateUtil = new TemplatePreProcessingUtils();
                     List<String> templateLines = IOUtils.readLines(templateUtil.buildFileContent("c", emaList, this.projectName, this.sampleName, this.eventName));

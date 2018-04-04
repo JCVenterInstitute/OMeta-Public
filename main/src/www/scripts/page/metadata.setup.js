@@ -8,13 +8,13 @@ var _html = {
   '<td><textarea name="beanList[$cnt$].ontology" id="ontology$cnt$"  placeholder="Search Ontology" cols="27" rows="1"/></td>',
   lar:
   '<td><input type="text" name="beanList[$cnt$].label" id="label$cnt$" size="15"/></td>' +
-  '<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].active" id="active$cnt$"/>' +
-  '<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].required" id="required$cnt$"/>',
+  '<td><input type="checkbox" name="beanList[$cnt$].active" id="active$cnt$"/>' +
+  '<td><input type="checkbox" name="beanList[$cnt$].required" id="required$cnt$"/>',
   s:
-      '<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].sampleRequired" id="sampleRequired$cnt$"/>',
+      '<td><input type="checkbox" name="beanList[$cnt$].sampleRequired" id="sampleRequired$cnt$"/>',
   pso:
-  '<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].projectMeta" id="projectMeta$cnt$"/>' +
-  '<td class="comboBoxCB"><input type="checkbox" name="beanList[$cnt$].sampleMeta" id="sampleMeta$cnt$"/>' +
+  '<td><input type="checkbox" name="beanList[$cnt$].projectMeta" id="projectMeta$cnt$"/>' +
+  '<td><input type="checkbox" name="beanList[$cnt$].sampleMeta" id="sampleMeta$cnt$"/>' +
   '<td><input type="text" name="beanList[$cnt$].order" id="order$cnt$" size="2"/></td>',
   ma:
       '<td class="fix172"><div class="input-group"><select name="beanList[$cnt$].name" id="ma$cnt$">$o$</select></div></td>',
@@ -25,7 +25,7 @@ var _html = {
   '  <div class="input-group"><select name="beanList[$cnt$].name" id="ema$cnt$">$ema$</select></div>' +
   '</td>',
   etTD_c:
-  '<div><table cellpadding="0" cellspacing="0">' +
+  '<div><table cellpadding="0" cellspacing="0" id="eventInfoTable">' +
   '  <tr><td class="etTD_c" style="text-align:left;float:left;"><strong>$et$</strong></td></tr>' +
   '</table>' +
   '<div class="btn-xs btn-warning" style="max-width:60%;" title="Add attribute to the event group" id="add_$imgid$">Add Attribute</div></div>',
@@ -224,6 +224,14 @@ var _utils = {
       $('#add_'+_ettrim+'_'+maCnt).click(function() {
         _that.ema('add',et);
       })
+
+      if((et.toLowerCase().indexOf('sample') >= 0 && et.indexOf('registration'))
+          && (n == 'isPublic' || n == 'parent_relationship')) {
+        if(n == 'isPublic') $_row.find('td:nth-child(5)').append('Show Public');
+        else $_row.find('td:nth-child(5)').append('Show Parent Sample');
+        $_row.find('td').not(':nth-child(5)').hide();
+        $_row.appendTo($("#eventInfoTable"));
+      }
 
       //create combobox
       utils.combonize('etAdditionTbody', maCnt);

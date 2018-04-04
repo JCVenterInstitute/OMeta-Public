@@ -242,7 +242,7 @@
                         <input type="text" id="_sampleName" name="loadingSample.sampleName" class="form-control"/>
                       </div>
                     </div>
-                    <div class="row form-group">
+                    <div class="row form-group" id="parentSampleRow" style="display: none;">
                       <div class="col-sm-2">Parent Sample</div>
                       <div class="col-sm-4">
                         <div class="input-group">
@@ -255,19 +255,22 @@
                         </div>
                       </div>
                     </div>
-                    <s:hidden name="loadingSample.isPublic" value="0" />
+                    <div class="row form-group" id="publicSampleRow" style="display: none;">
+                      <div class="col-sm-2">Public</div>
+                      <div class="col-sm-2">
+                        <div class="input-group">
+                          <s:select id="_isSamplePublic" list="#{0:'No', 1:'Yes'}" name="loadingSample.isPublic" required="true" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div id="dataSubmissionScope">
+              <div id="dataSubmissionScope" style="padding-top: 8px;border-top: 1px solid #eeeeee;">
                 <div class="row row_spacer">
-                  <div class="col-lg-3 col-md-4 middle-header" style="border-bottom: none;">
-                    <h3>Data Submission</h3>
-                  </div>
-                  <div style="font-size:0.9em;padding-top:30px;" class="col-lg-9 col-md-8">
+                  <div class="col-lg-9 col-md-8">
                     <input type="image" id="autofill-control" src="images/autofill_icon.png" onclick="triggerAutofill();return false;" title="Toggle Autofill" data-tooltip="Toggle Autofill" style="float: left;margin-right: 10px;margin-top: -3px;"/>
-                    [<img style="vertical-align:bottom;" src="images/icon/info_r.png"/>-Information, <img src="images/icon/ontology.png"/>-Ontology, <small class="text-danger" style="vertical-align: bottom">*</small>-Required]
                   </div>
                 </div>
                 <div id="attributeInputDiv" style="clear:both;display:none;">
@@ -285,7 +288,7 @@
                     </table>
                   </s:if>
                 </div>
-                <div id="gridInputDiv" style="margin:25px 10px 0 0 ;overflow-x: auto;display:none;">
+                <div id="gridInputDiv" style="margin: 5px 0px 0px 0px; overflow-x: auto;display:none;">
                   <table name="eventTable" id="eventTable" class="table table-bordered table-striped table-hover">
                     <thead id="gridHeader"></thead>
                     <tbody id="gridBody"></tbody>

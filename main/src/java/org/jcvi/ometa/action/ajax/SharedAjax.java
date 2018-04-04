@@ -78,6 +78,8 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
     private int totalSampleCount;
     private int firstResult;
     private int maxResult;
+    private boolean publicEnabled;
+    private boolean parentEnabled;
 
     //Download File
     private String fileStoragePath;
@@ -726,9 +728,11 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                 }
             } else if ("ea".equals(type)) { //attribute for an event
                 List<EventMetaAttribute> emaList = readPersister.getEventMetaAttributes(projectName, eventName);
-                emaList = CommonTool.filterEventMetaAttribute(emaList, "event");
-                 //CommonTool.sortEventMetaAttributeByOrder(emaList);
-                aaData = emaList;
+                Map<String, Object> map = CommonTool.filterEventMetaAttribute(emaList, "event", eventName);
+
+                aaData = (List<EventMetaAttribute>) map.get(Constants.EVENT_META_ATTRIBUTE_LIST);
+                publicEnabled = (boolean) map.getOrDefault(Constants.ATTR_IS_PUBLIC, false);
+                parentEnabled = (boolean) map.getOrDefault(Constants.ATTR_PARENT_RELATIONSHIP, false);
             } else if ("ces".equals(type)) { //Change Event Status
                 Editor editor = new Editor();
                 String resultVal = editor.eventEditProcess(eventId);
@@ -1010,5 +1014,21 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
 
     public void setAttributeName(String attributeName) {
         this.attributeName = attributeName;
+    }
+
+    public boolean isPublicEnabled() {
+        return publicEnabled;
+    }
+
+    public void setPublicEnabled(boolean publicEnabled) {
+        this.publicEnabled = publicEnabled;
+    }
+
+    public boolean isParentEnabled() {
+        return parentEnabled;
+    }
+
+    public void setParentEnabled(boolean parentEnabled) {
+        this.parentEnabled = parentEnabled;
     }
 }
