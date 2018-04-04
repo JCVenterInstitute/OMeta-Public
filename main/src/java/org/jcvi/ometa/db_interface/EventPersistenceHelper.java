@@ -35,6 +35,8 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by IntelliJ IDEA.
@@ -54,6 +56,8 @@ public class EventPersistenceHelper {
             "Unknown attribute type {0} " );
     protected static final MessageFormat CONTROLLED_VOCAB_VIOLATED_HUMAN_READABLE_MSG = new MessageFormat(
             "{0} {1} attribute may not be set to {2}.  Possible values: {3} " );
+    protected static final MessageFormat REGEX_NOT_MATCH_VIOLATED_HUMAN_READABLE_MSG = new MessageFormat(
+            "{0} {1} attribute may not be set to {2}. Regex {3} doesn't match " );
     protected static final MessageFormat NOT_VALID_ATTRIB_HUMAN_READABLE_MSG = new MessageFormat(
             "{0} {1} attribute may not be set to {2}. {3} " );
     protected static final MessageFormat EVENT_NOT_IN_PROJECT_HUMAN_READABLE_MSG = new MessageFormat(
@@ -305,6 +309,7 @@ public class EventPersistenceHelper {
             String dictionaryPrefix = "Dictionary:";
             String validationPrefix = "validate:";
             String readOnlyPrefix = "ReadOnly:";
+            String regexPrefix = "RegEx(";
             boolean valid = true, unique = true;
             String validationFailedMessage = "";
 
@@ -365,7 +370,10 @@ public class EventPersistenceHelper {
 
             if(valid) {
                 if(!controlValues.equals("")) {
-                    if (controlValues.startsWith(selectPrefix) && controlValues.endsWith(")")) {
+                    boolean isRegex;
+                    if (isRegex = controlValues.startsWith(regexPrefix) && controlValues.endsWith(")")) {
+                        controlValues = controlValues.substring(regexPrefix.length(), controlValues.length() - 1);
+                    } else if (controlValues.startsWith(selectPrefix) && controlValues.endsWith(")")) {
                         controlValues = controlValues.substring(selectPrefix.length(), controlValues.length() - 1);
                     } else if (controlValues.startsWith(multiplePrefix) && controlValues.endsWith(")")) {
                         controlValues = controlValues.substring(multiplePrefix.length(), controlValues.length() - 1);
@@ -409,30 +417,37 @@ public class EventPersistenceHelper {
                             ex.printStackTrace();
                         }
                     }
-                    List<String> controlValueList = Arrays.asList(controlValues.split(";"));
-                    boolean found = true;
-                    if (attributeValue.contains(",")) {
-                        for (String currentAttributeValue : attributeValue.split(",")) {
-                            if (controlValueList.indexOf(currentAttributeValue.trim()) < 0) {
-                                found = false;
-                                break;
-                            }
+
+                    if(isRegex) {
+                        Pattern pattern = Pattern.compile(controlValues);
+                        Matcher matcher = pattern.matcher(attributeValue);
+                        boolean matchFound = matcher.matches();
+
+                        if (!matchFound) {
+                            String message = REGEX_NOT_MATCH_VIOLATED_HUMAN_READABLE_MSG.format(
+                                    new Object[]{aType.toString(), attributeName, attributeValue, controlValues});
+                            throw new Exception(message);
                         }
                     } else {
-                        found = controlValueList.indexOf(attributeValue) >= 0;
-                    }
-                /*for ( String controlValue: controlValueArray ) {
-                    if ( attributeValue.equals( controlValue ) ) {
-                        found = true;
-                        break;
-                    }
-                }*/
+                        List<String> controlValueList = Arrays.asList(controlValues.split(";"));
+                        boolean found = true;
+                        if (attributeValue.contains(",")) {
+                            for (String currentAttributeValue : attributeValue.split(",")) {
+                                if (controlValueList.indexOf(currentAttributeValue.trim()) < 0) {
+                                    found = false;
+                                    break;
+                                }
+                            }
+                        } else {
+                            found = controlValueList.indexOf(attributeValue) >= 0;
+                        }
 
-                    if (!found) {
-                        String message = CONTROLLED_VOCAB_VIOLATED_HUMAN_READABLE_MSG.format(
-                                new Object[]{aType.toString(), attributeName, attributeValue, controlValues});
-                        throw new Exception(message);
+                        if (!found) {
+                            String message = CONTROLLED_VOCAB_VIOLATED_HUMAN_READABLE_MSG.format(
+                                    new Object[]{aType.toString(), attributeName, attributeValue, controlValues});
+                            throw new Exception(message);
 
+                        }
                     }
                 }
             } else {
