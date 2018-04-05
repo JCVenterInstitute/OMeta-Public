@@ -369,7 +369,7 @@ var vs = {
                 $("select:not(.hidden-by-jmp)").addClass("hidden-by-jmp hidden-by-" + openedPopups[openedPopups.length-1].name).css("visibility","hidden");
             }
             
-            $('#popupLayerScreenLocker').css("z-index",parseInt(openedPopups.length == 1 ? 999 : $("#popupLayer_" + openedPopups[openedPopups.length - 2].name).css("z-index")) + 1);
+            $('#popupLayerScreenLocker').css("z-index",parseInt(openedPopups.length == 1 ? 999 : $("#popupLayer_" + openedPopups[openedPopups.length - 2].name).css("z-index")) + 31);
         } else {
             $("body").append("<div id='popupLayerScreenLocker'><!-- --></div>");
             $("#popupLayerScreenLocker").css({
@@ -442,7 +442,7 @@ var vs = {
             
             $("body").append("<div id='" + idElement + "'><!-- --></div>");
             
-            var zIndex = parseInt(openedPopups.length == 1 ? 1000 : $("#popupLayer_" + openedPopups[openedPopups.length - 2].name).css("z-index")) + 2;
+            var zIndex = parseInt(openedPopups.length == 1 ? 1000 : $("#popupLayer_" + openedPopups[openedPopups.length - 2].name).css("z-index")) + 32;
         }  else {
             var zIndex = $("#" + idElement).css("z-index");
         }
