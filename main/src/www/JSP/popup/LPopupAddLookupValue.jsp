@@ -26,79 +26,76 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; {$charset|default:'charset=utf-8'}" />
-  <style>
-    .popup{background-color: white;}
-    .popup-header{padding: 10px 10px 0 10px; border-bottom: thin solid rgb(184, 92, 92);}
-  </style>
+  <meta http-equiv="Content-Type" content="text/html; {$charset|default:'charset=utf-8'}"/>
 </head>
 <body>
 <s:form id="LPopupAddLookupValue" name="LPopupAddLookupValue" namespace="/" method="post" theme="simple">
   <s:hidden name="w"/>
   <div class="popup">
-    <div class="popup-header">
-      <h2 id="popupHeader" style="float:left">Add </h2>
-      <a href="#" onclick="$.closePopupLayer('LPopupAddLookupValue');" title="Close" class="close-link" style="float: right;"><img src="images/xBtn.gif" title="Close" /></a>
-      <br clear="both" />
-    </div>
-    <div style="padding:10px;">
-      <fieldset style="padding:5px;">
-        <legend id="popupLegend" style="margin-left:10px;font-size:14px;"> Information</legend>
-        <div style="margin:5px 5px 5px 5px;">
-          <table>
-            <tr>
-              <td><strong>Type</strong></td><td><s:select list="types" name="lvType" id="lvType"/></td>
-            </tr>
-            <tr class="gappedTr">
-              <td><strong>Name</strong></td><td><s:textfield id="lvName" name="lvName" size="30"/></td>
-            </tr>
-            <tr>
-              <td/><td>Use comma(,) as delimiter to load multiple values</td>
-            </tr>
-            <tr class="gappedTr" id="dataTypeSelectTr">
-              <td><strong>Date Type</strong></td><td><s:select list="dataTypes" name="lvDataType" id="lvDataType"/></td>
-            </tr>
-            <tr>
-              <td></td>
-              <td><div class="popup_alert_info" style="margin-top: 15px; display: none">
-                <strong id="popupAlertDetail" style="color: #ffffff;background-color: #a90329;padding: 3px;border-color: #900323;border: 1px solid transparent;padding: 6px 12px;"></strong>
-              </div></td>
-            </tr>
-          </table>
+    <div class="modal-dialog" style="max-width: 450px;">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" onclick="$.closePopupLayer('LPopupAddLookupValue');">&times;</button>
+          <h4 class="modal-title" id="popupHeader"><i class="fa fa-angle-right"></i> <strong>Add </strong></h4>
         </div>
-        <div style="float:right;margin:5px 10px;">
-          <input type="button" value="Add" onclick="_popup.add();" class="btn btn-info"/>
+        <div class="modal-body form-horizontal">
+          <div class="alert alert-danger popup_alert_info" style="display: none;"><strong id="popupAlertDetail"></strong></div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label"><strong>Type</strong></label>
+            <div class="col-sm-9">
+              <s:select list="types" name="lvType" id="lvType" class="form-control"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label"><strong>Name</strong></label>
+            <div class="col-sm-9">
+              <s:textfield id="lvName" name="lvName" size="30" class="form-control"/>
+            </div>
+            <p class="col-sm-offset-3 col-sm-9 help-block">Use comma(,) as delimiter to load multiple values</p>
+          </div>
+          <div class="form-group" id="dataTypeSelectTr">
+            <label class="col-sm-3 control-label"><strong>Date Type</strong></label>
+            <div class="col-sm-9">
+              <s:select list="dataTypes" name="lvDataType" id="lvDataType" class="form-control"/>
+            </div>
+          </div>
         </div>
-      </fieldset>
+        <div class="modal-footer">
+          <input type="button" class="btn btn-info" value="Add" onclick="_popup.add();"/>
+          <button type="button" class="btn btn-default" onclick="$.closePopupLayer('LPopupAddLookupValue');">Close</button>
+        </div>
+      </div>
     </div>
   </div>
 </s:form>
 <script>
   function initPopup(which) {
-    var type = which==='et' ? 'Event Type' : which==='gr' ? 'Actor Group' : 'Attribute';
-    $('#popupHeader').append(type);
-    $('#popupLegend').prepend(type);
+    var type = which === 'et' ? 'Event Type' : which === 'gr' ? 'Actor Group' : 'Attribute';
+    $('#popupHeader strong').append(type);
     $('#lvDataType').val('string');
-    if(which === 'et' || which === 'a') { //preselect lookup value type
+    if (which === 'et' || which === 'a') { //preselect lookup value type
       $('#lvType').val(type).attr('disabled', 'disabled');
     }
-    if(which === 'et' || which === 'gr') { //hide lookup value datatype for Event Type and Actor Group
+    if (which === 'et' || which === 'gr') { //hide lookup value datatype for Event Type and Actor Group
       $('#dataTypeSelectTr').hide();
     }
-    utils.error.remove();
+    //utils.error.remove();
   }
+
   var _popup = {
-    add: function() {
+    add: function () {
       var attributeName = $('input[name="lvName"]').val();
-      if(!attributeName) {
+      if (!attributeName) {
         $('#popupAlertDetail').text("Name field is empty!");
         $('.popup_alert_info').show();
         return;
-      } else if(attributeName.indexOf('Project Name') > -1){
+      } else if (attributeName.indexOf('Project Name') > -1) {
         $('#popupAlertDetail').text("Attribute name cannot be 'Project Name'!");
         $('.popup_alert_info').show();
         return;
-      } else if(attributeName.indexOf('Sample Name') > -1){
+      } else if (attributeName.indexOf('Sample Name') > -1) {
         $('#popupAlertDetail').text("Attribute name cannot be 'Sample Name'!");
         $('.popup_alert_info').show();
         return;
@@ -107,19 +104,19 @@
           url: 'metadataSetupAjax.action',
           cache: false,
           async: false,
-          data: 'type=a_lv&lvName='+$('#lvName').val()+'&lvType='+$('#lvType').val()+'&lvDataType='+$('#lvDataType').val(),
-          success: function(res){
-            if(res.dataMap) {
+          data: 'type=a_lv&lvName=' + $('#lvName').val() + '&lvType=' + $('#lvType').val() + '&lvDataType=' + $('#lvDataType').val(),
+          success: function (res) {
+            if (res.dataMap) {
               var dataMap = res.dataMap;
-              if(dataMap.isError && dataMap.isError === true) {
-                var $errorMsg = $('<div id="errorMsg" style="clear:both;" class="alert_error" onclick="_popup.closeError()">' + dataMap.errorMsg + '</div>');
-                $('fieldset').append($errorMsg);
+              if (dataMap.isError && dataMap.isError === true) {
+                $('#popupAlertDetail').text(dataMap.errorMsg);
+                $('.popup_alert_info').show();
               } else {
                 var newOption = vs.vvoption.replace(/\$v\$/g, res.lvName);
-                if(res.lvType==='Attribute') {
-                  if(typeof emaOptions!='undefined' && emaOptions.length>0) emaOptions+=newOption;
-                  else if(typeof pmaOptions!='undefined' && emaOptions.length>0) pmaOptions+=newOption;
-                } else if(res.lvType==='Event Type' && typeof etOptions==='string' && etOptions.length>0) etOptions+=newOption;
+                if (res.lvType === 'Attribute') {
+                  if (typeof emaOptions != 'undefined' && emaOptions.length > 0) emaOptions += newOption;
+                  else if (typeof pmaOptions != 'undefined' && emaOptions.length > 0) pmaOptions += newOption;
+                } else if (res.lvType === 'Event Type' && typeof etOptions === 'string' && etOptions.length > 0) etOptions += newOption;
                 $.closePopupLayer('LPopupAddLookupValue');
               }
             }
@@ -127,9 +124,13 @@
         });
       }
     },
-    closeError: function() {$('#errorMsg').remove();}
+    closeError: function () {
+      $('.popup_alert_info').hide();
+    }
   };
-  (function() {initPopup('${type}');})();
+  (function () {
+    initPopup('${type}');
+  })();
 </script>
 </body>
 </html>

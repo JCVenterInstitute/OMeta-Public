@@ -20,36 +20,28 @@
   -->
 <!doctype html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-    <style>
-        .popup{background-color: white;}
-        .popup-header{padding: 10px 10px 0 10px; border-bottom: thin solid rgb(184, 92, 92);}
-        .errorText {
-            font-family: Tahoma, sans-serif;
-            font-size: 14px;
-            text-align: left;
-            color:#306BA7;
-            font-weight:600;
-            vertical-align:top;
-            padding-right: 5px;
-        }
-    </style>
-
-    <title>O-META: ERROR</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>O-META: ERROR</title>
 </head>
 <body>
 <div class="popup">
-    <div class="popup-header">
-        <h2 style="color:rgb(184, 92, 92); float:left"><strong>ERROR</strong></h2>
-        <a href="javascript:;" onclick="$.closePopupLayer('erroPopup')" title="Close" class="close-link" style="float: right"><img src="images/xBtn.gif" title="Close" /></a>
-        <br clear="both" />
+  <div class="modal-dialog" style="max-width: 450px;">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" onclick="$.closePopupLayer('erroPopup')">&times;</button>
+        <h4 class="modal-title text-danger"><i class="fa fa-angle-right"></i> <strong>ERROR</strong></h4>
+      </div>
+      <div class="modal-body"><p></p></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="$.closePopupLayer('erroPopup')">Close</button>
+      </div>
     </div>
-    <div style="padding:10px;">
-        <div id="errorMsg" style="margin:5px 5px 5px 5px;word-wrap: break-word;" class="errorText">
-            <script>
-                $('#errorMsg').html($('#error_messages').val());
-            </script>
-        </div>
-    </div>
+  </div>
+</div>
+<script>
+  $('.modal-body p').html($('#error_messages').val());
+</script>
 </body>
 </html>
