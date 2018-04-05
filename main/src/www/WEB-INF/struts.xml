@@ -390,10 +390,6 @@
         </action>
         <!-- POPUP ENDS -->
 
-        <action name="accountInformation">
-            <result>/JSP/dpcc/accountInformation.jsp</result>
-        </action>
-
         <action name="addActor" class="org.jcvi.ometa.action.AddActor" method="process">
             <result name="input">/JSP/AddActor.jsp</result>
             <result name="success" type="redirectAction">
@@ -466,30 +462,6 @@
         </action>
         <action name="error">
             <result>/JSP/error.jsp</result>
-        </action>
-
-        <!-- DPCC framed pages -->
-        <action name="support">
-            <result>/JSP/dpcc/support.jsp</result>
-        </action>
-
-        <action name="dpcc_help">
-            <result>/JSP/dpcc/help.jsp</result>
-        </action>
-
-        <action name="centerreport">
-            <result>/JSP/dpcc/centerreport.jsp</result>
-        </action>
-        <action name="analytics">
-            <result>/JSP/dpcc/analytics.jsp</result>
-        </action>
-
-        <action name="access">
-            <result>/JSP/dpcc/access.jsp</result>
-        </action>
-
-        <action name="projectdetail">
-            <result>/JSP/ProjectDetails.jsp</result>
         </action>
     </package>
 
