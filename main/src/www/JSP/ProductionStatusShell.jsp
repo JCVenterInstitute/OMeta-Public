@@ -30,7 +30,7 @@
     <jsp:include page="header.jsp" />
     <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
     <link rel="stylesheet" href="style/rte.css" />
-    <link rel="stylesheet" href="style/dataTables.css" />
+    <link rel="stylesheet" href="datatables/datatables.css" type='text/css' media='all' />
     <link rel="stylesheet" href="style/tableTools.css" />
     <link rel="stylesheet" href="style/version01.css" />
     <style>
@@ -95,11 +95,8 @@
       <jsp:include page="../html/footer.html" />
 
     </div>
-    
-    <script src="scripts/jquery/jquery.tablesorter.js"></script>
-    <script src="scripts/jquery/jquery.columnDisplay.js"></script>
-    <script src="scripts/jquery/jquery.dataTables.js"></script>
-    <script src="scripts/jquery/jquery.tableTools.js"></script>
+
+    <script src="datatables/datatables.js"></script>
 
     <script type="text/javascript">
       $(document).ready(function() {

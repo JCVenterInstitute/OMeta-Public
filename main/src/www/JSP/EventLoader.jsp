@@ -26,7 +26,6 @@
 
 <head>
   <jsp:include page="header.jsp" />
-  <link rel="stylesheet" href="style/dataTables.css" type='text/css' media='all' />
   <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
   <link rel="stylesheet" href="style/multiple-select.css" type='text/css' media='all' />
 
