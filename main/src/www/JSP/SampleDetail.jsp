@@ -25,80 +25,66 @@
 <%@ page isELIgnored="false" %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-    <link rel="stylesheet" href="style/dataTables.css" />
-    <link rel="stylesheet" href="style/rte.css" />
-</head>
+<s:if test="iss == null || iss.equals(\"false\")">
+  <jsp:include page="header.jsp"/>
+</s:if>
 <body>
-    <s:form id="statusPage" name="statusPage"
-            namespace="/"
-            action="sampleDetail"
-            method="post" theme="simple">
-        <s:hidden name="projectName" />
-        <s:hidden name="attributesOnScreen" />
-        <s:hidden name="attributes" />
-        <s:if test="iss.equals(\"true\")">
-            <link rel="stylesheet" href="style/main.css" />
-            <link rel="stylesheet" href="style/version01.css" />
-            <script src="scripts/jquery/jquery-1.7.2.js"></script>
-            <script src="scripts/jquery/jquery-ui.js"></script>
-            <script src="scripts/ometa.utils.js"></script>
-        </s:if>
-        <s:else>
-            <jsp:include page="TopMenu.jsp"/>
-            <div id="HeaderPane" style="margin:15px 0 0 30px;">
-               <div class="panelHeader" style="margin:0;">Sample Detail</div>
-            </div>
-        </s:else>
-        <div id="middle_content_template">
-            <h1 class="csc-firstHeader">
-                <s:if test="detailMap.get(\"Organism\")==null">
-                    <s:property value="sample.sampleName" />
-                </s:if>
-                <s:else>
-                    <s:property value="detailMap.Organism" />
-                </s:else>
-            </h1>
-            <p></p>
-            <div style="width:100%;">
-                <table class="contenttable tablesorter" id="statusTable">
-                    <thead>
-                    <tr class="tableHeader">
-                        <th style="width:25%;"><p>Event</p></th>
-                        <th style="width:12%;"><p>Status</p></th>
-                        <th style="width:45%;"><p>Description</p></th>
-                        <th style="width:12%;"><p>Date</p></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                        <s:iterator value="detailMap.event" var="event">
-                            <tr>
-                                <td><p><s:property value="eventName"/></p></td>
-                                <td><p><s:property value="eventStatus"/></p></td>
-                                <td>
-                                    <s:iterator value="eventAttr" var="eAttr">
-                                        <s:if test="name!=null && value!=null">
-                                            <p><s:property value="name" /> - <s:property value="value" escapeHtml="false"/></p>
-                                        </s:if>
-                                    </s:iterator>
-                                </td>
-                                <td>
-                                    <p><s:property value="date"/></p>
-                                </td>
-                            </tr>
-                        </s:iterator>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </s:form>
-    
-    <script src="scripts/jquery/jquery.dataTables.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#statusTable tbody tr:even').addClass('even');
-            $('#statusTable tbody tr:odd').addClass('odd');
-        })
-    </script>
+<s:form id="statusPage" name="statusPage" namespace="/" action="sampleDetail" method="post" theme="simple">
+  <s:hidden name="projectName"/>
+  <s:hidden name="attributesOnScreen"/>
+  <s:hidden name="attributes"/>
+  <s:if test="iss.equals(\"true\")">
+    <link rel="stylesheet" href="style/bootstrap.css"/>
+    <script src="scripts/jquery/jquery-1.7.2.js"></script>
+    <script src="scripts/jquery/jquery-ui.js"></script>
+    <script src="scripts/ometa.utils.js"></script>
+  </s:if>
+  <s:else>
+    <jsp:include page="top.jsp"/>
+    <div id="HeaderPane" style="margin:15px 0 0 30px;">
+      <div class="panelHeader" style="margin:0;">Sample Detail</div>
+    </div>
+  </s:else>
+  <div class="page-header">
+    <h1>
+      <s:if test="detailMap.get(\"Organism\")==null">
+        <s:property value="sample.sampleName"/>
+      </s:if>
+      <s:else>
+        <s:property value="detailMap.Organism"/>
+      </s:else>
+    </h1>
+  </div>
+  <div style="width:100%;">
+    <table class="table table-bordered table-striped table-condensed table-hover">
+      <thead>
+      <tr>
+        <th>Event</th>
+        <th>Status</th>
+        <th>Description</th>
+        <th>Date</th>
+      </tr>
+      </thead>
+      <tbody>
+      <s:iterator value="detailMap.event" var="event">
+        <tr>
+          <td><p><s:property value="eventName"/></p></td>
+          <td><p><s:property value="eventStatus"/></p></td>
+          <td>
+            <s:iterator value="eventAttr" var="eAttr">
+              <s:if test="name!=null && value!=null">
+                <p><s:property value="name"/> - <s:property value="value" escapeHtml="false"/></p>
+              </s:if>
+            </s:iterator>
+          </td>
+          <td>
+            <p><s:property value="date"/></p>
+          </td>
+        </tr>
+      </s:iterator>
+      </tbody>
+    </table>
+  </div>
+</s:form>
 </body>
 </html>

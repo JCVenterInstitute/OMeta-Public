@@ -9,9 +9,8 @@
 
   <jsp:include page="header.jsp" />
 
-  <link rel="stylesheet" href="style/dataTables.css" type='text/css' media='all' />
+  <link rel="stylesheet" href="datatables/datatables.css" type='text/css' media='all'/>
   <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
-  <link rel="stylesheet" href="style/version01.css" />
   <style>
   </style>
 </head>
@@ -60,7 +59,7 @@
   <jsp:include page="../html/footer.html" />
 </div>
 
-<script src="scripts/jquery/jquery.dataTables.js"></script>
+<script src="datatables/datatables.js"></script>
 <script>
   $(function() {
     var displayAttributes;

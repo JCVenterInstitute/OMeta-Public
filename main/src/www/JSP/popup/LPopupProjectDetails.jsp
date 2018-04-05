@@ -5,7 +5,7 @@
 <%@ page isELIgnored="false" %>
 
 <head>
-  <link rel="stylesheet" href="style/dataTables.css" type='text/css' media='all' />
+  <script src="datatables/datatables.js"></script>
   <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
   <link rel="stylesheet" href="style/version01.css" />
 
@@ -43,7 +43,7 @@
     </fieldset>
   </div>
 </div>
-<script src="scripts/jquery/jquery.dataTables.js"></script>
+<script src="datatables/datatables.js"></script>
 <script>
   var _popup = {
     run: function() {

@@ -27,7 +27,7 @@
 
 <head>
   <jsp:include page="header.jsp" />
-  <link rel="stylesheet" href="style/dataTables.css" type='text/css' media='all' />
+  <link rel="stylesheet" href="datatables/datatables.css" type='text/css' media='all' />
   <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
 
   <style>
@@ -128,8 +128,6 @@
 </div>
 
 <jsp:include page="../html/footer.html" />
-
-<script src="scripts/jquery/jquery.dataTables.js"></script>
 <script>
   $(document).ready(function() {
     $('.navbar-nav li').removeClass('active');
