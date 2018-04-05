@@ -1,4 +1,3 @@
-
 <!doctype html>
 
 <%@ page contentType="text/html; charset=UTF-8" %>
@@ -6,22 +5,51 @@
 <%@ page isELIgnored="false" %>
 
 <head>
-  <jsp:include page="header.jsp" />
-  <link rel="stylesheet" href="style/dataTables.css" type='text/css' media='all' />
-  <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
+  <jsp:include page="header.jsp"/>
+  <link rel="stylesheet" href="style/dataTables.css" type='text/css' media='all'/>
+  <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all'/>
   <%--<link rel="stylesheet" href="style/version01.css" />--%>
   <style>
-    table td:nth-child(2) { padding-left:7px; }
-    tr.even { padding: 2px; background-color: #e9e9e9; }
-    tr.odd { padding: 2px; background-color: #f5f5f5; }
-    tr.odd td, tr.even td { padding: 6px 8px; margin: 0; vertical-align: top; }
-    .chkbox { margin:5px 5px 5px 15px !important; }
-    .selection { width:300px;height:100px }
+    table td:nth-child(2) {
+      padding-left: 7px;
+    }
+
+    tr.even {
+      padding: 2px;
+      background-color: #e9e9e9;
+    }
+
+    tr.odd {
+      padding: 2px;
+      background-color: #f5f5f5;
+    }
+
+    tr.odd td, tr.even td {
+      padding: 6px 8px;
+      margin: 0;
+      vertical-align: top;
+    }
+
+    .chkbox {
+      margin: 5px 5px 5px 15px !important;
+    }
+
+    .selection {
+      width: 300px;
+      height: 100px
+    }
+
     #attributesTableBody > tr > td:first-child {
       border-right: 1px solid white;
     }
-    .hidden_event { display: none; }
-    input[type=text], select {width: 300px;}
+
+    .hidden_event {
+      display: none;
+    }
+
+    input[type=text], select {
+      width: 300px;
+    }
   </style>
   <style>
   </style>
@@ -30,46 +58,39 @@
 <body class="smart-style-2">
 <div id="container">
 
-  <jsp:include page="top.jsp" />
+  <jsp:include page="top.jsp"/>
 
-  <div id="popupLayerScreenLocker" style="position: fixed; left: 0; top: 0; opacity: 0.5; height: 100%; width: 100%; z-index: 1000; display: none; background: rgb(0, 0, 0);"><!-- --></div>
+  <div id="popupLayerScreenLocker" style="position: fixed; left: 0; top: 0; opacity: 0.5; height: 100%; width: 100%; z-index: 1000; display: none; background: rgb(0, 0, 0);">
+    <!-- --></div>
   <div id="processingDiv" class="show_processing" style="display: none;position: fixed;">Processing your request. Please wait...</div>
 
   <div id="main" class="">
     <div id="inner-content" class="">
       <div id="content" class="container max-container" role="main">
-        <div id="ribbon">
-          <ol class="breadcrumb">
-            <li>
-              <a href="/ometa/secureIndex.action">Dashboard</a>
-            </li>
-            <li>Admin</li>
-            <li>Json Management</li>
-          </ol>
+        <div class="page-header">
+          <h1>Json Management </h1>
+        </div>
+        <div id="HeaderPane" style="margin:15px 0 0 30px;">
+          <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+          <s:if test="hasActionErrors()">
+            <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
+              <div class="alert_info" onclick="$('.alert_info').remove();">
+                <strong style="color: #ffffff;background-color: #a90329;padding: 3px;border-color: #900323;border: 1px solid transparent;padding: 6px 12px;"><s:iterator
+                        value='actionErrors'><s:property/></s:iterator></strong>
+              </div>
+            </div>
+          </s:if>
+          <s:if test="hasActionMessages()">
+            <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
+              <div class="alert_info" onclick="$('.alert_info').remove();">
+                <strong style="color: #31708f;background-color: #d9edf7;padding: 3px;border-color: #bce8f1;border: 1px solid transparent;padding: 6px 12px;"><s:iterator
+                        value='actionMessages'><s:property/></s:iterator></strong>
+              </div>
+            </div>
+          </s:if>
         </div>
 
         <s:form id="jsonManagement" name="jsonManagement" namespace="/" theme="simple">
-          <div class="page-header">
-            <h1>Json Management </h1>
-          </div>
-          <div id="HeaderPane" style="margin:15px 0 0 30px;">
-            <div id="errorMessagesPanel" style="margin-top:15px;"></div>
-            <s:if test="hasActionErrors()">
-              <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
-                <div class="alert_info" onclick="$('.alert_info').remove();">
-                  <strong style="color: #ffffff;background-color: #a90329;padding: 3px;border-color: #900323;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionErrors'><s:property/></s:iterator></strong>
-                </div>
-              </div>
-            </s:if>
-            <s:if test="hasActionMessages()">
-              <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
-                <div class="alert_info" onclick="$('.alert_info').remove();">
-                  <strong style="color: #31708f;background-color: #d9edf7;padding: 3px;border-color: #bce8f1;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
-                </div>
-              </div>
-            </s:if>
-          </div>
-
           <div id="mainContent">
             <div id="statusTableDiv">
               <div id="tableTop">
@@ -184,7 +205,7 @@
                             <s:select id="screenAttributes"
                                       list="attributeList" name="screenAttributes"
                                       listValue="name" listKey="name"
-                                      multiple="true"  class="selection select" size="5"/>
+                                      multiple="true" class="selection select" size="5"/>
                           </td>
                           <td style="padding-top: 25px;padding-right: 25px;">
                             <input type="button" class="selectionBtn" value=">" id="screenAttributeSelOne">
@@ -226,7 +247,7 @@
                   <tr class="odd">
                     <td>
                       <div id="submitDiv" cssStyle="margin:15px 10px 5px 200px;width:100%;">
-                        <input type="button" class="btn btn-primary" id="loadButton" value="Update" onclick="javascript:updateJson();" />
+                        <input type="button" class="btn btn-primary" id="loadButton" value="Update" onclick="javascript:updateJson();"/>
                       </div>
                     </td>
                     <td>
@@ -243,11 +264,11 @@
   </div>
 </div>
 
-<jsp:include page="../html/footer.html" />
+<jsp:include page="../html/footer.html"/>
 <script src="scripts/jquery/jquery.dataTables.js"></script>
 
 <script type="text/javascript">
-  $(document).ready(function() {
+  $(document).ready(function () {
     $('select.select').on('dblclick', 'option', function () {
       var id = $(this).parent('select').attr('id');
 
@@ -257,33 +278,33 @@
     $('select.selected').on('dblclick', 'option', function () {
       var id = $(this).parent('select').attr('id');
 
-      if(id.indexOf('Project') > -1){
+      if (id.indexOf('Project') > -1) {
         moveOptionUpdateFilter('#' + id, '#projectNames', false);
-      } else if(id.indexOf('Screen') > -1){
+      } else if (id.indexOf('Screen') > -1) {
         moveOptionUpdateFilter('#' + id, '#screenAttributes', false);
       } else {
         moveOptionUpdateFilter('#' + id, '#attributes', false);
       }
     });
 
-    $('input:button.selectionBtn').click(function(){
+    $('input:button.selectionBtn').click(function () {
       var id = $(this).attr('id');
       var cObj = '', pObj = '';
-      var type = (id.indexOf('project') >  -1) ? 'projectNames' : ((id.indexOf('screen') > -1) ? 'screenAttributes' : 'attributes');
-      var all = (id.indexOf('One') >  -1) ? false : true;
+      var type = (id.indexOf('project') > -1) ? 'projectNames' : ((id.indexOf('screen') > -1) ? 'screenAttributes' : 'attributes');
+      var all = (id.indexOf('One') > -1) ? false : true;
 
-      if(id.indexOf('Sel') >  -1){
-        cObj = '#'+type;
-        pObj = '#selected'+upperCaseFirstLetter(type);
+      if (id.indexOf('Sel') > -1) {
+        cObj = '#' + type;
+        pObj = '#selected' + upperCaseFirstLetter(type);
       } else {
-        cObj = '#selected'+upperCaseFirstLetter(type);
-        pObj = '#'+type;
+        cObj = '#selected' + upperCaseFirstLetter(type);
+        pObj = '#' + type;
       }
 
       moveOptionUpdateFilter(cObj, pObj, all);
     });
 
-    $('input:button.reorderBtn').click(function() {
+    $('input:button.reorderBtn').click(function () {
       var $this = $(this);
       var id = $this.attr('id');
       var type = (id.indexOf('project') > -1) ? 'projectNames' : ((id.indexOf('screen') > -1) ? 'screenAttributes' : 'attributes');
@@ -292,9 +313,9 @@
       if ($op.length) {
         ($this.val() == 'Up') ? $op.first().prev().before($op) : $op.last().next().after($op);
 
-        if(type == 'projectNames')
+        if (type == 'projectNames')
           $('#selectedProjectNames').filterByText($('#defilterProjectNames'));
-        else if(type == 'screenAttributes')
+        else if (type == 'screenAttributes')
           $('#selectedScreenAttributes').filterByText($('#defilterScreenAttributes'));
         else
           $('#selectedAttributes').filterByText($('#defilterAttributes'));
@@ -324,7 +345,7 @@
     </s:iterator>
   }
 
-  function moveOptionUpdateFilter(cObj, pObj, all){
+  function moveOptionUpdateFilter(cObj, pObj, all) {
     var selected = $(cObj);
     var target = $(pObj);
     var action = (all === true) ? 'option' : 'option:selected';
@@ -339,12 +360,12 @@
     $.each(options, function (i) {
       var option = options[i];
       var check = false;
-      for(var j = 0; j < selectedVal.length; j++){
+      for (var j = 0; j < selectedVal.length; j++) {
         if (option.value == selectedVal[j]) {
           check = true;
         }
       }
-      if(!check) tempOption.push(option);
+      if (!check) tempOption.push(option);
     });
 
     var targetOptions = target.data('options');
@@ -358,7 +379,7 @@
     selected.data('options', tempOption);
   }
 
-  function moveOptionByValue(org, dest, val){
+  function moveOptionByValue(org, dest, val) {
     var selected = $(org);
     var target = $(dest);
     var options = selected.data('options');
@@ -377,11 +398,11 @@
 
     target.data('options', targetOptions);
 
-    selected.find('option[value="'+val+'"]').remove().appendTo(dest);
+    selected.find('option[value="' + val + '"]').remove().appendTo(dest);
     selected.data('options', tempOption);
   }
 
-  function upperCaseFirstLetter(string){
+  function upperCaseFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
@@ -390,10 +411,10 @@
     $.ajax({
       beforeSend: utils.processing(true),
       url: 'getJsonInfo.action',
-      data: "fileName="+val,
-      success: function(html) {
+      data: "fileName=" + val,
+      success: function (html) {
         //Clear filter
-        $.each($("input[id*='defilter'], input[id*='filter']"), function( index, value ) {
+        $.each($("input[id*='defilter'], input[id*='filter']"), function (index, value) {
           $(this).val('');
           $(this).keyup();
         });
@@ -425,20 +446,20 @@
   function updateJson() {
     utils.processing(true);
     //Clear filter
-    $.each($("input[id*='defilter']"), function( index, value ) {
+    $.each($("input[id*='defilter']"), function (index, value) {
       $(this).val('');
       $(this).keyup();
     });
 
     var projectNames = "", attributes = "", screenAttributes = "";
 
-    $.each($('select[name=selectedProjectNames] option'), function() {
+    $.each($('select[name=selectedProjectNames] option'), function () {
       projectNames += $(this).val() + ',';
     });
-    $.each($('select[name=selectedAttributes] option'), function() {
+    $.each($('select[name=selectedAttributes] option'), function () {
       attributes += $(this).val() + ',';
     });
-    $.each($('select[name=selectedScreenAttributes] option'), function() {
+    $.each($('select[name=selectedScreenAttributes] option'), function () {
       screenAttributes += $(this).val() + ',';
     });
 
@@ -451,65 +472,65 @@
     $('<input>').attr({
       id: 'fileName',
       name: 'fileName',
-      value : $('#fileNameList option:selected').text()
+      value: $('#fileNameList option:selected').text()
     }).appendTo($jsonForm);
 
     $('<input>').attr({
       id: 'projectNames',
       name: 'projectNames',
-      value : projectNames
+      value: projectNames
     }).appendTo($jsonForm);
 
     $('<input>').attr({
       id: 'attributes',
       name: 'attributes',
-      value : attributes
+      value: attributes
     }).appendTo($jsonForm);
 
     $('<input>').attr({
       id: 'screenAttributes',
       name: 'screenAttributes',
-      value : screenAttributes
+      value: screenAttributes
     }).appendTo($jsonForm);
 
     $('<input>').attr({
       id: 'sorting',
       name: 'sorting',
-      value : $("input[name='sorting']").val()
+      value: $("input[name='sorting']").val()
     }).appendTo($jsonForm);
 
     $('<input>').attr({
       id: 'filePath',
       name: 'filePath',
-      value : $("input[name='filePath']").val()
+      value: $("input[name='filePath']").val()
     }).appendTo($jsonForm);
 
     $('<input>').attr({
       id: 'domain',
       name: 'domain',
-      value : $("input[name='domain']").val()
+      value: $("input[name='domain']").val()
     }).appendTo($jsonForm);
 
     $('body').append($jsonForm);
     $jsonForm.submit();
   }
 
-  jQuery.fn.filterByText = function(textbox) {
-    return this.each(function() {
+  jQuery.fn.filterByText = function (textbox) {
+    return this.each(function () {
       var select = this;
       var options = [];
-      $(select).find('option').each(function() {
+      $(select).find('option').each(function () {
         options.push({value: $(this).val(), text: $(this).text()});
       });
       $(select).data('options', options);
-      $(textbox).bind('change keyup', function() {
+      $(textbox).bind('change keyup', function () {
         var options = $(select).empty().scrollTop(0).data('options');
         var search = $.trim($(this).val());
-        var regex = new RegExp(search,'gi');
+        var regex = new RegExp(search, 'gi');
 
-        $.each(options, function(i) {
+        $.each(options, function (i) {
           var option = options[i];
-          if(option.text.match(regex) !== null) {
+          if (option.text.match(regex) !== null) {
             $(select).append(
                 $('<option>').text(option.text).val(option.value)
             );

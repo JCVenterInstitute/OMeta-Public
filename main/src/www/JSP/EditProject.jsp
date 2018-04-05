@@ -13,38 +13,30 @@
 <%@ page isELIgnored="false" %>
 
 <head>
-  <jsp:include page="header.jsp" />
-  <link rel="stylesheet" href="style/dataTables.css" type='text/css' media='all' />
-  <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
-  <link rel="stylesheet" href="style/chosen.css" />
+  <jsp:include page="header.jsp"/>
   <style>
+    .form-horizontal .control-label {
+      text-align: left;
+      float: left;
+      min-width: 10%;
+      padding-left: 13px;
+      padding-right: 13px;
+    }
+
+    .form-horizontal .buttons {
+      margin-left: 10%;
+    }
   </style>
 </head>
 
 <body class="smart-style-2">
 <div id="container">
 
-  <jsp:include page="top.jsp" />
+  <jsp:include page="top.jsp"/>
 
   <div id="main" class="">
     <div id="inner-content" class="">
       <div id="content" class="container max-container" role="main">
-        <div id="ribbon">
-          <ol class="breadcrumb">
-            <li>
-              <a href="/ometa/secureIndex.action">Dashboard</a>
-            </li>
-            <li>Admin</li>
-            <li>
-              <a href="/ometa/projectManagement.action">Project Management</a>
-            </li>
-            <li>Edit Project</li>
-          </ol>
-        </div>
-
-        <s:form id="editProjectPage" name="editProjectPage" namespace="/" action="editProject" method="post" theme="simple">
-        <s:hidden name="projectId" value="%{project.projectId}" />
-        <s:hidden name="action" value="update" />
         <div class="page-header">
           <h1>Edit Project </h1>
         </div>
@@ -53,89 +45,72 @@
           <s:if test="hasActionErrors()">
             <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
               <div class="alert_info" onclick="$('.alert_info').remove();">
-                <strong style="color: #ffffff;background-color: #a90329;padding: 3px;border-color: #900323;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionErrors'><s:property/></s:iterator></strong>
+                <strong style="color: #ffffff;background-color: #a90329;padding: 3px;border-color: #900323;border: 1px solid transparent;padding: 6px 12px;"><s:iterator
+                        value='actionErrors'><s:property/></s:iterator></strong>
               </div>
             </div>
           </s:if>
           <s:if test="hasActionMessages()">
             <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
               <div class="alert_info" onclick="$('.alert_info').remove();">
-                <strong style="color: #31708f;background-color: #d9edf7;padding: 3px;border-color: #bce8f1;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
+                <strong style="color: #31708f;background-color: #d9edf7;padding: 3px;border-color: #bce8f1;border: 1px solid transparent;padding: 6px 12px;"><s:iterator
+                        value='actionMessages'><s:property/></s:iterator></strong>
               </div>
             </div>
           </s:if>
         </div>
 
-        <div id="mainContent">
-          <div id="statusTableDiv">
-            <div id="tableTop">
-              <div class="row">
-                <table id="project-information-table" style="width: 70%">
-                  <tr class="even">
-                    <td>Project Name</td>
-                    <td><div class="col-md-11">
-                      <s:label name="project.projectName"/>
-                    </div></td>
-                  </tr>
-                  <tr class="projectSelection even">
-                    <td>Public</td>
-                    <td><div class="col-md-11">
-                      <s:select id="_isPublic" list="#{0:'No', 1:'Yes'}" name="project.isPublic" required="true" />
-                    </div></td>
-              </tr>
-              <tr class="projectSelection even">
-                <td>Secure</td>
-                <td><div class="col-md-11">
-                  <s:select id="_isSecure" list="#{0:'No', 1:'Yes'}" name="project.isSecure" required="true" />
-                </div></td>
-              </tr>
-              <tr class="projectSelection even">
-                <td>Edit Group</td>
-                <td><div class="col-md-11">
-                  <s:select id="_editGroupSelect"
-                            list="groupList" headerKey="0" headerValue="Select Edit Group"
-                            listValue="groupNameLookupValue.name" listKey="groupId"
-                            name="project.editGroup" required="true" disabled="false" />
-                </div></td>
-              </tr>
-              <tr class="projectSelection even">
-                <td>View Group</td>
-                <td><div class="col-md-11">
-                  <s:select id="_viewGroupSelect"
-                            list="groupList" headerKey="0" headerValue="Select View Group"
-                            listValue="groupNameLookupValue.name" listKey="groupId"
-                            name="project.viewGroup" required="true" disabled="false" />
-                </div></td>
-              </tr>
-              <tr class="projectSelection">
-                <td></td>
-                <td><div class="col-md-11">
-                  <input type="submit" class="btn btn-warning" id="_updateProject" value="Update Project"/>
-                  <input type="button" class="btn btn-info" tyle="margin-left:15px;" onclick="window.location.href='projectManagement.action'" value="Back to Project Management" />
-                </div>
-                </td>
-              </tr>
-              </table>
+        <s:form id="editProjectPage" name="editProjectPage" namespace="/" action="editProject" method="post" theme="simple" class="form-horizontal">
+          <s:hidden name="projectId" value="%{project.projectId}"/>
+          <s:hidden name="action" value="update"/>
+
+          <div class="form-group">
+            <label for="_projectName" class="control-label">Project Name</label>
+            <div class="col-sm-3">
+              <p class="form-control-static"><s:property value="project.projectName" /></p>
             </div>
           </div>
-        </div>
+          <div class="form-group">
+            <label for="_isPublic" class="control-label">Public</label>
+            <div class="col-sm-3">
+              <s:select id="_isPublic" list="#{0:'No', 1:'Yes'}" name="project.isPublic" required="true" class="form-control"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="_isSecure" class="control-label">Secure</label>
+            <div class="col-sm-3">
+              <s:select id="_isSecure" list="#{0:'No', 1:'Yes'}" name="project.isSecure" required="true" class="form-control"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="_editGroupSelect" class="control-label">Edit Group</label>
+            <div class="col-sm-3">
+              <s:select id="_editGroupSelect"
+                        list="groupList" headerKey="0" headerValue="Select Edit Group"
+                        listValue="groupNameLookupValue.name" listKey="groupId"
+                        name="project.editGroup" required="true" disabled="false" class="form-control"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="_viewGroupSelect" class="control-label">View Group</label>
+            <div class="col-sm-3">
+              <s:select id="_viewGroupSelect"
+                        list="groupList" headerKey="0" headerValue="Select View Group"
+                        listValue="groupNameLookupValue.name" listKey="groupId"
+                        name="project.viewGroup" required="true" disabled="false" class="form-control"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="buttons col-sm-5">
+              <input type="submit" class="btn btn-success" id="_updateProject" value="Update Project"/>
+              <a class="btn btn-default" href="projectManagement.action" role="button">Back to Project Management</a>
+            </div>
+          </div>
+        </s:form>
       </div>
-      </s:form>
     </div>
   </div>
 </div>
-</div>
-
-<jsp:include page="../html/footer.html" />
-
-<script src="scripts/jquery/chosen.jquery.min.js"></script>
-
-<script type="text/javascript">
-  $(document).ready(function() {
-    utils.combonize(null, '_projectSelect');
-    //$(".projectSelection").hide();
-  });
-</script>
 </body>
 </html>
 
