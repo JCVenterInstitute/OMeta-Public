@@ -34,7 +34,7 @@
 
     <filter-mapping>
         <filter-name>Struts</filter-name>
-        <url-pattern>*.action</url-pattern>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <listener>
@@ -122,6 +122,15 @@
 
             <url-pattern>/jsonManagement.action</url-pattern>
             <url-pattern>/JSP/JsonManagement.jsp</url-pattern>
+
+            <url-pattern>/dictionary.action</url-pattern>
+            <url-pattern>/JSP/Dictionary.jsp</url-pattern>
+
+            <url-pattern>/projectManagement.action</url-pattern>
+            <url-pattern>/JSP/ProjectManagement.jsp</url-pattern>
+
+            <url-pattern>/dictionaryManagement.action</url-pattern>
+            <url-pattern>/JSP/DictionaryManagement.jsp</url-pattern>
 
         </web-resource-collection>
         <auth-constraint>
