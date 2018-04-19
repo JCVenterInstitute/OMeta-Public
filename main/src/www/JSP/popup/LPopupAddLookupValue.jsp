@@ -56,7 +56,7 @@
             <p class="col-sm-offset-3 col-sm-9 help-block">Use comma(,) as delimiter to load multiple values</p>
           </div>
           <div class="form-group" id="dataTypeSelectTr">
-            <label class="col-sm-3 control-label"><strong>Date Type</strong></label>
+            <label class="col-sm-3 control-label"><strong>Data Type</strong></label>
             <div class="col-sm-9">
               <s:select list="dataTypes" name="lvDataType" id="lvDataType" class="form-control"/>
             </div>
