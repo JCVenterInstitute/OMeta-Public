@@ -1,0 +1,4 @@
+#DataTemplate:SampleRegistration
+ProjectName,SampleName,ParentSample,Public,Lat Lon,Geo Loc Name,Collection Date,Env Biome,Env Feature,Env Material,Env Package,Ref Biomaterial,Isol Growth Condt,Seq Meth,Assembly,Assembly Name,Finishing Strategy,Annot Source
+#string *Required,#string *Required,#string optional,#int *Required,#string optional,#string optional,#string optional,#string optional,#string optional,#string optional,#string optional,#string optional,#string optional,#string optional,#string optional,#string optional,#string optional,#string optional
+MIxS Demo Project,Test_Sample,,1,54 N 8 E,Germany:Sylt:Hausstrand,2008,mud,cliff,soil,,,,Sanger dideoxysequencing,,HuRef,,
