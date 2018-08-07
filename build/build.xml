@@ -309,7 +309,7 @@
                 <exclude name="${package.name}/model/**/*.class" />
             </fileset>
             <zipgroupfileset dir="${JBoss-Client.lib.dir}" includes="**/jettison-1.3.3.jar" />
-            <zipgroupfileset dir="${struts.lib.dir}" includes="**/commons-lang3-3.4.jar" />
+            <zipgroupfileset dir="${struts.lib.dir}" includes="**/commons-lang3-3.6.jar" />
             <zipgroupfileset dir="${struts.lib.dir}" includes="**/commons-configuration2-2.1.1.jar" />
             <zipgroupfileset dir="${struts.lib.dir}" includes="**/commons-beanutils-1.9.3.jar" />
         </jar>
