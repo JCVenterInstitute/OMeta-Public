@@ -22,6 +22,7 @@
 package org.jcvi.ometa.interceptor;
 
 import org.apache.log4j.Logger;
+import org.apache.struts2.dispatcher.HttpParameters;
 import org.hibernate.Session;
 import org.jcvi.ometa.configuration.*;
 import org.jcvi.ometa.db_interface.DAOFactory;
@@ -266,11 +267,11 @@ public class InterceptorHelper implements Serializable {
      * @param parameters what they are asking for.
      * @return list of approved project names.
      */
-    public List<String> getApprovedProjects(String user, Map<String, Object> parameters) {
+    public List<String> getApprovedProjects(String user, HttpParameters parameters) {
         List<String> approvedProjects = new ArrayList<String>();
-        String[] requestedProjectsArray = (String[]) parameters.get("projectNames");
+        String[] requestedProjectsArray = parameters.get("projectNames").getMultipleValues();
         if ( requestedProjectsArray == null || requestedProjectsArray.length == 0 ) {
-            requestedProjectsArray = (String[]) parameters.get("projectName");
+            requestedProjectsArray = parameters.get("projectName").getMultipleValues();
             // Be careful to set this to empty, instead of null.  Null symbolizes something different.
             if ( requestedProjectsArray == null ) {
                 requestedProjectsArray = new String[] {};
@@ -389,7 +390,7 @@ public class InterceptorHelper implements Serializable {
     public boolean isLoginRequired(
             String user,
             Map<String, Object> session,
-            Map<String, Object> parameters) {
+            HttpParameters parameters) {
 
         boolean rtnVal = false;
 
@@ -404,7 +405,7 @@ public class InterceptorHelper implements Serializable {
                     // array member, may be (probably is) a set of project names that are comma-separated,
                     // for URL brevity, rather than using a repeat of the parameter name.  Both multi-value
                     // mechanisms are taken into account here.
-                    String[] requestedProjectsArray = (String[])parameters.get( "projectNames" );
+                    String[] requestedProjectsArray = parameters.get( "projectNames" ).getMultipleValues();
                     if ( requestedProjectsArray != null ) {
 
                         for ( String projectsRequestParam: requestedProjectsArray ) {
