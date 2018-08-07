@@ -537,3 +537,26 @@ var vs = {
         }
     });
 })(jQuery);
+
+//Check session timeout
+$(document).ready(function() {
+  $.active = false;
+  $('body').bind('click keypress', function() { $.active = true; });
+  checkActivity(1800000, 60000, 0); // timeout = 30 minutes, interval = 1 minute.
+});
+
+function checkActivity(timeout, interval, elapsed) {
+  if ($.active) {
+    elapsed = 0;
+    $.active = false;
+    $.get('heartbeat');
+  }
+  if (elapsed < timeout) {
+    elapsed += interval;
+    setTimeout(function() {
+      checkActivity(timeout, interval, elapsed);
+    }, interval);
+  } else {
+    window.location.href = 'logout.action'; // Redirect to login page
+  }
+}
