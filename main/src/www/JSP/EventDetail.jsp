@@ -30,12 +30,6 @@
   <link rel="stylesheet" href="datatables/datatables.css" type='text/css' media='all' />
   <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
   <style>
-    #refreshDataBtn {position:inherit;height:24px;width:34px;margin-left:10px;border:1px solid #aed0ea;background:#d7ebf9;font-weight:bold;color:#2779aa;}
-    #columnFilterBtn:hover:after, #refreshDataBtn:hover:after{ background: #333; background: rgba(0,0,0,.8);
-      border-radius: 5px; bottom: 0px; color: #fff; content: attr(data-tooltip);
-      left: 140%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
-    #columnFilterBtn:hover:before, #refreshDataBtn:hover:before{border: solid; border-color: transparent #333;border-width: 6px 6px 6px 0px;
-      bottom: 8px; content: ""; left: 125%; position: absolute; z-index: 99;}
     #column_filter{margin: 5px 0 18px;float: left;}
     .column_filter_box{margin: 5px 0 5px 15px;}
     #columnSearchBtn{margin:10px 0 0 15px;float:left;}

@@ -6253,17 +6253,6 @@ button.close {
 
 /*#eventTable td, #eventTable th{padding:2px}*/
 
-td.table-tooltip, button.table-tooltip{ /*display: inline;*/ position: relative;}
-td.table-tooltip{text-align: right;}
-button.table-tooltip{text-align: left;}
-td.table-tooltip:hover:after, button.table-tooltip:hover:after{ background: #333; background: rgba(0,0,0,.8);
-    border-radius: 5px; color: #fff; content: attr(data-tooltip);
-    left: 103%; padding: 5px 15px; position: absolute; z-index: 98; width: auto; display: inline-table; }
-td.table-tooltip:hover:before, button.table-tooltip:hover:before{border: solid; border-color: transparent #333;border-width: 6px 6px 6px 0px;
-    bottom: 8px; content: ""; left: 100%; position: absolute; z-index: 99;}
-button.table-tooltip:hover:after{left: 109% !important;display: inline !important;top: -10px;white-space: pre-line;}
-td.table-tooltip:hover:after{bottom: 0px;}
-
 .show_processing{z-index: 1032;top: 50%;left: 50%;width: 400px;height: 100px;margin-left: -125px;
     margin-top: -15px;padding: 40px 0 2px 0;text-align: center;font-size: 14px;background-color: white;position: absolute;
     border: 1px solid #aed0ea;background: #d7ebf9;font-weight: bold;color: #2779aa;}
@@ -6416,4 +6405,13 @@ PANELS CONFIGURATIONS
 
 #project-detail-table td:first-child {
     text-align: right;
+}
+
+.tooltip-inner {
+  text-align: left;
+}
+
+.tooltip.right > .tooltip-inner {
+  min-width: 100px;
+  max-width: 50%;
 }

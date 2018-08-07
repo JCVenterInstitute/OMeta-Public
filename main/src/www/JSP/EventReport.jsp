@@ -185,7 +185,7 @@
                         }
                       } else {
                         _html += '<table>';
-                        _html += h_s.fl.replace('$f$',k).replace('$g$',k);
+                        _html += h_s.fl.replace(/\$f\$/g, k).replace('$g$',k);
                         _html += '<tr><td>';
                         _html += h_s.sl.replace('$s$', 'select').replace('$g$', '_' + k);
                         $.each(values, function(a_i,a) {

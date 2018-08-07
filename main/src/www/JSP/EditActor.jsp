@@ -7,11 +7,18 @@
 
 <head>
   <jsp:include page="header.jsp" />
-  <link rel="stylesheet" href="style/dataTables.css" type='text/css' media='all' />
-  <link rel="stylesheet" href="style/cupertino/jquery-ui-1.8.18.custom.css" type='text/css' media='all' />
   <link rel="stylesheet" href="style/chosen.css" />
-  <%--<link rel="stylesheet" href="style/version01.css" />--%>
   <style>
+    .form-horizontal .control-label {
+      text-align: left;
+      float: left;
+      min-width: 10%;
+      padding-left: 13px;
+      padding-right: 13px;
+    }
+    .form-horizontal .buttons {
+      margin-left: 10%;
+    }
   </style>
 </head>
 
@@ -23,84 +30,73 @@
   <div id="main" class="">
     <div id="inner-content" class="">
       <div id="content" class="container max-container" role="main">
-        <div id="ribbon">
-          <ol class="breadcrumb">
-            <li>
-              <a href="/ometa/secureIndex.action">Dashboard</a>
-            </li>
-            <li>Admin</li>
-            <li><a href="/ometa/actorRole.action">User Management</a></li>
-            <li>Edit Actor</li>
-          </ol>
+        <div class="page-header">
+          <h1>Edit Actor </h1>
+        </div>
+        <div id="HeaderPane" style="margin:15px 0 0 30px;">
+          <div id="errorMessagesPanel" style="margin-top:15px;"></div>
+          <s:if test="hasActionErrors()">
+            <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
+              <div class="alert_info" onclick="$('.alert_info').remove();">
+                <strong style="color: #ffffff;background-color: #a90329;padding: 3px;border-color: #900323;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionErrors'><s:property/></s:iterator></strong>
+              </div>
+            </div>
+          </s:if>
+          <s:if test="hasActionMessages()">
+            <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
+              <div class="alert_info" onclick="$('.alert_info').remove();">
+                <strong style="color: #31708f;background-color: #d9edf7;padding: 3px;border-color: #bce8f1;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
+              </div>
+            </div>
+          </s:if>
         </div>
 
-        <s:form id="editActorPage" name="editActorPage" namespace="/" action="editActor" method="post" theme="simple">
+        <s:form id="editActorPage" name="editActorPage" namespace="/" action="editActor" method="post" theme="simple" class="form-horizontal">
           <input type="hidden" name="actorId" value="<s:property value='actor.loginId' />"/>
 
-          <div class="page-header">
-            <h1>Edit Actor </h1>
-          </div>
-          <div id="HeaderPane" style="margin:15px 0 0 30px;">
-            <div id="errorMessagesPanel" style="margin-top:15px;"></div>
-            <s:if test="hasActionErrors()">
-              <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
-                <div class="alert_info" onclick="$('.alert_info').remove();">
-                  <strong style="color: #ffffff;background-color: #a90329;padding: 3px;border-color: #900323;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionErrors'><s:property/></s:iterator></strong>
-                </div>
-              </div>
-            </s:if>
-            <s:if test="hasActionMessages()">
-              <div class="alert_info" onclick="$('.alert_info').remove();" style="margin-bottom: 15px;">
-                <div class="alert_info" onclick="$('.alert_info').remove();">
-                  <strong style="color: #31708f;background-color: #d9edf7;padding: 3px;border-color: #bce8f1;border: 1px solid transparent;padding: 6px 12px;"><s:iterator value='actionMessages'><s:property/></s:iterator></strong>
-                </div>
-              </div>
-            </s:if>
-            <div style="font-size:0.9em;margin-left: 300px;" >
-              [<img style="vertical-align:bottom;" src="images/icon/info_r.png">-Not Editable]
+          <div class="form-group">
+            <label class="control-label">User ID</label>
+            <div class="col-sm-3">
+              <p class="form-control-static"><s:property value="actor.username"/></p>
             </div>
           </div>
-
-          <div id="mainContent">
-            <div id="statusTableDiv">
-              <div id="tableTop">
-                <table id="editActorTable">
-                  <tr class="gappedTr">
-                    <td align="left"><img class="attributeIcon" src="images/icon/info_r.png" style="float: right;"/>User ID </td>
-                    <td style="padding-left:7px;"><s:label name="actor.username"/></td>
-                  </tr>
-                  <tr class="gappedTr">
-                    <td align="left">First Name </td>
-                    <td style="padding-left:7px;"><s:textfield id="_firstName" name="actor.firstName" size="35px"/></td>
-                  </tr>
-                  <tr class="gappedTr">
-                    <td align="left">Middle Name </td>
-                    <td style="padding-left:7px;"><s:textfield id="_middleName" name="actor.middleName" size="35px"/></td>
-                  </tr>
-                  <tr class="gappedTr">
-                    <td align="left">Last Name </td>
-                    <td style="padding-left:7px;"><s:textfield id="_lastName" name="actor.lastName" size="35px"/></td>
-                  </tr>
-                  <tr class="gappedTr">
-                    <td align="left">Email </td>
-                    <td style="padding-left:7px;"><s:textfield id="_email" name="actor.email" size="35px"/></td>
-                  </tr>
-                  <tr class="gappedTr">
-                    <td align="left">Groups</td>
-                    <td style="padding-left:7px;">
-                      <s:select id="groupSelect"
-                                list="groups" name="groupIds"
-                                listValue="groupNameLookupValue.name" listKey="groupId"
-                                multiple="true" required="true" style="width:400px;height:19px;
-                                      "/>
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <div id="submitDiv" cssStyle="margin:15px 10px 5px 200px;width:100%;">
-                <input type="button" class="btn btn-primary" onclick="javascript:loadActor();" id="loadButton" value="Update"/>
-                <a href="actorRole.action" class="btn btn-info">Back</a>
-              </div>
+          <div class="form-group">
+            <label for="_firstName" class="control-label">First Name</label>
+            <div class="col-sm-3">
+              <s:textfield id="_firstName" name="actor.firstName" class="form-control" placeholder="First Name"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="_middleName" class="control-label">Middle Name</label>
+            <div class="col-sm-3">
+              <s:textfield id="_middleName" name="actor.middleName" class="form-control" placeholder="Middle Name"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="_lastName" class="control-label">Last Name</label>
+            <div class="col-sm-3">
+              <s:textfield id="_lastName" name="actor.lastName" class="form-control" placeholder="Last Name"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="_email" class="control-label">Email</label>
+            <div class="col-sm-3">
+              <s:textfield id="_email" name="actor.email" class="form-control" placeholder="Email"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="groupSelect" class="control-label">Groups</label>
+            <div class="col-sm-3">
+              <s:select id="groupSelect"
+                        list="groups" name="groupIds"
+                        listValue="groupNameLookupValue.name" listKey="groupId"
+                        multiple="true" required="true" class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="buttons col-sm-3">
+              <input type="button" class="btn btn-primary" onclick="javascript:loadActor();" id="loadButton" value="Update"/>
+              <a class="btn btn-default" href="actorRole.action" role="button">Back</a>
             </div>
           </div>
         </s:form>

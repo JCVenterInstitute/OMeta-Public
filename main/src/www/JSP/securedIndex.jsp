@@ -87,7 +87,9 @@
     $('.navbar-nav li').removeClass('active');
     $('.navbar-nav > li:first-child').addClass('active');
 
-    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="tooltip"]').tooltip({
+      container: 'body'
+    });
 
     $( ".graph" ).each(function(index) {
       var id = $(this).attr('id');
