@@ -225,7 +225,7 @@ var _utils = {
         _that.ema('add',et);
       })
 
-      if((et.toLowerCase().indexOf('sample') >= 0 && et.indexOf('registration'))
+      if(typeof et !== "undefined" && (et.toLowerCase().indexOf('sample') >= 0 && et.indexOf('registration'))
           && (n == 'isPublic' || n == 'parent_relationship')) {
         if(n == 'isPublic') $_row.find('td:nth-child(5)').append('Show Public');
         else $_row.find('td:nth-child(5)').append('Show Parent Sample');
