@@ -120,11 +120,11 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
     @Override
     public void closeSession() {
         Transaction transaction = session.getTransaction();
-        if(transactionCanBeEnded(transaction)  &&  transaction.getStatus().isOneOf(TransactionStatus.ACTIVE)) {
+        if(transactionCanBeEnded(transaction)  &&  (transaction.getStatus() != null && transaction.getStatus().isOneOf(TransactionStatus.ACTIVE))) {
            transaction.commit();
             transaction = null;  // Pushing this away, to guarantee won't be re-used.
         }
-        if(session != null  &&  session.isOpen()) {
+        if(session != null && session.isOpen()) {
             try {
                session.close();
             } catch(Exception ex) {
@@ -132,22 +132,6 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
                 ex.printStackTrace();
             }
         }
-        //        if(logger.isDebugEnabled()) {
-        //            logger.debug("Close Session:: TRAX ref: " + transaction);
-        //        }
-        //Transaction trax = session.getTransaction();
-        //        if(transactionCanBeEnded(transaction)  &&  transaction.isActive()) {
-        //            transaction.commit();
-        //            transaction = null;  // Pushing this away, to guarantee won't be re-used.
-        //        }
-        //        if(session != null  &&  session.isOpen()) {
-        //            try {
-        //                session.close();
-        //            } catch(Exception ex) {
-        //                logger.error("Failed to close session TRAX ref: " + transaction);
-        //                ex.printStackTrace();
-        //            }
-        //        }
     }
 
     @Override
@@ -188,118 +172,22 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
         //import org.jboss.jpa.tx.TransactionScopedEntityManager;
 
         try {
-            session = em.unwrap(Session.class);
+            session = em.unwrap(Session.class)
+                    .getSessionFactory().openSession();
 
-            if(!session.isOpen()){
-                session = session.getSessionFactory().openSession();
-            }
         } catch(Exception ex) {
             logger.error("Failed to invoke the getter to obtain the hibernate session " + ex.getMessage());
             ex.printStackTrace();
         }
-        /*
-        // Find a method for getting a hibernate session.
-        Method[] emMethods = em.getClass().getMethods();
-
-        for(Method method: emMethods) {
-            if(method.getName().equals("getDelegate")) {
-                // Once found, invoke the method.
-                try {
-                    Object returnObj = method.invoke(em);
-                    if(returnObj instanceof Session) {
-                        session = (Session)returnObj;
-                    }
-                    else {
-                        logger.warn(
-                                "Invoking 'getHibernateSession()' returned type of " + returnObj.getClass().getName() +
-                                        " instead of a hibernate session."
-                        );
-                    }
-                } catch(Exception ex) {
-                    logger.error("Failed to invoke the getter to obtain the hibernate session " + ex.getMessage());
-                    ex.printStackTrace();
-                }
-            }
-        }*/
 
         if(session == null) {
             logger.error("Failed to find hibernate session from " + em.toString());
         }
     }
 
-    /**
-     * Obtain the session factory from the j2ee environment.  Designed as a 'facility' method
-     * for both this class and subclasses.
-     *
-     * @param jndiSessionFactoryName what session factory to lookup.
-     * @return whatever factory was found
-     * @throws DAOException in event of any called method exceptions.
-     */
-    //    protected SessionFactory getSessionFactory(String jndiSessionFactoryName) throws DAOException {
-    //        if (jndiSessionFactoryName == null  ||  jndiSessionFactoryName.trim().length() == 0)
-    //            return getSessionFactory();
-    //
-    //        String fullyQualifiedSessionFactory = jndiSessionFactoryName;
-    //        SessionFactory sessionFactory;
-    //        try {
-    //            Context ctx = new InitialContext();
-    //            logger.info(fullyQualifiedSessionFactory);
-    //            sessionFactory = (SessionFactory)ctx.lookup(fullyQualifiedSessionFactory);
-    //        } catch (ClassCastException cse) {
-    //            throw new DAOException(cse, FAILED_TO_OBTAIN_SESSION_FACTORY_ERROR + fullyQualifiedSessionFactory);
-    //        } catch (NamingException ne) {
-    //            throw new DAOException(ne, FAILED_TO_OBTAIN_SESSION_FACTORY_ERROR + fullyQualifiedSessionFactory);
-    //        }
-    //        return sessionFactory;
-    //    }
-
-    /**
-     * Getter for session factory.  This, with no param, forces the creation of a session factory
-     * on-the-spot.  It is intended for use in JUnit tests.
-     *
-     * @return fully-operational session factory.
-     */
-    //    protected SessionFactory getSessionFactory() throws DAOException {
-    //        if(sessionFactoryObject != null)
-    //            return sessionFactoryObject;
-    //
-    //        if (sessionFactoryName != null  &&  sessionFactoryName.trim().length() > 0) {
-    //            String message =
-    //                    "Attempt at creating a session factory from scratch when a container session factory /" +
-    //                            sessionFactoryName +
-    //                    "/ may be available.";
-    //            logger.error(message);
-    //            throw new DAOException(message);
-    //        }
-    //
-    //        try {
-    //            Configuration cfg = new AnnotationConfiguration();
-    //
-    //            File f = new File(cfgXml);
-    //            if (f.exists()) {
-    //                cfg = cfg.configure(f);
-    //            }
-    //            else {
-    //                cfg = cfg.configure(cfgXml);
-    //            }
-    //            logger.info("Got " + cfg.getProperties().size() + " properties in the " + cfgXml + " configuration.");
-    //
-    //            SessionFactory factory = cfg.buildSessionFactory();
-    //            sessionFactoryObject = factory;
-    //            logger.info("Created session factory on-the-spot");
-    //            return factory;
-    //
-    //        } catch (Exception ex) {
-    //            logger.error("Failed to create a session factory. " + ex.getMessage());
-    //            ex.printStackTrace();
-    //            throw new DAOException(ex);
-    //
-    //        }
-    //    }
-
     /** Helper: determine whether transaction can be committed or rolled back. */
     private boolean transactionCanBeEnded(Transaction tx) {
-        return tx != null && !(tx.getStatus().isOneOf(TransactionStatus.COMMITTED, TransactionStatus.ROLLED_BACK));
+        return tx != null && !(tx.getStatus() != null && tx.getStatus().isOneOf(TransactionStatus.COMMITTED, TransactionStatus.ROLLED_BACK));
     }
 
 
