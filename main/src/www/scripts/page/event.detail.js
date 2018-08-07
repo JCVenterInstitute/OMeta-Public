@@ -13,6 +13,35 @@ var sDT, //sample detail table
     eDT; //event detail table
 
 //dataTables functions
+jQuery.fn.dataTableExt.oApi.fnFilterClear  = function ( oSettings )
+{
+  var i, iLen;
+
+  /* Remove global filter */
+  oSettings.oPreviousSearch.sSearch = "";
+
+  /* Remove the text of the global filter in the input boxes */
+  if ( typeof oSettings.aanFeatures.f != 'undefined' )
+  {
+    var n = oSettings.aanFeatures.f;
+    for ( i=0, iLen=n.length ; i<iLen ; i++ )
+    {
+      $('input', n[i]).val( '' );
+    }
+  }
+
+  /* Remove the search text for the column filters - NOTE - if you have input boxes for these
+   * filters, these will need to be reset
+   */
+  for ( i=0, iLen=oSettings.aoPreSearchCols.length ; i<iLen ; i++ )
+  {
+    oSettings.aoPreSearchCols[i].sSearch = "";
+  }
+
+  /* Redraw */
+  oSettings.oApi._fnReDraw( oSettings );
+};
+
 $.fn.dataTableExt.afnFiltering.push(
     function( oSettings, aData, iDataIndex ) {
       var fromDate = $('#fromDate').val(), toDate = $('#toDate').val();
@@ -465,6 +494,8 @@ function createSampleDataTable(){
             $('#projectTableDivHeader, #sampleTableDivHeader, #sampleTableDiv, refreshDataBtn').show();
             utils.processing(false);
             utils.error.remove();
+
+            fixHeaderAlignment();
           }
         });
       }
@@ -514,7 +545,9 @@ function createSampleDataTable(){
             'type': 'button',
             'class': 'btn btn-default btn-sm',
             'id': 'columnFilterBtn',
-            'data-tooltip': 'Column Filter',
+            'data-original-title': 'Column Filter',
+            'data-toggle': 'tooltip',
+            'data-placement': 'right',
             'name':'showColumnFilter',
             'onclick': '_page.columnfilter.toggle(this);',
             'style': 'margin-left:10px;'
@@ -528,6 +561,14 @@ function createSampleDataTable(){
   );
 
   generateColumnFilter();
+}
+
+var fixed = false;
+function fixHeaderAlignment() {
+  if(!fixed) {
+    sDT.fnFilterClear();
+    fixed = true;
+  }
 }
 
 function showFMPopup(id){
