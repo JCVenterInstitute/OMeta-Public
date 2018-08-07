@@ -43,43 +43,6 @@
     ul.ui-autocomplete.ui-menu {
       width: 300px
     }
-
-    #refreshDataBtn {
-      position: inherit;
-      height: 24px;
-      width: 34px;
-      margin-left: 10px;
-      border: 1px solid #aed0ea;
-      background: #d7ebf9;
-      font-weight: bold;
-      color: #2779aa;
-    }
-
-    #refreshDataBtn:hover:after {
-      background: #333;
-      background: rgba(0, 0, 0, .8);
-      border-radius: 5px;
-      bottom: 0px;
-      color: #fff;
-      content: attr(data-tooltip);
-      left: 140%;
-      padding: 5px 15px;
-      position: absolute;
-      z-index: 98;
-      width: auto;
-      display: inline-table;
-    }
-
-    #refreshDataBtn:hover:before {
-      border: solid;
-      border-color: transparent #333;
-      border-width: 6px 6px 6px 0px;
-      bottom: 8px;
-      content: "";
-      left: 125%;
-      position: absolute;
-      z-index: 99;
-    }
   </style>
 </head>
 
@@ -216,7 +179,7 @@
                 </div>
                 <div id="EMASubmitDiv" style="margin:15px 10px 5px 0;">
                   <input type="button" class="btn btn-success" onclick="_utils.submit();" id="eventLoadButton" value="Setup Event"/>
-                  <input type="button" class="btn btn-primary" onclick="_utils.add.ema('add');" id="eventAddButton" value="Add Event Meta Attribute" disabled="disabled"/>
+                  <input type="button" class="btn btn-primary" onclick="_utils.add.ema('add');" id="eventAddButton" value="Add Event Meta Attribute"/>
                   <input type="button" class="btn btn-info" onclick="_utils.popup.attribute('et');" id="newEventButton" value="New Event Type"/>
                   <input type="button" class="btn btn-info" onclick="_utils.popup.attribute('a');" id="newAttributeButton" value="New Attribute"/>
                   <input type="button" class="btn btn-info" onclick="_utils.ontology();" id="ontologyButton" value="Ontology"/>

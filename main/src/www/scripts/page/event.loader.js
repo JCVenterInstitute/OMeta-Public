@@ -220,9 +220,9 @@ var _utils = {
         g_avDic={};
 
         var requireImgHtml = '<img class="attributeIcon" src="images/icon/info_r.png"/>';
-        var autofillButtonHtml = '<button type="button" class="btn btn-default btn-xs autofill-title" data-placement="left" id="all-$a$" onClick="dataAutofill(this.id)" title="Autofill column"><img src="images/autofill.png" style="width: 24px;height: 22px;"></i></button>' +
-            '<button type="button" id="sequence-$b$" onclick="dataAutofill(this.id)" data-placement="left" class="btn btn-default btn-xs autofill-title" title="Autofill column in sequence"><img src="images/autofill_sequence.png" style="width: 24px;height: 22px;"></button>' +
-            '<button type="button" class="btn btn-default btn-xs autofill-title" data-placement="left" id="clear-$c$" onClick="dataAutofill(this.id)" title="Remove data in column"><img src="images/autofill_clear.png" style="width: 24px;height: 22px;"></i></button>';
+        var autofillButtonHtml = '<button type="button" class="btn btn-default btn-xs autofill-title" data-placement="left" data-html="true" id="all-$a$" onClick="dataAutofill(this.id)" title="Autofill column"><img src="images/autofill.png" style="width: 24px;height: 22px;"></i></button>' +
+            '<button type="button" id="sequence-$b$" onclick="dataAutofill(this.id)" data-placement="left" data-html="true" class="btn btn-default btn-xs autofill-title" title="Autofill column in sequence"><img src="images/autofill_sequence.png" style="width: 24px;height: 22px;"></button>' +
+            '<button type="button" class="btn btn-default btn-xs autofill-title" data-placement="left" data-html="true" id="clear-$c$" onClick="dataAutofill(this.id)" title="Remove data in column"><img src="images/autofill_clear.png" style="width: 24px;height: 22px;"></i></button>';
 
 
         // //add table headers for grid view
@@ -280,8 +280,8 @@ var _utils = {
             var $attributeTr = $('<tr/>');
 
             $attributeTr.append(//icons and hover over information
-                $('<td align="right"/>').attr('class', (isDesc ? 'table-tooltip' : '')).attr(
-                    'data-tooltip', (isDesc ? _ma.desc : '')).append(
+                $('<td align="right"/>').attr('data-toggle', (isDesc ? 'tooltip' : '')).attr('data-container','body').attr('data-html','true').attr('data-placement','right').attr(
+                    'data-original-title', (isDesc ? _ma.desc : '')).append(
                     isRequired ? '<small class="text-danger">*</small>' : '',
                     (_ma.label != null && _ma.label !== '' ?_ma.label:_ma.lookupValue.name),
                     "&nbsp;",
@@ -357,7 +357,8 @@ var _utils = {
             } else {
               var maDatatype = _ma.lookupValue.dataType;
               if(maDatatype === 'file') { //file
-                inputElement += '<button type="button" id="' + maDatatype + '_$id$"  class="btn btn-default table-tooltip" data-tooltip="FILE MANAGEMENT" value="FILE MANAGEMENT" onclick="showFMPopup(this.id)">File Store</button>'
+                inputElement += '<button type="button" id="' + maDatatype + '_$id$"  class="btn btn-default" data-toggle="tooltip" data-container="body" data-html="true" ' +
+                    'data-placement="right" data-original-title="FILE MANAGEMENT" onclick="showFMPopup(this.id)">File Store</button>'
                 inputElement += _html.fm;
                 $autofillLine.append($('<td/>'));
               } else if(maDatatype ==='date') {
@@ -380,7 +381,7 @@ var _utils = {
 
             $gridHeaders.append(
                 $('<th/>').addClass('resizable-header')
-                    .attr('title', (isDesc ? _ma.desc : '')).attr('data-toggle','tooltip').attr('data-placement','top').append(
+                    .attr('title', (isDesc ? _ma.desc : '')).attr('data-toggle','tooltip').attr('data-placement','top').attr('data-html', 'true').append(
                     isRequired ? '<small class="text-danger">*</small>' : '',
                     (_ma.label ? _ma.label : _ma.lookupValue.name) + '<br/>',
                     isDesc ? requireImgHtml : ''
@@ -431,7 +432,9 @@ var _utils = {
         //add attribut headers to the grid view and add empty rows
         $('thead#gridHeader').append($gridHeaders);
         $("#gridBody").append($autofillLine);
-        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-toggle="tooltip"]').tooltip({
+          container: 'body'
+        });
         _utils.addGridRows(null, en);
 
         if(hasDependantDict){
@@ -478,6 +481,7 @@ var _utils = {
         }
 
         $(".autofill-title").tooltip({
+          container: 'body',
           position: {
             my: "center bottom-20",
             at: "center top",
@@ -1591,6 +1595,7 @@ function comboBoxChanged(option, id) {
 
 function dataAutofill(id){
   var idArr = id.split("-");
+  if(utils.checkSR($("#_eventSelect option:selected").text()) && idArr[1] > 3) idArr[1] = parseInt(idArr[1], 10) + 1;
   var autofillValue = $('#gridBody tr:nth-child(2) td:nth-child(' + idArr[1] +') input[type=text]').val();
   if(autofillValue == undefined) autofillValue = $('#gridBody tr:nth-child(2) td:nth-child(' + idArr[1] +') select').val();
   var $sampleFields = $('#gridBody tr td:nth-child(' + idArr[1] +') input, #gridBody tr td:nth-child(' + idArr[1] +') select');

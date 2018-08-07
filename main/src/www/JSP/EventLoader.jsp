@@ -30,9 +30,6 @@
   <link rel="stylesheet" href="style/multiple-select.css" type='text/css' media='all' />
 
   <style>
-    #gridBody .ui-autocomplete-input {
-      width: 150px;
-    }
     .gridIndex {
       max-width: 20px !important;
       min-width: 15px;
@@ -269,7 +266,8 @@
               <div id="dataSubmissionScope" style="padding-top: 8px;border-top: 1px solid #eeeeee;">
                 <div class="row row_spacer">
                   <div class="col-lg-9 col-md-8">
-                    <input type="image" id="autofill-control" src="images/autofill_icon.png" onclick="triggerAutofill();return false;" title="Toggle Autofill" data-tooltip="Toggle Autofill" style="float: left;margin-right: 10px;margin-top: -3px;"/>
+                    <input type="image" id="autofill-control" src="images/autofill_icon.png" onclick="triggerAutofill();return false;" data-toggle="tooltip" data-html="true"
+                           data-placement="top" data-original-title="Toggle Autofill" style="float: left;margin-right: 10px;margin-top: -3px;"/>
                   </div>
                 </div>
                 <div id="attributeInputDiv" style="clear:both;display:none;">
@@ -387,6 +385,7 @@
   var sample_options;
 
   $( "#autofill-control" ).tooltip({
+    container: 'body',
     show: {
       effect: "slideDown",
       delay: 250
