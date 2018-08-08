@@ -496,6 +496,18 @@ function createSampleDataTable(){
             utils.error.remove();
 
             fixHeaderAlignment();
+
+            $('.sampleCB').change(function(){ //".checkbox" change
+              //uncheck "select all", if one of the listed checkbox item is unchecked
+              if(this.checked == false){ //if this item is unchecked
+                $("#selectAllSamples")[0].checked = false; //change "select all" checked status to false
+              }
+
+              //check "select all" if all checkbox items are checked
+              if ($('.sampleCB:checked').length == $('.sampleCB').length ){
+                $("#selectAllSamples")[0].checked = true; //change "select all" checked status to true
+              }
+            });
           }
         });
       }
@@ -749,6 +761,5 @@ function aoColumns() {
 }
 
 function selectSamples() {
-  if($('#selectAllSamples').is(':checked')) $('.sampleCB').attr('checked', true);
-  else $('.sampleCB').attr('checked', false);
+  $(".sampleCB").prop('checked', $("#selectAllSamples").prop('checked'));
 }
