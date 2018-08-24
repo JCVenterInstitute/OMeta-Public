@@ -253,6 +253,9 @@
 
     <target name="war" depends="make-har">
         <war warfile="${pre-exploded-war}" webxml="${web.dir}/WEB-INF/web.xml" >
+            <manifest>
+                <attribute name="Dependencies" value="javax.wsdl4j.api"/>
+            </manifest>
             <classes dir="${class.dir}">
                 <include name="**/*.class"/>
                 <include name="**/*.xml"/>
