@@ -558,16 +558,18 @@ var _utils = {
       populateProjectInfo: function(data, eventName) {
         if(data && data.aaData) {
           var projAttrMap = data.aaData[1].attributes;
+          var keyArr = Object.keys(projAttrMap).sort(); //move keys to an array to loop them in order
 
-          for(var i in projAttrMap){
-            var key = i;
-            var value  = projAttrMap[i];
+          for(var i in keyArr){
+            var key = keyArr[i];
+            var value  = projAttrMap[key];
 
             key = key.replace(/ /g, "_");
             key = key.replace(/'/g, "\\'");
 
             //jquery regex for single quotation
-            var $input = $("input[id*='"+key.replace(/([ #;&,.+*~\':"!^$[\]()=>|\/@])/g,'\$1')+"']");
+            var $input = $("input[id*='"+key.replace(/([ #;&,.+*~\':"!^$[\]()=>|\/@])/g,'\$1')+"']")
+                .filter("input[id*='_f_']:first, input[id*='_g_']:first");
 
             if($input.length > 0) $input.val(value);
             else {
