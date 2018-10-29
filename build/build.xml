@@ -39,14 +39,15 @@
 
     <!-- set global properties for this build -->
     <property name="base.dir" value="${basedir}/.."/>
-    <property name="src.dir" value="${base.dir}/main/src/java"/>
+    <property name="src.dir" value="${base.dir}/src/main/java"/>
     <property name="tmp.dir" value="${base.dir}/tmp"/>
     <property name="build.dir" value="${base.dir}/build"/>
     <property name="class.dir" value="${tmp.dir}/classes"/>
     <property name="dist.dir" value="${base.dir}/dist"/>
     <property name="ear.lib.dir" value="${dist.dir}/lib"/>
-    <property name="web.dir" value="${base.dir}/main/src/www"/>
+    <property name="web.dir" value="${base.dir}/src/main/webapp"/>
     <property name="hibernate.dir" value="${base.dir}/build/hibernate"/>
+    <property name="resource.dir" value="${base.dir}/src/main/resources"/>
 
     <property name="src.js.dir" value="${web.dir}/scripts" description="JS source folder"/>
     <property name="src.js.page.dir" value="${web.dir}/scripts/page" description="JS source folder"/>
@@ -137,7 +138,7 @@
         <mkdir dir="${class.dir}/resource" />
         <mkdir dir="${class.dir}/resource/internal" />
         <copy todir="${class.dir}/resource">
-            <fileset dir="${build.dir}/resource/">
+            <fileset dir="${resource.dir}">
                 <include name="LoadingEngine*.properties"/>
                 <include name="gen_*.sql"/>
             </fileset>
@@ -195,7 +196,7 @@
                 <exclude name="${package.name}/interceptor/**/*.class" />
                 <exclude name="${package.name}/stateless_session_bean/**/*.class" />
             </fileset>
-            <fileset dir="${build.dir}/resource/">
+            <fileset dir="${resource.dir}">
                 <include name="LoadingEngine*.properties"/>
             </fileset>
             <fileset dir="${build.dir}/hibernate" includes="standalone_*_hibernate.cfg.xml"/>
@@ -320,7 +321,7 @@
 
     <target name="resource-jar" depends="compile">
         <jar destfile="${ear.lib.dir}/resource.jar">
-            <fileset dir="${build.dir}/resource/">
+            <fileset dir="${resource.dir}">
                 <include name="LoadingEngine*.properties"/>
             </fileset>
         </jar>
