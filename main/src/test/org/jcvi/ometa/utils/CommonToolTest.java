@@ -173,7 +173,7 @@ public class CommonToolTest {
         ema2.setActive(true);
         ema2.setLookupValue(lv2);
 
-        CommonTool.filterEventMetaAttribute(Arrays.asList(ema1, ema2), null);
+        CommonTool.filterEventMetaAttribute(Arrays.asList(ema1, ema2), null, "test");
     }
 
     @Test
