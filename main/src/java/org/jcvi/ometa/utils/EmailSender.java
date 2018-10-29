@@ -66,7 +66,7 @@ public class EmailSender {
 
     public void send(String to, String subject, String body, List<String> files) throws Exception {
         Properties mailProps = System.getProperties();
-        mailProps.setProperty(this.EMAIL_HOST, this.EMAIL_HOST);
+        mailProps.setProperty("mail.smtp.host", this.EMAIL_HOST);
         /*mailProps.put("mail.smtp.auth", "true");
         mailProps.put("mail.smtp.ssl.enable", "true");
         mailProps.put("mail.smtp.port", 587);
