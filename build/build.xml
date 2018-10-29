@@ -175,7 +175,7 @@
                 <include name="${package.name}/hibernate/dao/*.class" />
                 <include name="${package.name}/model/*.class" />
             </fileset>
-            <fileset dir="${base.dir}/build">
+            <fileset dir="${resource.dir}">
                 <include name="META-INF/persistence.xml" />
             </fileset>
             <zipgroupfileset dir="${ehcache.lib.dir}" includes="*.jar" />
