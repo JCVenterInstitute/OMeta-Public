@@ -33,7 +33,8 @@
     <property name="js.name" value="ometa.js" />
 
     <!--jboss location from user build file -->
-    <property file="./user_build_properties/${user.name}-build.properties" />
+    <property name="site.dir" value="${basedir}/../src/site"/>
+    <property file="${site.dir}/user_build_properties/${user.name}-build.properties" />
     <property name="jboss.deploy.local.dir" value="${jboss.local.server}/deploy"/>
     <property name="compile.target" value="1.8" />
 
@@ -46,7 +47,7 @@
     <property name="dist.dir" value="${base.dir}/dist"/>
     <property name="ear.lib.dir" value="${dist.dir}/lib"/>
     <property name="web.dir" value="${base.dir}/src/main/webapp"/>
-    <property name="hibernate.dir" value="${base.dir}/build/hibernate"/>
+    <property name="hibernate.dir" value="/hibernate"/>
     <property name="resource.dir" value="${base.dir}/src/main/resources"/>
 
     <property name="src.js.dir" value="${web.dir}/scripts" description="JS source folder"/>
@@ -144,7 +145,7 @@
             </fileset>
         </copy>
         <copy file="${web.dir}/WEB-INF/struts.xml" todir="${class.dir}"/>
-        <copy file="${build.dir}/log4j2.xml" todir="${class.dir}"/>
+        <copy file="${resource.dir}/log4j2.xml" todir="${class.dir}"/>
     </target>
 
     <path id="common-classpath">
@@ -199,7 +200,7 @@
             <fileset dir="${resource.dir}">
                 <include name="LoadingEngine*.properties"/>
             </fileset>
-            <fileset dir="${build.dir}/hibernate" includes="standalone_*_hibernate.cfg.xml"/>
+            <fileset dir="${resource.dir}/hibernate" includes="standalone_*_hibernate.cfg.xml"/>
             <fileset file="${persistence-ar}"/>
             <zipgroupfileset dir="${dom4j.lib.dir}" includes="*.jar"/>
             <zipgroupfileset dir="${hibernate.lib.dir}" includes="*.jar"/>
@@ -235,8 +236,8 @@
                 <exclude name="${package.name}/web_bean/**/*.class" />
                 <exclude name="${package.name}/jndi/**/*.class" />
             </fileset>
-            <fileset dir="${build.dir}/hibernate" includes="standalone_*_hibernate.cfg.xml"/>
-            <fileset dir="${build.dir}" file="log4j2.xml"/>
+            <fileset dir="${resource.dir}/hibernate" includes="standalone_*_hibernate.cfg.xml"/>
+            <fileset dir="${build.dir}" file="${resource.dir}/log4j2.xml"/>
             <fileset file="${persistence-ar}"/>
             <zipgroupfileset dir="${dom4j.lib.dir}" includes="*.jar"/>
             <zipgroupfileset dir="${hibernate.lib.dir}" includes="*.jar"/>
@@ -296,7 +297,7 @@
             <lib dir="${JBoss-Client.lib.dir}" includes="**/artemis-core-client-1.1.0.wildfly-011.jar" />
             <lib dir="${JBoss-Client.lib.dir}" includes="**/jboss-remoting-4.0.18.Final.jar" />
             <lib dir="${JBoss-Client.lib.dir}" includes="**/jboss-ejb3-core-client.jar" />
-            <zipfileset dir="${base.dir}/build/META-INF" includes="context.xml" prefix="META-INF"/>
+            <zipfileset dir="${resource.dir}/META-INF" includes="context.xml" prefix="META-INF"/>
         </war>
         <mkdir dir="${war-tmp-dir}" />
         <mkdir dir="${exploded-war}" />
@@ -328,8 +329,8 @@
     </target>
 
     <target name="ear" depends="compile,server-jar,war,make-har" description="All targets to make the enterprise application." >
-        <ear earfile="${dist.dir}/${tracking.web.context}.ear" appxml="${build.dir}/META-INF/application.xml" >
-            <metainf dir="${build.dir}/META-INF">
+        <ear earfile="${dist.dir}/${tracking.web.context}.ear" appxml="${resource.dir}/META-INF/application.xml" >
+            <metainf dir="${resource.dir}/META-INF">
                 <include name="jboss.xml" />
                 <!--<include name="scheduler-service.xml" />-->
             </metainf>
