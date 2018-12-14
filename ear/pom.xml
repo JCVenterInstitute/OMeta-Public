@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.jcvi</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <groupId>org.jcvi</groupId>
+    <artifactId>ear</artifactId>
+    <version>1.0</version>
+    <packaging>ear</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jcvi</groupId>
+            <artifactId>resources</artifactId>
+            <version>1.0</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jcvi</groupId>
+            <artifactId>ejb</artifactId>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jcvi</groupId>
+            <artifactId>db</artifactId>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.jcvi</groupId>
+            <artifactId>web</artifactId>
+            <type>war</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>ometa</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <version>2.10.1</version>
+                <inherited>true</inherited>
+                <configuration>
+                    <displayName>O-META</displayName>
+                    <modules>
+                        <jarModule>
+                            <groupId>org.jcvi</groupId>
+                            <artifactId>resources</artifactId>
+                            <bundleFileName>resources.jar</bundleFileName>
+                            <bundleDir>/lib</bundleDir>
+                        </jarModule>
+                        <ejbModule>
+                            <groupId>org.jcvi</groupId>
+                            <artifactId>ejb</artifactId>
+                            <bundleFileName>ometa_ejb_server.jar</bundleFileName>
+                        </ejbModule>
+                        <jarModule>
+                            <groupId>org.jcvi</groupId>
+                            <artifactId>db</artifactId>
+                            <bundleFileName>ometa_db_interface.jar</bundleFileName>
+                            <includeInApplicationXml>true</includeInApplicationXml>
+                        </jarModule>
+                        <webModule>
+                            <groupId>org.jcvi</groupId>
+                            <artifactId>web</artifactId>
+                            <contextRoot>ometa</contextRoot>
+                            <bundleFileName>ometa.war</bundleFileName>
+                        </webModule>
+                        <jarModule>
+                            <groupId>org.apache.poi</groupId>
+                            <artifactId>poi</artifactId>
+                            <includeInApplicationXml>true</includeInApplicationXml>
+                        </jarModule>
+                        <jarModule>
+                            <groupId>org.jcvi</groupId>
+                            <artifactId>Common-Utils</artifactId>
+                            <includeInApplicationXml>true</includeInApplicationXml>
+                        </jarModule>
+                    </modules>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
