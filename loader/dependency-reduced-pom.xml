@@ -62,7 +62,7 @@
     <dependency>
       <groupId>org.wildfly</groupId>
       <artifactId>wildfly-feature-pack</artifactId>
-      <version>10.0.0.Final</version>
+      <version>15.0.0.Final</version>
       <type>pom</type>
       <scope>provided</scope>
       <exclusions>
@@ -92,11 +92,11 @@
         </exclusion>
         <exclusion>
           <artifactId>asm</artifactId>
-          <groupId>asm</groupId>
+          <groupId>org.ow2.asm</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>cal10n-api</artifactId>
-          <groupId>ch.qos.cal10n</groupId>
+          <artifactId>asm-util</artifactId>
+          <groupId>org.ow2.asm</groupId>
         </exclusion>
         <exclusion>
           <artifactId>classmate</artifactId>
@@ -127,12 +127,36 @@
           <groupId>com.fasterxml.jackson.module</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>relaxngDatatype</artifactId>
-          <groupId>com.github.relaxng</groupId>
+          <artifactId>jackson-datatype-jsr310</artifactId>
+          <groupId>com.fasterxml.jackson.datatype</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jackson-datatype-jdk8</artifactId>
+          <groupId>com.fasterxml.jackson.datatype</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>relaxng-datatype</artifactId>
+          <groupId>com.sun.xml.bind.external</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>json-patch</artifactId>
+          <groupId>com.github.fge</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jackson-coreutils</artifactId>
+          <groupId>com.github.fge</groupId>
         </exclusion>
         <exclusion>
           <artifactId>compiler</artifactId>
           <groupId>com.github.spullara.mustache.java</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>caffeine</artifactId>
+          <groupId>com.github.ben-manes.caffeine</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>gson</artifactId>
+          <groupId>com.google.code.gson</groupId>
         </exclusion>
         <exclusion>
           <artifactId>guava</artifactId>
@@ -141,6 +165,18 @@
         <exclusion>
           <artifactId>h2</artifactId>
           <groupId>com.h2database</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>azure-storage</artifactId>
+          <groupId>com.microsoft.azure</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>okhttp</artifactId>
+          <groupId>com.squareup.okhttp3</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>okio</artifactId>
+          <groupId>com.squareup.okio</groupId>
         </exclusion>
         <exclusion>
           <artifactId>jsf-impl</artifactId>
@@ -153,10 +189,6 @@
         <exclusion>
           <artifactId>istack-commons-tools</artifactId>
           <groupId>com.sun.istack</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jaxb-core</artifactId>
-          <groupId>org.glassfish.jaxb</groupId>
         </exclusion>
         <exclusion>
           <artifactId>jaxb-runtime</artifactId>
@@ -173,6 +205,26 @@
         <exclusion>
           <artifactId>codemodel</artifactId>
           <groupId>org.glassfish.jaxb</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>javax.security.enterprise</artifactId>
+          <groupId>org.glassfish.soteria</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-http-ejb-client</artifactId>
+          <groupId>org.wildfly.wildfly-http-client</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-http-client-common</artifactId>
+          <groupId>org.wildfly.wildfly-http-client</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-http-naming-client</artifactId>
+          <groupId>org.wildfly.wildfly-http-client</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-http-transaction-client</artifactId>
+          <groupId>org.wildfly.wildfly-http-client</groupId>
         </exclusion>
         <exclusion>
           <artifactId>FastInfoset</artifactId>
@@ -192,7 +244,7 @@
         </exclusion>
         <exclusion>
           <artifactId>xsom</artifactId>
-          <groupId>com.sun.xsom</groupId>
+          <groupId>org.glassfish.jaxb</groupId>
         </exclusion>
         <exclusion>
           <artifactId>commons-beanutils</artifactId>
@@ -211,8 +263,8 @@
           <groupId>commons-lang</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>commons-pool</artifactId>
-          <groupId>commons-pool</groupId>
+          <artifactId>dom4j</artifactId>
+          <groupId>org.dom4j</groupId>
         </exclusion>
         <exclusion>
           <artifactId>java-getopt</artifactId>
@@ -299,10 +351,6 @@
           <groupId>org.apache.cxf</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>cxf-rt-bindings-object</artifactId>
-          <groupId>org.apache.cxf</groupId>
-        </exclusion>
-        <exclusion>
           <artifactId>cxf-rt-bindings-soap</artifactId>
           <groupId>org.apache.cxf</groupId>
         </exclusion>
@@ -315,11 +363,19 @@
           <groupId>org.apache.cxf</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>cxf-rt-features-logging</artifactId>
+          <groupId>org.apache.cxf</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>cxf-rt-databinding-aegis</artifactId>
           <groupId>org.apache.cxf</groupId>
         </exclusion>
         <exclusion>
           <artifactId>cxf-rt-databinding-jaxb</artifactId>
+          <groupId>org.apache.cxf</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>cxf-rt-features-clustering</artifactId>
           <groupId>org.apache.cxf</groupId>
         </exclusion>
         <exclusion>
@@ -471,7 +527,19 @@
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>jipijapa-hibernate5-3</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>jipijapa-hibernate5</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jipijapa-hibernate5-legacy</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jipijapa-hibernate5-3-legacy</artifactId>
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
@@ -531,10 +599,6 @@
           <groupId>org.jboss.ironjacamar</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>ironjacamar-spec-api</artifactId>
-          <groupId>org.jboss.ironjacamar</groupId>
-        </exclusion>
-        <exclusion>
           <artifactId>ironjacamar-validator</artifactId>
           <groupId>org.jboss.ironjacamar</groupId>
         </exclusion>
@@ -575,19 +639,39 @@
           <groupId>org.jboss.mod_cluster</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>mod_cluster-load-spi</artifactId>
+          <groupId>org.jboss.mod_cluster</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>netty-xnio-transport</artifactId>
           <groupId>org.jboss.xnio.netty</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>agroal-api</artifactId>
+          <groupId>io.agroal</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>agroal-narayana</artifactId>
+          <groupId>io.agroal</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>agroal-pool</artifactId>
+          <groupId>io.agroal</groupId>
         </exclusion>
         <exclusion>
           <artifactId>netty-all</artifactId>
           <groupId>io.netty</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>rxjava</artifactId>
+          <groupId>io.reactivex.rxjava2</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>undertow-js</artifactId>
           <groupId>io.undertow.js</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>jboss-jaxrs-api_2.0_spec</artifactId>
+          <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
           <groupId>org.jboss.spec.javax.ws.rs</groupId>
         </exclusion>
         <exclusion>
@@ -599,11 +683,11 @@
           <groupId>org.jboss.resteasy</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>resteasy-jaxrs</artifactId>
+          <artifactId>resteasy-client-microprofile</artifactId>
           <groupId>org.jboss.resteasy</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>async-http-servlet-3.0</artifactId>
+          <artifactId>resteasy-jaxrs</artifactId>
           <groupId>org.jboss.resteasy</groupId>
         </exclusion>
         <exclusion>
@@ -631,6 +715,10 @@
           <groupId>org.jboss.resteasy</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>resteasy-json-binding-provider</artifactId>
+          <groupId>org.jboss.resteasy</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>resteasy-json-p-provider</artifactId>
           <groupId>org.jboss.resteasy</groupId>
         </exclusion>
@@ -648,6 +736,10 @@
         </exclusion>
         <exclusion>
           <artifactId>resteasy-multipart-provider</artifactId>
+          <groupId>org.jboss.resteasy</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>resteasy-rxjava2</artifactId>
           <groupId>org.jboss.resteasy</groupId>
         </exclusion>
         <exclusion>
@@ -675,7 +767,7 @@
           <groupId>org.jboss.spec.javax.ejb</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>jboss-jsf-api_2.2_spec</artifactId>
+          <artifactId>jboss-jsf-api_2.3_spec</artifactId>
           <groupId>org.jboss.spec.javax.faces</groupId>
         </exclusion>
         <exclusion>
@@ -699,7 +791,7 @@
           <groupId>org.jboss.spec.javax.transaction</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>jboss-jaxb-api_2.2_spec</artifactId>
+          <artifactId>jboss-jaxb-api_2.3_spec</artifactId>
           <groupId>org.jboss.spec.javax.xml.bind</groupId>
         </exclusion>
         <exclusion>
@@ -711,7 +803,7 @@
           <groupId>org.jboss.spec.javax.xml.soap</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>jboss-jaxws-api_2.2_spec</artifactId>
+          <artifactId>jboss-jaxws-api_2.3_spec</artifactId>
           <groupId>org.jboss.spec.javax.xml.ws</groupId>
         </exclusion>
         <exclusion>
@@ -723,16 +815,32 @@
           <groupId>org.jboss.weld</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>weld-ejb</artifactId>
+          <groupId>org.jboss.weld.module</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>weld-jsf</artifactId>
+          <groupId>org.jboss.weld.module</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>weld-jta</artifactId>
+          <groupId>org.jboss.weld.module</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>weld-web</artifactId>
+          <groupId>org.jboss.weld.module</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>weld-probe-core</artifactId>
           <groupId>org.jboss.weld.probe</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>weld-core-jsf</artifactId>
+          <artifactId>weld-spi</artifactId>
           <groupId>org.jboss.weld</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>weld-spi</artifactId>
-          <groupId>org.jboss.weld</groupId>
+          <artifactId>microprofile-rest-client-api</artifactId>
+          <groupId>org.eclipse.microprofile.rest.client</groupId>
         </exclusion>
         <exclusion>
           <artifactId>jdom</artifactId>
@@ -741,6 +849,14 @@
         <exclusion>
           <artifactId>jgroups</artifactId>
           <groupId>org.jgroups</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jgroups-azure</artifactId>
+          <groupId>org.jgroups.azure</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jgroups-kubernetes</artifactId>
+          <groupId>org.jgroups.kubernetes</groupId>
         </exclusion>
         <exclusion>
           <artifactId>picketlink-api</artifactId>
@@ -769,14 +885,6 @@
         <exclusion>
           <artifactId>picketlink-idm-impl</artifactId>
           <groupId>org.picketlink</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>scannotation</artifactId>
-          <groupId>org.scannotation</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>slf4j-ext</artifactId>
-          <groupId>org.slf4j</groupId>
         </exclusion>
         <exclusion>
           <artifactId>snakeyaml</artifactId>
@@ -883,6 +991,10 @@
           <groupId>org.apache.activemq</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>artemis-jdbc-store</artifactId>
+          <groupId>org.apache.activemq</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>artemis-jms-client</artifactId>
           <groupId>org.apache.activemq</groupId>
         </exclusion>
@@ -896,10 +1008,6 @@
         </exclusion>
         <exclusion>
           <artifactId>artemis-native</artifactId>
-          <groupId>org.apache.activemq</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>artemis-proton-plug</artifactId>
           <groupId>org.apache.activemq</groupId>
         </exclusion>
         <exclusion>
@@ -920,6 +1028,10 @@
         </exclusion>
         <exclusion>
           <artifactId>artemis-stomp-protocol</artifactId>
+          <groupId>org.apache.activemq</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>artemis-tools</artifactId>
           <groupId>org.apache.activemq</groupId>
         </exclusion>
         <exclusion>
@@ -979,10 +1091,6 @@
           <groupId>org.apache.neethi</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>proton-jms</artifactId>
-          <groupId>org.apache.qpid</groupId>
-        </exclusion>
-        <exclusion>
           <artifactId>proton-j</artifactId>
           <groupId>org.apache.qpid</groupId>
         </exclusion>
@@ -991,11 +1099,15 @@
           <groupId>org.apache.santuario</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>libthrift</artifactId>
+          <groupId>org.apache.thrift</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>xmlschema-core</artifactId>
           <groupId>org.apache.ws.xmlschema</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>velocity</artifactId>
+          <artifactId>velocity-engine-core</artifactId>
           <groupId>org.apache.velocity</groupId>
         </exclusion>
         <exclusion>
@@ -1055,28 +1167,20 @@
           <groupId>org.codehaus.jettison</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>javax.json</artifactId>
-          <groupId>org.glassfish</groupId>
+          <artifactId>byte-buddy</artifactId>
+          <groupId>net.bytebuddy</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>hibernate-entitymanager</artifactId>
-          <groupId>org.hibernate</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>hibernate-java8</artifactId>
-          <groupId>org.hibernate</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>hibernate-infinispan</artifactId>
-          <groupId>org.hibernate</groupId>
+          <artifactId>infinispan-hibernate-cache-v53</artifactId>
+          <groupId>org.infinispan</groupId>
         </exclusion>
         <exclusion>
           <artifactId>hibernate-validator</artifactId>
-          <groupId>org.hibernate</groupId>
+          <groupId>org.hibernate.validator</groupId>
         </exclusion>
         <exclusion>
           <artifactId>hibernate-validator-cdi</artifactId>
-          <groupId>org.hibernate</groupId>
+          <groupId>org.hibernate.validator</groupId>
         </exclusion>
         <exclusion>
           <artifactId>hibernate-envers</artifactId>
@@ -1095,16 +1199,20 @@
           <groupId>org.hibernate</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>hibernate-search-backend-jgroups</artifactId>
-          <groupId>org.hibernate</groupId>
-        </exclusion>
-        <exclusion>
           <artifactId>hibernate-search-serialization-avro</artifactId>
           <groupId>org.hibernate</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>hibernate-jpa-2.1-api</artifactId>
-          <groupId>org.hibernate.javax.persistence</groupId>
+          <artifactId>wildfly-ormtransformer</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>javax.persistence-api</artifactId>
+          <groupId>javax.persistence</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>javax.security.enterprise-api</artifactId>
+          <groupId>javax.security.enterprise</groupId>
         </exclusion>
         <exclusion>
           <artifactId>hornetq-commons</artifactId>
@@ -1116,14 +1224,6 @@
         </exclusion>
         <exclusion>
           <artifactId>hornetq-jms-client</artifactId>
-          <groupId>org.hornetq</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>hornetq-journal</artifactId>
-          <groupId>org.hornetq</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>hornetq-native</artifactId>
           <groupId>org.hornetq</groupId>
         </exclusion>
         <exclusion>
@@ -1147,6 +1247,18 @@
           <groupId>org.infinispan</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>infinispan-hibernate-cache-commons</artifactId>
+          <groupId>org.infinispan</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>infinispan-hibernate-cache-spi</artifactId>
+          <groupId>org.infinispan</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>infinispan-hibernate-cache-v51</artifactId>
+          <groupId>org.infinispan</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>jasypt</artifactId>
           <groupId>org.jasypt</groupId>
         </exclusion>
@@ -1157,6 +1269,10 @@
         <exclusion>
           <artifactId>jboss-iiop-client</artifactId>
           <groupId>org.jboss</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>reactive-streams</artifactId>
+          <groupId>org.reactivestreams</groupId>
         </exclusion>
         <exclusion>
           <artifactId>wildfly-appclient</artifactId>
@@ -1223,15 +1339,23 @@
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>wildfly-clustering-marshalling-infinispan</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>wildfly-clustering-marshalling-jboss</artifactId>
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>wildfly-clustering-server</artifactId>
+          <artifactId>wildfly-clustering-marshalling-spi</artifactId>
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
           <artifactId>wildfly-clustering-service</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-clustering-server</artifactId>
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
@@ -1271,12 +1395,8 @@
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>release-stream</artifactId>
+          <artifactId>hal-console</artifactId>
           <groupId>org.jboss.hal</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>wildfly-batch</artifactId>
-          <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
           <artifactId>wildfly-batch-jberet</artifactId>
@@ -1287,11 +1407,19 @@
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>wildfly-jberet</artifactId>
+          <artifactId>wildfly-connector</artifactId>
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>wildfly-connector</artifactId>
+          <artifactId>wildfly-datasources-agroal</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-discovery-client</artifactId>
+          <groupId>org.wildfly.discovery</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-ee-security</artifactId>
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
@@ -1343,11 +1471,103 @@
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>smallrye-config</artifactId>
+          <groupId>io.smallrye</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-microprofile-config-smallrye</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>microprofile-config-api</artifactId>
+          <groupId>org.eclipse.microprofile.config</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>smallrye-health</artifactId>
+          <groupId>io.smallrye</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-microprofile-health-smallrye</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>microprofile-health-api</artifactId>
+          <groupId>org.eclipse.microprofile.health</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>smallrye-metrics</artifactId>
+          <groupId>io.smallrye</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-microprofile-metrics-smallrye</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>microprofile-metrics-api</artifactId>
+          <groupId>org.eclipse.microprofile.metrics</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>wildfly-mod_cluster-extension</artifactId>
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>smallrye-opentracing</artifactId>
+          <groupId>io.smallrye</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-microprofile-opentracing-extension</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-microprofile-opentracing-smallrye</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>microprofile-opentracing-api</artifactId>
+          <groupId>org.eclipse.microprofile.opentracing</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>opentracing-api</artifactId>
+          <groupId>io.opentracing</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>opentracing-noop</artifactId>
+          <groupId>io.opentracing</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>opentracing-util</artifactId>
+          <groupId>io.opentracing</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>opentracing-tracerresolver</artifactId>
+          <groupId>io.opentracing.contrib</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>opentracing-web-servlet-filter</artifactId>
+          <groupId>io.opentracing.contrib</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>opentracing-jaxrs2</artifactId>
+          <groupId>io.opentracing.contrib</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>opentracing-concurrent</artifactId>
+          <groupId>io.opentracing.contrib</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jaeger-core</artifactId>
+          <groupId>io.jaegertracing</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jaeger-thrift</artifactId>
+          <groupId>io.jaegertracing</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>wildfly-mod_cluster-undertow</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-naming-client</artifactId>
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
@@ -1363,11 +1583,43 @@
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
+          <artifactId>wildfly-transaction-client</artifactId>
+          <groupId>org.wildfly.transaction</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>wildfly-web</artifactId>
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
           <artifactId>wildfly-weld</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-weld-spi</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-weld-common</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-weld-ejb</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-weld-jpa</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-weld-bean-validation</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-weld-webservices</artifactId>
+          <groupId>org.wildfly</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>wildfly-weld-transactions</artifactId>
           <groupId>org.wildfly</groupId>
         </exclusion>
         <exclusion>
@@ -1395,8 +1647,16 @@
           <groupId>org.picketlink.distribution</groupId>
         </exclusion>
         <exclusion>
-          <artifactId>wildfly-checkstyle-config</artifactId>
-          <groupId>org.wildfly.checkstyle</groupId>
+          <artifactId>taglibs-standard-spec</artifactId>
+          <groupId>org.apache.taglibs</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>taglibs-standard-impl</artifactId>
+          <groupId>org.apache.taglibs</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>taglibs-standard-compat</artifactId>
+          <groupId>org.apache.taglibs</groupId>
         </exclusion>
       </exclusions>
     </dependency>
