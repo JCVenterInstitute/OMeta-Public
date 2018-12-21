@@ -1,0 +1,9 @@
+.idea
+db/target
+ear/target
+ejb/target
+loader/target
+resources/target
+
+web/src/main/resources/hibernate
+resources/src/main/resources/LoadingEngine*
