@@ -7,3 +7,4 @@ resources/target
 
 web/src/main/resources/hibernate
 resources/src/main/resources/LoadingEngine*
+!resources/src/main/resources/LoadingEngine-EXAMPLE.properties
