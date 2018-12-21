@@ -21,7 +21,7 @@
   -->
 
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
-    <persistence-unit name="OMETAPersistenceUnit">
+    <persistence-unit name="OMETAPersistenceUnit" transaction-type="RESOURCE_LOCAL">
         <jta-data-source>java:/PWS_DBInterface_MySQL_DS</jta-data-source>
         <class>org.jcvi.ometa.model.Actor</class>
         <class>org.jcvi.ometa.model.ActorGroup</class>

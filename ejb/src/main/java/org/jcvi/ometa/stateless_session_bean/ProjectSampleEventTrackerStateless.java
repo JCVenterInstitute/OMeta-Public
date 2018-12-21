@@ -72,6 +72,7 @@ import java.util.Properties;
 @RolesAllowed("pstuser")
 @Remote(org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackRemote.class)
 @Local(org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackLocal.class)
+@TransactionManagement(TransactionManagementType.BEAN)
 public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWritebackBusiness {
 
     @Resource

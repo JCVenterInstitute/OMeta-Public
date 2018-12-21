@@ -149,7 +149,7 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
         // Injection fails for this non-managed class.
         DAOException ex = null;
         String pu = PERSISTENCE_UNIT;
-        if(session == null) {
+        if(session == null || !em.isOpen()) {
             session = null;
             try {
                 em = (EntityManager)new InitialContext().lookup(pu);

@@ -33,9 +33,7 @@ import org.jcvi.ometa.model.Dictionary;
 import org.jcvi.ometa.utils.Constants;
 import org.jtc.common.util.property.PropertyHelper;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import javax.interceptor.ExcludeClassInterceptors;
 import javax.interceptor.Interceptors;
 import javax.jws.WebMethod;
@@ -68,6 +66,7 @@ import java.util.*;
 @Remote(org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationRemote.class)
 @Local(org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationLocal.class)
 @SecurityDomain("jcvi")
+@TransactionManagement(TransactionManagementType.BEAN)
 public class ProjectSampleEventPresentationStateless implements ProjectSampleEventPresentationBusiness {
     private DAOFactory daoFactory;
     private SessionAndTransactionManagerI sessionAndTransactionManager;
