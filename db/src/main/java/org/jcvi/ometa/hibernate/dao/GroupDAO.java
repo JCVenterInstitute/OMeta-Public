@@ -26,6 +26,9 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.jcvi.ometa.model.Group;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,12 +40,16 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class GroupDAO extends HibernateDAO {
-    public List<Group> getAllGroup( Session session ) throws DAOException {
-        List<Group> returnVal = new ArrayList<Group>();
+    public List<Group> getAllGroup(Session session) throws DAOException {
+        List<Group> returnVal;
         try {
-            Criteria crit = session.createCriteria( Group.class );
-            returnVal.addAll( crit.list() );
-        } catch ( Exception ex ) {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Group> criteriaQuery = builder.createQuery(Group.class);
+            Root<Group> groupRoot = criteriaQuery.from(Group.class);
+
+            criteriaQuery.select(groupRoot);
+            returnVal = new ArrayList<>(session.createQuery(criteriaQuery).getResultList());
+        } catch (Exception ex) {
             throw new DAOException(ex);
         }
 
@@ -50,11 +57,16 @@ public class GroupDAO extends HibernateDAO {
     }
 
     public Group getGroupByLookupId(Long nameId, Session session) throws DAOException {
-        Group rtnVal = null;
+        Group rtnVal;
         try {
-            Criteria crit = session.createCriteria(Group.class);
-            crit.add(Restrictions.eq("nameLookupId", nameId));
-            rtnVal = (Group)crit.uniqueResult();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Group> criteriaQuery = builder.createQuery(Group.class);
+            Root<Group> groupRoot = criteriaQuery.from(Group.class);
+
+            criteriaQuery.select(groupRoot)
+                    .where(builder.equal(groupRoot.get("nameLookupId"), nameId));
+
+            rtnVal = session.createQuery(criteriaQuery).getSingleResult();
         } catch (Exception ex) {
             throw new DAOException(ex);
         }
@@ -64,8 +76,8 @@ public class GroupDAO extends HibernateDAO {
     public void addGroup(Group group, Session session) throws Exception {
         try {
             session.saveOrUpdate(group);
-        } catch ( Exception ex ) {
-            throw new DAOException( ex );
+        } catch (Exception ex) {
+            throw new DAOException(ex);
         }
     }
 }

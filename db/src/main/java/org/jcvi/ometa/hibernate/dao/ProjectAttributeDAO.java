@@ -21,11 +21,13 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.jcvi.ometa.model.ProjectAttribute;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,11 +73,16 @@ public class ProjectAttributeDAO extends HibernateDAO {
     }
 
     public List<ProjectAttribute> readAll( Long projectId, Session session ) throws DAOException {
-        List<ProjectAttribute> attributeList = new ArrayList<ProjectAttribute>();
+        List<ProjectAttribute> attributeList = new ArrayList<>();
         try {
-            Criteria crit = session.createCriteria( ProjectAttribute.class );
-            crit.add( Restrictions.eq( "projectId", projectId ) );
-            List results = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<ProjectAttribute> criteriaQuery = builder.createQuery(ProjectAttribute.class);
+            Root<ProjectAttribute> projectAttributeRoot = criteriaQuery.from(ProjectAttribute.class);
+
+            criteriaQuery.select(projectAttributeRoot)
+                    .where(builder.equal(projectAttributeRoot.get("projectId"), projectId));
+
+            List results = session.createQuery(criteriaQuery).getResultList();
 
             if ( results != null ) {
                 for ( Object result: results ) {
@@ -94,10 +101,17 @@ public class ProjectAttributeDAO extends HibernateDAO {
 
         ProjectAttribute attribute = null;
         try {
-            Criteria crit = session.createCriteria( ProjectAttribute.class );
-            crit.add( Restrictions.eq( "projectId", projectId ) );
-            crit.add( Restrictions.eq( "nameLookupValueId", attributeLookupValueId ) );
-            List<ProjectAttribute> results = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<ProjectAttribute> criteriaQuery = builder.createQuery(ProjectAttribute.class);
+            Root<ProjectAttribute> projectAttributeRoot = criteriaQuery.from(ProjectAttribute.class);
+
+            criteriaQuery.select(projectAttributeRoot)
+                    .where(builder.and(
+                            builder.equal(projectAttributeRoot.get("projectId"), projectId),
+                            builder.equal(projectAttributeRoot.get("nameLookupValueId"), attributeLookupValueId)
+                    ));
+
+            List<ProjectAttribute> results = session.createQuery(criteriaQuery).getResultList();
 
             if ( results != null  &&  results.size() > 0 ) {
                 attribute = results.get( 0 );
@@ -110,12 +124,17 @@ public class ProjectAttributeDAO extends HibernateDAO {
     }
 
     public List<ProjectAttribute> readAll( List<Long> projectIds, Session session ) throws DAOException {
-        List<ProjectAttribute> attributeList = new ArrayList<ProjectAttribute>();
+        List<ProjectAttribute> attributeList = new ArrayList<>();
         try {
             if ( projectIds.size() > 0 ) {
-                Criteria crit = session.createCriteria( ProjectAttribute.class );
-                crit.add( Restrictions.in( "projectId", projectIds ) );
-                List results = crit.list();
+                CriteriaBuilder builder = session.getCriteriaBuilder();
+                CriteriaQuery<ProjectAttribute> criteriaQuery = builder.createQuery(ProjectAttribute.class);
+                Root<ProjectAttribute> projectAttributeRoot = criteriaQuery.from(ProjectAttribute.class);
+
+                criteriaQuery.select(projectAttributeRoot)
+                        .where(projectAttributeRoot.get("projectId").in(projectIds));
+
+                List results = session.createQuery(criteriaQuery).getResultList();
 
                 if ( results != null ) {
                     for ( Object result: results ) {

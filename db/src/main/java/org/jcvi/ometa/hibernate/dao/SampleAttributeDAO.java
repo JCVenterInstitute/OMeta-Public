@@ -21,15 +21,19 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
-import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.NativeQuery;
 import org.jcvi.ometa.model.SampleAttribute;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by IntelliJ IDEA.
@@ -67,11 +71,18 @@ public class SampleAttributeDAO extends HibernateDAO {
 
         SampleAttribute attribute = null;
         try {
-            Criteria crit = session.createCriteria( SampleAttribute.class );
-            crit.add( Restrictions.eq( "projectId", projectId ) );
-            crit.add(Restrictions.eq("sampleId", sampleId));
-            crit.add( Restrictions.eq( "nameLookupValueId", attributeLookupValueId ) );
-            List<SampleAttribute> results = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<SampleAttribute> criteriaQuery = builder.createQuery(SampleAttribute.class);
+            Root<SampleAttribute> sampleAttributeRoot = criteriaQuery.from(SampleAttribute.class);
+
+            criteriaQuery.select(sampleAttributeRoot)
+                    .where(builder.and(
+                            builder.equal(sampleAttributeRoot.get("projectId"), projectId),
+                            builder.equal(sampleAttributeRoot.get("sampleId"), sampleId),
+                            builder.equal(sampleAttributeRoot.get("nameLookupValueId"), attributeLookupValueId)
+                    ));
+
+            List<SampleAttribute> results = session.createQuery(criteriaQuery).getResultList();
 
             if ( results != null  &&  results.size() > 0 ) {
                 attribute = results.get( 0 );
@@ -95,7 +106,7 @@ public class SampleAttributeDAO extends HibernateDAO {
                     "where p.projet_name = :projectName " +
                     "and s.sample_name = :sampleName " +
                     "and lv.lkuvlu_name = :attributeName";
-            Query query = session.createSQLQuery(sql)
+            NativeQuery query = session.createNativeQuery(sql)
                     .addEntity(SampleAttribute.class)
                     .setParameter("projectName",projectName)
                     .setParameter("sampleName",sampleName)
@@ -116,12 +127,19 @@ public class SampleAttributeDAO extends HibernateDAO {
     public List<SampleAttribute> getSampleAttributesFromProject( Long projectId, Long attributeLookupValueId, Session session )
             throws DAOException {
 
-        List<SampleAttribute> results = null;
+        List<SampleAttribute> results;
         try {
-            Criteria crit = session.createCriteria( SampleAttribute.class );
-            crit.add( Restrictions.eq( "projectId", projectId ) );
-            crit.add( Restrictions.eq( "nameLookupValueId", attributeLookupValueId ) );
-            results = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<SampleAttribute> criteriaQuery = builder.createQuery(SampleAttribute.class);
+            Root<SampleAttribute> sampleAttributeRoot = criteriaQuery.from(SampleAttribute.class);
+
+            criteriaQuery.select(sampleAttributeRoot)
+                    .where(builder.and(
+                            builder.equal(sampleAttributeRoot.get("projectId"), projectId),
+                            builder.equal(sampleAttributeRoot.get("nameLookupValueId"), attributeLookupValueId)
+                    ));
+
+            results = session.createQuery(criteriaQuery).getResultList();
         } catch (Exception ex) {
             throw new DAOException(ex);
         }
@@ -130,12 +148,16 @@ public class SampleAttributeDAO extends HibernateDAO {
     }
 
     public List<SampleAttribute> getAllAttributes( Long sampleId, Session session ) throws DAOException {
-        List<SampleAttribute> attributeList = new ArrayList<SampleAttribute>();
+        List<SampleAttribute> attributeList;
         try {
-            Criteria crit = session.createCriteria( SampleAttribute.class );
-            crit.add( Restrictions.eq("sampleId", sampleId) );
-            List<SampleAttribute> results = crit.list();
-            attributeList.addAll( results );
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<SampleAttribute> criteriaQuery = builder.createQuery(SampleAttribute.class);
+            Root<SampleAttribute> sampleAttributeRoot = criteriaQuery.from(SampleAttribute.class);
+
+            criteriaQuery.select(sampleAttributeRoot)
+                    .where(builder.equal(sampleAttributeRoot.get("sampleId"), sampleId));
+
+            attributeList = new ArrayList<>(session.createQuery(criteriaQuery).getResultList());
         } catch (Exception ex) {
             throw new DAOException(ex);
         }
@@ -144,20 +166,24 @@ public class SampleAttributeDAO extends HibernateDAO {
     }
 
     public List<SampleAttribute> getAllAttributes( List<Long> sampleIds, Session session ) throws DAOException {
-        List<SampleAttribute> attributeList = new ArrayList<SampleAttribute>();
+        List<SampleAttribute> attributeList = new ArrayList<>();
 
         try {
             if ( sampleIds != null  &&  sampleIds.size() > 0 ) {
-                Criteria crit = session.createCriteria( SampleAttribute.class );
-                crit.add( Restrictions.in( "sampleId", sampleIds ) );
-                List results = crit.list();
+                CriteriaBuilder builder = session.getCriteriaBuilder();
+                CriteriaQuery<SampleAttribute> criteriaQuery = builder.createQuery(SampleAttribute.class);
+                Root<SampleAttribute> sampleAttributeRoot = criteriaQuery.from(SampleAttribute.class);
+
+                criteriaQuery.select(sampleAttributeRoot)
+                        .where(sampleAttributeRoot.get("sampleId").in(sampleIds));
+
+                List<SampleAttribute> results = session.createQuery(criteriaQuery).getResultList();
 
                 if ( results != null ) {
-                    for ( Object result: results ) {
-                        attributeList.add( (SampleAttribute) result);
-                    }
+                    attributeList = results.stream()
+                            .map(result -> (SampleAttribute) result)
+                            .collect(Collectors.toList());
                 }
-
             }
         } catch (Exception ex) {
             throw new DAOException(ex);

@@ -21,14 +21,18 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
-import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.NativeQuery;
 import org.jcvi.ometa.model.EventMetaAttribute;
 import org.jcvi.ometa.utils.Constants;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -70,12 +74,18 @@ public class EventMetaAttributeDAO extends HibernateDAO {
 
         EventMetaAttribute metaAttribute = null;
         try {
-            Criteria crit = session.createCriteria( EventMetaAttribute.class );
-            crit.add( Restrictions.eq("nameLookupId", lookupValueId) );
-            crit.add( Restrictions.eq("projectId", projectId) );
-            crit.add( Restrictions.eq("eventTypeLookupId", eventTypeLookupId) );
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<EventMetaAttribute> criteriaQuery = builder.createQuery(EventMetaAttribute.class);
+            Root<EventMetaAttribute> emaRoot = criteriaQuery.from(EventMetaAttribute.class);
 
-            List results = crit.list();
+            criteriaQuery.select(emaRoot)
+                    .where(builder.and(
+                            builder.equal(emaRoot.get("nameLookupId"), lookupValueId),
+                            builder.equal(emaRoot.get("projectId"), projectId),
+                            builder.equal(emaRoot.get("eventTypeLookupId"), eventTypeLookupId)
+                    ));
+
+            List results = session.createQuery(criteriaQuery).getResultList();
             Date latestDate = null;
             for ( Object nextResult: results ) {
                 EventMetaAttribute nextMetaAttribute = (EventMetaAttribute)nextResult;
@@ -93,16 +103,22 @@ public class EventMetaAttributeDAO extends HibernateDAO {
     /** Find all the required event attributes (by meta attribute) for the event type/project combination. */
     public List<EventMetaAttribute> readAll( Long projectId, Long eventTypeLookupId, Session session )
             throws DAOException {
-        List<EventMetaAttribute> attributeList = new ArrayList<EventMetaAttribute>();
+        List<EventMetaAttribute> attributeList = new ArrayList<>();
         try {
-            Criteria crit = session.createCriteria( EventMetaAttribute.class );
-            crit.add( Restrictions.eq( "projectId", projectId ) );
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<EventMetaAttribute> criteriaQuery = builder.createQuery(EventMetaAttribute.class);
+            Root<EventMetaAttribute> emaRoot = criteriaQuery.from(EventMetaAttribute.class);
+
+            List<Predicate> predicates = new ArrayList<>(2);
+            predicates.add(builder.equal(emaRoot.get("projectId"), projectId));
             if(eventTypeLookupId != null)
-                crit.add( Restrictions.eq( "eventTypeLookupId", eventTypeLookupId ) );
+                predicates.add(builder.equal(emaRoot.get("eventTypeLookupId"), eventTypeLookupId ));
 
-            crit.addOrder(Order.asc("order")); //order by position value
+            criteriaQuery.select(emaRoot)
+                    .where(predicates.toArray(new Predicate[]{}))
+                    .orderBy(builder.asc(emaRoot.get("order"))); //order by position value
 
-            List results = crit.list();
+            List results = session.createQuery(criteriaQuery).getResultList();
 
             if ( results != null ) {
                 for ( Object result: results ) {
@@ -124,18 +140,23 @@ public class EventMetaAttributeDAO extends HibernateDAO {
     /** Find all the required event attributes (by meta attribute) for each event type/project combination. */
     public List<EventMetaAttribute> readAll( List<Long> projectIds, Long eventTypeLookupId, Session session )
             throws DAOException {
-        List<EventMetaAttribute> attributeList = new ArrayList<EventMetaAttribute>();
+        List<EventMetaAttribute> attributeList = new ArrayList<>();
         try {
             if(projectIds.size() > 0) {
-                Criteria crit = session.createCriteria(EventMetaAttribute.class);
-                crit.add(Restrictions.in("projectId", projectIds));
-                if(eventTypeLookupId != null) {
-                    crit.add(Restrictions.eq("eventTypeLookupId", eventTypeLookupId));
-                }
+                CriteriaBuilder builder = session.getCriteriaBuilder();
+                CriteriaQuery<EventMetaAttribute> criteriaQuery = builder.createQuery(EventMetaAttribute.class);
+                Root<EventMetaAttribute> emaRoot = criteriaQuery.from(EventMetaAttribute.class);
 
-                crit.addOrder(Order.asc("order")); //order by position value
+                List<Predicate> predicates = new ArrayList<>(2);
+                predicates.add(emaRoot.get("projectId").in(projectIds));
+                if(eventTypeLookupId != null)
+                    predicates.add(builder.equal(emaRoot.get("eventTypeLookupId"), eventTypeLookupId ));
 
-                List<EventMetaAttribute> results = crit.list();
+                criteriaQuery.select(emaRoot)
+                        .where(predicates.toArray(new Predicate[]{}))
+                        .orderBy(builder.asc(emaRoot.get("order"))); //order by position value
+
+                List<EventMetaAttribute> results = session.createQuery(criteriaQuery).getResultList();
 
                 if ( results != null   &&   results.size() > 0 ) {
                     expandLookupValueIds( results, session );
@@ -154,7 +175,7 @@ public class EventMetaAttributeDAO extends HibernateDAO {
 
     /** get all unique meta-attributes */
     public List<EventMetaAttribute> readAllUnique( Session session ) throws DAOException {
-        List<EventMetaAttribute> attributeList = new ArrayList<EventMetaAttribute>();
+        List<EventMetaAttribute> attributeList;
         try {
             String sql = " select EMA.*,LV.lkuvlu_name " +
                     " from event_meta_attribute EMA, " +
@@ -162,7 +183,7 @@ public class EventMetaAttributeDAO extends HibernateDAO {
                     " lookup_value LV " +
                     " where EMA.evenma_id = EMAU.evenma_id and EMA.evenma_lkuvlu_attribute_id=LV.lkuvlu_id " +
                     " order by LV.lkuvlu_name ";
-            SQLQuery query = session.createSQLQuery( sql );
+            NativeQuery query = session.createNativeQuery( sql );
             query.addEntity( "EMA", EventMetaAttribute.class );
 
             attributeList = query.list();

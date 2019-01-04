@@ -13,6 +13,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.5.11" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains:annotations:16.0.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.wildfly:wildfly-picketlink:15.0.0.Final" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.wildfly:wildfly-security-api:15.0.0.Final" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.wildfly:wildfly-system-jmx:15.0.0.Final" level="project" />

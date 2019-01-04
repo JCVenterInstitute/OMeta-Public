@@ -21,12 +21,20 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
+import org.bouncycastle.math.raw.Nat;
 import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
+import org.hibernate.type.LongType;
 import org.hibernate.type.StandardBasicTypes;
+import org.hibernate.type.StringType;
 import org.jcvi.ometa.model.Event;
 import org.jcvi.ometa.model.LookupValue;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -143,36 +151,33 @@ public class EventDAO extends HibernateDAO {
             Long flexId, String identifier, String sSearch,
             String sortCol, String sortDir, int start, int count,
             String fromd, String tod, List<String> columnName, List<String> columnSearchArguments, Session session) throws DAOException {
-        List<Event> eventList = new ArrayList<Event>();
+        List<Event> eventList = new ArrayList<>();
         try {
-            List results = null;
+            List results;
 
-            String sql = " select E.*, S.sample_name sample, CONCAT(A.actor_last_name,',',A.actor_first_name) user, LV.lkuvlu_name eventType  " +
+            StringBuilder sql = new StringBuilder(" select E.*, S.sample_name sample, CONCAT(A.actor_last_name,',',A.actor_first_name) user, LV.lkuvlu_name eventType  " +
                     " from event E " +
                     "   left join sample S on E.event_sampl_id=S.sample_id " +
                     "   left join lookup_value LV on E.event_type_lkuvl_id=LV.lkuvlu_id " +
-                    "   left join actor A on E.event_actor_created_by=A.actor_id where ";
+                    "   left join actor A on E.event_actor_created_by=A.actor_id where ");
 
             if("Sample".equals(identifier))
-                sql += "E.event_sampl_id=";
+                sql.append("E.event_sampl_id=");
             else if("Eventlist".equals(identifier))
-                sql += "E.event_projet_id=";
+                sql.append("E.event_projet_id=");
             else if("Event".equals(identifier))
-                sql += "E.event_id=";
+                sql.append("E.event_id=");
             else
-                sql += "E.event_sampl_id is null and E.event_projet_id=";
-            sql+=flexId;
+                sql.append("E.event_sampl_id is null and E.event_projet_id=");
+            sql.append(flexId);
 
             if(sSearch!=null && !sSearch.isEmpty()) {
                 sSearch = "%"+sSearch+"%";
-                sql+=" and (LOWER(LV.lkuvlu_name) like '"+sSearch+"' or LOWER(S.sample_name) like '"+sSearch+"' " +
-                        " or ((LOWER(A.actor_first_name) like '"+sSearch+"' or LOWER(A.actor_last_name) like '"+sSearch+"')))";
+                sql.append(" and (LOWER(LV.lkuvlu_name) like '").append(sSearch).append("' or LOWER(S.sample_name) like '").append(sSearch).append("' ").append(" or ((LOWER(A.actor_first_name) like '").append(sSearch).append("' or LOWER(A.actor_last_name) like '").append(sSearch).append("')))");
             }
 
             if(columnName!=null && !columnName.isEmpty()){
-                String columnSearchSql = " #logicGate# (E.event_id in (select EA.eventa_event_id from event_attribute EA, lookup_value LV1 where EA.eventa_lkuvlu_attribute_id = LV1.lkuvlu_id and " +
-                        "LV1.lkuvlu_name = '#columnName#' and COALESCE(EA.eventa_attribute_date,LOWER(EA.eventa_attribute_float),LOWER(EA.eventa_attribute_str),LOWER(EA.eventa_attribute_int)) #columnSearch#))";
-                sql += " and (";
+                sql.append(" and (");
 
                 for(int i = 0; i<columnName.size(); i++) {
                     String key = columnName.get(i);
@@ -182,13 +187,13 @@ public class EventDAO extends HibernateDAO {
                     String logicGate = i == 0 ? "" : valueArr[2].equals("not") ? "and not" : valueArr[2];
 
                     if (key.equals("Sample Name")) {
-                        sql += operation.equals("like") ? " " + logicGate + " LOWER(S.sample_name) like '%" + searchVal + "%' "
+                        sql.append(operation.equals("like") ? " " + logicGate + " LOWER(S.sample_name) like '%" + searchVal + "%' "
                                 : operation.equals("in") ? " " + logicGate + " LOWER(S.sample_name) in ('" + searchVal.replaceAll(",", "','") + "') "
-                                : " " + logicGate + " LOWER(S.sample_name) = '" + searchVal + "' ";
+                                : " " + logicGate + " LOWER(S.sample_name) = '" + searchVal + "' ");
                     } else if (key.equals("Event Type")) {
-                        sql += operation.equals("like") ? " " + logicGate + " LOWER(LV.lkuvlu_name) like '%" + searchVal + "%' "
+                        sql.append(operation.equals("like") ? " " + logicGate + " LOWER(LV.lkuvlu_name) like '%" + searchVal + "%' "
                                 : operation.equals("in") ? " " + logicGate + " LOWER(LV.lkuvlu_name) in ('" + searchVal.replaceAll(",", "','") + "') "
-                                : " " + logicGate + " LOWER(LV.lkuvlu_name) = '" + searchVal + "' ";
+                                : " " + logicGate + " LOWER(LV.lkuvlu_name) = '" + searchVal + "' ");
                     } else if (key.equals("User")) {
                         String flNameSeparator = ", ";
                         if(searchVal.contains(flNameSeparator)){
@@ -196,49 +201,52 @@ public class EventDAO extends HibernateDAO {
                             String firstName = searchValArr[1];
                             String lastName = searchValArr[0];
 
-                            sql += operation.equals("like") ? " " + logicGate + " (LOWER(A.actor_first_name) like '%" + firstName + "%' or LOWER(A.actor_last_name) like '%" + lastName + "%') "
+                            sql.append(operation.equals("like") ? " " + logicGate + " (LOWER(A.actor_first_name) like '%" + firstName + "%' or LOWER(A.actor_last_name) like '%" + lastName + "%') "
                                     : operation.equals("in") ? " " + logicGate + " (LOWER(A.actor_first_name) in ('" + firstName.replaceAll(",", "','") + "') or LOWER(A.actor_last_name) in ('" + lastName.replaceAll(",", "','") + "')) "
-                                    : " " + logicGate + " (LOWER(A.actor_first_name) = '" + firstName + "' or LOWER(A.actor_last_name) = '" + lastName + "') ";
+                                    : " " + logicGate + " (LOWER(A.actor_first_name) = '" + firstName + "' or LOWER(A.actor_last_name) = '" + lastName + "') ");
                         } else {
-                            sql += operation.equals("like") ? " " + logicGate + " (LOWER(A.actor_first_name) like '%" + searchVal + "%' or LOWER(A.actor_last_name) like '%" + searchVal + "%') "
+                            sql.append(operation.equals("like") ? " " + logicGate + " (LOWER(A.actor_first_name) like '%" + searchVal + "%' or LOWER(A.actor_last_name) like '%" + searchVal + "%') "
                                     : operation.equals("in") ? " " + logicGate + " (LOWER(A.actor_first_name) in ('" + searchVal.replaceAll(",", "','") + "') or LOWER(A.actor_last_name) in ('" + searchVal.replaceAll(",", "','") + "')) "
-                                    : " " + logicGate + " (LOWER(A.actor_first_name) = '" + searchVal + "' or LOWER(A.actor_last_name) = '" + searchVal + "') ";
+                                    : " " + logicGate + " (LOWER(A.actor_first_name) = '" + searchVal + "' or LOWER(A.actor_last_name) = '" + searchVal + "') ");
                         }
                     } else if (key.equals("Date")) {
-                        sql += operation.equals("like") ? " " + logicGate + " E.event_create_date like '%" + searchVal + "%' "
+                        sql.append(operation.equals("like") ? " " + logicGate + " E.event_create_date like '%" + searchVal + "%' "
                                 : operation.equals("in") ? " " + logicGate + " E.event_create_date in ('" + searchVal.replaceAll(",", "','") + "') "
                                 : operation.equals("equals") ? " " + logicGate + " E.event_create_date = '" + searchVal + "' "
-                                : " " + logicGate + " E.event_create_date " + (operation.equals("less")?"<":">") + " '" + searchVal + "' ";
+                                : " " + logicGate + " E.event_create_date " + (operation.equals("less") ? "<" : ">") + " '" + searchVal + "' ");
                     }  else {
-                        sql += operation.equals("like") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "like '%" + searchVal + "%'")
-                                : operation.equals("in") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "in ('" + searchVal.replaceAll(",", "','") + "')")
-                                : operation.equals("equals") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "= '" + searchVal + "'")
-                                : columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", (operation.equals("less")?"<":">") + " '" + searchVal + "'");
+                        String columnSearchSql = " "+logicGate+" (E.event_id in (select EA.eventa_event_id from event_attribute EA, lookup_value LV1 where EA.eventa_lkuvlu_attribute_id = LV1.lkuvlu_id and " +
+                                "LV1.lkuvlu_name = '"+key+"' and COALESCE(EA.eventa_attribute_date,LOWER(EA.eventa_attribute_float),LOWER(EA.eventa_attribute_str),LOWER(EA.eventa_attribute_int)) #columnSearch#))";
+
+                        sql.append(operation.equals("like") ? columnSearchSql.replace("#columnSearch#", "like '%" + searchVal + "%'")
+                                : operation.equals("in") ? columnSearchSql.replace("#columnSearch#", "in ('" + searchVal.replaceAll(",", "','") + "')")
+                                : operation.equals("equals") ? columnSearchSql.replace("#columnSearch#", "= '" + searchVal + "'")
+                                : columnSearchSql.replace("#columnSearch#", (operation.equals("less") ? "<" : ">") + " '" + searchVal + "'"));
                     }
                 }
 
-                sql += ")";
+                sql.append(")");
             }
 
             if(fromd!=null && !fromd.isEmpty())
-                sql+=" and date(E.event_create_date)>='"+fromd+"'";
+                sql.append(" and date(E.event_create_date)>='").append(fromd).append("'");
             if(tod!=null && !tod.isEmpty())
-                sql+=" and date(E.event_create_date)<='"+tod+"'";
+                sql.append(" and date(E.event_create_date)<='").append(tod).append("'");
 
             if(sortCol!=null && !sortCol.isEmpty() && sortDir!=null && !sortDir.isEmpty()) {
-                sql += " order by";
+                sql.append(" order by");
                 if(sortCol.equals("event"))
-                    sql += " eventType ";
+                    sql.append(" eventType ");
                 else if(sortCol.equals("user"))
-                    sql += " user ";
+                    sql.append(" user ");
                 else if(sortCol.equals("sample"))
-                    sql += " sample ";
+                    sql.append(" sample ");
                 else if(sortCol.equals("date"))
-                    sql += " event_create_date ";
-                sql += sortDir;
+                    sql.append(" event_create_date ");
+                sql.append(sortDir);
             }
 
-            SQLQuery query = session.createSQLQuery(sql);
+            NativeQuery query = session.createNativeQuery(sql.toString());
             query.addEntity("E", Event.class);
             if(start>=0 && count>=0) {
                 query.setFirstResult(start);
@@ -259,21 +267,25 @@ public class EventDAO extends HibernateDAO {
     }
 
     public List<Event> getAllEvents(List<Long> flexIds, String identifier, Session session) throws DAOException {
-        List<Event> eventList = new ArrayList<Event>();
+        List<Event> eventList = new ArrayList<>();
         if (flexIds == null  ||  flexIds.size() == 0)
             return eventList;
 
         try {
-            Criteria crit = session.createCriteria(Event.class);
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Event> criteriaQuery = builder.createQuery(Event.class);
+            Root<Event> eventRoot = criteriaQuery.from(Event.class);
+
+            criteriaQuery.select(eventRoot);
             if("Sample".equals(identifier))
-                crit.add(Restrictions.in("sampleId", flexIds));
+                criteriaQuery.where(eventRoot.get("sampleId").in(flexIds));
             else
-                crit.add(Restrictions.and(
-                        Restrictions.in("projectId", flexIds) ,
-                        Restrictions.isNull("sampleId")
+                criteriaQuery.where(builder.and(
+                        eventRoot.get("projectId").in(flexIds),
+                        eventRoot.get("sampleId").isNull()
                 ));
 
-            List results = crit.list();
+            List results = session.createQuery(criteriaQuery).getResultList();
 
             if (results != null) {
                 for (Object result: results) {
@@ -288,16 +300,20 @@ public class EventDAO extends HibernateDAO {
     }
 
     public List<Event> getEventByType( Long projectId, Long eventTypeId, Session session) throws DAOException {
-        List<Event> eventList = new ArrayList<Event>();
+        List<Event> eventList = new ArrayList<>();
 
         try {
-            Criteria crit = session.createCriteria(Event.class);
-            crit.add(Restrictions.and(
-                    Restrictions.eq("projectId", projectId),
-                    Restrictions.eq("eventType", eventTypeId)
-            ));
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Event> criteriaQuery = builder.createQuery(Event.class);
+            Root<Event> eventRoot = criteriaQuery.from(Event.class);
 
-            List results = crit.list();
+            criteriaQuery.select(eventRoot)
+                    .where(builder.and(
+                            builder.equal(eventRoot.get("projectId"), projectId),
+                            builder.equal(eventRoot.get("eventType"), eventTypeId)
+                    ));
+
+            List results = session.createQuery(criteriaQuery).getResultList();
 
             if (results != null) {
                 for (Object result: results) {
@@ -312,16 +328,20 @@ public class EventDAO extends HibernateDAO {
     }
 
     public List<Event> getEventByTypeAndSample(Long sampleId, Long eventTypeId, Session session) throws DAOException {
-        List<Event> eventList = new ArrayList<Event>();
+        List<Event> eventList = new ArrayList<>();
 
         try {
-            Criteria crit = session.createCriteria(Event.class);
-            crit.add(Restrictions.and(
-                    Restrictions.eq("sampleId", sampleId),
-                    Restrictions.eq("eventType", eventTypeId)
-            ));
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Event> criteriaQuery = builder.createQuery(Event.class);
+            Root<Event> eventRoot = criteriaQuery.from(Event.class);
 
-            List results = crit.list();
+            criteriaQuery.select(eventRoot)
+                    .where(builder.and(
+                            builder.equal(eventRoot.get("sampleId"), sampleId),
+                            builder.equal(eventRoot.get("eventType"), eventTypeId)
+                    ));
+
+            List results = session.createQuery(criteriaQuery).getResultList();
 
             if (results != null) {
                 for (Object result: results) {
@@ -344,10 +364,10 @@ public class EventDAO extends HibernateDAO {
                     " where EA.eventa_lkuvlu_attribute_id = :lookupValueId " +
                     " and EA.eventa_attribute_str = :lookupValueStr ";
 
-            SQLQuery query = session.createSQLQuery(sql);
+            NativeQuery query = session.createNativeQuery(sql);
             query.addEntity("E", Event.class);
-            query.setLong("lookupValueId", lookupValueId);
-            query.setString("lookupValueStr", lookupValueStr);
+            query.setParameter("lookupValueId", lookupValueId, LongType.INSTANCE);
+            query.setParameter("lookupValueStr", lookupValueStr, StringType.INSTANCE);
 
 
             eventList = query.list();
@@ -360,7 +380,7 @@ public class EventDAO extends HibernateDAO {
     }
 
     public Event getLatestEventForSample(Long projectId, Long sampleId, Long eventTypeId, Session session) throws DAOException {
-        Event latestEvent = null;
+        Event latestEvent;
 
         try {
             String where = "where eventType = :eventTypeId and projectId = :projectId";
@@ -368,11 +388,11 @@ public class EventDAO extends HibernateDAO {
                 where += " and sampleId = :sampleId";
             }
             Query query = session.createQuery("from Event " + where + " order by creationDate DESC");
-            query.setLong("projectId", projectId);
+            query.setParameter("projectId", projectId, LongType.INSTANCE);
             if(sampleId != null) {
-                query.setLong("sampleId", sampleId);
+                query.setParameter("sampleId", sampleId, LongType.INSTANCE);
             }
-            query.setLong("eventTypeId", eventTypeId);
+            query.setParameter("eventTypeId", eventTypeId, LongType.INSTANCE);
             query.setMaxResults(1);
             latestEvent = (Event)query.uniqueResult();
         } catch (Exception ex) {
@@ -389,7 +409,7 @@ public class EventDAO extends HibernateDAO {
             String sql = " select E.* from event E, lookup_value LV " +
                     " where E.event_type_lkuvl_id=LV.lkuvlu_id " +
                     " group by E.event_type_lkuvl_id order by LV.lkuvlu_name asc ";
-            SQLQuery query = session.createSQLQuery(sql);
+            NativeQuery query = session.createNativeQuery(sql);
             query.addEntity("E", Event.class);
 
             eventList = query.list();
@@ -417,7 +437,7 @@ public class EventDAO extends HibernateDAO {
 
     /** Broad method for simply getting a list of meta attrib names.  Used above as T/F feed. */
     private List<String> getSampleMetaAttributeNames(String projectName, String eventName, Session session) {
-        SQLQuery query = session.createSQLQuery(SAMPLE_REQUIRED_QUERY);
+        NativeQuery query = session.createNativeQuery(SAMPLE_REQUIRED_QUERY);
         query.setParameter(PROJECT_NAME_PARAM, projectName);
         query.setParameter(EVENT_NAME_PARAM, eventName);
         query.addScalar(RETURN_VAL_PARAM, StandardBasicTypes.STRING);

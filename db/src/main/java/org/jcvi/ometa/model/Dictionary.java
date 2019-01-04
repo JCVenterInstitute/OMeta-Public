@@ -25,6 +25,18 @@ public class Dictionary implements ModelBean, Serializable {
     private Long modifiedBy;
     private String parentDependency;
 
+    public Dictionary() {
+    }
+
+    public Dictionary(Long dictionaryId, String dictionaryType, String dictionaryCode, String dictionaryValue, Integer isActive, Date creationDate) {
+        this.dictionaryId = dictionaryId;
+        this.dictionaryType = dictionaryType;
+        this.dictionaryCode = dictionaryCode;
+        this.dictionaryValue = dictionaryValue;
+        this.isActive = isActive;
+        this.creationDate = creationDate;
+    }
+
     @Id
     @Column(name="dict_id", nullable=false)
     public Long getDictionaryId() {

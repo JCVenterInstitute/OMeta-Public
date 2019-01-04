@@ -18,6 +18,16 @@ public class DictionaryDependency implements Serializable {
     private Date createdDate;
     private Date modifiedDate;
 
+    public DictionaryDependency() {
+    }
+
+    public DictionaryDependency(Long dictionaryDependencyId, Long dictionaryId, Long parentId, Date createdDate) {
+        this.dictionaryDependencyId = dictionaryDependencyId;
+        this.dictionaryId = dictionaryId;
+        this.parentId = parentId;
+        this.createdDate = createdDate;
+    }
+
     @Id
     @Column(name="dict_dpcy_id", nullable=false)
     public Long getDictionaryDependencyId() {

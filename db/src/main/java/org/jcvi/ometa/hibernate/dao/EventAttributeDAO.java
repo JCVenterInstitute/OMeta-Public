@@ -21,7 +21,6 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.jcvi.ometa.model.Event;
@@ -29,7 +28,11 @@ import org.jcvi.ometa.model.EventAttribute;
 import org.jcvi.ometa.model.EventMetaAttribute;
 import org.jcvi.ometa.model.ModelBean;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by IntelliJ IDEA.
@@ -61,23 +64,34 @@ public class EventAttributeDAO extends HibernateDAO {
     }
 
     public List<EventAttribute> getEventAttributes( Long eventId, Long projectId, Session session ) throws DAOException {
-        List<EventAttribute> eaList = null;
+        List<EventAttribute> eaList;
         try {
-            Criteria crit = session.createCriteria( EventAttribute.class );
-            crit.add( Restrictions.eq("eventId", eventId) );
-            List<EventAttribute> results = crit.list();
-            List<Long> nameLookupIds = new ArrayList<Long>();
-            if ( results != null && results.size() > 0 ) {
-                for ( EventAttribute ea: results ) {
-                    nameLookupIds.add( ea.getNameLookupValueId() );
-                }
-                crit = session.createCriteria(EventMetaAttribute.class);
-                crit.add(Restrictions.in( "nameLookupId", nameLookupIds ) )
-                        .add(Restrictions.eq( "projectId", projectId ) );
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<EventAttribute> eaCriteriaQuery = builder.createQuery(EventAttribute.class);
+            Root<EventAttribute> eventAttributeRoot = eaCriteriaQuery.from(EventAttribute.class);
 
-                List<EventMetaAttribute> metaResults = crit.list();
+            eaCriteriaQuery.select(eventAttributeRoot)
+                    .where(builder.equal(eventAttributeRoot.get("eventId"), eventId));
+
+            List<EventAttribute> results = session.createQuery(eaCriteriaQuery).getResultList();
+            List<Long> nameLookupIds;
+            if ( results != null && results.size() > 0 ) {
+                nameLookupIds = results.stream()
+                        .map(EventAttribute::getNameLookupValueId)
+                        .collect(Collectors.toList());
+
+                CriteriaQuery<EventMetaAttribute> emaCriteriaQuery = builder.createQuery(EventMetaAttribute.class);
+                Root<EventMetaAttribute> emaRoot = emaCriteriaQuery.from(EventMetaAttribute.class);
+
+                emaCriteriaQuery.select(emaRoot)
+                        .where(builder.and(
+                                builder.equal(emaRoot.get("projectId"), projectId),
+                                emaRoot.get("nameLookupId").in(nameLookupIds)
+                        ));
+
+                List<EventMetaAttribute> metaResults = session.createQuery(emaCriteriaQuery).getResultList();
                 if ( metaResults != null ) {
-                    Map<Long,EventMetaAttribute> nameIdVsMetaAttribute = new HashMap<Long,EventMetaAttribute>();
+                    Map<Long,EventMetaAttribute> nameIdVsMetaAttribute = new HashMap<>(metaResults.size());
                     for ( EventMetaAttribute ema: metaResults ) {
                         nameIdVsMetaAttribute.put( ema.getNameLookupId(), ema );
                     }
@@ -93,32 +107,6 @@ public class EventAttributeDAO extends HibernateDAO {
             else {
                 eaList = Collections.EMPTY_LIST;
             }
-
-            /*Query query = session.createSQLQuery( "select ea.*, ema.*, lv1.*, lv2.* from " +
-                    " from event_attribute as ea " +
-                    " join event_meta_attribute as ema on ea.eventa_lkuvlu_attribute_id=ema.evenma_lkuvlu_attribute_id " +
-                    " join lookup_value as lv1 on ema.eventTypeLookupId=lv1.lkuvlu_id " +
-                    " join lookup_value as lv2 on ema.evenma_event_type_lkuvl_id=lv2.lkuvlu_id " +
-                    " where ea.eventa_event_id = :eventId and ema.evenma_projet_id = :projectId "
-            ).addEntity(EventAttribute.class);
-            */
-
-            /*Query hql = session.createQuery( "from EventAttribute ea join ea.metaAttribute ema with ema.projectId=:projectId " +
-                    " join ema.lookupValue nlv join ema.eventTypeLookupValue tlv " +
-                    " where ea.eventId=:eventId "
-            );
-            hql.setLong("eventId", eventId);
-            hql.setLong("projectId", projectId);
-
-            //eaList = (List<EventAttribute>)hql.list();
-
-            List results = hql.list();
-            if ( results != null ) {
-                for ( Object result: results ) {
-                    eaList.add( (EventAttribute) result);
-                }
-            }*/
-
         } catch (Exception ex) {
             throw new DAOException(ex);
         }
@@ -127,18 +115,26 @@ public class EventAttributeDAO extends HibernateDAO {
     }
 
     public List<EventAttribute> getEventAttributes( List<Long> eventIds, Long projectId, Session session ) throws DAOException {
-        List<EventAttribute> eaList = new ArrayList<EventAttribute>();
+        List<EventAttribute> eaList = new ArrayList<>(eventIds.size());
         try {
             if ( eventIds.size() > 0 ) {
+                CriteriaBuilder builder = session.getCriteriaBuilder();
+                CriteriaQuery<EventAttribute> eaCriteriaQuery = builder.createQuery(EventAttribute.class);
+                Root<EventAttribute> eventAttributeRoot = eaCriteriaQuery.from(EventAttribute.class);
 
-                Criteria crit = session.createCriteria( EventAttribute.class );
-                crit.add( Restrictions.in("eventId", eventIds) );
-                List<EventAttribute> results = crit.list();
+                eaCriteriaQuery.select(eventAttributeRoot)
+                        .where(eventAttributeRoot.get("eventId").in(eventIds));
 
-                crit = session.createCriteria(Event.class);
-                crit.add(Restrictions.in("eventId", eventIds));
-                List<Event> events = crit.list();
-                Map<Long, Long> eventVsEventType = new HashMap<Long, Long>();
+                List<EventAttribute> results = session.createQuery(eaCriteriaQuery).getResultList();
+
+                CriteriaQuery<Event> eventCriteriaQuery = builder.createQuery(Event.class);
+                Root<Event> eventRoot = eventCriteriaQuery.from(Event.class);
+
+                eventCriteriaQuery.select(eventRoot)
+                        .where(eventRoot.get("eventId").in(eventIds));
+
+                List<Event> events = session.createQuery(eventCriteriaQuery).getResultList();
+                Map<Long, Long> eventVsEventType = new HashMap<>(events.size());
                 for(Event event : events) {
                     if(!eventVsEventType.containsKey(event.getEventId())) {
                         eventVsEventType.put(event.getEventId(), event.getEventType());
@@ -146,23 +142,28 @@ public class EventAttributeDAO extends HibernateDAO {
                 }
 
                 if(results != null && results.size() > 0) {
+                    List<Long> nameLookupIds = results.stream()
+                            .map(EventAttribute::getNameLookupValueId)
+                            .collect(Collectors.toList());
 
-                    List<Long> nameLookupIds = new ArrayList<Long>();
-                    for ( EventAttribute ea: results ) {
-                        nameLookupIds.add( ea.getNameLookupValueId() );
-                    }
-                    crit = session.createCriteria(EventMetaAttribute.class);
-                    crit.add(Restrictions.in("nameLookupId", nameLookupIds))
-                            .add(Restrictions.eq("projectId", projectId));
-                    List<EventMetaAttribute> metaResults = crit.list();
+                    CriteriaQuery<EventMetaAttribute> emaCriteriaQuery = builder.createQuery(EventMetaAttribute.class);
+                    Root<EventMetaAttribute> emaRoot = emaCriteriaQuery.from(EventMetaAttribute.class);
+
+                    emaCriteriaQuery.select(emaRoot)
+                            .where(builder.and(
+                                    builder.equal(emaRoot.get("projectId"), projectId),
+                                    emaRoot.get("nameLookupId").in(nameLookupIds)
+                            ));
+
+                    List<EventMetaAttribute> metaResults = session.createQuery(emaCriteriaQuery).getResultList();
 
                     if(metaResults != null) {
-                        Map<Long, Map<Long, EventMetaAttribute>> eventTypeToNameMap = new HashMap<Long, Map<Long, EventMetaAttribute>>();
+                        Map<Long, Map<Long, EventMetaAttribute>> eventTypeToNameMap = new HashMap<>(metaResults.size());
                         for(EventMetaAttribute ema: metaResults) {
                             if(eventTypeToNameMap.containsKey(ema.getEventTypeLookupId())) {
                                 eventTypeToNameMap.get(ema.getEventTypeLookupId()).put(ema.getNameLookupId(), ema);
                             } else {
-                                Map<Long, EventMetaAttribute> nameVsEma = new TreeMap<Long, EventMetaAttribute>();
+                                Map<Long, EventMetaAttribute> nameVsEma = new TreeMap<>();
                                 nameVsEma.put(ema.getNameLookupId(), ema);
                                 eventTypeToNameMap.put(ema.getEventTypeLookupId(), nameVsEma);
                             }

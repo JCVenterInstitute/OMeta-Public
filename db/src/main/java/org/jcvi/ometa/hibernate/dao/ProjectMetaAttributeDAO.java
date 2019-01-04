@@ -21,13 +21,16 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
-import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.NativeQuery;
 import org.jcvi.ometa.model.ProjectMetaAttribute;
 import org.jcvi.ometa.utils.Constants;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -72,11 +75,17 @@ public class ProjectMetaAttributeDAO extends HibernateDAO {
      * get all meta-attributes associated with project.
      */
     public List<ProjectMetaAttribute> readAll(Long projectId, Session session) throws DAOException {
-        List<ProjectMetaAttribute> attributeList = new ArrayList<ProjectMetaAttribute>();
+        List<ProjectMetaAttribute> attributeList = new ArrayList<>();
         try {
-            Criteria crit = session.createCriteria(ProjectMetaAttribute.class);
-            crit.add(Restrictions.eq("projectId", projectId));
-            List<ProjectMetaAttribute> results = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<ProjectMetaAttribute> criteriaQuery = builder.createQuery(ProjectMetaAttribute.class);
+            Root<ProjectMetaAttribute> pmaRoot = criteriaQuery.from(ProjectMetaAttribute.class);
+
+            criteriaQuery.select(pmaRoot)
+                    .where(builder.equal(pmaRoot.get("projectId"), projectId));
+
+            List<ProjectMetaAttribute> results = session.createQuery(criteriaQuery).getResultList();
+
             attributeList.addAll(results);
             logger.debug("Got " + results.size() + " meta attributes for project " + projectId);
         } catch (Exception ex) {
@@ -90,12 +99,17 @@ public class ProjectMetaAttributeDAO extends HibernateDAO {
      * get all meta-attributes associated with project.
      */
     public List<ProjectMetaAttribute> readAll(List<Long> projectIds, Session session) throws DAOException {
-        List<ProjectMetaAttribute> attributeList = new ArrayList<ProjectMetaAttribute>();
+        List<ProjectMetaAttribute> attributeList = new ArrayList<>();
         try {
             if (projectIds.size() > 0) {
-                Criteria crit = session.createCriteria(ProjectMetaAttribute.class);
-                crit.add(Restrictions.in("projectId", projectIds));
-                List<ProjectMetaAttribute> results = crit.list();
+                CriteriaBuilder builder = session.getCriteriaBuilder();
+                CriteriaQuery<ProjectMetaAttribute> criteriaQuery = builder.createQuery(ProjectMetaAttribute.class);
+                Root<ProjectMetaAttribute> pmaRoot = criteriaQuery.from(ProjectMetaAttribute.class);
+
+                criteriaQuery.select(pmaRoot)
+                        .where(pmaRoot.get("projectId").in(projectIds));
+
+                List<ProjectMetaAttribute> results = session.createQuery(criteriaQuery).getResultList();
                 attributeList.addAll(results);
                 logger.debug(
                         "Got " + results.size() + " meta attributes for project list of size " + projectIds.size());
@@ -111,14 +125,14 @@ public class ProjectMetaAttributeDAO extends HibernateDAO {
      * get all unique meta-attributes
      */
     public List<ProjectMetaAttribute> readAllUnique(Session session) throws DAOException {
-        List<ProjectMetaAttribute> attributeList = new ArrayList<ProjectMetaAttribute>();
+        List<ProjectMetaAttribute> attributeList;
         try {
             String sql =
                     " select PMA.* from project_meta_attribute PMA, " +
                             " (select projma_id, max(projma_create_date) " +
                             "     from project_meta_attribute group by projma_lkuvlu_attribute_id) PMAU " +
                             " where PMA.projma_id = PMAU.projma_id ";
-            SQLQuery query = session.createSQLQuery(sql);
+            NativeQuery query = session.createNativeQuery(sql);
             query.addEntity("PMA", ProjectMetaAttribute.class);
 
             attributeList = query.list();

@@ -21,13 +21,19 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
-import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.NativeQuery;
 import org.jcvi.ometa.model.Actor;
 import org.jcvi.ometa.model.ActorGroup;
+import org.jcvi.ometa.model.Group;
+import org.jcvi.ometa.model.LookupValue;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,9 +51,12 @@ public class ActorDAO extends HibernateDAO {
     public Actor getActorByLoginName( String loginName, Session session ) throws DAOException {
         Actor rtnVal = null;
         try {
-            Criteria crit = session.createCriteria( Actor.class );
-            crit.add( Restrictions.eq( "username", loginName ) );
-            List modelObjects = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Actor> criteriaQuery = builder.createQuery(Actor.class);
+            Root<Actor> actorRoot = criteriaQuery.from(Actor.class);
+            criteriaQuery.select(actorRoot)
+                    .where(builder.equal(actorRoot.get("username"), loginName));
+            List modelObjects = session.createQuery(criteriaQuery).getResultList();
             if ( modelObjects != null ) {
                 if ( modelObjects.size() == 1 ) {
                     rtnVal = (Actor)modelObjects.get( 0 );
@@ -68,9 +77,12 @@ public class ActorDAO extends HibernateDAO {
     public Actor getActorById( Long loginId, Session session ) throws DAOException {
         Actor rtnVal = null;
         try {
-            Criteria crit = session.createCriteria( Actor.class );
-            crit.add( Restrictions.eq( "loginId", loginId ) );
-            List modelObjects = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Actor> criteriaQuery = builder.createQuery(Actor.class);
+            Root<Actor> actorRoot = criteriaQuery.from(Actor.class);
+            criteriaQuery.select(actorRoot)
+                    .where(builder.equal(actorRoot.get("loginId"), loginId));
+            List modelObjects = session.createQuery(criteriaQuery).getResultList();
             if ( modelObjects != null ) {
                 if ( modelObjects.size() == 1 ) {
                     rtnVal = (Actor)modelObjects.get( 0 );
@@ -89,15 +101,25 @@ public class ActorDAO extends HibernateDAO {
     }
 
     public boolean isActorAdmin( String loginName, Session session ) throws DAOException {
-        boolean isAdmin = false;
+        boolean isAdmin;
         try {
-            String sql = " select A.* from actor A, actor_group AG, groups G, lookup_value LV " +
-                    " where A.actor_username=:userName and AG.actgrp_actor_id=A.actor_id and G.group_id=AG.actgrp_group_id " +
-                    " and LV.lkuvlu_id=G.group_name_lkuvl_id and LV.lkuvlu_name='General-Admin' ";
-            SQLQuery query = session.createSQLQuery( sql );
-            query.setParameter("userName", loginName);
+            CriteriaBuilder builder = session.getCriteriaBuilder();
 
-            List<Actor> actorList = query.list();
+            CriteriaQuery<Actor> criteriaQuery = builder.createQuery(Actor.class);
+            Root<Actor> actorRoot = criteriaQuery.from(Actor.class);
+            Root<ActorGroup> actorGroupRoot = criteriaQuery.from(ActorGroup.class);
+
+            Join<ActorGroup, Group> group = actorGroupRoot.join("group");
+            Join<Group, LookupValue> lookupValue = group.join("groupNameLookupValue");
+
+            criteriaQuery.select(actorRoot)
+                    .where(builder.and(
+                            builder.equal(actorRoot.get("loginId"), actorGroupRoot.get("actorId")),
+                            builder.equal(actorRoot.get("username"), loginName),
+                            builder.equal(lookupValue.get("name"), "General-Admin")
+                    ));
+
+            List<Actor> actorList = session.createQuery(criteriaQuery).getResultList();
             isAdmin = actorList!=null && actorList.size()>0;
         } catch (Exception ex) {
             throw new DAOException(ex);
@@ -107,13 +129,16 @@ public class ActorDAO extends HibernateDAO {
     }
 
     public List<Actor> getAllActor(Session session) throws DAOException {
-        List<Actor> actors = new ArrayList<Actor>();
+        List<Actor> actors = new ArrayList<>();
         try {
-            Criteria crit = session.createCriteria(Actor.class);
-            List modelObjects = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Actor> criteriaQuery = builder.createQuery(Actor.class);
+            Root<Actor> actorRoot = criteriaQuery.from(Actor.class);
+            criteriaQuery.select(actorRoot);
+            List modelObjects = session.createQuery(criteriaQuery).getResultList();
             if (modelObjects != null && modelObjects.size() > 0) {
-                for(int i = 0;i < modelObjects.size();i++) {
-                    actors.add((Actor)modelObjects.get(i));
+                for (Object modelObject : modelObjects) {
+                    actors.add((Actor) modelObject);
                 }
             }
         } catch(Exception ex) {
@@ -174,14 +199,17 @@ public class ActorDAO extends HibernateDAO {
     }
 
     public List<ActorGroup> getActorGroup(Long userId, Session session) throws DAOException {
-        List<ActorGroup> groups = new ArrayList<ActorGroup>();
+        List<ActorGroup> groups = new ArrayList<>();
         try {
-            Criteria crit = session.createCriteria(ActorGroup.class);
-            crit.add( Restrictions.eq( "actorId", userId ) );
-            List modelObjects = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<ActorGroup> agCriteriaQuery = builder.createQuery(ActorGroup.class);
+            Root<ActorGroup> actorGroupRoot = agCriteriaQuery.from(ActorGroup.class);
+            agCriteriaQuery.select(actorGroupRoot)
+                    .where(builder.equal(actorGroupRoot.get("actorId"), userId));
+            List modelObjects = session.createQuery(agCriteriaQuery).getResultList();
             if (modelObjects != null && modelObjects.size() > 0) {
-                for(int i = 0;i < modelObjects.size();i++) {
-                    groups.add((ActorGroup)modelObjects.get(i));
+                for (Object modelObject : modelObjects) {
+                    groups.add((ActorGroup) modelObject);
                 }
             }
         } catch(Exception ex) {

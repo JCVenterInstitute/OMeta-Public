@@ -21,13 +21,16 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
-import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.NativeQuery;
 import org.jcvi.ometa.model.SampleMetaAttribute;
 import org.jcvi.ometa.utils.Constants;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,11 +71,16 @@ public class SampleMetaAttributeDAO extends HibernateDAO {
      */
     public List<SampleMetaAttribute> readAll(Long projectId, Session session)
             throws DAOException {
-        List<SampleMetaAttribute> attributeList = new ArrayList<SampleMetaAttribute>();
+        List<SampleMetaAttribute> attributeList = new ArrayList<>();
         try {
-            Criteria crit = session.createCriteria(SampleMetaAttribute.class);
-            crit.add(Restrictions.eq("projectId", projectId));
-            List<SampleMetaAttribute> results = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<SampleMetaAttribute> criteriaQuery = builder.createQuery(SampleMetaAttribute.class);
+            Root<SampleMetaAttribute> smaRoot = criteriaQuery.from(SampleMetaAttribute.class);
+
+            criteriaQuery.select(smaRoot)
+                    .where(builder.equal(smaRoot.get("projectId"), projectId));
+
+            List<SampleMetaAttribute> results = session.createQuery(criteriaQuery).getResultList();
 
             if (results != null) {
                 for (SampleMetaAttribute result : results) {
@@ -95,12 +103,17 @@ public class SampleMetaAttributeDAO extends HibernateDAO {
      */
     public List<SampleMetaAttribute> readAll(List<Long> projectIds, Session session)
             throws DAOException {
-        List<SampleMetaAttribute> attributeList = new ArrayList<SampleMetaAttribute>();
+        List<SampleMetaAttribute> attributeList = new ArrayList<>();
         try {
             if (projectIds.size() > 0) {
-                Criteria crit = session.createCriteria(SampleMetaAttribute.class);
-                crit.add(Restrictions.in("projectId", projectIds));
-                List<SampleMetaAttribute> results = crit.list();
+                CriteriaBuilder builder = session.getCriteriaBuilder();
+                CriteriaQuery<SampleMetaAttribute> criteriaQuery = builder.createQuery(SampleMetaAttribute.class);
+                Root<SampleMetaAttribute> smaRoot = criteriaQuery.from(SampleMetaAttribute.class);
+
+                criteriaQuery.select(smaRoot)
+                        .where(smaRoot.get("projectId").in(projectIds));
+
+                List<SampleMetaAttribute> results = session.createQuery(criteriaQuery).getResultList();
                 if (results != null) {
                     expandLookupValueIds(results, session);
                     logger.debug(
@@ -128,14 +141,14 @@ public class SampleMetaAttributeDAO extends HibernateDAO {
      * get all unique meta-attributes
      */
     public List<SampleMetaAttribute> readAllUnique(Session session) throws DAOException {
-        List<SampleMetaAttribute> attributeList = new ArrayList<SampleMetaAttribute>();
+        List<SampleMetaAttribute> attributeList;
         try {
             String sql =
                     " select SMA.* from sample_meta_attribute SMA, " +
                             "  (select sampma_id, max(sampma_create_date) " +
                             "  from sample_meta_attribute group by sampma_lkuvlu_attribute_id) SMAU " +
                             "  where SMA.sampma_id = SMAU.sampma_id ";
-            SQLQuery query = session.createSQLQuery(sql);
+            NativeQuery query = session.createNativeQuery(sql);
             query.addEntity("SMA", SampleMetaAttribute.class);
 
             attributeList = query.list();

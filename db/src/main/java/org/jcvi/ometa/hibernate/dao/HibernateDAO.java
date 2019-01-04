@@ -27,11 +27,15 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.jcvi.ometa.model.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by IntelliJ IDEA.
@@ -56,10 +60,17 @@ public abstract class HibernateDAO {
             Long lookupValueId, Long projectId, Session session, Class clazz) throws DAOException {
         T metaAttribute = null;
         try {
-            Criteria crit = session.createCriteria(clazz);
-            crit.add(Restrictions.eq("nameLookupId", lookupValueId));
-            crit.add(Restrictions.eq("projectId", projectId));
-            List results = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery criteriaQuery = builder.createQuery(clazz);
+            Root root = criteriaQuery.from(clazz);
+
+            criteriaQuery.select(root)
+                    .where(builder.and(
+                            builder.equal(root.get("nameLookupId"), lookupValueId),
+                            builder.equal(root.get("projectId"), projectId)
+                    ));
+
+            List results = session.createQuery(criteriaQuery).getResultList();
             Date latestDate = null;
             for (Object nextResult : results) {
                 T nextMetaAttribute = (T) nextResult;
@@ -86,9 +97,14 @@ public abstract class HibernateDAO {
         if (projectName == null) {
             throw new DAOException("Do not attempt to find a null-named project object for  " + logName);
         }
-        Criteria crit = session.createCriteria(Project.class);
-        crit.add(Restrictions.eq("projectName", projectName));
-        List results = crit.list();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Project> criteriaQuery = builder.createQuery(Project.class);
+        Root<Project> projectRoot = criteriaQuery.from(Project.class);
+
+        criteriaQuery.select(projectRoot)
+                .where(builder.equal(projectRoot.get("projectName"), projectName));
+
+        List results = session.createQuery(criteriaQuery).getResultList();
         if (results.size() == 0) {
             throw new DAOException(
                     "Project " + projectName +
@@ -113,9 +129,14 @@ public abstract class HibernateDAO {
         if (sampleName == null) {
             throw new DAOException("Do not attempt to find a null-named project object for  " + logName);
         }
-        Criteria crit = session.createCriteria(Sample.class);
-        crit.add(Restrictions.eq("sampleName", sampleName));
-        List results = crit.list();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Sample> criteriaQuery = builder.createQuery(Sample.class);
+        Root<Sample> sampleRoot = criteriaQuery.from(Sample.class);
+
+        criteriaQuery.select(sampleRoot)
+                .where(builder.equal(sampleRoot.get("sampleName"), sampleName));
+
+        List results = session.createQuery(criteriaQuery).getResultList();
         if (results.size() == 0) {
             throw new DAOException(
                     "Sample " + sampleName +
@@ -148,9 +169,14 @@ public abstract class HibernateDAO {
         }
 
         LookupValue returnValue = null;
-        Criteria crit = session.createCriteria(LookupValue.class);
-        crit.add(Restrictions.eq("name", name));
-        List results = crit.list();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<LookupValue> criteriaQuery = builder.createQuery(LookupValue.class);
+        Root<LookupValue> lookupValueRoot = criteriaQuery.from(LookupValue.class);
+
+        criteriaQuery.select(lookupValueRoot)
+                .where(builder.equal(lookupValueRoot.get("name"), name));
+
+        List results = session.createQuery(criteriaQuery).getResultList();
         if (results.size() > 1) {
             throw new DAOException(
                     "Lookup value " + name + " for object " + logName + " found multiple times in db."
@@ -245,9 +271,14 @@ public abstract class HibernateDAO {
             throws DAOException {
 
         Long lkuvluId = model.getNameLookupId();
-        Criteria crit = session.createCriteria(LookupValue.class);
-        crit.add(Restrictions.eq("lookupValueId", lkuvluId));
-        List results = crit.list();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<LookupValue> criteriaQuery = builder.createQuery(LookupValue.class);
+        Root<LookupValue> lookupValueRoot = criteriaQuery.from(LookupValue.class);
+
+        criteriaQuery.select(lookupValueRoot)
+                .where(builder.equal(lookupValueRoot.get("lookupValueId"), lkuvluId));
+
+        List results = session.createQuery(criteriaQuery).getResultList();
         if (results.size() == 1) {
             LookupValue lv = (LookupValue) results.get(0);
             model.setAttributeName(lv.getName());
@@ -267,17 +298,20 @@ public abstract class HibernateDAO {
             return;
 
         // Get mapping of all lookup value ids for query.
-        List<Long> lookupValueIds = new ArrayList<Long>();
-        for (B model : models) {
-            Long lkuvluId = model.getNameLookupId();
-            lookupValueIds.add(lkuvluId);
-        }
+        List<Long> lookupValueIds = models.stream()
+                .map(MetaAttributeModelBean::getNameLookupId)
+                .collect(Collectors.toList());
 
         // Query to get all the lookup values for the ids.
-        Criteria crit = session.createCriteria(LookupValue.class);
-        crit.add(Restrictions.in("lookupValueId", lookupValueIds));
-        List<LookupValue> results = crit.list();
-        Map<Long, LookupValue> idVsValue = new HashMap<Long, LookupValue>();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<LookupValue> criteriaQuery = builder.createQuery(LookupValue.class);
+        Root<LookupValue> lookupValueRoot = criteriaQuery.from(LookupValue.class);
+
+        criteriaQuery.select(lookupValueRoot)
+                .where(lookupValueRoot.get("lookupValueId").in(lookupValueIds));
+
+        List<LookupValue> results = session.createQuery(criteriaQuery).getResultList();
+        Map<Long, LookupValue> idVsValue = new HashMap<>(results.size());
         for (LookupValue lv : results) {
             idVsValue.put(lv.getLookupValueId(), lv);
         }

@@ -24,6 +24,7 @@ package org.jcvi.ometa.hibernate.dao;
 import org.apache.log4j.Logger;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.type.StandardBasicTypes;
 import org.jcvi.ometa.configuration.AccessLevel;
 import org.jcvi.ometa.configuration.QueryEntityType;
@@ -32,6 +33,7 @@ import org.jcvi.ometa.model.Project;
 import org.jcvi.ometa.exception.ForbiddenResourceException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by IntelliJ IDEA.
@@ -228,14 +230,14 @@ public class SecurityDAO extends HibernateDAO {
 
         ids = uniquifyIds(ids);
 
-        String queryStr = null;
+        String queryStr;
         if ( accessLevel == AccessLevel.View  ) {
             queryStr = openAndSecuredIdsQuery.replace( PROJ_GRP_SUBST_STR, VIEW_PROJECT_GROUP_FIELD );
         }
         else {
             queryStr = securedIdsQuery.replace( PROJ_GRP_SUBST_STR, EDIT_PROJECT_GROUP_FIELD );
         }
-        SQLQuery query = session.createSQLQuery( queryStr );
+        NativeQuery query = session.createNativeQuery( queryStr );
         query.addScalar( returnVarName, StandardBasicTypes.STRING );
         if ( accessLevel == AccessLevel.View  ) {
             query.setParameterList( openParamListName, ids );
@@ -277,14 +279,14 @@ public class SecurityDAO extends HibernateDAO {
         // Need to avoid sending same name multiple times.
         names = uniquifyNames(names);
 
-        String queryStr = null;
+        String queryStr;
         if ( accessLevel == AccessLevel.View  ) {
             queryStr = openAndSecuredQuery.replace( PROJ_GRP_SUBST_STR, VIEW_PROJECT_GROUP_FIELD );
         }
         else {
             queryStr = securedQuery.replace( PROJ_GRP_SUBST_STR, EDIT_PROJECT_GROUP_FIELD );
         }
-        SQLQuery query = session.createSQLQuery(queryStr);
+        NativeQuery query = session.createNativeQuery( queryStr );
         query.addScalar(returnVarName, StandardBasicTypes.STRING );
 
         query.setParameterList( securedParamListName, names );
@@ -325,14 +327,14 @@ public class SecurityDAO extends HibernateDAO {
             queryStr = queryStr.replace( PROJ_GRP_SUBST_STR, EDIT_PROJECT_GROUP_FIELD );
         }
 
-        SQLQuery query = session.createSQLQuery(queryStr);
+        NativeQuery query = session.createNativeQuery( queryStr );
         String queryUsername = username == null ? UNLOGGED_IN_USER : username;
         query.setParameter( USERNAME_PARAM, queryUsername );
         query.addEntity("P", Project.class);
         List<Project> rtnVal = query.list();
         return rtnVal;
-
     }
+
     public List<Project> getLastUpdatedAuthorizedProjects(
             String username,
             int size,
@@ -348,14 +350,13 @@ public class SecurityDAO extends HibernateDAO {
             queryStr = queryStr.replace( PROJ_GRP_SUBST_STR, EDIT_PROJECT_GROUP_FIELD );
         }
 
-        SQLQuery query = session.createSQLQuery(queryStr);
+        NativeQuery query = session.createNativeQuery( queryStr );
         String queryUsername = username == null ? UNLOGGED_IN_USER : username;
         query.setParameter( USERNAME_PARAM, queryUsername );
         query.setParameter( LIMIT_PARAM, size);
         query.addEntity("P", Project.class);
         List<Project> rtnVal = query.list();
         return rtnVal;
-
     }
 
     /** Messages generated here can wind up before the user.  Take care to make them readable! */
@@ -365,56 +366,50 @@ public class SecurityDAO extends HibernateDAO {
     }
 
     private List<String> uniquifyNames(List<String> names) {
-        Set<String> uniqueNames = new HashSet<String>();
+        Set<String> uniqueNames = new HashSet<>(names.size());
         uniqueNames.addAll( names );
-        List<String> rtnList = new ArrayList<String>();
+        List<String> rtnList = new ArrayList<>(names.size());
         rtnList.addAll( uniqueNames );
         return rtnList;
     }
 
     private List<Long> uniquifyIds( List<Long> names ) {
-        Set<Long> uniqueNames = new HashSet<Long>();
+        Set<Long> uniqueNames = new HashSet<>(names.size());
         uniqueNames.addAll( names );
-        List<Long> rtnList = new ArrayList<Long>();
+        List<Long> rtnList = new ArrayList<>(names.size());
         rtnList.addAll( uniqueNames );
         return rtnList;
     }
 
     /** Roll a list of strings into a comma-separated single string. */
     private String joinNameList(List<String> names) {
-        StringBuilder bldr = new StringBuilder();
+        String bldr;
 
         if ( names != null ) {
-            for ( String nextName: uniquifyNames(names) ) {
-                if ( bldr.length() > 0 ) {
-                    bldr.append( "','" );
-                }
-                bldr.append( nextName );
-            }
+            bldr = uniquifyNames(names)
+                    .stream()
+                    .collect(Collectors.joining("','"));
         }
         else {
             throw new IllegalArgumentException( "Null name list not allowed." );
         }
 
-        return bldr.toString();
+        return bldr;
     }
 
     /** Roll a list of numeric IDs into a comma-separated single string. */
     private String joinIdList(List<Long> projects) {
-        StringBuilder bldr = new StringBuilder();
+        String bldr;
         if ( projects != null ) {
-            for ( Long nextProject: projects ) {
-                if ( bldr.length() > 0 ) {
-                    bldr.append( "," );
-                }
-                bldr.append( nextProject );
-            }
+            bldr = projects.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(","));
         }
         else {
             throw new IllegalArgumentException( "Null id list not allowed." );
         }
 
-        return bldr.toString();
+        return bldr;
     }
 
 }

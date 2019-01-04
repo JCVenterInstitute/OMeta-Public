@@ -21,17 +21,21 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
-import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.type.LongType;
 import org.hibernate.type.StandardBasicTypes;
 import org.jcvi.ometa.model.Group;
 import org.jcvi.ometa.model.LookupValue;
 import org.jcvi.ometa.model.Project;
 import org.jcvi.ometa.utils.Constants;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -97,17 +101,22 @@ public class ProjectDAO extends HibernateDAO {
     public Project getProject( String projectName, Session session ) throws DAOException {
         Project returnVal = null;
         try {
-            Criteria crit = session.createCriteria( Project.class );
-            crit.add( Restrictions.eq( "projectName", projectName ) );
-            List results = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Project> criteriaQuery = builder.createQuery(Project.class);
+            Root<Project> projectRoot = criteriaQuery.from(Project.class);
+
+            criteriaQuery.select(projectRoot)
+                    .where(builder.equal(projectRoot.get("projectName"), projectName));
+
+            List results = session.createQuery(criteriaQuery).getResultList();
             if ( results == null  ||  results.size() == 0  ||  results.size() > 1 ) {
-                if ( results.size() > 1 ) {
+                if ( results == null  ||  results.size() > 1 ) {
                     throw new DAOException("Multiple project appear by the same name, of " + projectName );
                 }
             }
             else {
                 returnVal = (Project)results.get( 0 );
-                logger.debug( "Found one project called " + returnVal.getProjectName() + " " +
+                logger.debug( "Found one project called " + returnVal.getProjectName() + ' ' +
                         returnVal.getProjectId() );
             }
         } catch ( Exception ex ) {
@@ -118,13 +127,18 @@ public class ProjectDAO extends HibernateDAO {
     }
 
     public Project getProject( Long projectId, Session session ) throws DAOException {
-        Project returnVal = null;
+        Project returnVal;
         try {
-            Criteria crit = session.createCriteria( Project.class );
-            crit.add( Restrictions.eq( "projectId", projectId ) );
-            List results = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Project> criteriaQuery = builder.createQuery(Project.class);
+            Root<Project> projectRoot = criteriaQuery.from(Project.class);
+
+            criteriaQuery.select(projectRoot)
+                    .where(builder.equal(projectRoot.get("projectId"), projectId));
+
+            List results = session.createQuery(criteriaQuery).getResultList();
             returnVal = (Project)results.get( 0 );
-            logger.debug( "Found one project called " + returnVal.getProjectName() + " " +
+            logger.debug( "Found one project called " + returnVal.getProjectName() + ' ' +
                     returnVal.getProjectId() );
         } catch ( Exception ex ) {
             throw new DAOException(ex);
@@ -142,14 +156,19 @@ public class ProjectDAO extends HibernateDAO {
      * @throws DAOException in response to other exceptions.
      */
     public List<Project> getProjects( List<String> projectNames, Session session ) throws DAOException {
-        List<Project> returnVal = new ArrayList<Project>();
+        List<Project> returnVal = new ArrayList<>();
         try {
             if ( projectNames.size() > 0 ) {
-                Criteria crit = session.createCriteria( Project.class );
+                CriteriaBuilder builder = session.getCriteriaBuilder();
+                CriteriaQuery<Project> criteriaQuery = builder.createQuery(Project.class);
+                Root<Project> projectRoot = criteriaQuery.from(Project.class);
+
+                criteriaQuery.select(projectRoot);
                 if( !"ALL".equals( projectNames.get(0) ) )
-                    crit.add( Restrictions.in( "projectName", projectNames ) );
-                crit.addOrder(Order.asc("projectName"));
-                List results = crit.list();
+                    criteriaQuery.where(projectRoot.get("projectName").in(projectNames));
+                criteriaQuery.orderBy(builder.asc(projectRoot.get("projectName")));
+
+                List results = session.createQuery(criteriaQuery).getResultList();
                 returnVal.addAll( results );
             }
         } catch ( Exception ex ) {
@@ -160,12 +179,17 @@ public class ProjectDAO extends HibernateDAO {
     }
 
     public List<Project> getProjectsByPublicFlag(boolean isPublic, Session session) throws Exception {
-        List<Project> rtnVal = new ArrayList<Project>();
+        List<Project> rtnVal = new ArrayList<>();
         try {
-            Criteria crit = session.createCriteria( Project.class );
-            crit.add( Restrictions.eq( "isPublic", isPublic?1:0 ) );
-            crit.addOrder(Order.asc("projectName"));
-            List results = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Project> criteriaQuery = builder.createQuery(Project.class);
+            Root<Project> projectRoot = criteriaQuery.from(Project.class);
+
+            criteriaQuery.select(projectRoot)
+                    .where(builder.equal(projectRoot.get("isPublic"), isPublic?1:0))
+                    .orderBy(builder.asc(projectRoot.get("projectName")));
+
+            List results = session.createQuery(criteriaQuery).getResultList();
             rtnVal.addAll( results );
         } catch ( Exception ex ) {
             throw new DAOException(ex);
@@ -175,10 +199,14 @@ public class ProjectDAO extends HibernateDAO {
 
     /** Return a list of all projects. */
     public List<Project> getAllProjects( Session session ) throws DAOException {
-        List<Project> returnVal = new ArrayList<Project>();
+        List<Project> returnVal;
         try {
-            Criteria crit = session.createCriteria( Project.class );
-            returnVal.addAll( crit.list() );
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Project> criteriaQuery = builder.createQuery(Project.class);
+            Root<Project> projectRoot = criteriaQuery.from(Project.class);
+
+            criteriaQuery.select(projectRoot);
+            returnVal = new ArrayList<>(session.createQuery(criteriaQuery).getResultList());
         } catch ( Exception ex ) {
             throw new DAOException(ex);
         }
@@ -188,11 +216,11 @@ public class ProjectDAO extends HibernateDAO {
 
     /** Return a list of all projects. */
     public List<String> getSecuredProjectNames( Session session ) throws DAOException {
-        List<String> returnVal = new ArrayList<String>();
+        List<String> returnVal;
         try {
-            SQLQuery query = session.createSQLQuery(SECURED_PROJECTS_SQL_QUERY);
+            NativeQuery query = session.createNativeQuery(SECURED_PROJECTS_SQL_QUERY);
             query.addScalar(RTN_PROJECT_NAME, StandardBasicTypes.STRING);
-            returnVal.addAll( query.list() );
+            returnVal = new ArrayList<>(query.list());
 
         } catch ( Exception ex ) {
             throw new DAOException(ex);
@@ -202,12 +230,12 @@ public class ProjectDAO extends HibernateDAO {
     }
 
     public List<Project> getChildProjects( Long projectId, Session session ) throws DAOException {
-        List<Project> returnVal = new ArrayList<Project>();
+        List<Project> returnVal;
         try {
-            SQLQuery query = session.createSQLQuery( CHILD_PROJECTS_SQL_QUERY );
+            NativeQuery query = session.createNativeQuery( CHILD_PROJECTS_SQL_QUERY );
             /*query.addScalar(RTN_PROJECT_NAME, Hibernate.STRING );
             query.addScalar(RTN_PROJECT_ID, Hibernate.LONG );*/
-            query.setLong("parantId", projectId); //ParentProjectId
+            query.setParameter("parantId", projectId, LongType.INSTANCE); //ParentProjectId
             query.addEntity("P", Project.class);
             returnVal = query.list();
 
@@ -235,17 +263,22 @@ public class ProjectDAO extends HibernateDAO {
 
     private void handleNonNewProject(Project project, Session session) {
         // See: any old version of project?  If so, blow out.
-        Criteria crit = session.createCriteria( Project.class );
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Project> criteriaQuery = builder.createQuery(Project.class);
+        Root<Project> projectRoot = criteriaQuery.from(Project.class);
+
         String projectName = project.getProjectName();
-        crit.add( Restrictions.eq("projectName", projectName) );
-        List results = crit.list();
+        criteriaQuery.select(projectRoot)
+                .where(builder.equal(projectRoot.get("projectName"), projectName));
+
+        List results = session.createQuery(criteriaQuery).getResultList();
         if ( results != null  &&  results.size() > 0 ) {
             throw new IllegalStateException("Do not call writeback loop with an existing project.  Project " + projectName + " is in the database.");
         }
     }
 
     private void resolveParentProjectId(Project project, Session session) {
-        Criteria crit;List results;
+        List results;
         if ( project.getParentProjectId() == null ) {
             // Need to resolve the parent project ID from the parent project name.
             String parentProjectName = project.getParentProjectName();
@@ -256,9 +289,14 @@ public class ProjectDAO extends HibernateDAO {
             }
             else if ( parentProjectName != null ) {
                 // Need to read yet another project from database, by name, to get its ID.
-                crit = session.createCriteria( Project.class );
-                crit.add( Restrictions.eq("projectName", parentProjectName) );
-                results = crit.list();
+                CriteriaBuilder builder = session.getCriteriaBuilder();
+                CriteriaQuery<Project> criteriaQuery = builder.createQuery(Project.class);
+                Root<Project> projectRoot = criteriaQuery.from(Project.class);
+
+                criteriaQuery.select(projectRoot)
+                        .where(builder.equal(projectRoot.get("projectName"), parentProjectName));
+
+                results = session.createQuery(criteriaQuery).getResultList();
                 if ( results.size() > 0 ) {
                     Project parent = (Project)results.get( 0 );
                     project.setParentProjectId(parent.getProjectId());

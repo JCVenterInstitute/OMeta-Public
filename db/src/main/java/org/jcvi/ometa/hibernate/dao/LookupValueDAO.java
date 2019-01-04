@@ -21,14 +21,17 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
-import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 import org.jcvi.ometa.model.LookupValue;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.GuidGetter;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -45,13 +48,16 @@ import java.util.List;
 public class LookupValueDAO extends HibernateDAO {
 
     public LookupValue getLookupValue( String lvName, Session session ) throws DAOException {
-        LookupValue returnVal = null;
+        LookupValue returnVal;
         try {
-            Criteria crit = session.createCriteria( LookupValue.class );
-            crit.add( Restrictions.eq( "name", lvName) );
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<LookupValue> criteriaQuery = builder.createQuery(LookupValue.class);
+            Root<LookupValue> lookupValueRoot = criteriaQuery.from(LookupValue.class);
 
-            returnVal = mustBeOnlyOne(lvName, crit);
+            criteriaQuery.select(lookupValueRoot)
+                    .where(builder.equal(lookupValueRoot.get("name"), lvName));
 
+            returnVal = mustBeOnlyOne(lvName, session.createQuery(criteriaQuery));
         } catch ( Exception ex ) {
             throw new DAOException( ex );
         }
@@ -60,14 +66,19 @@ public class LookupValueDAO extends HibernateDAO {
 
     /** Get a lookup value of the type given, name given. */
     public LookupValue getLookupValue( String lvName, String lookupType, Session session ) throws DAOException {
-        LookupValue returnVal = null;
+        LookupValue returnVal;
         try {
-            Criteria crit = session.createCriteria( LookupValue.class );
-            crit.add( Restrictions.eq( "name", lvName) );
-            crit.add( Restrictions.eq( "type", lookupType ) );
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<LookupValue> criteriaQuery = builder.createQuery(LookupValue.class);
+            Root<LookupValue> lookupValueRoot = criteriaQuery.from(LookupValue.class);
 
-            returnVal = mustBeOnlyOne(lvName, crit);
+            criteriaQuery.select(lookupValueRoot)
+                    .where(builder.and(
+                            builder.equal(lookupValueRoot.get("name"), lvName),
+                            builder.equal(lookupValueRoot.get("type"), lookupType)
+                    ));
 
+            returnVal = mustBeOnlyOne(lvName, session.createQuery(criteriaQuery));
         } catch ( Exception ex ) {
             throw new DAOException( ex );
         }
@@ -75,7 +86,7 @@ public class LookupValueDAO extends HibernateDAO {
     }
 
     public LookupValue getEventStatusLookupValue( boolean active, Session session ) throws DAOException {
-        LookupValue returnVal = null;
+        LookupValue returnVal;
         try {
             returnVal = this.getLookupValue(active?EVENT_STATUS_ACTIVE:EVENT_STATUS_INACTIVE, Constants.EVENT_STATUS_LV_TYPE_NAME, session);
         } catch ( Exception ex ) {
@@ -86,11 +97,10 @@ public class LookupValueDAO extends HibernateDAO {
 
     /** Return ALL event-type lookup values. */
     public List<LookupValue> getEventLookupValueList( Session session ) throws DAOException {
-        List<LookupValue>  rtnVal = null;
+        List<LookupValue>  rtnVal;
         try {
             rtnVal = this.getLookupValueByType(Constants.EVENT_TYPE_LV_TYPE_NAME, session);
         } catch ( Exception ex ) {
-            rtnVal = Collections.emptyList();
             throw new DAOException( ex );
         }
 
@@ -98,7 +108,7 @@ public class LookupValueDAO extends HibernateDAO {
     }
 
     public List<LookupValue> getEventLookupValueListForProjectAndSample( Long projectId, Session session ) throws DAOException {
-        List<LookupValue>  rtnVal = new ArrayList<LookupValue>();
+        List<LookupValue>  rtnVal;
         try {
             String hql = "from LookupValue where lookupValueId in "
                     + "(select distinct(eventTypeLookupId) from EventMetaAttribute where projectId=" + projectId + ") ";
@@ -106,7 +116,6 @@ public class LookupValueDAO extends HibernateDAO {
             Query query = session.createQuery( hql );
             rtnVal = query.list();
         } catch ( Exception ex ) {
-            rtnVal = Collections.emptyList();
             throw new DAOException( ex );
         }
 
@@ -114,13 +123,17 @@ public class LookupValueDAO extends HibernateDAO {
     }
 
     public List<LookupValue> getLookupValueByType(String type, Session session) throws DAOException {
-        List<LookupValue> rtnVal = null;
+        List<LookupValue> rtnVal;
         try {
-            Criteria crit = session.createCriteria( LookupValue.class );
-            crit.add(Restrictions.eq("type", type));
-            rtnVal = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<LookupValue> criteriaQuery = builder.createQuery(LookupValue.class);
+            Root<LookupValue> lookupValueRoot = criteriaQuery.from(LookupValue.class);
+
+            criteriaQuery.select(lookupValueRoot)
+                    .where(builder.equal(lookupValueRoot.get("type"), type));
+
+            rtnVal = session.createQuery(criteriaQuery).getResultList();
         } catch ( Exception ex ) {
-            rtnVal = Collections.emptyList();
             throw new DAOException( ex );
         }
         return rtnVal;
@@ -149,14 +162,14 @@ public class LookupValueDAO extends HibernateDAO {
         }
     }
 
-    private LookupValue mustBeOnlyOne(String lvName, Criteria crit) throws Exception {
-        List results = crit.list();
+    private LookupValue mustBeOnlyOne(String lvName, Query query) throws Exception {
+        List results = query.getResultList();
         LookupValue returnVal = null;
         if ( results != null  &&  results.size() > 0 ) {
             if ( results.size() == 1 ) {
                 returnVal = (LookupValue)results.get(0);
             }
-            else if ( results.size() > 1 ) {
+            else {
                 throw new Exception( "more than one lookup value has name " + lvName );
             }
 

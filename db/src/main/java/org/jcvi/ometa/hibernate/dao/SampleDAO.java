@@ -21,16 +21,19 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
-import org.hibernate.Criteria;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.NativeQuery;
 import org.jcvi.ometa.model.Sample;
 import org.jcvi.ometa.utils.Constants;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -52,10 +55,14 @@ public class SampleDAO extends HibernateDAO {
         Sample retVal = null;
 
         try {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Sample> criteriaQuery = builder.createQuery(Sample.class);
+            Root<Sample> sampleRoot = criteriaQuery.from(Sample.class);
 
-            Criteria crit = session.createCriteria( Sample.class );
-            crit.add( Restrictions.eq( "sampleName", sampleName ) );
-            List results = crit.list();
+            criteriaQuery.select(sampleRoot)
+                    .where(builder.equal(sampleRoot.get("sampleName"), sampleName));
+
+            List results = session.createQuery(criteriaQuery).getResultList();
 
             if ( results != null ) {
                 if ( results.size() == 1 ) {
@@ -78,10 +85,14 @@ public class SampleDAO extends HibernateDAO {
         Sample retVal = null;
 
         try {
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Sample> criteriaQuery = builder.createQuery(Sample.class);
+            Root<Sample> sampleRoot = criteriaQuery.from(Sample.class);
 
-            Criteria crit = session.createCriteria( Sample.class );
-            crit.add( Restrictions.eq( "sampleId", sampleId ) );
-            List results = crit.list();
+            criteriaQuery.select(sampleRoot)
+                    .where(builder.equal(sampleRoot.get("sampleId"), sampleId));
+
+            List results = session.createQuery(criteriaQuery).getResultList();
 
             if ( results != null ) {
                 if ( results.size() == 1 ) {
@@ -103,11 +114,17 @@ public class SampleDAO extends HibernateDAO {
     public Sample getSample( Long projectId, Long sampleId, Session session ) throws DAOException {
         Sample retVal = null;
         try {
-            Criteria crit = session.createCriteria( Sample.class );
-            crit.add( Restrictions.and(
-                    Restrictions.eq( "sampleId", sampleId ),
-                    Restrictions.eq( "projectId", projectId ) ) );
-            List results = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Sample> criteriaQuery = builder.createQuery(Sample.class);
+            Root<Sample> sampleRoot = criteriaQuery.from(Sample.class);
+
+            criteriaQuery.select(sampleRoot)
+                    .where(builder.and(
+                            builder.equal(sampleRoot.get("sampleId"), sampleId),
+                            builder.equal(sampleRoot.get("projectId"), projectId)
+                    ));
+
+            List results = session.createQuery(criteriaQuery).getResultList();
             if ( results != null ) {
                 if ( results.size() == 1 ) {
                     retVal = (Sample)results.get( 0 );
@@ -126,11 +143,17 @@ public class SampleDAO extends HibernateDAO {
     public Sample getSample( Long projectId, String sampleName, Session session ) throws DAOException {
         Sample retVal = null;
         try {
-            Criteria crit = session.createCriteria( Sample.class );
-            crit.add( Restrictions.and(
-                    Restrictions.eq( "sampleName", sampleName ),
-                    Restrictions.eq( "projectId", projectId ) ) );
-            List results = crit.list();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Sample> criteriaQuery = builder.createQuery(Sample.class);
+            Root<Sample> sampleRoot = criteriaQuery.from(Sample.class);
+
+            criteriaQuery.select(sampleRoot)
+                    .where(builder.and(
+                            builder.equal(sampleRoot.get("sampleName"), sampleName),
+                            builder.equal(sampleRoot.get("projectId"), projectId)
+                    ));
+
+            List results = session.createQuery(criteriaQuery).getResultList();
             if ( results != null ) {
                 if ( results.size() == 1 ) {
                     retVal = (Sample)results.get( 0 );
@@ -147,10 +170,14 @@ public class SampleDAO extends HibernateDAO {
 
     /** Return a list of all Samples. */
     public List<Sample> getAllSamples( Session session ) throws DAOException {
-        List<Sample> returnVal = new ArrayList<Sample>();
+        List<Sample> returnVal;
         try {
-            Criteria crit = session.createCriteria( Sample.class );
-            returnVal.addAll( crit.list() );
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Sample> criteriaQuery = builder.createQuery(Sample.class);
+            Root<Sample> sampleRoot = criteriaQuery.from(Sample.class);
+
+            criteriaQuery.select(sampleRoot);
+            returnVal = new ArrayList<>(session.createQuery(criteriaQuery).getResultList());
         } catch ( Exception ex ) {
             throw new DAOException(ex);
         }
@@ -159,11 +186,16 @@ public class SampleDAO extends HibernateDAO {
     }
 
     public List<Sample> getChildSamples(Long sampleId, Session session) throws DAOException {
-        List<Sample> returnVal = new ArrayList<Sample>();
+        List<Sample> returnVal;
         try {
-            Criteria crit = session.createCriteria( Sample.class );
-            crit.add(Restrictions.eq("parentSampleId", sampleId));
-            returnVal.addAll( crit.list() );
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Sample> criteriaQuery = builder.createQuery(Sample.class);
+            Root<Sample> sampleRoot = criteriaQuery.from(Sample.class);
+
+            criteriaQuery.select(sampleRoot)
+                    .where(builder.equal(sampleRoot.get("parentSampleId"), sampleId));
+
+            returnVal = new ArrayList<>(session.createQuery(criteriaQuery).getResultList());
         } catch ( Exception ex ) {
             throw new DAOException(ex);
         }
@@ -215,23 +247,34 @@ public class SampleDAO extends HibernateDAO {
 
     private void handleNonNewSample(Sample sample, Session session) throws DAOException {
         // See: any old sample by same name, and in same project?  Then throw exception.
-        Criteria crit = session.createCriteria( Sample.class );
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Sample> criteriaQuery = builder.createQuery(Sample.class);
+        Root<Sample> sampleRoot = criteriaQuery.from(Sample.class);
+
         String sampleName = sample.getSampleName();
-        crit.add( Restrictions.eq("sampleName", sampleName) );
-        crit.add( Restrictions.eq("projectId", sample.getProjectId()) );
-        List results = crit.list();
+        criteriaQuery.select(sampleRoot)
+                .where(builder.and(
+                        builder.equal(sampleRoot.get("sampleName"), sampleName),
+                        builder.equal(sampleRoot.get("projectId"), sample.getProjectId())
+                ));
+
+        List results = session.createQuery(criteriaQuery).getResultList();
         if(results != null  &&  results.size() > 0) {
             throw new DAOException("Sample '" + sampleName + "' already exists.");
         }
     }
 
     public List<Sample> getAllSamples(Long projectId, Session session) throws DAOException {
-        List<Sample> sampleList = new ArrayList<Sample>();
+        List<Sample> sampleList;
         try {
-            Criteria crit = session.createCriteria( Sample.class );
-            crit.add( Restrictions.eq( "projectId", projectId ) );
-            List<Sample> results = crit.list();
-            sampleList.addAll( results );
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Sample> criteriaQuery = builder.createQuery(Sample.class);
+            Root<Sample> sampleRoot = criteriaQuery.from(Sample.class);
+
+            criteriaQuery.select(sampleRoot)
+                    .where(builder.equal(sampleRoot.get("projectId"), projectId));
+
+            sampleList = new ArrayList<>(session.createQuery(criteriaQuery).getResultList());
         } catch (Exception ex) {
             throw new DAOException(ex);
         }
@@ -240,7 +283,7 @@ public class SampleDAO extends HibernateDAO {
     }
 
     public List<String[]> getSampleStatusForProject(Long projectId, Session session) throws DAOException {
-        List<String[]> sampleStatusList = new ArrayList<>();
+        List<String[]> sampleStatusList;
         try {
             String sql = "select distinct count(s.sample_name), sa.sampla_attribute_str from ifx_projects.sample s" +
                     " join ifx_projects.sample_attribute sa on sa.sampla_sample_id = s.sample_id" +
@@ -249,10 +292,9 @@ public class SampleDAO extends HibernateDAO {
                     " and (lv.lkuvlu_name = 'Sample Status' or  lv.lkuvlu_name = 'Sample_Status')" +
                     " group by sa.sampla_attribute_str";
 
-            SQLQuery query = session.createSQLQuery( sql );
+            NativeQuery query = session.createNativeQuery( sql );
             query.setParameter("projectId", projectId);
-            List<String[]> results = query.list();
-            sampleStatusList.addAll(results);
+            sampleStatusList = new ArrayList<>(query.list());
         } catch (Exception ex) {
             throw new DAOException(ex);
         }
@@ -261,16 +303,23 @@ public class SampleDAO extends HibernateDAO {
     }
 
     public List<Sample> getAllSamplesBySearch(Long projectId, String sampleVal, int firstResult, int maxResult, Session session) throws DAOException {
-        List<Sample> sampleList = new ArrayList<Sample>();
+        List<Sample> sampleList;
         try {
-            Criteria crit = session.createCriteria( Sample.class );
-            crit.add( Restrictions.eq( "projectId", projectId ) );
-            crit.add( Restrictions.ilike("sampleName", sampleVal, MatchMode.ANYWHERE));
-            crit.addOrder(Order.asc("sampleName"));
-            crit.setFirstResult(firstResult);
-            crit.setMaxResults(maxResult);
-            List<Sample> results = crit.list();
-            sampleList.addAll( results );
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Sample> criteriaQuery = builder.createQuery(Sample.class);
+            Root<Sample> sampleRoot = criteriaQuery.from(Sample.class);
+
+            criteriaQuery.select(sampleRoot)
+                    .where(builder.and(
+                            builder.equal(sampleRoot.get("projectId"), projectId),
+                            builder.like(builder.upper(sampleRoot.get("sampleName")), '%' +sampleVal.toUpperCase()+ '%')
+                    ))
+                    .orderBy(builder.asc(sampleRoot.get("sampleName")));
+
+            sampleList = new ArrayList<>(session.createQuery(criteriaQuery)
+                    .setFirstResult(firstResult)
+                    .setMaxResults(maxResult)
+                    .getResultList());
         } catch (Exception ex) {
             throw new DAOException(ex);
         }
@@ -279,14 +328,19 @@ public class SampleDAO extends HibernateDAO {
     }
 
     public Integer getSampleCountForProjectBySearch(Long projectId, String sampleVal, Session session) throws DAOException {
-        Integer totalSampleCount = 0;
+        Integer totalSampleCount;
         try {
-            Criteria crit = session.createCriteria( Sample.class );
-            crit.add(Restrictions.eq("projectId", projectId));
-            crit.add( Restrictions.ilike("sampleName", sampleVal, MatchMode.ANYWHERE));
-            crit.setProjection(Projections.rowCount());
-            Long count = (Long) crit.uniqueResult();
-            totalSampleCount = count.intValue();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Long> criteriaQuery = builder.createQuery(Long.class);
+            Root<Sample> sampleRoot = criteriaQuery.from(Sample.class);
+
+            criteriaQuery.select(builder.count(sampleRoot))
+                    .where(builder.and(
+                            builder.equal(sampleRoot.get("projectId"), projectId),
+                            builder.like(builder.upper(sampleRoot.get("sampleName")), '%' +sampleVal.toUpperCase()+ '%')
+                    ));
+
+            totalSampleCount = session.createQuery(criteriaQuery).getSingleResult().intValue();
         } catch (Exception ex) {
             throw new DAOException(ex);
         }
@@ -295,14 +349,17 @@ public class SampleDAO extends HibernateDAO {
     }
 
     public List<Sample> getAllSamples(List<Long> projectIds, Session session) throws DAOException {
-        List<Sample> sampleList = new ArrayList<Sample>();
+        List<Sample> sampleList = new ArrayList<>();
         try {
             if ( projectIds.size() > 0 ) {
-                Criteria crit = session.createCriteria( Sample.class );
-                crit.add( Restrictions.in( "projectId", projectIds ) );
-                List<Sample> results = crit.list();
-                sampleList.addAll( results );
+                CriteriaBuilder builder = session.getCriteriaBuilder();
+                CriteriaQuery<Sample> criteriaQuery = builder.createQuery(Sample.class);
+                Root<Sample> sampleRoot = criteriaQuery.from(Sample.class);
 
+                criteriaQuery.select(sampleRoot)
+                        .where(sampleRoot.get("projectId").in(projectIds));
+
+                sampleList.addAll( session.createQuery(criteriaQuery).getResultList() );
             }
 
         } catch (Exception ex) {
@@ -313,17 +370,20 @@ public class SampleDAO extends HibernateDAO {
     }
 
     public List<Sample> getSamplesByPublicFlag(Long projectId, boolean isPublic, Session session) throws Exception {
-        List<Sample> sampleList = new ArrayList<Sample>();
+        List<Sample> sampleList;
         try {
-            Criteria crit = session.createCriteria( Sample.class );
-            crit.add(
-                    Restrictions.and(
-                            Restrictions.eq( "projectId", projectId ),
-                            Restrictions.eq( "isPublic", isPublic?1:0 )
-                    )
-            );
-            List<Sample> results = crit.list();
-            sampleList.addAll( results );
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaQuery<Sample> criteriaQuery = builder.createQuery(Sample.class);
+            Root<Sample> sampleRoot = criteriaQuery.from(Sample.class);
+
+            criteriaQuery.select(sampleRoot)
+                    .where(builder.and(
+                            builder.equal(sampleRoot.get("projectId"), projectId),
+                            builder.equal(sampleRoot.get("isPublic"), isPublic?1:0)
+                    ))
+                    .orderBy(builder.asc(sampleRoot.get("sampleName")));
+
+            sampleList = new ArrayList<>(session.createQuery(criteriaQuery).getResultList());
         } catch (Exception ex) {
             throw new DAOException(ex);
         }
@@ -331,40 +391,32 @@ public class SampleDAO extends HibernateDAO {
     }
 
     public List<Sample> getAllSamples(Long flexId, String type, String sSearch, String sortCol, String sortDir, List<String> columnName, List<String> columnSearchArguments, Session session) throws DAOException {
-        List<Sample> sampleList = new ArrayList<Sample>();
+        List<Sample> sampleList = new ArrayList<>();
         try {
-            List results = null;
+            List results;
 
-            String sql = " select S1.*, S2.sample_name parent, CONCAT(A.actor_last_name,',',A.actor_first_name) user," +
+            StringBuilder sql = new StringBuilder(" select S1.*, S2.sample_name parent, CONCAT(A.actor_last_name,',',A.actor_first_name) user," +
                     " SA2.sampla_attribute_date attribute_value_date, SA2.sampla_attribute_float attribute_value_float, SA2.sampla_attribute_str attribute_value_str, SA2.sampla_attribute_int attribute_value_int " +
                     " from sample S1 " +
                     " left join sample S2 on S1.sample_sample_parent_id=S2.sample_id " +
                     " left join actor A on S1.sample_created_by=A.actor_id " +
                     " left join (select SA1.* from sample_attribute SA1, lookup_value LV " +
-                    " where SA1.sampla_lkuvlu_attribute_id = LV.lkuvlu_id and LV.lkuvlu_name = '"+ sortCol +
-                    "') SA2 on S1.sample_id = SA2.sampla_sample_id where ";
+                    " where SA1.sampla_lkuvlu_attribute_id = LV.lkuvlu_id and LV.lkuvlu_name = '" + sortCol +
+                    "') SA2 on S1.sample_id = SA2.sampla_sample_id where ");
 
             if("sample".equals(type))
-                sql += "S1.sample_id=";
+                sql.append("S1.sample_id=");
             else
-                sql += "S1.sample_projet_id=";
-            sql+=flexId;
+                sql.append("S1.sample_projet_id=");
+            sql.append(flexId);
 
             if(sSearch!=null && !sSearch.isEmpty()) {
-                sSearch = "%"+sSearch+"%";
-                sql+=" and (LOWER(S1.sample_name) like '"+sSearch+"' or S1.sample_create_date like '"+sSearch+"' " +
-                        " or (S1.sample_id in (select SA.sampla_sample_id from sample_attribute SA, lookup_value LV " +
-                        "   where COALESCE(SA.sampla_attribute_date,LOWER(SA.sampla_attribute_float),LOWER(SA.sampla_attribute_str),LOWER(SA.sampla_attribute_int)) like '"+sSearch+"'" +
-                        " or (SA.sampla_lkuvlu_attribute_id=LV.lkuvlu_id and LOWER(LV.lkuvlu_name) like '"+sSearch+"')) " +
-                        " or LOWER(S2.sample_name) like '"+sSearch+"' or ((LOWER(A.actor_first_name) like '"+sSearch+"' or LOWER(A.actor_last_name) like '"+sSearch+"'))))";
+                sSearch = '%' +sSearch+ '%';
+                sql.append(" and (LOWER(S1.sample_name) like '").append(sSearch).append("' or S1.sample_create_date like '").append(sSearch).append("' ").append(" or (S1.sample_id in (select SA.sampla_sample_id from sample_attribute SA, lookup_value LV ").append("   where COALESCE(SA.sampla_attribute_date,LOWER(SA.sampla_attribute_float),LOWER(SA.sampla_attribute_str),LOWER(SA.sampla_attribute_int)) like '").append(sSearch).append('\'').append(" or (SA.sampla_lkuvlu_attribute_id=LV.lkuvlu_id and LOWER(LV.lkuvlu_name) like '").append(sSearch).append("')) ").append(" or LOWER(S2.sample_name) like '").append(sSearch).append("' or ((LOWER(A.actor_first_name) like '").append(sSearch).append("' or LOWER(A.actor_last_name) like '").append(sSearch).append("'))))");
             }
 
             if(columnName!=null && !columnName.isEmpty()){
-                String columnSearchSql = " #logicGate# (S1.sample_id in (select SA.sampla_sample_id from sample_attribute SA, lookup_value LV where SA.sampla_lkuvlu_attribute_id = LV.lkuvlu_id and " +
-                        "LV.lkuvlu_name = '#columnName#' and COALESCE(SA.sampla_attribute_date,LOWER(SA.sampla_attribute_float),LOWER(SA.sampla_attribute_str),LOWER(SA.sampla_attribute_int)) #columnSearch#))";
-
-
-                sql += " and (";
+                sql.append(" and (");
 
                 for(int i = 0; i<columnName.size(); i++){
                     String key = columnName.get(i);
@@ -374,13 +426,13 @@ public class SampleDAO extends HibernateDAO {
                     String logicGate = i == 0 ? "" : valueArr[2].equals("not") ? "and not" : valueArr[2];
 
                     if (key.equals("Sample Name")) {
-                        sql += operation.equals("like") ? " " + logicGate + " LOWER(S1.sample_name) like '%" + searchVal + "%' "
-                                : operation.equals("in") ? " " + logicGate + " LOWER(S1.sample_name) in ('" + searchVal.replaceAll(",", "','") + "') "
-                                : " " + logicGate + " LOWER(S1.sample_name) = '" + searchVal + "' ";
+                        sql.append(operation.equals("like") ? ' ' + logicGate + " LOWER(S1.sample_name) like '%" + searchVal + "%' "
+                                : operation.equals("in") ? ' ' + logicGate + " LOWER(S1.sample_name) in ('" + searchVal.replaceAll(",", "','") + "') "
+                                : ' ' + logicGate + " LOWER(S1.sample_name) = '" + searchVal + "' ");
                     } else if (key.equals("Parent")) {
-                        sql += operation.equals("like") ? " " + logicGate + " LOWER(S2.sample_name) like '%" + searchVal + "%' "
-                                : operation.equals("in") ? " " + logicGate + " LOWER(S2.sample_name) in ('" + searchVal.replaceAll(",", "','") + "') "
-                                : " " + logicGate + " LOWER(S2.sample_name) = '" + searchVal + "' ";
+                        sql.append(operation.equals("like") ? ' ' + logicGate + " LOWER(S2.sample_name) like '%" + searchVal + "%' "
+                                : operation.equals("in") ? ' ' + logicGate + " LOWER(S2.sample_name) in ('" + searchVal.replaceAll(",", "','") + "') "
+                                : ' ' + logicGate + " LOWER(S2.sample_name) = '" + searchVal + "' ");
                     } else if (key.equals("User")) {
                         String flNameSeparator = ", ";
                         if(searchVal.contains(flNameSeparator)){
@@ -388,50 +440,53 @@ public class SampleDAO extends HibernateDAO {
                             String firstName = searchValArr[1];
                             String lastName = searchValArr[0];
 
-                            sql += operation.equals("like") ? " " + logicGate + " (LOWER(A.actor_first_name) like '%" + firstName + "%' or LOWER(A.actor_last_name) like '%" + lastName + "%') "
-                                    : operation.equals("in") ? " " + logicGate + " (LOWER(A.actor_first_name) in ('" + firstName.replaceAll(",", "','") + "') or LOWER(A.actor_last_name) in ('" + lastName.replaceAll(",", "','") + "')) "
-                                    : " " + logicGate + " (LOWER(A.actor_first_name) = '" + firstName + "' or LOWER(A.actor_last_name) = '" + lastName + "') ";
+                            sql.append(operation.equals("like") ? ' ' + logicGate + " (LOWER(A.actor_first_name) like '%" + firstName + "%' or LOWER(A.actor_last_name) like '%" + lastName + "%') "
+                                    : operation.equals("in") ? ' ' + logicGate + " (LOWER(A.actor_first_name) in ('" + firstName.replaceAll(",", "','") + "') or LOWER(A.actor_last_name) in ('" + lastName.replaceAll(",", "','") + "')) "
+                                    : ' ' + logicGate + " (LOWER(A.actor_first_name) = '" + firstName + "' or LOWER(A.actor_last_name) = '" + lastName + "') ");
                         } else {
-                            sql += operation.equals("like") ? " " + logicGate + " (LOWER(A.actor_first_name) like '%" + searchVal + "%' or LOWER(A.actor_last_name) like '%" + searchVal + "%') "
-                                    : operation.equals("in") ? " " + logicGate + " (LOWER(A.actor_first_name) in ('" + searchVal.replaceAll(",", "','") + "') or LOWER(A.actor_last_name) in ('" + searchVal.replaceAll(",", "','") + "')) "
-                                    : " " + logicGate + " (LOWER(A.actor_first_name) = '" + searchVal + "' or LOWER(A.actor_last_name) = '" + searchVal + "') ";
+                            sql.append(operation.equals("like") ? ' ' + logicGate + " (LOWER(A.actor_first_name) like '%" + searchVal + "%' or LOWER(A.actor_last_name) like '%" + searchVal + "%') "
+                                    : operation.equals("in") ? ' ' + logicGate + " (LOWER(A.actor_first_name) in ('" + searchVal.replaceAll(",", "','") + "') or LOWER(A.actor_last_name) in ('" + searchVal.replaceAll(",", "','") + "')) "
+                                    : ' ' + logicGate + " (LOWER(A.actor_first_name) = '" + searchVal + "' or LOWER(A.actor_last_name) = '" + searchVal + "') ");
                         }
                     } else if (key.equals("Date")) {
-                        sql += operation.equals("like") ? " " + logicGate + " S1.sample_create_date like '%" + searchVal + "%' "
-                                : operation.equals("in") ? " " + logicGate + " S1.sample_create_date in ('" + searchVal.replaceAll(",", "','") + "') "
-                                : operation.equals("equals") ? " " + logicGate + " S1.sample_create_date = '" + searchVal + "' "
-                                : " " + logicGate + " S1.sample_create_date " + (operation.equals("less")?"<":">") + " '" + searchVal + "' ";
+                        sql.append(operation.equals("like") ? ' ' + logicGate + " S1.sample_create_date like '%" + searchVal + "%' "
+                                : operation.equals("in") ? ' ' + logicGate + " S1.sample_create_date in ('" + searchVal.replaceAll(",", "','") + "') "
+                                : operation.equals("equals") ? ' ' + logicGate + " S1.sample_create_date = '" + searchVal + "' "
+                                : ' ' + logicGate + " S1.sample_create_date " + (operation.equals("less") ? "<" : ">") + " '" + searchVal + "' ");
                     } else {
-                        sql += operation.equals("like") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "like '%" + searchVal + "%'")
-                                : operation.equals("in") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "in ('" + searchVal.replaceAll(",", "','") + "')")
-                                : operation.equals("equals") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "= '" + searchVal + "'")
-                                : columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", (operation.equals("less")?"<":">") + " '" + searchVal + "'");
+                        String columnSearchSql = ' ' +logicGate+" (S1.sample_id in (select SA.sampla_sample_id from sample_attribute SA, lookup_value LV where SA.sampla_lkuvlu_attribute_id = LV.lkuvlu_id and " +
+                                "LV.lkuvlu_name = '"+key+"' and COALESCE(SA.sampla_attribute_date,LOWER(SA.sampla_attribute_float),LOWER(SA.sampla_attribute_str),LOWER(SA.sampla_attribute_int)) #columnSearch#))";
+
+                        sql.append(operation.equals("like") ? columnSearchSql.replace("#columnSearch#", "like '%" + searchVal + "%'")
+                                : operation.equals("in") ? columnSearchSql.replace("#columnSearch#", "in ('" + searchVal.replaceAll(",", "','") + "')")
+                                : operation.equals("equals") ? columnSearchSql.replace("#columnSearch#", "= '" + searchVal + '\'')
+                                : columnSearchSql.replace("#columnSearch#", (operation.equals("less") ? "<" : ">") + " '" + searchVal + '\''));
                     }
                 }
 
-                sql += ")";
+                sql.append(')');
             }
 
             if(sortCol!=null && !sortCol.isEmpty() && sortDir!=null && !sortDir.isEmpty()) {
-                sql += " order by";
+                sql.append(" order by");
                 boolean isDateSort = false;
                 if(sortCol.equals("sample"))
-                    sql += " sample_name ";
+                    sql.append(" sample_name ");
                 else if(sortCol.equals("parent"))
-                    sql += " parent ";
+                    sql.append(" parent ");
                 else if(sortCol.equals("user"))
-                    sql += " user ";
+                    sql.append(" user ");
                 else if(sortCol.equals("date")) {
-                    sql += " sample_create_date ";
+                    sql.append(" sample_create_date ");
                     isDateSort = true;
                 }else
-                    sql += " COALESCE(attribute_value_date, attribute_value_float, attribute_value_str, attribute_value_int) ";
-                sql += sortDir;
+                    sql.append(" COALESCE(attribute_value_date, attribute_value_float, attribute_value_str, attribute_value_int) ");
+                sql.append(sortDir);
 
-                if(isDateSort) sql += ", sample_name asc";
+                if(isDateSort) sql.append(", sample_name asc");
             }
 
-            SQLQuery query = session.createSQLQuery( sql );
+            NativeQuery query = session.createNativeQuery(sql.toString());
             query.addEntity("S", Sample.class);
             results = query.list();
 
@@ -449,11 +504,11 @@ public class SampleDAO extends HibernateDAO {
 
     public List<Sample> getAllSamples(String projectIds, String attributeNames, String sSearch, String sortType,
                                       String sortCol, String sortDir, List<String> columnName, List<String> columnSearchArguments, Session session) throws DAOException {
-        List<Sample> sampleList = new ArrayList<Sample>();
+        List<Sample> sampleList = new ArrayList<>();
         String defaultAttributes[] = {Constants.ATTR_PROJECT_NAME, Constants.ATTR_SAMPLE_NAME, Constants.ATTR_PARENT_SAMPLE_NAME};
 
         try {
-            List results = null;
+            List results;
             boolean isInt = (sSearch!=null && Pattern.compile("\\d+").matcher(sSearch).matches());
             boolean isSearch = (sSearch!=null && !sSearch.isEmpty());
             boolean isSort = (sortCol!=null && !sortCol.isEmpty() && sortDir!=null && !sortDir.isEmpty());
@@ -461,7 +516,7 @@ public class SampleDAO extends HibernateDAO {
 
             String sql = null;
             String sub_sql = null;
-            String col_s_sql = null;
+            StringBuilder col_s_sql = null;
             String sql_s_default =
                     "select distinct #selector# "+
                             "  from project p left join project p_1 on p.projet_projet_parent_id=p_1.projet_id " +
@@ -497,7 +552,7 @@ public class SampleDAO extends HibernateDAO {
                             "   s.sample_name like #sSearch# or s_1.sample_name like #sSearch# or ( "+
                             "     (sa.sampla_attribute_str like #sSearch# " +
                             "       or date(sa.sampla_attribute_date) like #sSearch# " +
-                            (isInt?"or sa.sampla_attribute_int=#i_sSearch# ":"") + ")" +
+                            (isInt?"or sa.sampla_attribute_int=#i_sSearch# ":"") + ')' +
                             "     and lv.lkuvlu_name in (#attributes#) "+
                             "   ) "+
                             " ) ";
@@ -527,13 +582,7 @@ public class SampleDAO extends HibernateDAO {
             String event_field = "ea.eventa";
 
             if(isColumnSearch){
-                String columnSearchSql = " #logicGate# (s.sample_id in (select SA.sampla_sample_id from sample_attribute SA, lookup_value LV where SA.sampla_lkuvlu_attribute_id = LV.lkuvlu_id and " +
-                        "LV.lkuvlu_name = '#columnName#' and COALESCE(SA.sampla_attribute_date,LOWER(SA.sampla_attribute_float),LOWER(SA.sampla_attribute_str),LOWER(SA.sampla_attribute_int)) #columnSearch#)";
-
-                String columnSearchSqlProject = " #logicGate# p.projet_id in (select PA.projea_projet_id from project_attribute PA, lookup_value LV where PA.projea_lkuvlu_attribute_id = LV.lkuvlu_id and " +
-                        "LV.lkuvlu_name = '#columnName#' and COALESCE(PA.projea_attribute_date,LOWER(PA.projea_attribute_float),LOWER(PA.projea_attribute_str),LOWER(PA.projea_attribute_int)) #columnSearch#))";
-
-                col_s_sql = " and (";
+                col_s_sql = new StringBuilder(" and (");
 
                 for(int i = 0; i<columnName.size(); i++){
                     String key = columnName.get(i);
@@ -543,31 +592,36 @@ public class SampleDAO extends HibernateDAO {
                     String logicGate = i == 0 ? "" : valueArr[2].equals("not") ? "and not" : valueArr[2];
 
                     if (key.equals("Project Name")) {
-                        col_s_sql += operation.equals("like") ? " " + logicGate + " LOWER(p.projet_name) like '%" + searchVal + "%' "
-                                : operation.equals("in") ? " " + logicGate + " LOWER(p.projet_name) in ('" + searchVal.replaceAll(",", "','") + "') "
-                                : " " + logicGate + " LOWER(p.projet_name) = '" + searchVal + "' ";
+                        col_s_sql.append(operation.equals("like") ? ' ' + logicGate + " LOWER(p.projet_name) like '%" + searchVal + "%' "
+                                : operation.equals("in") ? ' ' + logicGate + " LOWER(p.projet_name) in ('" + searchVal.replaceAll(",", "','") + "') "
+                                : ' ' + logicGate + " LOWER(p.projet_name) = '" + searchVal + "' ");
                     } else if (key.equals("Sample Name")) {
-                        col_s_sql += operation.equals("like") ? " " + logicGate + " LOWER(s.sample_name) like '%" + searchVal + "%' "
-                                : operation.equals("in") ? " " + logicGate + " LOWER(s.sample_name) in ('" + searchVal.replaceAll(",", "','") + "') "
-                                : " " + logicGate + " LOWER(s.sample_name) = '" + searchVal + "' ";
+                        col_s_sql.append(operation.equals("like") ? ' ' + logicGate + " LOWER(s.sample_name) like '%" + searchVal + "%' "
+                                : operation.equals("in") ? ' ' + logicGate + " LOWER(s.sample_name) in ('" + searchVal.replaceAll(",", "','") + "') "
+                                : ' ' + logicGate + " LOWER(s.sample_name) = '" + searchVal + "' ");
                     } else {
-                        col_s_sql += operation.equals("like") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "like '%" + searchVal + "%'")
-                                : operation.equals("in") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "in ('" + searchVal.replaceAll(",", "','") + "')")
-                                : operation.equals("equals") ? columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "= '" + searchVal + "'")
-                                : columnSearchSql.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", (operation.equals("less")?"<":">") + " '" + searchVal + "'");
+                        String columnSearchSql = ' ' +logicGate+" (s.sample_id in (select SA.sampla_sample_id from sample_attribute SA, lookup_value LV where SA.sampla_lkuvlu_attribute_id = LV.lkuvlu_id and " +
+                                "LV.lkuvlu_name = '"+key+"' and COALESCE(SA.sampla_attribute_date,LOWER(SA.sampla_attribute_float),LOWER(SA.sampla_attribute_str),LOWER(SA.sampla_attribute_int)) #columnSearch#)";
+
+                        col_s_sql.append(operation.equals("like") ? columnSearchSql.replace("#columnSearch#", "like '%" + searchVal + "%'")
+                                : operation.equals("in") ? columnSearchSql.replace("#columnSearch#", "in ('" + searchVal.replaceAll(",", "','") + "')")
+                                : operation.equals("equals") ? columnSearchSql.replace("#columnSearch#", "= '" + searchVal + '\'')
+                                : columnSearchSql.replace("#columnSearch#", (operation.equals("less") ? "<" : ">") + " '" + searchVal + '\''));
 
                         logicGate = "or";
+                        String columnSearchSqlProject = ' ' +logicGate+" p.projet_id in (select PA.projea_projet_id from project_attribute PA, lookup_value LV where PA.projea_lkuvlu_attribute_id = LV.lkuvlu_id and " +
+                                "LV.lkuvlu_name = '"+key+"' and COALESCE(PA.projea_attribute_date,LOWER(PA.projea_attribute_float),LOWER(PA.projea_attribute_str),LOWER(PA.projea_attribute_int)) #columnSearch#))";
 
-                        col_s_sql += operation.equals("like") ? columnSearchSqlProject.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "like '%" + searchVal + "%'")
-                                : operation.equals("in") ? columnSearchSqlProject.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "in ('" + searchVal.replaceAll(",", "','") + "')")
-                                : operation.equals("equals") ? columnSearchSqlProject.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", "= '" + searchVal + "'")
-                                : columnSearchSqlProject.replace("#logicGate#", logicGate).replace("#columnName#", key).replace("#columnSearch#", (operation.equals("less")?"<":">") + " '" + searchVal + "'");
+                        col_s_sql.append(operation.equals("like") ? columnSearchSqlProject.replace("#columnSearch#", "like '%" + searchVal + "%'")
+                                : operation.equals("in") ? columnSearchSqlProject.replace("#columnSearch#", "in ('" + searchVal.replaceAll(",", "','") + "')")
+                                : operation.equals("equals") ? columnSearchSqlProject.replace("#columnSearch#", "= '" + searchVal + '\'')
+                                : columnSearchSqlProject.replace("#columnSearch#", (operation.equals("less") ? "<" : ">") + " '" + searchVal + '\''));
 
 
                     }
                 }
 
-                col_s_sql += ")";
+                col_s_sql.append(')');
             }
 
             if(isSearch) {
@@ -578,7 +632,7 @@ public class SampleDAO extends HibernateDAO {
                 sub_sql += " union " + sql_e.replaceFirst("#e_attr#", "").replaceFirst("#e_opt#", sql_e_wsearch).replaceFirst("#lookup#", lookup.replaceAll("#field#", event_field));
                 sub_sql = sub_sql.replaceAll("#sSearch#", "'%"+sSearch.toLowerCase().replaceAll("'", "''")+"%'")
                         .replaceAll("#i_sSearch#", sSearch)
-                        .replaceAll("#attributes#", "'"+attributeNames.replaceAll("'", "''").replaceAll(",", "','")+"'");
+                        .replaceAll("#attributes#", '\'' +attributeNames.replaceAll("'", "''").replaceAll(",", "','")+ '\'');
 
                 sub_sql = sub_sql.replaceAll("#col_s#", "");
             }
@@ -610,26 +664,26 @@ public class SampleDAO extends HibernateDAO {
                         sql = sortType.equals("p") ? sql_p.replaceFirst("#p_attr#", sql_attr.replaceAll("#field#", project_field)).replaceAll("#lookup#", lookup.replaceAll("#field#", project_field))
                                 : sortType.equals("s") ? sql_s.replaceFirst("#s_attr#", sql_attr.replaceAll("#field#", sample_field)).replaceAll("#lookup#", lookup.replaceAll("#field#", sample_field))
                                 : sql_e.replaceFirst("#e_attr#", sql_attr.replaceAll("#field#", event_field)).replaceAll("#lookup#", lookup.replaceAll("#field#", event_field));
-                        optSelector = "#" + sortType + "_opt#";
+                        optSelector = '#' + sortType + "_opt#";
                     }
 
                     String sortOptionSql = (isSearch ? sql_wsort_s.replaceFirst("#sampleIds#", sub_sql.replaceAll("#selector#", "s.sample_id")) : sql_wsort_p);
                     String sortWhereSql = sql_wsort.replaceFirst("#sortOpt#", sortOptionSql);
                     sql = sql.replaceAll(optSelector, sortWhereSql);
 
-                    sql = isColumnSearch ? sql.replaceAll("#col_s#", col_s_sql) : sql.replaceAll("#col_s#", "");
+                    sql = isColumnSearch ? sql.replaceAll("#col_s#", col_s_sql.toString()) : sql.replaceAll("#col_s#", "");
                 }
 
                 sql = sql.replaceFirst("#sortDir#", sortDir);
             }
 
-            sql = (!isSearch && !isSort) ? sql_s_default.replace("#opt#", col_s_sql)
-                    : sql == null && isColumnSearch ? sql_s_default.replace("#opt#", col_s_sql) + " and  s.sample_id in (" + sub_sql.replaceAll("#selector#", "s.sample_id") +" )"
+            sql = (!isSearch && !isSort) ? sql_s_default.replace("#opt#", col_s_sql.toString())
+                    : sql == null && isColumnSearch ? sql_s_default.replace("#opt#", col_s_sql.toString()) + " and  s.sample_id in (" + sub_sql.replaceAll("#selector#", "s.sample_id") +" )"
                     : sql == null ? sub_sql
                     : sql;
             sql = sql.replaceAll("#projectIds#", projectIds).replaceAll("#selector#", "s.*");
 
-            SQLQuery query = session.createSQLQuery(sql);
+            NativeQuery query = session.createNativeQuery(sql);
             query.addEntity(Sample.class);
             results = query.list();
 
