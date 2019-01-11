@@ -264,8 +264,7 @@ public class CommonTool {
                         boolean hasParent = dictType.contains("Parent:");
 
                         try {
-                            Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-                            ReadBeanPersister readPersister = new ReadBeanPersister(props);
+                            ReadBeanPersister readPersister = new ReadBeanPersister();
 
                             if (hasParent) {
                                 String[] dictOpts = dictType.split(",Parent:");

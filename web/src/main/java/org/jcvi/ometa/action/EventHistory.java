@@ -50,8 +50,7 @@ public class EventHistory extends ActionSupport {
     private Long sampleId;
 
     public EventHistory() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister( props );
+        readPersister = new ReadBeanPersister();
     }
 
     public String eventHistory() {

@@ -53,7 +53,6 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
     //private Transaction transaction;
     private Date traxStartDate;
     private String sessionFactoryName;
-    private String cfgXml;
     private boolean sessionIsUsed = false;
 
     Logger logger = Logger.getLogger(ContainerizedSessionAndTransactionManager.class);
@@ -61,10 +60,6 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
     @PersistenceContext(unitName="OMETAPersistenceUnit")
     private EntityManager em;
     //private EntityManagerFactory emf;
-
-    public ContainerizedSessionAndTransactionManager(Properties props) {
-        cfgXml = props.getProperty(CONTAINERIZED_HIBERNATE_CFG_PROP);
-    }
 
     @Override
     public void startTransaction() throws DAOException {

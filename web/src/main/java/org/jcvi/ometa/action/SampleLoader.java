@@ -66,8 +66,7 @@ public class SampleLoader extends ActionSupport {
     private Logger logger = Logger.getLogger(EventLoader.class);
 
     public SampleLoader() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister(props);
+        readPersister = new ReadBeanPersister();
     }
 
     public String execute() {

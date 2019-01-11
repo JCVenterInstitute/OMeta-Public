@@ -25,8 +25,7 @@ public class Dashboard extends ActionSupport {
     private List<Map<String, Object>> projectMapList;
 
     public Dashboard() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister( props );
+        readPersister = new ReadBeanPersister();
     }
 
     public String process() {

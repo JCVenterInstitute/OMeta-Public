@@ -41,8 +41,7 @@ public class Popup extends ActionSupport {
     private List<LookupValue> eventTypeList;
 
     public Popup() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister(props);
+        readPersister = new ReadBeanPersister();
     }
 
     public String run() {
@@ -58,8 +57,6 @@ public class Popup extends ActionSupport {
 
             rtnVal = "SELECT_EXPORT";
         } else if(t.startsWith("projectDetails")) {
-            //Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-            //this.ids = props.getProperty(Constants.CONFIG_PROJECT_POPUP_DISPLAY_ATTRS);
             try {
                 List<ProjectAttribute> projectAttributes = readPersister.getProjectAttributes(projectId);
                 StringBuilder idsBuilder = new StringBuilder();

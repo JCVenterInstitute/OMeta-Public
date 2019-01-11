@@ -45,8 +45,7 @@ public class ActorRole extends ActionSupport implements IAjaxAction, Preparable 
     ProjectSampleEventWritebackBusiness psewt;
 
     public ActorRole() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister(props);
+        readPersister = new ReadBeanPersister();
     }
 
     public ActorRole(ReadBeanPersister readPersister) {

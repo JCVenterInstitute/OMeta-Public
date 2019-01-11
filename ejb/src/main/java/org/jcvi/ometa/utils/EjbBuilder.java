@@ -42,12 +42,6 @@ import java.util.Properties;
 public class EjbBuilder {
 
     private static final int NUM_RETRIES = 5;
-    protected Properties props;
-
-    // Create the props at construction time.
-    {
-        props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-    }
 
     /**
      * Get the ejb of the type provided, for a remote client.
@@ -134,6 +128,7 @@ public class EjbBuilder {
         String ejbServerProp = ejbName + ".Server";
         try {
             if ( ejbServerName == null  ||  ejbServerName.trim().length() == 0 ) {
+                Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
                 ejbServerName = props.getProperty( ejbServerProp );
             }
             logger.info( "Context points to server " + ejbServerName );

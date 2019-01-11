@@ -46,8 +46,6 @@ import java.util.Properties;
 public class FileDownloader extends ActionSupport {
     private static Logger logger = Logger.getLogger(FileDownloader.class);
 
-    private final String PROJECT_FILE_STORAGE;
-
     private String fp;
 
     private InputStream fileInputStream;
@@ -57,10 +55,7 @@ public class FileDownloader extends ActionSupport {
     private ReadBeanPersister readPersister;
 
     public FileDownloader() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        this.PROJECT_FILE_STORAGE = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH) + File.separator + Constants.DIRECTORY_PROJECT;
-
-        this.readPersister = new ReadBeanPersister(props);
+        this.readPersister = new ReadBeanPersister();
     }
 
     public String download() {
@@ -84,7 +79,9 @@ public class FileDownloader extends ActionSupport {
             }
 
             if(hasAccess) {
-                File file = new File(this.PROJECT_FILE_STORAGE + File.separator + this.fp);
+                Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
+                String projectFileStorage = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH) + File.separator + Constants.DIRECTORY_PROJECT;
+                File file = new File(projectFileStorage + File.separator + this.fp);
                 if(file.exists() && file.canRead()) {
                     this.fileInputStream = new FileInputStream(file);
                     this.fileName = file.getName();

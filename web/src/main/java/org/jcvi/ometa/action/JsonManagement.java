@@ -51,8 +51,8 @@ public class JsonManagement extends ActionSupport implements IAjaxAction {
     public JsonManagement() {
         errorMessages = new ArrayList<>(0);
         fileNameList = new ArrayList<>(9);
+        readPersister = new ReadBeanPersister();
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister( props );
         String jsonFilePath = props.getProperty(Constants.CONFIG_JSON_FILE_PATH);
 
         builder = new FileBasedConfigurationBuilder<>(PropertiesConfiguration.class)

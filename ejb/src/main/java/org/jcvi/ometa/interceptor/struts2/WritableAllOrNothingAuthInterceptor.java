@@ -55,8 +55,7 @@ public class WritableAllOrNothingAuthInterceptor implements Interceptor {
 
     /** Special resources requested. */
     public void init() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        interceptorHelper = new InterceptorHelper( props, logger );
+        interceptorHelper = new InterceptorHelper( logger );
         interceptorHelper.setAccessLevel( AccessLevel.Edit );
         interceptorHelper.setMissingProjectsResponse( ResponseToFailedAuthorization.ThrowException );
     }

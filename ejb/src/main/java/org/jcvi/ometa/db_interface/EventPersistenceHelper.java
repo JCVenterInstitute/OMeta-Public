@@ -385,8 +385,7 @@ public class EventPersistenceHelper {
                         boolean hasParent = dictType.contains("Parent:");
 
                         try {
-                            Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-                            ReadBeanPersister readPersister = new ReadBeanPersister(props);
+                            ReadBeanPersister readPersister = new ReadBeanPersister();
                             List<Dictionary> dictList = null;
 
                             if (hasParent) {

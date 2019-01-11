@@ -56,8 +56,7 @@ public class EventReport extends ActionSupport {
     private String toDate;
 
     public EventReport() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister( props );
+        readPersister = new ReadBeanPersister();
     }
 
     public String eventReport() {

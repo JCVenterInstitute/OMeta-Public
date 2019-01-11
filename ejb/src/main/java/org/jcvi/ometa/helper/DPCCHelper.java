@@ -16,11 +16,6 @@ import java.util.List;
  * org.jcvi.ometa.helper
  */
 public class DPCCHelper {
-    public DPCCHelper() {
-        /*Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        this.readPersister = new ReadBeanPersister(props);*/
-    }
-
 
     public void validateDataForDPCC(List<FileReadAttributeBean> loadingList, int index,String eventName) throws Exception {
         Collection errorMessages = new ArrayList();

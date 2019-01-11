@@ -50,8 +50,8 @@ public class GCIDMetadata extends ActionSupport {
             Constants.ATTR_GENBANK_XREF_PLASMIDS,Constants.ATTR_GENBANK_XREF_WGS};
 
     public GCIDMetadata() {
+        readPersister = new ReadBeanPersister();
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister(props);
         this.fileStoragePath = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH); //file storage area
         this.attrFilePath = props.getProperty(Constants.CONFIG_GCIDMETADATA_OUTPUTATTR_FILEPATH); //csv file area
         this.bioProjectFilePath = props.getProperty(Constants.CONFIG_GCIDMETADATA_BIOPROJECTFILE_FILEPATH); // bioproject id file area

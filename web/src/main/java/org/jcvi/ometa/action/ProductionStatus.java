@@ -82,8 +82,7 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
     private List<String> columnSearchArguments;
 
     public ProductionStatus() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister(props);
+        readPersister = new ReadBeanPersister();
     }
 
     public ProductionStatus(ReadBeanPersister bean) {

@@ -24,8 +24,7 @@ public class AttributeHelper {
     }
 
     public AttributeHelper() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister(props);
+        readPersister = new ReadBeanPersister();
     }
 
     public List<AttributePair> getAllAttributeByIDs(Long projectId, Long eventId, String ids, String idType) throws Exception {

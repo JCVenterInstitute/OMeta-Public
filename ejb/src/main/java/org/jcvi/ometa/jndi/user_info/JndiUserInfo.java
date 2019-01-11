@@ -49,8 +49,7 @@ public class JndiUserInfo {
      * C'tor will find all info required to do searches.
      */
     public JndiUserInfo() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister(props);
+        readPersister = new ReadBeanPersister();
     }
 
     /**

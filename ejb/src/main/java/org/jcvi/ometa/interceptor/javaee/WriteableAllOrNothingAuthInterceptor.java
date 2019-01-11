@@ -94,8 +94,7 @@ public class WriteableAllOrNothingAuthInterceptor {
 
     private void lazyInit() {
         if ( ! isInitialized ) {
-            Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-            interceptorHelper = new InterceptorHelper( props, logger );
+            interceptorHelper = new InterceptorHelper( logger );
             interceptorHelper.setAccessLevel( AccessLevel.Edit );
             interceptorHelper.setMissingProjectsResponse( ResponseToFailedAuthorization.ThrowException );
             isInitialized = true;

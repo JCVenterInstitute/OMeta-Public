@@ -72,8 +72,7 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
     private SessionAndTransactionManagerI sessionAndTransactionManager;
     public ProjectSampleEventPresentationStateless() {
         daoFactory = new DAOFactory();
-        Properties props = PropertyHelper.getHostnameProperties( Constants.PROPERTIES_FILE_NAME );
-        sessionAndTransactionManager = new ContainerizedSessionAndTransactionManager( props );
+        sessionAndTransactionManager = new ContainerizedSessionAndTransactionManager();
     }
 
     /** This constructor to support unit testing.  */

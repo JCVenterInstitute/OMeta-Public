@@ -32,8 +32,7 @@ public class DictionaryManagement extends ActionSupport {
     private List aaData;
 
     public DictionaryManagement() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister(props);
+        readPersister = new ReadBeanPersister();
     }
 
     public String getDictionaries(){

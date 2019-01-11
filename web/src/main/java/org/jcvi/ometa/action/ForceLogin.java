@@ -45,10 +45,6 @@ public class ForceLogin extends ActionSupport implements SessionAware {
     private String projectNames;
     private String attributes;
 
-    public ForceLogin() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-    }
-
     public String silentRedirect() {
         getForwardingParameters();
         return SUCCESS;

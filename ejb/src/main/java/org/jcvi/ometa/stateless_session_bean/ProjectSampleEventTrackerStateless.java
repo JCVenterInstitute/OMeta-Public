@@ -79,13 +79,6 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
     private SessionContext context;
     private Logger logger = Logger.getLogger(ProjectSampleEventTrackerStateless.class);
 
-    private Properties props;
-
-    // Create the props at construction time.
-    {
-        props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-    }
-
     @PermitAll
     @ExcludeClassInterceptors
     @ExcludeDefaultInterceptors
@@ -529,7 +522,8 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
      * General means of getting persister required by many methods.
      */
     private BeanPersistenceFacadeI getBeanPersister() {
-        BeanPersistenceFacadeI rtnVal = new WritebackBeanPersister(props,new ContainerizedSessionAndTransactionManager(props));
+        Properties props  = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
+        BeanPersistenceFacadeI rtnVal = new WritebackBeanPersister(props,new ContainerizedSessionAndTransactionManager());
         return rtnVal;
     }
 

@@ -80,8 +80,7 @@ public class Editor extends ActionSupport {
 
 
     public Editor() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister(props);
+        readPersister = new ReadBeanPersister();
 
         UploadActionDelegate udelegate = new UploadActionDelegate();
         psewt = udelegate.initializeBusinessObject(logger, psewt);

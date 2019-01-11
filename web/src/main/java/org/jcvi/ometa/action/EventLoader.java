@@ -116,11 +116,7 @@ public class EventLoader extends ActionSupport implements Preparable {
     }
 
     public EventLoader() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister(props);
-
-        fileStoragePath = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH); //file storage area
-        //defaultProjectId = Long.parseLong(props.getProperty(Constants.CONFIG_DEFAULT_PROJECT_ID));
+        readPersister = new ReadBeanPersister();
 
         UploadActionDelegate udelegate = new UploadActionDelegate();
         psewt = udelegate.initializeBusinessObject(logger, psewt);
@@ -316,6 +312,8 @@ public class EventLoader extends ActionSupport implements Preparable {
                                                 StringBuilder dataBufferFilePath = new StringBuilder();
                                                 String delim = "";
 
+                                                Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
+                                                fileStoragePath = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH); //file storage area
                                                 for (String path : paths) {
                                                     String absoluteFilePath = this.fileStoragePath + File.separator + Constants.DIRECTORY_PROJECT + File.separator + File.separator + path;
                                                     String name = path.substring(path.lastIndexOf(File.separator) + 1);
@@ -386,6 +384,10 @@ public class EventLoader extends ActionSupport implements Preparable {
         } catch (Exception ex) {
 
             if(loadedFiles!=null && loadedFiles.size()>0) { //deletes uploaded files in event of error
+                if(fileStoragePath == null) {
+                    Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
+                    fileStoragePath = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH); //file storage area
+                }
                 for(String filePath : loadedFiles) {
                     File tempFile = new File(fileStoragePath + filePath);
                     if(tempFile.exists())

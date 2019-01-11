@@ -57,8 +57,7 @@ public class EventDetail extends ActionSupport {
     private Long sampleId;
 
     public EventDetail() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister( props );
+        readPersister = new ReadBeanPersister();
     }
 
     public String eventDetail() {

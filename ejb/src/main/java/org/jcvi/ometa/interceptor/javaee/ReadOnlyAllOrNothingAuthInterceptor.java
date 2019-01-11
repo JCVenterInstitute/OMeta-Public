@@ -109,8 +109,7 @@ public class ReadOnlyAllOrNothingAuthInterceptor {
 
     private void lazyInit() {
         if ( ! isInitialized ) {
-            Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-            interceptorHelper = new InterceptorHelper( props, logger );
+            interceptorHelper = new InterceptorHelper( logger );
             interceptorHelper.setAccessLevel( AccessLevel.View );
             interceptorHelper.setMissingProjectsResponse( ResponseToFailedAuthorization.ThrowException );
             isInitialized = true;

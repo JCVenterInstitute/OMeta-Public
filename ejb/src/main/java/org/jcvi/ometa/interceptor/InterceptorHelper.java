@@ -55,11 +55,11 @@ public class InterceptorHelper implements Serializable {
     private ProjectDAO projectDAO;
     private SessionAndTransactionManagerI sessionAndTransactionManager;
 
-    public InterceptorHelper( Properties props, Logger logger ) {
+    public InterceptorHelper( Logger logger ) {
         DAOFactory daoFactory = new DAOFactory();
         securityDAO = daoFactory.getSecurityDAO();
         projectDAO = daoFactory.getProjectDAO();
-        sessionAndTransactionManager = new ContainerizedSessionAndTransactionManager( props );
+        sessionAndTransactionManager = new ContainerizedSessionAndTransactionManager();
         this.logger = logger;
     }
 

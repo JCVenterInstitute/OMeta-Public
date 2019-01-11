@@ -43,8 +43,7 @@ public class ProjectManagement extends ActionSupport {
     private String eventName;
 
     public ProjectManagement() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister(props);
+        readPersister = new ReadBeanPersister();
     }
 
     public String manageProject() {

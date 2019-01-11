@@ -47,7 +47,7 @@ import java.util.Properties;
 public class ReadBeanPersister implements WebDataFacadeI {
     private ProjectSampleEventPresentationBusiness pseb;
 
-    public ReadBeanPersister( Properties props ) {
+    public ReadBeanPersister() {
         //pseb = new ProjectSampleEventPresentationStateless();
         pseb = new PresentationActionDelegate().initializeEjb( Logger.getLogger( ReadBeanPersister.class ), null );
     }

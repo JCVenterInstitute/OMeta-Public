@@ -43,8 +43,7 @@ public class EditProject extends ActionSupport{
     private String errorMsg;
 
     public EditProject() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister(props);
+        readPersister = new ReadBeanPersister();
     }
 
     public String editProject() {

@@ -44,8 +44,7 @@ public class EditActor extends ActionSupport implements Preparable {
     ProjectSampleEventWritebackBusiness psewt;
 
     public EditActor(){
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister(props);
+        readPersister = new ReadBeanPersister();
     }
 
     public EditActor(ReadBeanPersister readPersister){this.readPersister = readPersister;  }

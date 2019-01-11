@@ -60,8 +60,7 @@ public class SampleDetail extends ActionSupport {
     private final String TAXONOMY_ID = "Taxonomy ID";
 
     public SampleDetail() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister( props );
+        readPersister = new ReadBeanPersister();
     }
     public SampleDetail(ReadBeanPersister beanPersister) {
         this.readPersister = beanPersister;

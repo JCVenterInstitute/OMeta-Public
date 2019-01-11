@@ -27,7 +27,6 @@ public class EventLoadHelper {
 
     private DPCCHelper dpccHelper;
 
-    private final String fileStoragePath;
     private String originalPath; // original path for relative file paths
     private String submissionId; // submission id
     private String dataRole;
@@ -35,13 +34,11 @@ public class EventLoadHelper {
     private final String ZIP_FILE_DIRECTORY_APPENDER = "___zip";
 
     public EventLoadHelper(ReadBeanPersister readPersister) {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
         if(readPersister == null) {
-            this.readPersister = new ReadBeanPersister(props);
+            this.readPersister = new ReadBeanPersister();
         } else {
             this.readPersister = readPersister;
         }
-        this.fileStoragePath = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH);
         /*Not necessary for internal OMETA
         this.dataRole = props.getProperty(Constants.CONFIG_DPCC_DATA_ROLE);*/
         this.dpccHelper = new DPCCHelper();
@@ -468,7 +465,9 @@ public class EventLoadHelper {
 
                 String storagePath = project.getProjectId() + File.separator + currentDate;
 
-                File storingDirectory = new File(this.fileStoragePath + File.separator + Constants.DIRECTORY_PROJECT + File.separator + storagePath);
+                Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
+                String fileStoragePath = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH);
+                File storingDirectory = new File(fileStoragePath + File.separator + Constants.DIRECTORY_PROJECT + File.separator + storagePath);
                 storingDirectory.mkdirs();
 
                 File destFile = new File(storingDirectory.getAbsolutePath() + File.separator + uploadFileName);

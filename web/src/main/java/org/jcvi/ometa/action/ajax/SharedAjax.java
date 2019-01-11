@@ -81,7 +81,6 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
     private boolean parentEnabled;
 
     //Download File
-    private String fileStoragePath;
     private InputStream dataTemplateStream;
     private String dataTemplateFileName;
     private String dataTemplateContentType;
@@ -90,14 +89,8 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
 
     private String userName;
 
-    private String projectPopupAttributes;
-
     public SharedAjax() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister(props);
-
-        this.projectPopupAttributes = props.getProperty(Constants.CONFIG_PROJECT_POPUP_ATTRS);
-        this.fileStoragePath = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH);
+        readPersister = new ReadBeanPersister();
     }
 
     public SharedAjax(ReadBeanPersister readPersister) {
@@ -203,13 +196,15 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
             aaData = new ArrayList<Map>();
 
             this.getCurrentUserName();
+            Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
+            String projectPopupAttributes = props.getProperty(Constants.CONFIG_PROJECT_POPUP_ATTRS);;
 
             Map<String, String> generalInfo = new HashMap<String, String>(2);
             generalInfo.put("actor", this.userName);
-            generalInfo.put("attributes", this.projectPopupAttributes);
+            generalInfo.put("attributes", projectPopupAttributes);
             aaData.add(generalInfo);
 
-            List<String> displayFields = Arrays.asList(this.projectPopupAttributes.split(","));
+            List<String> displayFields = Arrays.asList(projectPopupAttributes.split(","));
 
             List<Project> projects = null;
             if(this.projectName != null && !this.projectName.isEmpty()) {
@@ -367,6 +362,8 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                 String absoluteFileName = null;
                 File file = null;
 
+                Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
+                String fileStoragePath = props.getProperty(Constants.CONIFG_FILE_STORAGE_PATH);
                 if(this.fileName.equals("DOWNLOADALL")){
                     byte[] bytes;
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -374,7 +371,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                     FileInputStream fis;
 
                     for(String path : paths){
-                        String absoluteFilePath = this.fileStoragePath + File.separator + Constants.DIRECTORY_PROJECT + File.separator + File.separator + path;
+                        String absoluteFilePath = fileStoragePath + File.separator + Constants.DIRECTORY_PROJECT + File.separator + File.separator + path;
                         String name = path.substring(path.lastIndexOf(File.separator) + 1);
 
                         file = new File(absoluteFilePath);
@@ -406,7 +403,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                     }
 
                     if(absoluteFileName != null) {
-                        String absoluteFilePath = this.fileStoragePath + File.separator + Constants.DIRECTORY_PROJECT + File.separator + File.separator + absoluteFileName;
+                        String absoluteFilePath = fileStoragePath + File.separator + Constants.DIRECTORY_PROJECT + File.separator + File.separator + absoluteFileName;
 
                         file = new File(absoluteFilePath);
 

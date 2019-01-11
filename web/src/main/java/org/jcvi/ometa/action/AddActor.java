@@ -58,8 +58,7 @@ public class AddActor extends ActionSupport {
     };
 
     public AddActor() {
-        Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);
-        readPersister = new ReadBeanPersister(props);
+        readPersister = new ReadBeanPersister();
     }
 
     public String process() {
