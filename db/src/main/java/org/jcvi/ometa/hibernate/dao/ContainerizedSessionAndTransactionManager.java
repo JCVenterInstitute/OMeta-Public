@@ -45,10 +45,6 @@ import java.util.Properties;
 public class ContainerizedSessionAndTransactionManager implements SessionAndTransactionManagerI {
     private static final String PERSISTENCE_UNIT = "java:/OMETAPersistenceUnit";
 
-    private static final String CONTAINERIZED_HIBERNATE_CFG_PROP = "hibernate.cfg.xml";
-    private static final String FAILED_TO_OBTAIN_SESSION_FACTORY_ERROR = "Failed to obtain session factory: ";
-
-    private static SessionFactory sessionFactoryObject;
     private Session session;
     //private Transaction transaction;
     private Date traxStartDate;
@@ -59,7 +55,6 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
 
     @PersistenceContext(unitName="OMETAPersistenceUnit")
     private EntityManager em;
-    //private EntityManagerFactory emf;
 
     @Override
     public void startTransaction() throws DAOException {
@@ -163,8 +158,6 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
 
     /** This convenience method is set aside for readability. */
     private void getHibernateSession() {
-        //import org.jboss.jpa.tx.TransactionScopedEntityManager;
-
         try {
             session = em.unwrap(Session.class)
                     .getSessionFactory().openSession();
