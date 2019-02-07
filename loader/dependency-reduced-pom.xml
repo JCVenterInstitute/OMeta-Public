@@ -33,19 +33,7 @@
                     <exclude>org/jcvi/ometa/stateless_session_bean/**/*.class</exclude>
                   </excludes>
                 </filter>
-                <filter>
-                  <artifact>org.jcvi:web</artifact>
-                  <includes>
-                    <include>WEB-INF/classes/log4j2.xml</include>
-                  </includes>
-                </filter>
               </filters>
-              <relocations>
-                <relocation>
-                  <pattern>WEB-INF/classes</pattern>
-                  <shadedPattern />
-                </relocation>
-              </relocations>
             </configuration>
           </execution>
         </executions>

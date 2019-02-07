@@ -26,12 +26,6 @@
         </dependency>
         <dependency>
             <groupId>org.jcvi</groupId>
-            <artifactId>web</artifactId>
-            <type>war</type>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jcvi</groupId>
             <artifactId>resources</artifactId>
             <type>jar</type>
             <scope>compile</scope>
@@ -167,31 +161,21 @@
             <version>${servlet.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-configuration2</artifactId>
+            <version>${commons.configuration2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
         <finalName>ometaApp</finalName>
         <plugins>
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>package-all</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/main/assembly/loader.xml</descriptor>
-                            </descriptors>
-                            <appendAssemblyId>false</appendAssemblyId>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -216,19 +200,7 @@
                                         <exclude>org/jcvi/ometa/stateless_session_bean/**/*.class</exclude>
                                     </excludes>
                                 </filter>
-                                <filter>
-                                    <artifact>org.jcvi:web</artifact>
-                                    <includes>
-                                        <include>WEB-INF/classes/log4j2.xml</include>
-                                    </includes>
-                                </filter>
                             </filters>
-                            <relocations>
-                                <relocation>
-                                    <pattern>WEB-INF/classes</pattern>
-                                    <shadedPattern></shadedPattern>
-                                </relocation>
-                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
