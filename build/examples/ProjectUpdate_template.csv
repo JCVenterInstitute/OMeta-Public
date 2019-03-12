@@ -1,0 +1,4 @@
+#DataTemplate:ProjectUpdate
+ProjectName,Submit to INSDC,Investigation Type,project_name,Experimental Factor
+#string *Required,#float optional,#string optional[dropdown(eukaryote;bacteria_archaea;plasmid;virus;organelle;metagenome;mimarks-survey;mimarks-specimen)],#string optional,#string optional
+MIxS Demo Project,1111,metagenome,MIxS Human Gut,family history
