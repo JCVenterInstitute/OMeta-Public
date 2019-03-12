@@ -1,4 +1,4 @@
-![alt text](https://raw.github.com/JCVenterInstitute/OMeta-Public/master/main/src/www/images/ometa_logo.png "O-META")
+![alt text](https://raw.github.com/JCVenterInstitute/OMeta-Public/master/web/src/main/webapp/images/ometa_logo.png "O-META")
 =====
 
 ### O-META
@@ -21,11 +21,11 @@ O-META (Ontologies based metadata tracking system) is a data driven application 
 * Project and Sample attributes can be updated through multiple events like sample registration, sample QC, sample aliquot etc.
 
 ##### Screenshots
-![alt text](https://raw.github.com/JCVenterInstitute/OMeta-Public/master/main/src/www/images/screenshot/eventLoader.png "Event Loader")
+![alt text](https://raw.github.com/JCVenterInstitute/OMeta-Public/master/web/src/main/webapp/images/screenshot/eventLoader.png "Event Loader")
 
 ------------------------------------------------------
 
-![alt text](https://raw.github.com/JCVenterInstitute/OMeta-Public/master/main/src/www/images/screenshot/eventDetail.png "Event Detail")
+![alt text](https://raw.github.com/JCVenterInstitute/OMeta-Public/master/web/src/main/webapp/images/screenshot/eventDetail.png "Event Detail")
 
 ##### License
 <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
@@ -34,4 +34,4 @@ This project has been funded in whole or part with federal funds from the Nation
 
 ======
 ##### Project Supported by
-![www.jcvi.org](https://raw.github.com/JCVenterInstitute/OMeta-Public/master/main/src/www/images/header-logo.png "JCVI") | ![www.jetbrains.com](https://raw.github.com/JCVenterInstitute/OMeta-Public/master/main/src/www/images/logo_JetBrains_1.png "JetBrains") | ![www.jboss.org](https://raw.github.com/JCVenterInstitute/OMeta-Public/master/main/src/www/images/jboss.png "Jboss")
+![www.jcvi.org](https://raw.github.com/JCVenterInstitute/OMeta-Public/master/web/src/main/webapp/images/header-logo.png "JCVI") | ![www.jetbrains.com](https://raw.github.com/JCVenterInstitute/OMeta-Public/master/web/src/main/webapp/images/logo_JetBrains_1.png "JetBrains") | ![www.jboss.org](https://raw.github.com/JCVenterInstitute/OMeta-Public/master/web/src/main/webapp/images/jboss.png "Jboss")
