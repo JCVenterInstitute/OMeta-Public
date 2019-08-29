@@ -61,7 +61,7 @@ CREATE TABLE `lookup_value` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`hkim`@`%`*/ /*!50003 TRIGGER lv_modify_date_trg BEFORE UPDATE ON ifx_projects.lookup_value  
+/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER lv_modify_date_trg BEFORE UPDATE ON ifx_projects.lookup_value  
   FOR EACH ROW BEGIN SET NEW.lkuvlu_modify_date = CURRENT_TIMESTAMP;   
 END */;;
 DELIMITER ;
@@ -102,7 +102,7 @@ CREATE TABLE `actor` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`hkim`@`%`*/ /*!50003 TRIGGER actor_modify_date_trg BEFORE UPDATE ON ifx_projects.actor  
+/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER actor_modify_date_trg BEFORE UPDATE ON ifx_projects.actor  
   FOR EACH ROW BEGIN SET NEW.actor_modify_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -161,7 +161,7 @@ CREATE TABLE `actor_group` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`hkim`@`%`*/ /*!50003 TRIGGER actor_grp_modify_date_trg BEFORE UPDATE ON ifx_projects.actor_group  
+/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER actor_grp_modify_date_trg BEFORE UPDATE ON ifx_projects.actor_group  
   FOR EACH ROW BEGIN SET NEW.actgrp_modify_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -218,7 +218,7 @@ CREATE TABLE `project` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`hkim`@`%`*/ /*!50003 TRIGGER project_modify_date_trg BEFORE UPDATE ON ifx_projects.project  
+/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER project_modify_date_trg BEFORE UPDATE ON ifx_projects.project  
   FOR EACH ROW BEGIN SET NEW.projet_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -299,7 +299,7 @@ CREATE TABLE `project_meta_attribute` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`hkim`@`%`*/ /*!50003 TRIGGER pma_modify_date_trg BEFORE UPDATE ON ifx_projects.project_meta_attribute  
+/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER pma_modify_date_trg BEFORE UPDATE ON ifx_projects.project_meta_attribute  
   FOR EACH ROW BEGIN SET NEW.projma_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -352,7 +352,7 @@ CREATE TABLE `project_attribute` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`hkim`@`%`*/ /*!50003 TRIGGER pa_modify_date_trg BEFORE UPDATE ON ifx_projects.project_attribute  
+/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER pa_modify_date_trg BEFORE UPDATE ON ifx_projects.project_attribute  
   FOR EACH ROW BEGIN SET NEW.projea_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -403,7 +403,7 @@ CREATE TABLE `sample` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`hkim`@`%`*/ /*!50003 TRIGGER sample_modify_date_trg BEFORE UPDATE ON ifx_projects.sample  
+/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER sample_modify_date_trg BEFORE UPDATE ON ifx_projects.sample  
   FOR EACH ROW BEGIN SET NEW.sample_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -485,7 +485,7 @@ CREATE TABLE `sample_meta_attribute` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`hkim`@`%`*/ /*!50003 TRIGGER sma_modify_date_trg BEFORE UPDATE ON ifx_projects.sample_meta_attribute  
+/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER sma_modify_date_trg BEFORE UPDATE ON ifx_projects.sample_meta_attribute  
   FOR EACH ROW BEGIN SET NEW.sampma_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -551,7 +551,7 @@ CREATE TABLE `sample_attribute` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`hkim`@`%`*/ /*!50003 TRIGGER sa_modify_date_trg BEFORE UPDATE ON ifx_projects.sample_attribute  
+/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER sa_modify_date_trg BEFORE UPDATE ON ifx_projects.sample_attribute  
   FOR EACH ROW BEGIN SET NEW.sampla_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -605,7 +605,7 @@ CREATE TABLE `event` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`hkim`@`%`*/ /*!50003 TRIGGER event_modify_date_trg BEFORE UPDATE ON ifx_projects.event  
+/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER event_modify_date_trg BEFORE UPDATE ON ifx_projects.event  
   FOR EACH ROW BEGIN SET NEW.event_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -665,7 +665,7 @@ CREATE TABLE `event_meta_attribute` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`hkim`@`%`*/ /*!50003 TRIGGER ema_modify_date_trg BEFORE UPDATE ON ifx_projects.event_meta_attribute  
+/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER ema_modify_date_trg BEFORE UPDATE ON ifx_projects.event_meta_attribute  
   FOR EACH ROW BEGIN SET NEW.evenma_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -716,7 +716,7 @@ CREATE TABLE `event_attribute` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`hkim`@`%`*/ /*!50003 TRIGGER ea_modify_date_trg BEFORE UPDATE ON ifx_projects.event_attribute  
+/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER ea_modify_date_trg BEFORE UPDATE ON ifx_projects.event_attribute  
   FOR EACH ROW BEGIN SET NEW.eventa_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
