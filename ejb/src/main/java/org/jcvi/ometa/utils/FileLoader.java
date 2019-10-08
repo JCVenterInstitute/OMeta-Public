@@ -42,8 +42,8 @@ import java.util.Properties;
  * Time: 3:17 PM
  */
 public class FileLoader {
-    private final String NON_PUBLIC_PROJECT_SQL = "SELECT projet_name, projet_id FROM ifx_projects.project where project.projet_is_public=0";
-    private final String NON_PUBLIC_SAMPLE_SQL = "SELECT sample_name FROM ifx_projects.sample where sample_projet_id=%s sample_is_public=0";
+    private final String NON_PUBLIC_PROJECT_SQL = "SELECT projet_name, projet_id FROM dod_ometa.project where project.projet_is_public=0";
+    private final String NON_PUBLIC_SAMPLE_SQL = "SELECT sample_name FROM dod_ometa.sample where sample_projet_id=%s sample_is_public=0";
 
     Properties props;
     public FileLoader() {

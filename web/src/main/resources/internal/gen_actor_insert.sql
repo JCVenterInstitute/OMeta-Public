@@ -13,5 +13,5 @@ SELECT
                 ',actor_last_name=',CONCAT('\"',actor_last_name,'\"') , ',actor_middle_name=',CONCAT('\"',actor_middle_name ,'\"') ,
                 ',actor_email_address=',CONCAT('\"',actor_email_address ,'\"') ,
                 ',actor_create_date=',CONCAT('\"',actor_create_date,'\"') , ',actor_modify_date=',CONCAT('\"',actor_modify_date,'\"') ,';'
-FROM ifx_projects.actor
+FROM dod_ometa.actor
 ;

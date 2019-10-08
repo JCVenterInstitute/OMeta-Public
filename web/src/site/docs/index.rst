@@ -16,10 +16,10 @@ OMeta Installation Guide
 	- Create database and database objects for OMETA and GUID application
 		1. Login to Mysql with user who has adminstrative privileges to create database and users.
 	    $mysql -h <Mysql-host> -u <user> -p
-		2. run script OMETA_IFX_PROJECTS_db.sql to set database and users. Script will create ifx_projects database, and ifx_projects_app and ifx_projects_adm users. Default password is 'welcome',and it should be changed before production use.
+		2. run script OMETA_IFX_PROJECTS_db.sql to set database and users. Script will create dod_ometa database, and dod_ometa_app and dod_ometa_adm users. Default password is 'welcome',and it should be changed before production use.
 		  $mysql> source <OMETALoc>/scripts/db/OMETA_IFX_PROJECTS_db.sql
 		 
-		  2.1 To cleanup database ifx_projects and its users, you can run OMETA_IFX_PROJECTS_db_Cleanup.sql script.
+		  2.1 To cleanup database dod_ometa and its users, you can run OMETA_IFX_PROJECTS_db_Cleanup.sql script.
 		    $mysql> source <OMETALoc>/scripts/db/OMETA_IFX_PROJECTS_db_Cleanup.sql
 		   
 		3.run script OMETA_GUID_db.sql. Script will create database jcvi_guid, and users jcvi_guid and jcvi_admin. Default password is 'welcome',and it should be changed before production use.
@@ -35,7 +35,7 @@ OMeta Installation Guide
 
 4. Deploy OMETA application (EAR file) to the ometa server in Jboss. 
 	- Update mysql server name under PWS_DBInterface_MySQL_DS jndi in <OMETALoc>/standalone-ometa/configuration/standalone.xml. Replace [OMETA_SERVER_URL] with connection url.
-		e.g. jdbc:mysql://mysql56-lan-cms:3306/ifx_projects, port is optional if database is running on default port.
+		e.g. jdbc:mysql://mysql56-lan-cms:3306/dod_ometa, port is optional if database is running on default port.
 	- Update security credentials in <OMETALoc>/standalone-ometa/configuration/standalone.xml. Replace [OMETA_SERVER_USERNAME] with username and [OMETA_SERVER_PASSWORD] with password.
 
 5.	Configure LDAP for users� authentication.
@@ -81,10 +81,10 @@ OMeta Installation Guide
 		-- Only grant admin role to administrators.
 			
 			set @v_userid='isingh';
-			select @maxid := max(actgrp_id)+1 from ifx_projects.actor_group;
+			select @maxid := max(actgrp_id)+1 from dod_ometa.actor_group;
 			INSERT INTO `actor_group` (`actgrp_id`, `actgrp_create_date`, `actgrp_modify_date`, `actgrp_actor_id`, `actgrp_group_id`) 
-						VALUES ( @maxid, NOW() , NULL, (select actor_id from ifx_projects.actor a where a.actor_username=@v_userid) 
-						,(select g.group_id from ifx_projects.groups g,ifx_projects.lookup_value lv where g.group_name_lkuvl_id=lv.lkuvlu_id
+						VALUES ( @maxid, NOW() , NULL, (select actor_id from dod_ometa.actor a where a.actor_username=@v_userid)
+						,(select g.group_id from dod_ometa.groups g,dod_ometa.lookup_value lv where g.group_name_lkuvl_id=lv.lkuvlu_id
 						 and lv.lkuvlu_name='General-Admin')
 						 );
 

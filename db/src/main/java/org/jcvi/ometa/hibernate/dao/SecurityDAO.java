@@ -96,9 +96,9 @@ public class SecurityDAO extends HibernateDAO {
                     " order by P.projet_name";
 
     private static final String LATEST_AUTHORIZED_FOR_USER_SQL_QUERY =
-            "select P.*, sa.sampla_create_date, sa.sampla_modified_date from ifx_projects.project P" +
-                    " join ifx_projects.sample_attribute sa on sa.sampla_projet_id = P.projet_id" +
-                    " join ifx_projects.actor a on a.actor_id = sa.sampla_actor_modified_by" +
+            "select P.*, sa.sampla_create_date, sa.sampla_modified_date from dod_ometa.project P" +
+                    " join dod_ometa.sample_attribute sa on sa.sampla_projet_id = P.projet_id" +
+                    " join dod_ometa.actor a on a.actor_id = sa.sampla_actor_modified_by" +
                     " where a.actor_username =:" + USERNAME_PARAM +
                     " and (" + PROJ_GRP_SUBST_STR + " is null " +
                     "    or " + PROJ_GRP_SUBST_STR + " in (" +

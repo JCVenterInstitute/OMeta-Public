@@ -285,9 +285,9 @@ public class SampleDAO extends HibernateDAO {
     public List<String[]> getSampleStatusForProject(Long projectId, Session session) throws DAOException {
         List<String[]> sampleStatusList;
         try {
-            String sql = "select distinct count(s.sample_name), sa.sampla_attribute_str from ifx_projects.sample s" +
-                    " join ifx_projects.sample_attribute sa on sa.sampla_sample_id = s.sample_id" +
-                    " join ifx_projects.lookup_value lv on lv.lkuvlu_id = sa.sampla_lkuvlu_attribute_id" +
+            String sql = "select distinct count(s.sample_name), sa.sampla_attribute_str from dod_ometa.sample s" +
+                    " join dod_ometa.sample_attribute sa on sa.sampla_sample_id = s.sample_id" +
+                    " join dod_ometa.lookup_value lv on lv.lkuvlu_id = sa.sampla_lkuvlu_attribute_id" +
                     " where s.sample_projet_id = :projectId" +
                     " and (lv.lkuvlu_name = 'Sample Status' or  lv.lkuvlu_name = 'Sample_Status')" +
                     " group by sa.sampla_attribute_str";

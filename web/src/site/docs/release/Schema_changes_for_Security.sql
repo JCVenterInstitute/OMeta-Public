@@ -1,5 +1,5 @@
 --group
-CREATE  TABLE IF NOT EXISTS `ifx_projects`.`group` (
+CREATE  TABLE IF NOT EXISTS `dod_ometa`.`group` (
   `group_id` BIGINT(20) NOT NULL ,
   `group_name_lkuvl_id` BIGINT(20) NOT NULL ,
   PRIMARY KEY (`group_id`) ,
@@ -8,7 +8,7 @@ CREATE  TABLE IF NOT EXISTS `ifx_projects`.`group` (
   INDEX `group_name_lkuvl_fk` (`group_name_lkuvl_id` ASC) ,
   CONSTRAINT `group_name_lkuvl_fk`
     FOREIGN KEY (`group_name_lkuvl_id` )
-    REFERENCES `ifx_projects`.`lookup_value` (`lkuvlu_id` )
+    REFERENCES `dod_ometa`.`lookup_value` (`lkuvlu_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -16,21 +16,21 @@ DEFAULT CHARACTER SET = latin1
 ROW_FORMAT = COMPACT;
 
 --project
-ALTER TABLE `ifx_projects`.`project`
+ALTER TABLE `dod_ometa`.`project`
 	ADD COLUMN projet_view_group_id BIGINT(20),
 	ADD CONSTRAINT UNIQUE INDEX projet_view_group_ind USING BTREE (projet_view_group_id ASC) ,
 	ADD CONSTRAINT `projet_view_group_id_fk`
     		FOREIGN KEY (`projet_view_group_id` )
-    		REFERENCES `ifx_projects`.`group` (`group_id` )
+    		REFERENCES `dod_ometa`.`group` (`group_id` )
     		ON DELETE NO ACTION
     		ON UPDATE NO ACTION
 ;
-ALTER TABLE `ifx_projects`.`project`
+ALTER TABLE `dod_ometa`.`project`
 	ADD COLUMN projet_edit_group_id BIGINT(20),
 	ADD UNIQUE INDEX projet_edit_group_ind USING BTREE (projet_edit_group_id ASC) ,
 	ADD CONSTRAINT projet_edit_group_id_fk
     		FOREIGN KEY (projet_edit_group_id )
-    		REFERENCES `ifx_projects`.`group` (group_id)
+    		REFERENCES `dod_ometa`.`group` (group_id)
     		ON DELETE NO ACTION
     		ON UPDATE NO ACTION
 ;
@@ -39,14 +39,14 @@ ALTER TABLE project ADD projet_is_secure INT(1) NOT NULL DEFAULT 0;
 ALTER TABLE project ADD INDEX projet_is_secure_ind (projet_is_secure ASC);
 
 --actor_group
---ALTER TABLE 'ifx_projects'.'actor_group' DROP FOREIGN KEY acgrp_group_name_lkuvl_fk;
---ALTER TABLE 'ifx_projects'.'actor_group' DROP 'actgrp_group_name_lkuvl_id';
+--ALTER TABLE 'dod_ometa'.'actor_group' DROP FOREIGN KEY acgrp_group_name_lkuvl_fk;
+--ALTER TABLE 'dod_ometa'.'actor_group' DROP 'actgrp_group_name_lkuvl_id';
 --ALTER TABLE `actor_group`
 --	ADD COLUMN actgrp_actor_id BIGINT(20),
 --	ADD UNIQUE INDEX actgrp_actgrp_actor_id_ind USING BTREE (actgrp_actor_id ASC) ,
 --	ADD CONSTRAINT actgrp_actgrp_actor_fk
 --   		FOREIGN KEY (actgrp_actor_id)
---    		REFERENCES `ifx_projects`.`actor` (actor_id)
+--    		REFERENCES `dod_ometa`.`actor` (actor_id)
 --    		ON DELETE NO ACTION
 --    		ON UPDATE NO ACTION
 --;
@@ -55,7 +55,7 @@ ALTER TABLE project ADD INDEX projet_is_secure_ind (projet_is_secure ASC);
 --	ADD UNIQUE INDEX actgrp_actgrp_group_id_ind USING BTREE (actgrp_group_id ASC) ,
 --	ADD CONSTRAINT actgrp_actgrp_group_fk
 --    		FOREIGN KEY (actgrp_group_id)
---   		REFERENCES `ifx_projects`.`group` (actor_id)
+--   		REFERENCES `dod_ometa`.`group` (actor_id)
 --    		ON DELETE NO ACTION
 --    		ON UPDATE NO ACTION
 --;
@@ -82,7 +82,7 @@ CREATE  TABLE IF NOT EXISTS actor_group (
   INDEX actgrp_actgrp_group_id_ind USING BTREE (actgrp_group_id ASC) ,
   CONSTRAINT actgrp_actgrp_group_fk
 	FOREIGN KEY (actgrp_group_id)
-	REFERENCES ifx_projects.group (group_id)
+	REFERENCES dod_ometa.group (group_id)
 	ON DELETE NO ACTION
 	ON UPDATE NO ACTION)
 	ENGINE = InnoDB
@@ -94,7 +94,7 @@ ROW_FORMAT = COMPACT;
 --SELECT actor_acgrp_id FROM actor;
 --INSERT INTO actor_group (actgrp_id, actgrp_create_date) VALUES (1128147435169, now());
 
-ALTER TABLE  `actor` ADD FOREIGN KEY (  `actor_acgrp_id` ) REFERENCES  `ifx_projects`.`actor_group` (
+ALTER TABLE  `actor` ADD FOREIGN KEY (  `actor_acgrp_id` ) REFERENCES  `dod_ometa`.`actor_group` (
 `actgrp_id`
 ) ON DELETE NO ACTION ON UPDATE NO ACTION ;
 

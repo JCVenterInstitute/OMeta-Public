@@ -325,11 +325,11 @@ $Revision: 87078 $
           java:/PWS_DBInterface_MySQL_DS
         </module-option>
         <module-option name="principalsQuery">
-          select a.actor_id from ifx_projects.actor a where a.actor_username=?
+          select a.actor_id from dod_ometa.actor a where a.actor_username=?
         </module-option>
         <module-option name = "rolesQuery">
           SELECT 'pstuser' as Role, 'Roles' as RoleGroup
-          FROM ifx_projects.actor a
+          FROM dod_ometa.actor a
           WHERE a.actor_username=?
         </module-option>
       </login-module>

@@ -1,10 +1,10 @@
 
-/*Script to cleanup OMETA database objects for ifx_projects */
+/*Script to cleanup OMETA database objects for dod_ometa */
 /*Review script before uncommenting and running the script*/
 
-/*--Cleanup command to ifx_projects database*/
+/*--Cleanup command to dod_ometa database*/
 
-drop database `ifx_projects`;
-drop user 'ifx_projects_app'@'%';
-drop user 'ifx_projects_adm'@'%';
+drop database `dod_ometa`;
+drop user 'dod_ometa_app'@'%';
+drop user 'dod_ometa_adm'@'%';
 

@@ -47,7 +47,7 @@ public class ProductionLoader {
     private ProductionLoaderConnectionFactory dbInterface;
     private boolean pushNonPublicData = false;
 
-    private static final String SCHEMA_PREFIX = "ifx_projects";
+    private static final String SCHEMA_PREFIX = "dod_ometa";
     private static final String DELETION_DDL_FMT = "delete from {0}";
 
     public static void main(String[] args) {

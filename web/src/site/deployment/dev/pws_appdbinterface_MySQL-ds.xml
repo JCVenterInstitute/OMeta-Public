@@ -13,9 +13,9 @@
 <datasources>
     <local-tx-datasource>
         <jndi-name>PWS_DBInterface_MySQL_DS</jndi-name>
-        <connection-url>jdbc:mysql://mysql51-lan-dev.jcvi.org/ifx_projects</connection-url>
+        <connection-url>jdbc:mysql://mysql51-lan-dev.jcvi.org/dod_ometa</connection-url>
         <driver-class>com.mysql.jdbc.Driver</driver-class>
-        <user-name>ifx_projects_app</user-name>
+        <user-name>dod_ometa_app</user-name>
         <password>---</password>
         <min-pool-size>1</min-pool-size>
         <max-pool-size>5</max-pool-size>

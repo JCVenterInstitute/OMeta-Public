@@ -1,26 +1,26 @@
 /*
---Script to setup ifx_projects database objects
---Script will create ifx_projects database, and ifx_projects_app and ifx_projects_adm users with default password of welcome.
+--Script to setup dod_ometa database objects
+--Script will create dod_ometa database, and dod_ometa_app and dod_ometa_adm users with default password of welcome.
 --It's highly recommended that adminstrator changes the passwords before using OMETA in production.
 */
 
 /*--Script for OMETA*/
-Create database ifx_projects;
-/*-- Grants for 'ifx_projects_adm'@'%'*/
+Create database dod_ometa;
+/*-- Grants for 'dod_ometa_adm'@'%'*/
 SET old_passwords = 0;
-CREATE USER ifx_projects_adm IDENTIFIED BY 'welcome';
-GRANT ALL PRIVILEGES ON `ifx\_projects`.* TO 'ifx_projects_adm'@'%' WITH GRANT OPTION;
+CREATE USER dod_ometa_adm IDENTIFIED BY 'welcome';
+GRANT ALL PRIVILEGES ON `ifx\_projects`.* TO 'dod_ometa_adm'@'%' WITH GRANT OPTION;
 
--- Grants for 'ifx_projects_app'@'%'
-CREATE USER ifx_projects_app IDENTIFIED BY 'welcome'; 
-GRANT DELETE, INSERT, SELECT, UPDATE ON `ifx\_projects`.* TO 'ifx_projects_app'@'%';
+-- Grants for 'dod_ometa_app'@'%'
+CREATE USER dod_ometa_app IDENTIFIED BY 'welcome';
+GRANT DELETE, INSERT, SELECT, UPDATE ON `ifx\_projects`.* TO 'dod_ometa_app'@'%';
 
 
-use ifx_projects;
+use dod_ometa;
 
 /*-- MySQL dump 10.13  Distrib 5.6.16-64.2, for Linux (x86_64)*/
 /*--*/
-/*-- Host: mysql-lan-pro.jcvi.org    Database: ifx_projects*/
+/*-- Host: mysql-lan-pro.jcvi.org    Database: dod_ometa*/
 /*-- ------------------------------------------------------*/
 /*-- Server version	5.1.39-log*/
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
@@ -61,7 +61,7 @@ CREATE TABLE `lookup_value` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER lv_modify_date_trg BEFORE UPDATE ON ifx_projects.lookup_value  
+/*!50003 CREATE*/ /*!50017 DEFINER=`dod_ometa_adm`@`%`*/ /*!50003 TRIGGER lv_modify_date_trg BEFORE UPDATE ON dod_ometa.lookup_value
   FOR EACH ROW BEGIN SET NEW.lkuvlu_modify_date = CURRENT_TIMESTAMP;   
 END */;;
 DELIMITER ;
@@ -102,7 +102,7 @@ CREATE TABLE `actor` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER actor_modify_date_trg BEFORE UPDATE ON ifx_projects.actor  
+/*!50003 CREATE*/ /*!50017 DEFINER=`dod_ometa_adm`@`%`*/ /*!50003 TRIGGER actor_modify_date_trg BEFORE UPDATE ON dod_ometa.actor
   FOR EACH ROW BEGIN SET NEW.actor_modify_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -161,7 +161,7 @@ CREATE TABLE `actor_group` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER actor_grp_modify_date_trg BEFORE UPDATE ON ifx_projects.actor_group  
+/*!50003 CREATE*/ /*!50017 DEFINER=`dod_ometa_adm`@`%`*/ /*!50003 TRIGGER actor_grp_modify_date_trg BEFORE UPDATE ON dod_ometa.actor_group
   FOR EACH ROW BEGIN SET NEW.actgrp_modify_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -218,7 +218,7 @@ CREATE TABLE `project` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER project_modify_date_trg BEFORE UPDATE ON ifx_projects.project  
+/*!50003 CREATE*/ /*!50017 DEFINER=`dod_ometa_adm`@`%`*/ /*!50003 TRIGGER project_modify_date_trg BEFORE UPDATE ON dod_ometa.project
   FOR EACH ROW BEGIN SET NEW.projet_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -235,17 +235,17 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER project_cascade_update AFTER UPDATE ON ifx_projects.project FOR EACH ROW 
+/*!50003 CREATE*/ /*!50017 DEFINER=`dod_ometa_adm`@`%`*/ /*!50003 TRIGGER project_cascade_update AFTER UPDATE ON dod_ometa.project FOR EACH ROW
   BEGIN
-    UPDATE ifx_projects.project_attribute AS pa SET pa.projea_modified_date=CURRENT_TIMESTAMP
+    UPDATE dod_ometa.project_attribute AS pa SET pa.projea_modified_date=CURRENT_TIMESTAMP
       WHERE pa.projea_projet_id=NEW.projet_id;
-    UPDATE ifx_projects.project_meta_attribute AS pma set pma.projma_modified_date=CURRENT_TIMESTAMP
+    UPDATE dod_ometa.project_meta_attribute AS pma set pma.projma_modified_date=CURRENT_TIMESTAMP
       WHERE pma.projma_projet_id=NEW.projet_id;
-    UPDATE ifx_projects.event AS e SET e.event_modified_date=CURRENT_TIMESTAMP
+    UPDATE dod_ometa.event AS e SET e.event_modified_date=CURRENT_TIMESTAMP
       WHERE e.event_projet_id=NEW.projet_id;
-    UPDATE ifx_projects.event_attribute AS ea SET ea.eventa_modified_date=CURRENT_TIMESTAMP
+    UPDATE dod_ometa.event_attribute AS ea SET ea.eventa_modified_date=CURRENT_TIMESTAMP
       WHERE ea.eventa_event_id in (SELECT e.event_id FROM event e WHERE e.event_projet_id=NEW.projet_id);
-    UPDATE ifx_projects.event_meta_attribute AS ema SET ema.evenma_modified_date=CURRENT_TIMESTAMP
+    UPDATE dod_ometa.event_meta_attribute AS ema SET ema.evenma_modified_date=CURRENT_TIMESTAMP
       WHERE ema.evenma_projet_id=NEW.projet_id;
 END */ ;;
 DELIMITER ;
@@ -299,7 +299,7 @@ CREATE TABLE `project_meta_attribute` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER pma_modify_date_trg BEFORE UPDATE ON ifx_projects.project_meta_attribute  
+/*!50003 CREATE*/ /*!50017 DEFINER=`dod_ometa_adm`@`%`*/ /*!50003 TRIGGER pma_modify_date_trg BEFORE UPDATE ON dod_ometa.project_meta_attribute
   FOR EACH ROW BEGIN SET NEW.projma_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -352,7 +352,7 @@ CREATE TABLE `project_attribute` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER pa_modify_date_trg BEFORE UPDATE ON ifx_projects.project_attribute  
+/*!50003 CREATE*/ /*!50017 DEFINER=`dod_ometa_adm`@`%`*/ /*!50003 TRIGGER pa_modify_date_trg BEFORE UPDATE ON dod_ometa.project_attribute
   FOR EACH ROW BEGIN SET NEW.projea_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -403,7 +403,7 @@ CREATE TABLE `sample` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER sample_modify_date_trg BEFORE UPDATE ON ifx_projects.sample  
+/*!50003 CREATE*/ /*!50017 DEFINER=`dod_ometa_adm`@`%`*/ /*!50003 TRIGGER sample_modify_date_trg BEFORE UPDATE ON dod_ometa.sample
   FOR EACH ROW BEGIN SET NEW.sample_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -420,17 +420,17 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER sample_cascade_update AFTER UPDATE ON ifx_projects.sample FOR EACH ROW 
+/*!50003 CREATE*/ /*!50017 DEFINER=`dod_ometa_adm`@`%`*/ /*!50003 TRIGGER sample_cascade_update AFTER UPDATE ON dod_ometa.sample FOR EACH ROW
   BEGIN
-    UPDATE ifx_projects.sample_attribute AS sa SET sa.sampla_modified_date=CURRENT_TIMESTAMP
+    UPDATE dod_ometa.sample_attribute AS sa SET sa.sampla_modified_date=CURRENT_TIMESTAMP
       WHERE sa.sampla_sample_id=NEW.sample_id;
-    UPDATE ifx_projects.sample_meta_attribute AS sma set sma.sampma_modified_date=CURRENT_TIMESTAMP
+    UPDATE dod_ometa.sample_meta_attribute AS sma set sma.sampma_modified_date=CURRENT_TIMESTAMP
       WHERE sma.sampma_projet_id=NEW.sample_projet_id;
-    UPDATE ifx_projects.event AS e SET e.event_modified_date=CURRENT_TIMESTAMP
+    UPDATE dod_ometa.event AS e SET e.event_modified_date=CURRENT_TIMESTAMP
       WHERE e.event_projet_id=NEW.sample_projet_id AND e.event_sampl_id=NEW.sample_id;
-    UPDATE ifx_projects.event_attribute AS ea SET ea.eventa_modified_date=CURRENT_TIMESTAMP
+    UPDATE dod_ometa.event_attribute AS ea SET ea.eventa_modified_date=CURRENT_TIMESTAMP
       WHERE ea.eventa_event_id in (SELECT e.event_id FROM event e WHERE e.event_projet_id=NEW.sample_projet_id AND e.event_sampl_id=NEW.sample_id);
-    UPDATE ifx_projects.event_meta_attribute AS ema SET ema.evenma_modified_date=CURRENT_TIMESTAMP
+    UPDATE dod_ometa.event_meta_attribute AS ema SET ema.evenma_modified_date=CURRENT_TIMESTAMP
       WHERE ema.evenma_projet_id=NEW.sample_projet_id;
 END */ ;;
 DELIMITER ;
@@ -485,7 +485,7 @@ CREATE TABLE `sample_meta_attribute` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER sma_modify_date_trg BEFORE UPDATE ON ifx_projects.sample_meta_attribute  
+/*!50003 CREATE*/ /*!50017 DEFINER=`dod_ometa_adm`@`%`*/ /*!50003 TRIGGER sma_modify_date_trg BEFORE UPDATE ON dod_ometa.sample_meta_attribute
   FOR EACH ROW BEGIN SET NEW.sampma_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -495,7 +495,7 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
--- Dumping routines for database 'ifx_projects'
+-- Dumping routines for database 'dod_ometa'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -551,7 +551,7 @@ CREATE TABLE `sample_attribute` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER sa_modify_date_trg BEFORE UPDATE ON ifx_projects.sample_attribute  
+/*!50003 CREATE*/ /*!50017 DEFINER=`dod_ometa_adm`@`%`*/ /*!50003 TRIGGER sa_modify_date_trg BEFORE UPDATE ON dod_ometa.sample_attribute
   FOR EACH ROW BEGIN SET NEW.sampla_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -605,7 +605,7 @@ CREATE TABLE `event` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER event_modify_date_trg BEFORE UPDATE ON ifx_projects.event  
+/*!50003 CREATE*/ /*!50017 DEFINER=`dod_ometa_adm`@`%`*/ /*!50003 TRIGGER event_modify_date_trg BEFORE UPDATE ON dod_ometa.event
   FOR EACH ROW BEGIN SET NEW.event_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -665,7 +665,7 @@ CREATE TABLE `event_meta_attribute` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER ema_modify_date_trg BEFORE UPDATE ON ifx_projects.event_meta_attribute  
+/*!50003 CREATE*/ /*!50017 DEFINER=`dod_ometa_adm`@`%`*/ /*!50003 TRIGGER ema_modify_date_trg BEFORE UPDATE ON dod_ometa.event_meta_attribute
   FOR EACH ROW BEGIN SET NEW.evenma_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;
@@ -716,7 +716,7 @@ CREATE TABLE `event_attribute` (
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`ifx_projects_adm`@`%`*/ /*!50003 TRIGGER ea_modify_date_trg BEFORE UPDATE ON ifx_projects.event_attribute  
+/*!50003 CREATE*/ /*!50017 DEFINER=`dod_ometa_adm`@`%`*/ /*!50003 TRIGGER ea_modify_date_trg BEFORE UPDATE ON dod_ometa.event_attribute
   FOR EACH ROW BEGIN SET NEW.eventa_modified_date = CURRENT_TIMESTAMP;   
 END */ ;;
 DELIMITER ;

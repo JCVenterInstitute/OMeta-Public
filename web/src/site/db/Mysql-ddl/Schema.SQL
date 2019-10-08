@@ -2,13 +2,13 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
 
-CREATE SCHEMA IF NOT EXISTS `ifx_projects` DEFAULT CHARACTER SET latin1 ;
-USE `ifx_projects` ;
+CREATE SCHEMA IF NOT EXISTS `dod_ometa` DEFAULT CHARACTER SET latin1 ;
+USE `dod_ometa` ;
 
 -- -----------------------------------------------------
--- Table `ifx_projects`.`lookup_value`
+-- Table `dod_ometa`.`lookup_value`
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `ifx_projects`.`lookup_value` (
+CREATE  TABLE IF NOT EXISTS `dod_ometa`.`lookup_value` (
   `lkuvlu_id` BIGINT(20) NOT NULL ,
   `lkuvlu_name` VARCHAR(40) NOT NULL ,
   `lkuvlu_type` VARCHAR(255) NULL DEFAULT NULL ,
@@ -27,9 +27,9 @@ ROW_FORMAT = COMPACT;
 
 
 -- -----------------------------------------------------
--- Table `ifx_projects`.`actor_group`
+-- Table `dod_ometa`.`actor_group`
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `ifx_projects`.`actor_group` (
+CREATE  TABLE IF NOT EXISTS `dod_ometa`.`actor_group` (
   `actgrp_id` BIGINT(20) NOT NULL ,
   `actgrp_create_date` DATETIME NOT NULL ,
   `actgrp_modify_date` DATETIME NULL DEFAULT NULL ,
@@ -41,7 +41,7 @@ CREATE  TABLE IF NOT EXISTS `ifx_projects`.`actor_group` (
   INDEX `acgrp_group_name_lkuvl_fk` (`actgrp_group_name_lkuvl_id` ASC) ,
   CONSTRAINT `acgrp_group_name_lkuvl_fk`
     FOREIGN KEY (`actgrp_group_name_lkuvl_id` )
-    REFERENCES `ifx_projects`.`lookup_value` (`lkuvlu_id` )
+    REFERENCES `dod_ometa`.`lookup_value` (`lkuvlu_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -50,9 +50,9 @@ ROW_FORMAT = COMPACT;
 
 
 -- -----------------------------------------------------
--- Table `ifx_projects`.`actor`
+-- Table `dod_ometa`.`actor`
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `ifx_projects`.`actor` (
+CREATE  TABLE IF NOT EXISTS `dod_ometa`.`actor` (
   `actor_username` VARCHAR(10) NOT NULL ,
   `actor_first_name` VARCHAR(30) NOT NULL ,
   `actor_last_name` VARCHAR(30) NOT NULL ,
@@ -69,7 +69,7 @@ CREATE  TABLE IF NOT EXISTS `ifx_projects`.`actor` (
   INDEX `actor_create_date_ind` USING BTREE (`actor_create_date` ASC) ,
   CONSTRAINT `actor_actgrp_fk`
     FOREIGN KEY (`actor_acgrp_id` )
-    REFERENCES `ifx_projects`.`actor_group` (`actgrp_id` )
+    REFERENCES `dod_ometa`.`actor_group` (`actgrp_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -78,9 +78,9 @@ ROW_FORMAT = COMPACT;
 
 
 -- -----------------------------------------------------
--- Table `ifx_projects`.`project`
+-- Table `dod_ometa`.`project`
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `ifx_projects`.`project` (
+CREATE  TABLE IF NOT EXISTS `dod_ometa`.`project` (
   `projet_id` BIGINT(20) NOT NULL ,
   `projet_name` VARCHAR(255) NULL DEFAULT NULL ,
   `projet_projet_parent_id` BIGINT(20) NULL DEFAULT NULL ,
@@ -105,26 +105,26 @@ CREATE  TABLE IF NOT EXISTS `ifx_projects`.`project` (
   INDEX `projet_view_group_id_ind` (`projet_view_group_id` ASC) ,
   CONSTRAINT `projet_actor_created_by_fk`
     FOREIGN KEY (`projet_actor_created_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `projet_actor_modified_by_fk`
     FOREIGN KEY (`projet_actor_modified_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `projet_projet_parent_id_fk`
     FOREIGN KEY (`projet_projet_parent_id` )
-    REFERENCES `ifx_projects`.`project` (`projet_id` )
+    REFERENCES `dod_ometa`.`project` (`projet_id` )
     ON UPDATE NO ACTION)
   CONSTRAINT `projet_edit_group_id_fk`
     FOREIGN KEY (`projet_edit_group_id` )
-    REFERENCES `ifx_projects`.`group` (`group_id` )
+    REFERENCES `dod_ometa`.`group` (`group_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `projet_view_group_id_fk`
     FOREIGN KEY (`projet_view_group_id` )
-    REFERENCES `ifx_projects`.`group` (`group_id` )
+    REFERENCES `dod_ometa`.`group` (`group_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
 ENGINE = InnoDB
@@ -133,9 +133,9 @@ ROW_FORMAT = COMPACT;
 
 
 -- -----------------------------------------------------
--- Table `ifx_projects`.`sample`
+-- Table `dod_ometa`.`sample`
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `ifx_projects`.`sample` (
+CREATE  TABLE IF NOT EXISTS `dod_ometa`.`sample` (
   `sample_id` BIGINT(20) NOT NULL ,
   `sample_projet_id` BIGINT(20) NOT NULL ,
   `sample_name` VARCHAR(255) NOT NULL ,
@@ -155,17 +155,17 @@ CREATE  TABLE IF NOT EXISTS `ifx_projects`.`sample` (
   INDEX `sample_is_public_ind` (`sample_is_public` ASC) ,
   CONSTRAINT `sample_created_by_fk`
     FOREIGN KEY (`sample_created_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `sample_modified_by_fk`
     FOREIGN KEY (`sample_modified_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `sample_projet_id_fk`
     FOREIGN KEY (`sample_projet_id` )
-    REFERENCES `ifx_projects`.`project` (`projet_id` )
+    REFERENCES `dod_ometa`.`project` (`projet_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -174,9 +174,9 @@ ROW_FORMAT = COMPACT;
 
 
 -- -----------------------------------------------------
--- Table `ifx_projects`.`event`
+-- Table `dod_ometa`.`event`
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `ifx_projects`.`event` (
+CREATE  TABLE IF NOT EXISTS `dod_ometa`.`event` (
   `event_id` BIGINT(20) NOT NULL ,
   `event_projet_id` BIGINT(20) NOT NULL ,
   `event_type_lkuvl_id` BIGINT(20) NULL DEFAULT NULL ,
@@ -197,32 +197,32 @@ CREATE  TABLE IF NOT EXISTS `ifx_projects`.`event` (
   INDEX `event_status_lkuvl_id_fk_ind` USING BTREE (`event_status_lkuvl_id` ASC) ,
   CONSTRAINT `event_actor_created_by_fk`
     FOREIGN KEY (`event_actor_created_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `event_actor_modified_by_fk`
     FOREIGN KEY (`event_actor_modified_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `event_projet_id_fk`
     FOREIGN KEY (`event_projet_id` )
-    REFERENCES `ifx_projects`.`project` (`projet_id` )
+    REFERENCES `dod_ometa`.`project` (`projet_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `event_sampl_id_fk`
     FOREIGN KEY (`event_sampl_id` )
-    REFERENCES `ifx_projects`.`sample` (`sample_id` )
+    REFERENCES `dod_ometa`.`sample` (`sample_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `event_status_lkuvl_id_fk`
     FOREIGN KEY (`event_status_lkuvl_id` )
-    REFERENCES `ifx_projects`.`lookup_value` (`lkuvlu_id` )
+    REFERENCES `dod_ometa`.`lookup_value` (`lkuvlu_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `event_type_lkuvl_id_fk`
     FOREIGN KEY (`event_type_lkuvl_id` )
-    REFERENCES `ifx_projects`.`lookup_value` (`lkuvlu_id` )
+    REFERENCES `dod_ometa`.`lookup_value` (`lkuvlu_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -231,9 +231,9 @@ ROW_FORMAT = COMPACT;
 
 
 -- -----------------------------------------------------
--- Table `ifx_projects`.`event_attribute`
+-- Table `dod_ometa`.`event_attribute`
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `ifx_projects`.`event_attribute` (
+CREATE  TABLE IF NOT EXISTS `dod_ometa`.`event_attribute` (
   `eventa_id` BIGINT(20) NOT NULL ,
   `eventa_lkuvlu_attribute_id` BIGINT(20) NOT NULL ,
   `eventa_event_id` BIGINT(20) NOT NULL ,
@@ -253,20 +253,20 @@ CREATE  TABLE IF NOT EXISTS `ifx_projects`.`event_attribute` (
   INDEX `eventa_actor_modified_by_fk_ind` USING BTREE (`eventa_actor_modified_by` ASC) ,
   CONSTRAINT `eventa_actor_created_by_fk`
     FOREIGN KEY (`eventa_actor_created_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `eventa_actor_modified_by_fk`
     FOREIGN KEY (`eventa_actor_modified_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `eventa_event_id_fk`
     FOREIGN KEY (`eventa_event_id` )
-    REFERENCES `ifx_projects`.`event` (`event_id` ),
+    REFERENCES `dod_ometa`.`event` (`event_id` ),
   CONSTRAINT `eventa_lkuvlu_attribute_id_fk`
     FOREIGN KEY (`eventa_lkuvlu_attribute_id` )
-    REFERENCES `ifx_projects`.`lookup_value` (`lkuvlu_id` )
+    REFERENCES `dod_ometa`.`lookup_value` (`lkuvlu_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -275,9 +275,9 @@ ROW_FORMAT = COMPACT;
 
 
 -- -----------------------------------------------------
--- Table `ifx_projects`.`event_meta_attribute`
+-- Table `dod_ometa`.`event_meta_attribute`
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `ifx_projects`.`event_meta_attribute` (
+CREATE  TABLE IF NOT EXISTS `dod_ometa`.`event_meta_attribute` (
   `evenma_id` BIGINT(20) NOT NULL ,
   `evenma_projet_id` BIGINT(20) NOT NULL ,
   `evenma_event_type_lkuvl_id` BIGINT(20) NOT NULL ,
@@ -301,32 +301,32 @@ CREATE  TABLE IF NOT EXISTS `ifx_projects`.`event_meta_attribute` (
   UNIQUE INDEX `evenma_attribute_list_uk` (`evenma_projet_id` ASC, `evenma_event_type_lkuvl_id` ASC, `evenma_lkuvlu_attribute_id` ASC) ,
   CONSTRAINT `evenma_actor_created_by_fk`
     FOREIGN KEY (`evenma_actor_created_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `evenma_actor_modified_by_fk`
     FOREIGN KEY (`evenma_actor_modified_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `evenma_lkuvlu_attribute_id_fk`
     FOREIGN KEY (`evenma_lkuvlu_attribute_id` )
-    REFERENCES `ifx_projects`.`lookup_value` (`lkuvlu_id` ),
+    REFERENCES `dod_ometa`.`lookup_value` (`lkuvlu_id` ),
   CONSTRAINT `evenma_lkuvlu_event_type_fk`
     FOREIGN KEY (`evenma_event_type_lkuvl_id` )
-    REFERENCES `ifx_projects`.`lookup_value` (`lkuvlu_id` ),
+    REFERENCES `dod_ometa`.`lookup_value` (`lkuvlu_id` ),
   CONSTRAINT `evenma_project_id_fk`
     FOREIGN KEY (`evenma_projet_id` )
-    REFERENCES `ifx_projects`.`project` (`projet_id` ))
+    REFERENCES `dod_ometa`.`project` (`projet_id` ))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1
 ROW_FORMAT = COMPACT;
 
 
 -- -----------------------------------------------------
--- Table `ifx_projects`.`project_attribute`
+-- Table `dod_ometa`.`project_attribute`
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `ifx_projects`.`project_attribute` (
+CREATE  TABLE IF NOT EXISTS `dod_ometa`.`project_attribute` (
   `projea_id` BIGINT(20) NOT NULL ,
   `projea_projet_id` BIGINT(20) NOT NULL ,
   `projea_lkuvlu_attribute_id` BIGINT(20) NOT NULL ,
@@ -349,22 +349,22 @@ CREATE  TABLE IF NOT EXISTS `ifx_projects`.`project_attribute` (
   INDEX `projea_modified_date_ind` USING BTREE (`projea_modified_date` ASC) ,
   CONSTRAINT `projea_actor_created_by_fk`
     FOREIGN KEY (`projea_actor_created_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `projea_actor_modified_by_fk`
     FOREIGN KEY (`projea_actor_modified_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `projea_lkuvlu_attribute_id_fk`
     FOREIGN KEY (`projea_lkuvlu_attribute_id` )
-    REFERENCES `ifx_projects`.`lookup_value` (`lkuvlu_id` )
+    REFERENCES `dod_ometa`.`lookup_value` (`lkuvlu_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `projea_projet_id_fk`
     FOREIGN KEY (`projea_projet_id` )
-    REFERENCES `ifx_projects`.`project` (`projet_id` )
+    REFERENCES `dod_ometa`.`project` (`projet_id` )
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1
@@ -372,9 +372,9 @@ ROW_FORMAT = COMPACT;
 
 
 -- -----------------------------------------------------
--- Table `ifx_projects`.`project_meta_attribute`
+-- Table `dod_ometa`.`project_meta_attribute`
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `ifx_projects`.`project_meta_attribute` (
+CREATE  TABLE IF NOT EXISTS `dod_ometa`.`project_meta_attribute` (
   `projma_id` BIGINT(20) NOT NULL ,
   `projma_projet_id` BIGINT(20) NOT NULL ,
   `projma_lkuvlu_attribute_id` BIGINT(20) NOT NULL ,
@@ -396,22 +396,22 @@ CREATE  TABLE IF NOT EXISTS `ifx_projects`.`project_meta_attribute` (
   UNIQUE INDEX `projma_attribute_list_uk` (`projma_projet_id` ASC, `projma_lkuvlu_attribute_id` ASC) ,
   CONSTRAINT `projma_actor_created_by_fk`
     FOREIGN KEY (`projma_actor_created_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `projma_actor_modified_by_fk`
     FOREIGN KEY (`projma_actor_modified_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `projma_lkuvlu_attribute_id_fk`
     FOREIGN KEY (`projma_lkuvlu_attribute_id` )
-    REFERENCES `ifx_projects`.`lookup_value` (`lkuvlu_id` )
+    REFERENCES `dod_ometa`.`lookup_value` (`lkuvlu_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `projma_project_id_fk`
     FOREIGN KEY (`projma_projet_id` )
-    REFERENCES `ifx_projects`.`project` (`projet_id` )
+    REFERENCES `dod_ometa`.`project` (`projet_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -420,9 +420,9 @@ ROW_FORMAT = COMPACT;
 
 
 -- -----------------------------------------------------
--- Table `ifx_projects`.`sample_attribute`
+-- Table `dod_ometa`.`sample_attribute`
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `ifx_projects`.`sample_attribute` (
+CREATE  TABLE IF NOT EXISTS `dod_ometa`.`sample_attribute` (
   `sampla_id` BIGINT(20) NOT NULL ,
   `sampla_projet_id` BIGINT(20) NOT NULL ,
   `sampla_lkuvlu_attribute_id` BIGINT(20) NOT NULL ,
@@ -447,27 +447,27 @@ CREATE  TABLE IF NOT EXISTS `ifx_projects`.`sample_attribute` (
   INDEX `sampla_modified_date_ind` USING BTREE (`sampla_modified_date` ASC) ,
   CONSTRAINT `sampla_actor_created_by_fk`
     FOREIGN KEY (`sampla_actor_created_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `sampla_actor_modified_by_fk`
     FOREIGN KEY (`sampla_actor_modified_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `sampla_lkuvlu_attribute_id_fk`
     FOREIGN KEY (`sampla_lkuvlu_attribute_id` )
-    REFERENCES `ifx_projects`.`lookup_value` (`lkuvlu_id` )
+    REFERENCES `dod_ometa`.`lookup_value` (`lkuvlu_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `sampla_projet_id_fk`
     FOREIGN KEY (`sampla_projet_id` )
-    REFERENCES `ifx_projects`.`project` (`projet_id` )
+    REFERENCES `dod_ometa`.`project` (`projet_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `sampla_sample_id_fk`
     FOREIGN KEY (`sampla_sample_id` )
-    REFERENCES `ifx_projects`.`sample` (`sample_id` )
+    REFERENCES `dod_ometa`.`sample` (`sample_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -476,9 +476,9 @@ ROW_FORMAT = COMPACT;
 
 
 -- -----------------------------------------------------
--- Table `ifx_projects`.`sample_meta_attribute`
+-- Table `dod_ometa`.`sample_meta_attribute`
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `ifx_projects`.`sample_meta_attribute` (
+CREATE  TABLE IF NOT EXISTS `dod_ometa`.`sample_meta_attribute` (
   `sampma_id` BIGINT(20) NOT NULL ,
   `sampma_projet_id` BIGINT(20) NOT NULL ,
   `sampma_lkuvlu_attribute_id` BIGINT(20) NOT NULL ,
@@ -500,20 +500,20 @@ CREATE  TABLE IF NOT EXISTS `ifx_projects`.`sample_meta_attribute` (
   UNIQUE INDEX `sampma_attribute_list_uk` (`sampma_projet_id` ASC, `sampma_lkuvlu_attribute_id` ASC) ,
   CONSTRAINT `sampma_actor_created_by_fk`
     FOREIGN KEY (`sampma_actor_created_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `sampma_actor_modified_by_fk`
     FOREIGN KEY (`sampma_actor_modified_by` )
-    REFERENCES `ifx_projects`.`actor` (`actor_id` )
+    REFERENCES `dod_ometa`.`actor` (`actor_id` )
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
   CONSTRAINT `sampma_lkuvlu_attribute_id_fk`
     FOREIGN KEY (`sampma_lkuvlu_attribute_id` )
-    REFERENCES `ifx_projects`.`lookup_value` (`lkuvlu_id` ),
+    REFERENCES `dod_ometa`.`lookup_value` (`lkuvlu_id` ),
   CONSTRAINT `sampma_project_id_fk`
     FOREIGN KEY (`sampma_projet_id` )
-    REFERENCES `ifx_projects`.`project` (`projet_id` ))
+    REFERENCES `dod_ometa`.`project` (`projet_id` ))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1
 ROW_FORMAT = COMPACT;

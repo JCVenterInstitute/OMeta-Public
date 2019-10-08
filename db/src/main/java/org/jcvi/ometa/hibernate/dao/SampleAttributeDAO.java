@@ -99,10 +99,10 @@ public class SampleAttributeDAO extends HibernateDAO {
 
         SampleAttribute attribute = null;
         try {
-            String sql = "select sa.* from ifx_projects.sample_attribute sa " +
-                    "join ifx_projects.sample s on s.sample_id = sa.sampla_sample_id " +
-                    "join ifx_projects.project p on p.projet_id = s.sample_projet_id " +
-                    "join ifx_projects.lookup_value lv on lv.lkuvlu_id = sa.sampla_lkuvlu_attribute_id " +
+            String sql = "select sa.* from dod_ometa.sample_attribute sa " +
+                    "join dod_ometa.sample s on s.sample_id = sa.sampla_sample_id " +
+                    "join dod_ometa.project p on p.projet_id = s.sample_projet_id " +
+                    "join dod_ometa.lookup_value lv on lv.lkuvlu_id = sa.sampla_lkuvlu_attribute_id " +
                     "where p.projet_name = :projectName " +
                     "and s.sample_name = :sampleName " +
                     "and lv.lkuvlu_name = :attributeName";

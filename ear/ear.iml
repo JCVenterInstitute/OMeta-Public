@@ -22,7 +22,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="resources" />
-    <orderEntry type="library" name="Maven: org.jcvi:Common-Utils:1.0" level="project" />
     <orderEntry type="module" module-name="ejb" scope="PROVIDED" />
     <orderEntry type="module" module-name="db" scope="PROVIDED" />
     <orderEntry type="module" module-name="web" scope="PROVIDED" />
@@ -441,6 +440,7 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:slf4j-api:1.4.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: dom4j:dom4j:1.6.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:servlet-api:2.4" level="project" />
+    <orderEntry type="library" name="Maven: org.jcvi:Common-Utils:1.0" level="project" />
     <orderEntry type="library" name="Maven: au.com.bytecode:opencsv:2.4" level="project" />
     <orderEntry type="library" name="Maven: org.apache.poi:poi:3.15" level="project" />
     <orderEntry type="library" name="Maven: org.apache.poi:poi-ooxml:3.15" level="project" />

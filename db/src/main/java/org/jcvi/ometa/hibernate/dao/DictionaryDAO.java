@@ -108,10 +108,10 @@ public class DictionaryDAO extends HibernateDAO {
         List<Dictionary> rtnVal;
 
         try {
-            String sql = " select distinct * from ifx_projects.dictionary d " +
+            String sql = " select distinct * from dod_ometa.dictionary d " +
                     "where d.dict_id in (" +
-                    "select dd.dict_id from ifx_projects.dictionary_dependency dd " +
-                    "left join ifx_projects.dictionary d on dd.parent_id = d.dict_id " +
+                    "select dd.dict_id from dod_ometa.dictionary_dependency dd " +
+                    "left join dod_ometa.dictionary d on dd.parent_id = d.dict_id " +
                     "where d.dict_type = :dictType and d.dict_code = :dictCode) and d.dict_is_active = 1";
 
             NativeQuery query = session.createNativeQuery(sql);

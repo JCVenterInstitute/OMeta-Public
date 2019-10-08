@@ -183,7 +183,7 @@ where s.sample_id=e.event_sampl_id
 
 -- This query will find all the attributes named "run date".  There is a link required back to the lookup value, in order
 -- to query by name.
-select * from ifx_projects.lookup_value LV, ifx_projects.event_attribute EA
+select * from dod_ometa.lookup_value LV, dod_ometa.event_attribute EA
 where LV.lkuvlu_id=EA.eventa_lkuvlu_attribute_id and LV.lkuvlu_name='run date';
 
 -- Find full lookup value info on event meta attributes for the project whose name is given.
@@ -202,9 +202,9 @@ and evenma_projet_id=project.projet_id and evenma_lkuvlu_attribute_id=lkuvlu_id
 and projet_name='Yersinia pestis' );
 
 -- This tells all attributes for a sample:
-select * from ifx_projects.sample, ifx_projects.sample_attribute, ifx_projects.lookup_value
+select * from dod_ometa.sample, dod_ometa.sample_attribute, dod_ometa.lookup_value
   where sample_name='gstec01'
-  AND ifx_projects.sample_attribute.sampla_sample_id=sample.sample_id
+  AND dod_ometa.sample_attribute.sampla_sample_id=sample.sample_id
   AND sampla_lkuvlu_attribute_id=lkuvlu_id;
 
 -- ====================================== SECURING A PROJECT
@@ -224,7 +224,7 @@ select * from lookup_value where lkuvlu_type like '%Group%'
 select * from project where projet_name='Werewolf';
 
 -- The group ID generated using a web browser and this URL http://guid/guid/GuidClientServer?Request=GET&Size=1
-insert into ifx_projects.group values (1130098580025, 1130106189942);
+insert into dod_ometa.group values (1130098580025, 1130106189942);
 
 -- NOTE: same group ID for edit or view.
 update project set view_group=1130098580025, edit_group=1130098580025 where projet_name='Werewolf';
@@ -232,29 +232,29 @@ update project set view_group=1130098580025, edit_group=1130098580025 where proj
 
 --  ============================== SECURING A PROJECT AND ADDING MYSELF AS USER
 --    I had to generate serveral GUIDs.  One for each new lookup value, one for each new group.
-select * from ifx_projects.project where projet_name='Cellulosome';
+select * from dod_ometa.project where projet_name='Cellulosome';
 
-update ifx_projects.project set projet_is_secure=1 where projet_name='Cellulosome';
+update dod_ometa.project set projet_is_secure=1 where projet_name='Cellulosome';
 
-select * from ifx_projects.group;
+select * from dod_ometa.group;
 
-insert into ifx_projects.lookup_value values( 1130175784000, 'Cellulosome', 'Access Group', 'string', '2011-06-11 12:37', null );
-insert into ifx_projects.lookup_value values( 1130175784001, 'Cellulosome-Edit', 'Edit Group', 'string', '2011-06-11 12:37', null );
+insert into dod_ometa.lookup_value values( 1130175784000, 'Cellulosome', 'Access Group', 'string', '2011-06-11 12:37', null );
+insert into dod_ometa.lookup_value values( 1130175784001, 'Cellulosome-Edit', 'Edit Group', 'string', '2011-06-11 12:37', null );
 
-insert into ifx_projects.group values(1130116680436,1130175784000);
-insert into ifx_projects.group values(1130116680437,1130175784001);
+insert into dod_ometa.group values(1130116680436,1130175784000);
+insert into dod_ometa.group values(1130116680437,1130175784001);
 
 
-update ifx_projects.project set projet_edit_group_id=1130116680436, projet_view_group_id=1130116680437
+update dod_ometa.project set projet_edit_group_id=1130116680436, projet_view_group_id=1130116680437
  where projet_name='Cellulosome';
 
 
-select * from ifx_projects.actor_group;
+select * from dod_ometa.actor_group;
 
-select * from ifx_projects.actor where actor_username='lfoster';
+select * from dod_ometa.actor where actor_username='lfoster';
 
-insert into ifx_projects.actor_group values( 1130122071742, '2011-06-11 12:43', null, 4461009, 1130116680436);
-insert into ifx_projects.actor_group values( 1130116680438, '2011-06-11 12:43', null, 4461009, 1130116680437);
+insert into dod_ometa.actor_group values( 1130122071742, '2011-06-11 12:43', null, 4461009, 1130116680436);
+insert into dod_ometa.actor_group values( 1130116680438, '2011-06-11 12:43', null, 4461009, 1130116680437);
 
 --  ============================== BACKING OUT A PROJECT
 -- Here's how I cleaned up a mis-loaded project to completely reload it.
@@ -445,19 +445,19 @@ where LE.lkuvlu_name ='SampleRegistration' and P.projet_name = 'MRSA'
 --  projects at the same group
 
 --  First make the temporary copy of the index...
-alter table ifx_projects.project
+alter table dod_ometa.project
 add index projet_edit_group_temp_ind USING BTREE ( projet_edit_group_id ASC);
 
 --  Next delete the original index.
-alter table ifx_projects.project
+alter table dod_ometa.project
 drop index projet_edit_group_ind;
 
 --  Add back the index to retain the original name.
-alter table ifx_projects.project
+alter table dod_ometa.project
 add index projet_edit_group_ind USING BTREE ( projet_edit_group_id ASC);
 
 -- Get rid of the temporary copy.
-alter table ifx_projects.project
+alter table dod_ometa.project
 drop index projet_edit_group_temp_ind;
 
 -- This was carried out for both edit and view groups.
