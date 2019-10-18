@@ -34,6 +34,8 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by IntelliJ IDEA.
@@ -390,5 +392,19 @@ public class CommonTool {
 
     public static String currentDateToDefaultFormat() {
         return new SimpleDateFormat(Constants.DATE_USER_ENTER_FORMAT).format(Calendar.getInstance().getTime());
+    }
+
+    public static List<String> patternMatch(String value, String pattern) {
+        List<String> matches = new ArrayList<>(1);
+        Matcher m = Pattern.compile(pattern).matcher(value);
+        while(m.find()) {
+            matches.add(m.group(1));
+        }
+        return matches;
+    }
+
+    public static String firstPatternMatch(String value, String pattern) {
+        List<String> matches = patternMatch(value,pattern);
+        return matches.isEmpty() ? "" : matches.get(0);
     }
 }

@@ -14,7 +14,9 @@ import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.scratch.ScratchUtils;
 
 import java.io.*;
+import java.time.LocalDate;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Created by IntelliJ IDEA.
@@ -491,6 +493,12 @@ public class TemplatePreProcessingUtils {
                                 String attributeName = this.extractRealAttributeName(columns.get(colIndex));
                                 fBean.setAttributeName(attributeName);
                                 fBean.setAttributeValue(line[colIndex]);
+                                //autoconcat sample id based on parent id and visit date/specimen type
+                                if (isVisitEvent && attributeName.equalsIgnoreCase("Visit Date"))
+                                    gBean.setSampleName(gBean.getParentSampleName() + '_' + line[colIndex].replaceAll("-", ""));
+                                else if (isSampleEvent && attributeName.equalsIgnoreCase("sample type"))
+                                    gBean.setSampleName(gBean.getParentSampleName() + '_' + CommonTool.firstPatternMatch(line[colIndex], "\\((.*?)\\)"));
+
                                 gBean.getBeanList().add(fBean);
                             }
 

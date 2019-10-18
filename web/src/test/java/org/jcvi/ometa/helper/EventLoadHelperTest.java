@@ -61,7 +61,7 @@ public class EventLoadHelperTest extends PSTTestAbstract {
         gridList.add(gBean);
 
         MultiLoadParameter multiParam = new MultiLoadParameter();
-        helper.gridListToMultiLoadParameter(multiParam, gridList, projectName, Constants.EVENT_SAMPLE_UPDATE, "edit", "hkim");
+        helper.gridListToMultiLoadParameter(multiParam, gridList, projectName, Constants.EVENT_UPDATE, "edit", "hkim");
 
     }
 
