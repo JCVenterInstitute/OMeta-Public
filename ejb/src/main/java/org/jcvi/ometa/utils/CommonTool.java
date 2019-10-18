@@ -28,7 +28,6 @@ import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.model.Dictionary;
 import org.jcvi.ometa.validation.ModelValidator;
-import org.jtc.common.util.property.PropertyHelper;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -230,12 +229,12 @@ public class CommonTool {
         List<EventMetaAttribute> filtered = new ArrayList<EventMetaAttribute>(list.size());
 
         List<String> hiddenAttributes = Arrays.asList(Constants.HIDDEN_ATTRIBUTES);
-        boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);
+        boolean isEventRegistration = eventName.contains(Constants.EVENT_REGISTRATION);
         Map<String, String> dictTypeMap = new HashMap<String, String>(0);
 
         for(EventMetaAttribute ema : list) {
             String emaName = ema.getLookupValue().getName();
-            if(isSampleRegistration){
+            if(isEventRegistration){
                 if(emaName.equals(Constants.ATTR_IS_PUBLIC)) {
                     map.put(Constants.ATTR_IS_PUBLIC, ema.isRequired());
                 }

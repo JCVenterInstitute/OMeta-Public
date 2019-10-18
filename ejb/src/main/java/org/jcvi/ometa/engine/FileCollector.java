@@ -36,10 +36,6 @@ import java.util.List;
  * Break up all types of files out of a list..
  */
 public class FileCollector {
-    /*
-    protected static final String PROJ_REG_NAME_END = "ProjectRegistration_" + FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX;
-    protected static final String SAMP_REG_NAME_END = "SampleRegistration_" + FileMappingSupport.EVENT_ATTRIBUTES_FILE_SUFFIX;
-    */
 
     private File[] files;
     /** Give something to test against, in c'tor. */

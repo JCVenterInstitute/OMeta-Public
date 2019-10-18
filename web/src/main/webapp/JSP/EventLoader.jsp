@@ -158,9 +158,9 @@
               <div id="statusTableDiv">
                 <div id="interactive-submission-group" class="form-group">
                   <div class="btn-group btn-group-justified" data-toggle="buttons">
-                    <label class="btn btn-default active"><input type="radio" name="loadType" value="form">Single Sample</label>
-                    <label class="btn btn-default"><input type="radio" name="loadType" value="grid">Multiple Samples (Web Form)</label>
-                    <label class="btn btn-default"><input type="radio" name="loadType" value="file">Multiple Samples (Excel Template)</label>
+                    <label class="btn btn-default active"><input type="radio" name="loadType" value="form">Single Record</label>
+                    <label class="btn btn-default"><input type="radio" name="loadType" value="grid">Multiple Records (Web Form)</label>
+                    <label class="btn btn-default"><input type="radio" name="loadType" value="file">Multiple Records (Excel Template)</label>
                     <label class="btn btn-default"><input type="radio" name="loadType" value="bulk">Bulk Submission</label>
                   </div>
                 </div>
@@ -191,11 +191,11 @@
                 </div>
                 <div id="form-sample-name" class="row form-group" style="display: none;">
                   <div class="col-sm-2">
-                    <label class="control-label">Sample Name</label>
+                    <label class="control-label">ID</label>
                   </div>
                   <div class="col-sm-4">
                     <div class="input-group">
-                      <s:textfield id="sampleSelect" placeholder="Select by Sample Name" name="sampleName"
+                      <s:textfield id="sampleSelect" placeholder="Select by ID" name="sampleName"
                                    required="true" cssClass="form-control sample-element" disabled="true"/>
                       <span class="input-group-btn">
                           <button type="button" class="btn btn-primary sample-element" id="searchSample" onclick="searchSamples(this.id);" disabled="true">
@@ -229,17 +229,17 @@
 
                 <div id="sampleDetailInputDiv" style="display:none;">
                   <div class="middle-header">
-                    <h4>Sample Information</h4>
+                    <h4>Record Information</h4>
                   </div>
                   <div id="sampleDetailSubDiv">
                     <div class="row form-group">
-                      <div class="col-sm-2">Sample Name</div>
+                      <div class="col-sm-2">ID</div>
                       <div class="col-sm-4">
                         <input type="text" id="_sampleName" name="loadingSample.sampleName" class="form-control"/>
                       </div>
                     </div>
                     <div class="row form-group" id="parentSampleRow" style="display: none;">
-                      <div class="col-sm-2">Parent Sample</div>
+                      <div class="col-sm-2">Parent ID</div>
                       <div class="col-sm-4">
                         <div class="input-group">
                           <s:textfield id="parentSelect"  name="loadingSample.parentSampleName"  required="true" cssClass="form-control"/>
@@ -300,7 +300,7 @@
                     </div>
                   </div>
                   <div id="pagination-warning" style="padding-top: 20px;display: none;">
-                    <label style="color: rgb(169, 32, 32);">You will lose the updated data if you don't submit before pulling other samples.</label>
+                    <label style="color: rgb(169, 32, 32);">You will lose the updated data if you don't submit before pulling other records.</label>
                   </div>
                 </nav>
                 <div id="confirmDiv"></div>
@@ -320,7 +320,7 @@
                   <input type="button" class="btn btn-info" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Row" style="display:none;"/>
                   <input type="button" class="btn btn-info" onclick="javascript:button.remove_event();" id="gridRemoveLineButton" value="Remove Row" style="display:none;"/>
                   <input type="button" class="btn btn-info" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
-                  <input type="button" class="btn btn-info" onclick="javascript:button.exportSample();" id="exportButton" value="Export Sample(s)" style="display:none;"/>
+                  <input type="button" class="btn btn-info" onclick="javascript:button.exportSample();" id="exportButton" value="Export Record(s)" style="display:none;"/>
                   <input type="button" class="btn btn-primary" onclick="javascript:button.clear_form();" value="Clear" />
                 </div>
               </div>
@@ -537,7 +537,7 @@
     </s:if>
     <s:elseif test="%{#oldBeanList != null && #oldBeanList.size() >0}">
     //preload form view
-    if(oldEventName && oldEventName.indexOf("SampleRegistration") === -1) {
+    if(oldEventName && oldEventName.indexOf("Registration") === -1) {
       $('#sampleSelect, #searchSample').prop("disabled", false);$('#form-sample-name').show(); //show sample name
     }
 

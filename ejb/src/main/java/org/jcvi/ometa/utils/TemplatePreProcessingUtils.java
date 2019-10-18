@@ -32,18 +32,18 @@ public class TemplatePreProcessingUtils {
 
         boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION);
         //boolean isProjectUpdate = eventName.replaceAll("\\s","").equals("ProjectUpdate");
-        boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);
+        boolean isEventRegistration = eventName.contains(Constants.EVENT_REGISTRATION);
 
-        List<HeaderDetail> headers = new ArrayList<HeaderDetail>();
+        List<HeaderDetail> headers = new ArrayList<>();
 
         headers.add(new HeaderDetail(Constants.ATTR_PROJECT_NAME, true, "string", "", null));
 
 
-        if (isSampleRegistration) { // parent sample name for sample registration
+        if (isEventRegistration) { // parent sample name for sample registration
             headers.add(new HeaderDetail(Constants.ATTR_PARENT_SAMPLE_NAME, false, "string", "", null));
         }
 
-        if (isProjectRegistration || isSampleRegistration) { //public flag
+        if (isProjectRegistration || isEventRegistration) { //public flag
             headers.add(new HeaderDetail(Constants.ATTR_PUBLIC_FLAG, true, "int", "", null));
         }
 
@@ -57,12 +57,12 @@ public class TemplatePreProcessingUtils {
             ));
         }
 
-        //if(!isSampleRegistration && sampleRequired) { //remove sample name for sample registration
-        if(isSampleRegistration || sampleRequired) {
+        //if(!isEventRegistration && sampleRequired) { //remove sample name for sample registration
+        if(isEventRegistration || sampleRequired) {
             headers.add(1, new HeaderDetail(Constants.ATTR_SAMPLE_NAME, true, "string", "", null));
         }
 
-        InputStream templateStream = null;
+        InputStream templateStream;
         if(type.equals("e")) {
             templateStream = this.createExcel(headers, isProjectRegistration, projectName, sampleName, eventName);
         } else {
@@ -148,7 +148,7 @@ public class TemplatePreProcessingUtils {
                 .append(Constants.ATTR_DESCRIPTION).append(",")
                 .append(Constants.ATTR_OPTIONS).append(",")
                 .append(Constants.ATTR_ORDER).append("\n");
-        Map<String, StringBuilder> emaMap = new HashMap<String, StringBuilder>(eventNameList.size());
+        Map<String, StringBuilder> emaMap = new HashMap<>(eventNameList.size());
         for(LookupValue lv : eventNameList){
             emaMap.put(lv.getName(), new StringBuilder());
         }
@@ -221,7 +221,7 @@ public class TemplatePreProcessingUtils {
         Row commentRow = sheet.createRow(rowIndex++);
 
         int headerIndex = 0;
-        Cell cell = null;
+        Cell cell;
         for(HeaderDetail detail : attributes) {
             cell = attributeRow.createCell(headerIndex);
             cell.setCellValue(detail.getDisplayHeader());
@@ -268,8 +268,8 @@ public class TemplatePreProcessingUtils {
 
     private void addValidations(int headerIndex, HeaderDetail detail, Sheet sheet) {
         CellRangeAddressList addressList = new CellRangeAddressList(2, 100, headerIndex, headerIndex);
-        DVConstraint constraint = null;
-        DataValidation validation = null;
+        DVConstraint constraint;
+        DataValidation validation;
         //adds select box with option values
         if(detail.hasOptions()) {
             constraint = DVConstraint.createExplicitListConstraint(detail.getOptionsArray());
@@ -311,14 +311,19 @@ public class TemplatePreProcessingUtils {
         }
     }
 
-    public List<GridBean> parseEventFile(String originalFileName, File uploadedFile, String projectName, boolean isProjectRegistration, boolean isSampleRegistration) throws Exception {
-        List<GridBean> gridBeans = new ArrayList<GridBean>();
+    public List<GridBean> parseEventFile(String originalFileName, File uploadedFile, String projectName, boolean isProjectRegistration, boolean isRegistration) throws Exception {
+        return parseEventFile(originalFileName, uploadedFile, projectName, isProjectRegistration, isRegistration, false, false);
+    }
+
+    public List<GridBean> parseEventFile(String originalFileName, File uploadedFile, String projectName, boolean isProjectRegistration, boolean isEventRegistration,
+                                         boolean isVisitEvent, boolean isSampleEvent) throws Exception {
+        List<GridBean> gridBeans = new ArrayList<>();
 
         String fileType = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
 
-        List<String> columns = new ArrayList<String>();
+        List<String> columns = new ArrayList<>();
 
-        String currProjectName = null;
+        String currProjectName;
 
         boolean hasSampleName = false;
         boolean hasParentSampleName = false;
@@ -370,7 +375,7 @@ public class TemplatePreProcessingUtils {
                             if(hasPublicFlag) {
                                 gBean.setProjectPublic(this.getExcelCellValue(row.getCell(colIndex++)));
                             }
-                        } else if(isSampleRegistration) {
+                        } else if(isEventRegistration) {
                             if(hasSampleName){
                                 if(hasParentSampleName) {
                                     gBean.setParentSampleName(this.getExcelCellValue(row.getCell(colIndex++)));
@@ -381,7 +386,7 @@ public class TemplatePreProcessingUtils {
                             }
                         }
 
-                        gBean.setBeanList(new ArrayList<FileReadAttributeBean>());
+                        gBean.setBeanList(new ArrayList<>());
                         for (; colIndex < columns.size(); colIndex++) {
                             FileReadAttributeBean fBean = new FileReadAttributeBean();
                             fBean.setProjectName(isProjectRegistration ? currProjectName : projectName);
@@ -394,12 +399,10 @@ public class TemplatePreProcessingUtils {
                 }
             }
         } else {
-            CSVReader reader = new CSVReader(new FileReader(uploadedFile));
 
-            String[] line;
-            int lineCount = 0;
-
-            try {
+            try (CSVReader reader = new CSVReader(new FileReader(uploadedFile))) {
+                String[] line;
+                int lineCount = 0;
                 while ((line = reader.readNext()) != null) {
                     ++lineCount;
 
@@ -469,7 +472,7 @@ public class TemplatePreProcessingUtils {
                                 if (hasPublicFlag) {
                                     gBean.setProjectPublic(line[(colIndex++)]);
                                 }
-                            } else if (isSampleRegistration) {
+                            } else if (isEventRegistration) {
                                 if (hasSampleName) {
                                     if (hasParentSampleName) {
                                         gBean.setParentSampleName(line[(colIndex++)]);
@@ -480,12 +483,13 @@ public class TemplatePreProcessingUtils {
                                 }
                             }
 
-                            gBean.setBeanList(new ArrayList<FileReadAttributeBean>());
+                            gBean.setBeanList(new ArrayList<>());
                             for (; colIndex < columns.size(); colIndex++) {
                                 FileReadAttributeBean fBean = new FileReadAttributeBean();
                                 fBean.setProjectName(isProjectRegistration ? currProjectName : projectName);
                                 fBean.setSampleName(hasSampleName ? gBean.getSampleName() : null);
-                                fBean.setAttributeName(this.extractRealAttributeName(columns.get(colIndex)));
+                                String attributeName = this.extractRealAttributeName(columns.get(colIndex));
+                                fBean.setAttributeName(attributeName);
                                 fBean.setAttributeValue(line[colIndex]);
                                 gBean.getBeanList().add(fBean);
                             }
@@ -496,8 +500,6 @@ public class TemplatePreProcessingUtils {
                         }
                     }
                 }
-            } finally {
-                reader.close();
             }
         }
 
@@ -511,20 +513,20 @@ public class TemplatePreProcessingUtils {
      * @throws Exception
      */
     public List<Map<String, String>> parseNonEventFile(File beanFile) throws Exception {
-        List<Map<String, String>> dataList = new ArrayList<Map<String, String>>();
+        List<Map<String, String>> dataList = new ArrayList<>();
 
         CSVReader reader = new CSVReader(new FileReader(beanFile));
 
         String[] line;
         int lineCount = 0;
-        List<String> columns = new ArrayList<String>();
+        List<String> columns = new ArrayList<>();
 
         while((line = reader.readNext()) != null) {
             if(lineCount == 0) { //headers
                 Collections.addAll(columns, line);
             } else {
 
-                Map<String, String> data = new HashMap<String, String>();
+                Map<String, String> data = new HashMap<>();
                 for(int i = 0;i < columns.size();i++) {
                     data.put(columns.get(i), line[i]);
                 }
@@ -538,7 +540,7 @@ public class TemplatePreProcessingUtils {
 
 
     public File preProcessTemplateFile(File originalFile) {
-        File outputFile = null;
+        File outputFile;
         try {
             // Setup scratch location.
             String userBase = System.getProperty("user.home");
@@ -551,7 +553,7 @@ public class TemplatePreProcessingUtils {
             BufferedReader br = new BufferedReader( new FileReader( originalFile ) );
             PrintWriter pw = new PrintWriter( new FileWriter( outputFile ) );
 
-            String inline = null;
+            String inline;
             while ( null != ( inline = br.readLine() ) ) {
                 // Will output all lines except those having pound-sign prefixes.
                 if ( ! inline.startsWith( "#" ) ) {

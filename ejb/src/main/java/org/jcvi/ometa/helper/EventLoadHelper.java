@@ -54,9 +54,9 @@ public class EventLoadHelper {
             throw new Exception("event name is missing.");
         }
 
-        boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) || eventName.contains(Constants.EVENT_CORE_PROJECT_REGISTRATION);
-        boolean isProjectUpdate = eventName.contains(Constants.EVENT_PROJECT_UPDATE) || eventName.contains(Constants.EVENT_CORE_PROJECT_UPDATE);
-        boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) || eventName.contains(Constants.EVENT_CORE_SAMPLE_REGISTRATION);
+        boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) ;
+        boolean isProjectUpdate = eventName.contains(Constants.EVENT_PROJECT_UPDATE);
+        boolean isEventRegistration = eventName.contains(Constants.EVENT_REGISTRATION);
 
         // check if the user has data support role
         boolean isUserDataSupporter = false;
@@ -94,12 +94,12 @@ public class EventLoadHelper {
                     loadingProject = this.readPersister.getProject(projectName);
 
                     if(!isProjectUpdate) {
-                        if(!isSampleRegistration && (gBean.getSampleName() == null || gBean.getSampleName().isEmpty())) { //skip row without sample name
+                        if(!isEventRegistration && (gBean.getSampleName() == null || gBean.getSampleName().isEmpty())) { //skip row without sample name
                             continue;
                         }
                         Sample existingSample = this.readPersister.getSample(loadingProject.getProjectId(), gBean.getSampleName());
                         if(existingSample == null) {
-                            if(isSampleRegistration) {
+                            if(isEventRegistration) {
                                 loadingSample = new Sample();
 
                                 String sampleIdentifierValue = this.getAttributeValue(gBean.getBeanList(), Constants.ATTR_SAMPLE_IDENTIFIER);
@@ -121,7 +121,7 @@ public class EventLoadHelper {
 
                 List<FileReadAttributeBean> fBeanList = gBean.getBeanList();
                 // process empty attribute lists events for project/sample registrations
-                if((fBeanList != null && fBeanList.size() > 0) || isProjectRegistration || isSampleRegistration) {
+                if((fBeanList != null && fBeanList.size() > 0) || isProjectRegistration || isEventRegistration) {
                     this.createMultiLoadParameter(loadParameter, projectName, eventName, loadingProject,  loadingSample, fBeanList, status, ++gridRowIndex, isUserDataSupporter);
                 }
             }
@@ -134,10 +134,9 @@ public class EventLoadHelper {
 
         loadParameter.setEventName(eventName);
 
-        boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) || eventName.contains(Constants.EVENT_CORE_PROJECT_REGISTRATION);
-        boolean isProjectLevelEvent = isProjectRegistration || eventName.toLowerCase().contains(Constants.EVENT_PROJECT_UPDATE.toLowerCase())
-                || eventName.toLowerCase().contains(Constants.EVENT_CORE_PROJECT_UPDATE.toLowerCase());
-        boolean isSampleRegistration = ((eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) || eventName.contains(Constants.EVENT_CORE_SAMPLE_REGISTRATION))
+        boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION);
+        boolean isProjectLevelEvent = isProjectRegistration || eventName.toLowerCase().contains(Constants.EVENT_PROJECT_UPDATE.toLowerCase());
+        boolean isEventRegistration = ((eventName.contains(Constants.EVENT_REGISTRATION))
                 && sample.getSampleName() != null && !sample.getSampleName().isEmpty());
 
         List<FileReadAttributeBean> loadingList = null;
@@ -220,7 +219,7 @@ public class EventLoadHelper {
 
             loadParameter.addProjectPair(feedProjectData(project, parentProject), loadingList, newPmas, newSmas, newEmas, rowIndex);
         } else {
-            boolean isSampleLevelEvent = isSampleRegistration || eventName.toLowerCase().contains(Constants.EVENT_SAMPLE_UPDATE.toLowerCase());
+            boolean isSampleLevelEvent = isEventRegistration || eventName.toLowerCase().contains(Constants.EVENT_UPDATE.toLowerCase());
             boolean isStatusGiven = status != null && !status.isEmpty();
 
             if(project == null || project.getProjectName() == null || project.getProjectName().isEmpty()) {
@@ -243,7 +242,7 @@ public class EventLoadHelper {
             }
 
             if(listHasData) {
-                if(isSampleRegistration) {
+                if(isEventRegistration) {
                     this.addSubmissionId(loadingList, project, sample.getSampleName(), rowIndex); // set submission id
                     loadParameter.addSamplePair(feedSampleData(sample, project), loadingList, rowIndex);
                 } else {
@@ -293,7 +292,7 @@ public class EventLoadHelper {
     private List<FileReadAttributeBean> feedAndFilterFileReadBeans(String eventName, String projectName, String sampleName, List<FileReadAttributeBean> loadingList) throws Exception {
         List<FileReadAttributeBean> processedList = new ArrayList<FileReadAttributeBean>();
         String sampleIdentifier = null;
-        boolean isSequenceSubmission = (eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) || eventName.contains(Constants.EVENT_CORE_SAMPLE_REGISTRATION))
+        boolean isSequenceSubmission = (eventName.contains(Constants.EVENT_REGISTRATION))
                 && eventName.contains(Constants.EVENT_SEQUENCE_SUBMISSION);
 
         for(FileReadAttributeBean fBean : loadingList) { //skip invalid attribute bean
@@ -306,11 +305,10 @@ public class EventLoadHelper {
                 continue;
             }
 
-            if(fBean.getProjectName() == null || eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) || eventName.contains(Constants.EVENT_CORE_PROJECT_REGISTRATION)) {
+            if(fBean.getProjectName() == null || eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)) {
                 fBean.setProjectName(projectName);
             }
-            if(fBean.getSampleName() == null && !eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) && !eventName.contains(Constants.EVENT_CORE_PROJECT_REGISTRATION)
-                    && !eventName.contains(Constants.EVENT_PROJECT_UPDATE) && !eventName.contains(Constants.EVENT_CORE_PROJECT_UPDATE)) {
+            if(fBean.getSampleName() == null && !eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) && !eventName.contains(Constants.EVENT_PROJECT_UPDATE)) {
                 if(sampleName == null || sampleName.isEmpty()) {
                     throw new Exception(ErrorMessages.SAMPLE_NOT_FOUND);
                 }

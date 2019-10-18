@@ -6,7 +6,7 @@ var _html = {
   '<button type="button" class="btn btn-success" id="attach-file-upload-$id$" style="margin-top: 10px;">UPLOAD</button><img id="loading-$id$" src="images/loading.gif" style="margin: 10px 0 0 10px;width: 24px;display: none;"></fieldset><fieldset class="fm-fieldset" style="width: 660px;margin-top: 5px;"><b>Tip:</b> After uploading or removing the file(s), click “Back to Submit Page”  button and submit the page to compete the changes!</fieldset>' +
   '</div><div class="buttons-container form-footer" style="overflow: visible;min-height: 51px;height: 100%;margin: 0;padding: 10px;"><fieldset class="fm-fieldset" style="width: 600px;"><legend><span>Attachment(s)</span></legend><div id="files-$id$" class="files" style="padding-left:20px;">$existingFileField$</div></fieldset>' +
   '<div class="buttons" style="float: right"><button type="button" class="btn btn-primary" id="attach-file-done-$id$" style="margin: 10px;" disabled>Back to Submit Page</button><button type="button" class="btn btn-warning" id="attach-file-cancel-$id$" style="margin: 10px;">Cancel</button></div></div></div>'
-}
+};
 
 var _utils = {
       makeAjax: function(u,d,p,cb) {
@@ -35,7 +35,7 @@ var _utils = {
         if(utils.checkSR(eventName)) { // triggers sample loader
           $('#sampleDetailInputDiv').show();
           if(typeof publicEnabled !== 'undefined'  && !publicEnabled) $("#publicSampleRow").hide(); // hide public from form view
-          if(typeof parentEnabled !== 'undefined'  && !parentEnabled) $("#parentSampleRow").hide(); // hide parent sample from form view
+          if(typeof parentEnabled !== 'undefined'  && !parentEnabled) $("#parentSampleRow").hide(); // hide Parent ID from form view
           $('#sampleSelect, #searchSample').prop("disabled", true);$('#form-sample-name').hide();
         } else if(utils.checkPR(eventName)) {
           $('#projectDetailInputDiv').show();
@@ -206,7 +206,8 @@ var _utils = {
         var radioSelectPrefix='radio(';
         var hasDependantDict = false;
         publicEnabled = data.publicEnabled;
-        parentEnabled = data.parentEnabled;
+        //parentEnabled = data.parentEnabled;
+        parentEnabled = true;
 
         var $attributeDiv = $("#attributeInputDiv"); //where attributes are placed
         $attributeDiv.empty(); //empty any existing contents
@@ -230,16 +231,16 @@ var _utils = {
         $gridHeaders.append($('<th/>').addClass('gridIndex').append('#')); //grid row index
         if(utils.checkNP(en)) {
           if(!utils.checkSR(en)) {
-            $gridHeaders.append($('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>Sample Name'));
+            $gridHeaders.append($('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>ID'));
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '135').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
             autofill_no+=1;
           } else {
-            $gridHeaders.append($('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>Sample Name<br/>'));
+            $gridHeaders.append($('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>ID<br/>'));
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '95').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
             autofill_no+=1;
 
             if(parentEnabled) {
-              $gridHeaders.append($('<th/>').addClass('resizable-header').append('Parent Sample'));
+              $gridHeaders.append($('<th/>').addClass('resizable-header').append('Parent ID'));
               $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '190').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
               autofill_no+=1;
             } else {
@@ -358,7 +359,7 @@ var _utils = {
               var maDatatype = _ma.lookupValue.dataType;
               if(maDatatype === 'file') { //file
                 inputElement += '<button type="button" id="' + maDatatype + '_$id$"  class="btn btn-default" data-toggle="tooltip" data-container="body" data-html="true" ' +
-                    'data-placement="right" data-original-title="FILE MANAGEMENT" onclick="showFMPopup(this.id)">File Store</button>'
+                    'data-placement="right" data-original-title="FILE MANAGEMENT" onclick="showFMPopup(this.id)">File Store</button>';
                 inputElement += _html.fm;
                 $autofillLine.append($('<td/>'));
               } else if(maDatatype ==='date') {
@@ -437,6 +438,10 @@ var _utils = {
         });
         _utils.addGridRows(null, en);
 
+        $("[id^='req_select_sample_type']").on('change', function() {
+          generateID(this);
+        });
+
         if(hasDependantDict){
           $("select[id*='select_"+parentFieldName.replace(/\s+/g, '_')+"']").change(function(event, data){
             var val = parentChildDict[parentFieldName];
@@ -498,7 +503,7 @@ var _utils = {
             var text = $(this).text();
             var textWidth;
 
-            if(text == 'Sample Name' || text == '*Sample Name'){
+            if(text == 'ID' || text == '*ID'){
               textWidth = 168;
             } else{
               var canvas = document.createElement('canvas');
@@ -576,7 +581,7 @@ var _utils = {
               var $select =  $("select[id*='"+key+"']");
 
               if($select.get(0)){
-                if($select.get(0).getAttribute('multiple') == null) $select.val(value)
+                if($select.get(0).getAttribute('multiple') == null) $select.val(value);
                 else {
                   var valueArr = value.split(",");
 
@@ -936,7 +941,7 @@ var button = {
               rowMsg += "&nbsp;&nbsp;" + $node.siblings('[name$="attributeName"]').val() + "<br />";
             } else if($node.attr('id') && $node.attr('id').indexOf("sampleName") !== -1){
               rowAllReq = false;
-              rowMsg += "&nbsp;&nbsp;Sample Name<br />";
+              rowMsg += "&nbsp;&nbsp;ID<br />";
             }
           } else if($node.is('select')){
             if($node.find('option:eq(0)').val() === '') {
@@ -982,7 +987,7 @@ var button = {
               rowMsg += "&nbsp;&nbsp;" + $node.siblings('[name$="attributeName"]').val() + "<br />";
             } else if($node.attr('id') && $node.attr('id').indexOf("sampleSelect") !== -1){
               rowAllReq = false;
-              rowMsg += "&nbsp;&nbsp;Sample Name<br />";
+              rowMsg += "&nbsp;&nbsp;ID<br />";
             }
           } else if($node.is('select')){
             if($node.find('option:eq(0)').val() === '') {
@@ -1134,7 +1139,7 @@ var button = {
     $("#jobType").val(type);
     $("#status").val(status);
 
-    //Project & Sample name validation
+    //Project & ID validation
     if(type === 'form'){
       if(utils.checkPR(eventName)){
         var projectRegName = $("#_projectName").val();
@@ -1146,7 +1151,7 @@ var button = {
       } else if(utils.checkSR(eventName)) {
         var sampleRegName = $("#_sampleName").val();
         if(sampleRegName == null || sampleRegName === ''){
-          utils.error.add("Sample Name is empty!");
+          utils.error.add("ID is empty!");
           utils.processing(false);
           return;
         }
@@ -1318,7 +1323,7 @@ var button = {
         if(attributeField.indexOf('type="file"') >= 0) {
           if(bean) {
             //attributeField += ("<strong>" + bean[1].substring(bean[1].indexOf("_") + 1) + "</strong>");
-            var id = av_v.ma.lookupValue.name + "_$id$"
+            var id = av_v.ma.lookupValue.name + "_$id$";
             var valArr = bean[1].split(',');
             var selectName = "gridList[" + g_gridLineCount + "].sampleName";
 
@@ -1555,7 +1560,7 @@ function comboBoxChanged(option, id) {
       $('input[name="ids"]').remove();
       changes.event(option.text, option.value);
 
-      //Hide Sample dropdown if SampleRegistration is selected
+      //Hide Sample dropdown if Registration is selected
       var _selectedType = $('input[name="loadType"]:checked').val();
       var _eventName = option.text;
       if(utils.checkSR(_eventName) || _selectedType === 'grid') {
@@ -1983,6 +1988,9 @@ function searchSamples(id) {
         );
       }
     },
+    change: function () {
+      generateID(this);
+    },
     minLength: 0,
     delay: 0
   }).focus(function () {
@@ -2218,4 +2226,33 @@ function initializeFileManagementFunctions(){
       }, 100);
     });
   });
+}
+
+function generateID(v) {
+  var id = $(v).attr('id');
+  if(id) {
+    var en = utils.getEventName();
+    var select;
+    var isSample = false;
+    if (en == "VisitRegistration" || en == "VisitUpdate")
+      select = "date_Visit_Date";
+    else if (en == "SampleRegistration" || en == "SampleUpdate") {
+      select = "req_select_sample_type";
+      isSample = true;
+    }
+
+    var isMulti = (id.indexOf("_g_") >= 0 || id.indexOf("_parentSelect") >= 0) ? true : false;
+    if (isMulti) {
+      var row = id.substr(id.length - 1);
+      var parentVal = $("#_parentSelect" + row).val();
+      var selVal = $("#" + select + "_g_" + row).val().replace(/-/g, '');
+      if(isSample && selVal != '') selVal = selVal.match(/\((.*)\)/)[1];
+      $("#_sampleName" + row).val(parentVal + "_" + selVal);
+    } else {
+      var parentVal = $("#parentSelect").val();
+      var selVal =$("[id*='"+select+"_f']").val().replace(/-/g, '');
+      if(isSample && selVal != '') selVal = selVal.match(/\((.*)\)/)[1];
+      $("#_sampleName").val(parentVal + "_" + selVal);
+    }
+  }
 }

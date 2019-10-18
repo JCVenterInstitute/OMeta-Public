@@ -76,7 +76,7 @@ public class BulkLoader {
 
                     // process sequence file
                     String eventName = this.getEventNameFromFile(currentFile);
-                    if(eventName != null && eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION) && eventName.contains(Constants.EVENT_SEQUENCE_SUBMISSION)) {
+                    if(eventName != null && eventName.contains(Constants.EVENT_REGISTRATION) && eventName.contains(Constants.EVENT_SEQUENCE_SUBMISSION)) {
                         if(sequenceHelper.processSequencePair(currentFile, currentUserId) != 1) {
                             continue;
                         }

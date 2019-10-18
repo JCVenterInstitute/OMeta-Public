@@ -29,7 +29,6 @@ import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.UploadActionDelegate;
 import org.jcvi.ometa.validation.ModelValidator;
-import org.jtc.common.util.property.PropertyHelper;
 
 import javax.naming.InitialContext;
 import javax.transaction.Status;
@@ -37,7 +36,6 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Created by IntelliJ IDEA.
@@ -52,7 +50,7 @@ public class Editor extends ActionSupport {
     private static final String LOOKUP_VALUE_TYPE_EVENT = "Event Type";
     private static final String LOOKUP_VALUE_TYPE_ATTRIBUTE = "Attribute";
     private static final String LOOKUP_VALUE_NAME_PROJECT_UPDATE = "ProjectUpdate";
-    private static final String LOOKUP_VALUE_NAME_SAMPLE_UPDATE = "SampleUpdate";
+    private static final String LOOKUP_VALUE_NAME_UPDATE = "Update";
     private final String LOOKUP_VALUE_NAME_IS_PUBLIC = "isPublic";
     private final String LOOKUP_VALUE_NAME_IS_SECURE = "isSecure";
 
@@ -267,13 +265,13 @@ public class Editor extends ActionSupport {
                 List<EventMetaAttribute> existingEmaList = readPersister.getEventMetaAttributes(projectId);
                 List<String> existingEmaNames = new ArrayList<String>();
                 for (EventMetaAttribute ema : existingEmaList) {
-                    if (ema.getEventTypeLookupValue().getName().equals(LOOKUP_VALUE_NAME_SAMPLE_UPDATE))
+                    if (ema.getEventTypeLookupValue().getName().equals(LOOKUP_VALUE_NAME_UPDATE))
                         if (!existingEmaNames.contains(ema.getLookupValue().getName()))
                             existingEmaNames.add(ema.getLookupValue().getName());
                 }
 
-                if (readPersister.getLookupValue(LOOKUP_VALUE_NAME_SAMPLE_UPDATE, LOOKUP_VALUE_TYPE_EVENT) == null)
-                    lkvList.add(this.createLookup(LOOKUP_VALUE_NAME_SAMPLE_UPDATE, LOOKUP_VALUE_TYPE_EVENT, Constants.STRING_DATA_TYPE));
+                if (readPersister.getLookupValue(LOOKUP_VALUE_NAME_UPDATE, LOOKUP_VALUE_TYPE_EVENT) == null)
+                    lkvList.add(this.createLookup(LOOKUP_VALUE_NAME_UPDATE, LOOKUP_VALUE_TYPE_EVENT, Constants.STRING_DATA_TYPE));
 
                 if (editType.equals("sample")) {
                     sample = readPersister.getSample(sampleId);
@@ -286,7 +284,7 @@ public class Editor extends ActionSupport {
                         if (!existingEmaNames.contains(LOOKUP_VALUE_NAME_IS_PUBLIC))
                             emaList.add(
                                     this.createEventMetaAttribute(
-                                            projectId, projectName, LOOKUP_VALUE_NAME_SAMPLE_UPDATE, LOOKUP_VALUE_NAME_IS_PUBLIC,
+                                            projectId, projectName, LOOKUP_VALUE_NAME_UPDATE, LOOKUP_VALUE_NAME_IS_PUBLIC,
                                             false, true, Constants.INT_DATA_TYPE, "Sample availability", true
                                     )
                             );
@@ -301,7 +299,7 @@ public class Editor extends ActionSupport {
                     if (emaList.size() > 0)
                         psewt.loadEventMetaAttributes(emaList);
                     if (attrBeanList.size() > 0)
-                        psewt.loadAttributes(attrBeanList, LOOKUP_VALUE_NAME_SAMPLE_UPDATE);
+                        psewt.loadAttributes(attrBeanList, LOOKUP_VALUE_NAME_UPDATE);
 
                     sample.setProjectName(projectName);
                     psewt.updateSample(sample);
@@ -331,7 +329,7 @@ public class Editor extends ActionSupport {
                                     if (!existingEmaNames.contains(sa.getMetaAttribute().getAttributeName()))
                                         emaList.add(
                                                 this.createEventMetaAttribute(
-                                                        projectId, projectName, LOOKUP_VALUE_NAME_SAMPLE_UPDATE, sa.getMetaAttribute().getAttributeName(),
+                                                        projectId, projectName, LOOKUP_VALUE_NAME_UPDATE, sa.getMetaAttribute().getAttributeName(),
                                                         false, true, sa.getMetaAttribute().getDataType(), sa.getMetaAttribute().getAttributeName(), true
                                                 )
                                         );
@@ -347,7 +345,7 @@ public class Editor extends ActionSupport {
                     if (emaList.size() > 0)
                         psewt.loadEventMetaAttributes(emaList);
                     if (attrBeanList.size() > 0)
-                        psewt.loadAttributes(attrBeanList, LOOKUP_VALUE_NAME_SAMPLE_UPDATE);
+                        psewt.loadAttributes(attrBeanList, LOOKUP_VALUE_NAME_UPDATE);
                 }
             }
 

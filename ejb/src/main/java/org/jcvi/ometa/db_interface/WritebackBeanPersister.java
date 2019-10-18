@@ -627,7 +627,7 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
 
         // Pre-emptive bail.
         if (aBeans == null || aBeans.size() == 0) {
-            if(!eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) && !eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)) { //still record project or sample registration events
+            if(!eventName.contains(Constants.EVENT_PROJECT_REGISTRATION) && !eventName.contains(Constants.EVENT_REGISTRATION)) { //still record project or sample registration events
                 throw new Exception("event cannot be created with empty attributes");
             }
         }

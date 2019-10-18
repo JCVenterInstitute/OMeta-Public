@@ -352,33 +352,6 @@ public class BeanWriter {
             parameterObject.addEventMetaAttributes(emaBeans);
         }
 
-        /*
-        * no events allowed in a multi file. event loads should go through [template generation -> load]
-        * by hkim 3/25/14
-        *
-        // Finally, the events.
-        files = collector.getProjectRegistrationFiles();
-        for (File file: files) {
-            String eventName = getEventName(file.getName());
-            List<FileReadAttributeBean> attributeBeans = this.getGenericAttributeBeans(file);
-            parameterObject.addProjectRegistrations(eventName, attributeBeans);
-        }
-
-        files = collector.getSampleRegistrationFiles();
-        for (File file: files) {
-            String eventName = getEventName(file.getName());
-            List<FileReadAttributeBean> attributeBeans = this.getGenericAttributeBeans(file);
-            parameterObject.addSampleRegistrations(eventName, attributeBeans);
-        }
-
-        files = collector.getEventFiles();
-        for (File file: files) {
-            String eventName = getEventName(file.getName());
-            List<FileReadAttributeBean> attributeBeans = this.getGenericAttributeBeans(file);
-            parameterObject.addEvents(eventName, attributeBeans);
-        }
-        */
-
         return parameterObject;
     }
 
@@ -502,14 +475,14 @@ public class BeanWriter {
         }
 
         boolean isProjectRegistration = eventName.equals(Constants.EVENT_PROJECT_REGISTRATION);
-        boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);
+        boolean isEventRegistration = eventName.contains(Constants.EVENT_REGISTRATION);
 
         List<GridBean> parsedList = templateUtils.parseEventFile(
                 processedFile.getName(),
                 processedFile,
                 null,
                 isProjectRegistration,
-                isSampleRegistration
+                isEventRegistration
         );
 
         templateUtils.deletePreProcessedFile(processedFile);

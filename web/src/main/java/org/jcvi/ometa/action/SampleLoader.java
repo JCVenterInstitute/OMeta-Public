@@ -119,12 +119,6 @@ public class SampleLoader extends ActionSupport {
                         }
                     }
                 }
-
-                /*MultiLoadParameter loadParameter = new MultiLoadParameter();
-                loadParameter.addSamples(sampleList);
-                if (loadedBeanList.size() > 0)
-                    loadParameter.addSampleRegistrations(Constants.EVENT_SAMPLE_REGISTRATION, loadedBeanList);
-                psewt.loadAll(null, loadParameter);*/
             }
 
             beanList = null;

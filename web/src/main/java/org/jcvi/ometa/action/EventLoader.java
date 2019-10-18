@@ -160,7 +160,7 @@ public class EventLoader extends ActionSupport implements Preparable {
 
             if (jobType != null) {
                 boolean isProjectRegistration = eventName.contains(Constants.EVENT_PROJECT_REGISTRATION);
-                boolean isSampleRegistration = eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION);
+                boolean isEventRegistration = eventName.contains(Constants.EVENT_REGISTRATION);
 
                 String userName = ServletActionContext.getRequest().getRemoteUser();
 
@@ -184,8 +184,8 @@ public class EventLoader extends ActionSupport implements Preparable {
                     if(isProjectRegistration) {
                         singleGridBean.setProjectPublic(Integer.toString(this.loadingProject.getIsPublic()));
                     }
-                    singleGridBean.setSampleName(isSampleRegistration ? this.loadingSample.getSampleName() : this.sampleName);
-                    if(isSampleRegistration) {
+                    singleGridBean.setSampleName(isEventRegistration ? this.loadingSample.getSampleName() : this.sampleName);
+                    if(isEventRegistration) {
                         singleGridBean.setSamplePublic(Integer.toString(this.loadingSample.getIsPublic()));
                         singleGridBean.setParentSampleName(this.loadingSample.getParentSampleName());
                     }
@@ -196,9 +196,9 @@ public class EventLoader extends ActionSupport implements Preparable {
                     psewt.loadAll(null, loadParameter);
 
 
-                    this.pageDataReset(isProjectRegistration, isSampleRegistration, this.status);
+                    this.pageDataReset(isProjectRegistration, isEventRegistration, this.status);
 
-                    if(isSampleRegistration) { // set sample name for sample update form load with newly loaded sample
+                    if(isEventRegistration) { // set sample name for sample update form load with newly loaded sample
                         this.sampleName = singleGridBean.getSampleName();
                     }
 
@@ -215,7 +215,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                     loadHelper.gridListToMultiLoadParameter(loadParameter, this.gridList, this.projectName, this.eventName, this.status, userName);
                     psewt.loadAll(null, loadParameter);
 
-                    if(!filter.equals("su"))this.pageDataReset(isProjectRegistration, isSampleRegistration, this.status);
+                    if(!filter.equals("su"))this.pageDataReset(isProjectRegistration, isEventRegistration, this.status);
 
                     addActionMessage(this.getResultMessage());
 
@@ -227,7 +227,9 @@ public class EventLoader extends ActionSupport implements Preparable {
                             TemplatePreProcessingUtils templateUtil = new TemplatePreProcessingUtils();
                             gridList = templateUtil.parseEventFile(
                                     this.dataTemplateFileName, this.dataTemplate,
-                                    this.projectName, isProjectRegistration, isSampleRegistration
+                                    this.projectName, isProjectRegistration, isEventRegistration,
+                                    eventName.equals("VisitRegistration") || eventName.equals("VisitUpdate"),
+                                    eventName.equals("SampleRegistration") || eventName.equals("SampleUpdate")
                             );
                             jobType = SUBMISSION_TYPE_GRID;
                         } catch(Exception ex) {
@@ -282,7 +284,7 @@ public class EventLoader extends ActionSupport implements Preparable {
                                 dataBuffer.append(pair.getProjectName() + ",");
                                 Sample currSample = pair.getSample();
                                 dataBuffer.append(currSample.getSampleName() + ",");
-                                if(isSampleRegistration) {
+                                if(isEventRegistration) {
                                     dataBuffer.append((currSample.getParentSampleName() == null) ? "," : currSample.getParentSampleName() + ",");
                                     dataBuffer.append(currSample.getIsPublic() + ",");
                                 }
@@ -441,15 +443,15 @@ public class EventLoader extends ActionSupport implements Preparable {
         return rtnVal;
     }
 
-    private void pageDataReset(boolean isProjectRegistration, boolean isSampleRegistration, String status) {
+    private void pageDataReset(boolean isProjectRegistration, boolean isEventRegistration, String status) {
         boolean resetIdsAndNames = true;
         boolean resetLists = true;
 
         if(status.equals(SUBMISSION_STATUS_SAVE) || status.equals(SUBMISSION_STATUS_VALIDATE)) {
             resetIdsAndNames = false;
             resetLists = false;
-            if(isSampleRegistration) { //update registration event to update on save requests
-                this.eventName = this.eventName.replaceAll(Constants.EVENT_SAMPLE_REGISTRATION, Constants.EVENT_SAMPLE_UPDATE);
+            if(isEventRegistration) { //update registration event to update on save requests
+                this.eventName = this.eventName.replaceAll(Constants.EVENT_REGISTRATION, Constants.EVENT_UPDATE);
                 this.filter = "su";
             }
         } else {
@@ -460,7 +462,7 @@ public class EventLoader extends ActionSupport implements Preparable {
 
         if(resetIdsAndNames) {
             /* Filter is not necessary for internal usage
-            if((isSampleRegistration || this.eventName.contains(Constants.EVENT_SAMPLE_UPDATE)) && status.equals(SUBMISSION_STATUS_SUBMIT)) {
+            if((isRegistration || this.eventName.contains(Constants.EVENT_SAMPLE_UPDATE)) && status.equals(SUBMISSION_STATUS_SUBMIT)) {
                 this.filter = "sr";
             }*/
 

@@ -28,8 +28,6 @@ import org.jcvi.ometa.model.Dictionary;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.GuidGetter;
 import org.jcvi.ometa.validation.DataValidator;
-import org.jcvi.ometa.validation.ModelValidator;
-import org.jtc.common.util.property.PropertyHelper;
 
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
@@ -673,7 +671,7 @@ public class EventPersistenceHelper {
      * @throws DAOException if the sample is required and not given.
      */
     private void checkSampleGivenForEventAttribute(String attribName, EventMetaAttribute ema) throws DAOException {
-        if (ema.isSampleRequired() || this.eventType.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
+        if (ema.isSampleRequired() || this.eventType.contains(Constants.EVENT_REGISTRATION)) {
             isSampleRequiredForEvent = true;
             if ( sampleId == null ) {
                 throw new DAOException("'" + attribName + "' for '" + eventType + "' requires a sample");

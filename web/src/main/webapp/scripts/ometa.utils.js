@@ -70,7 +70,7 @@ var utils = {
   checkSR: function(en) {
     en = this.getEventName(en);
     en = en ? en.toLowerCase() : "";
-    return en.indexOf('sample') >= 0 && en.indexOf('registration') > 0;
+    return en.indexOf('project') < 0 && en.indexOf('registration') > 0;
   },
   checkPR: function(en) {
     en = this.getEventName(en);
@@ -85,7 +85,7 @@ var utils = {
   checkSU: function(en) {
     en = this.getEventName(en);
     en = en ? en.toLowerCase() : "";
-    return en.indexOf('sample') >= 0 && en.indexOf('update') > 0;
+    return en.indexOf('project') < 0 && en.indexOf('update') > 0;
   },
   checkNP: function(en) {
     en = this.getEventName(en);
@@ -145,8 +145,14 @@ var utils = {
       buttonImageOnly: true, buttonImage: 'images/jqueryUI/icon_cal_21x19.png'
     });
   },
-  smartDatePicker: function($node) {
-    $node.find('input[id^="date_"]').datepicker({dateFormat: 'yy-mm-dd'});
+  smartDatePicker: function ($node) {
+    $node.find('input[id^="date_"]').datepicker({
+      dateFormat: 'yy-mm-dd',
+      onSelect: function () {
+        if ($(this).attr("id").indexOf("date_Visit_Date") >= 0)
+          generateID(this);
+      }
+    });
   },
   error: {
     check: function() {

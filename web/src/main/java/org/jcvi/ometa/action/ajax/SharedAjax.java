@@ -435,7 +435,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
             List<LookupValue> eventNameList = readPersister.getEventTypesForProject(this.projectId);
 
             if(filter != null && !filter.isEmpty()) {
-                boolean isSampleRegistration = filter.equals("sr");
+                boolean isEventRegistration = filter.equals("sr");
                 boolean isProjectRegistration = filter.equals("pr");
 
                 List<LookupValue> filteredList = new ArrayList<LookupValue>();
@@ -445,14 +445,14 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                         if(eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)) {
                             filteredList.add(lv);
                         }
-                    } else if(isSampleRegistration){
-                        if(eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
+                    } else if(isEventRegistration){
+                        if(eventName.contains(Constants.EVENT_REGISTRATION)) {
                             filteredList.add(lv);
                         }
                     } else {
                         if(!eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)
                                 && !eventName.contains(Constants.EVENT_PROJECT_UPDATE)
-                                && !eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
+                                && !eventName.contains(Constants.EVENT_REGISTRATION)) {
                             filteredList.add(lv);
                         }
                     }
@@ -633,7 +633,7 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                 List<LookupValue> eventNameList = readPersister.getEventTypesForProject(this.projectId);
 
                 if(filter != null && !filter.isEmpty()) {
-                    boolean isSampleRegistration = filter.equals("sr");
+                    boolean isEventRegistration = filter.equals("sr");
                     boolean isProjectRegistration = filter.equals("pr");
 
                     List<LookupValue> filteredList = new ArrayList<LookupValue>();
@@ -643,8 +643,8 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                             if(eventName.contains(Constants.EVENT_PROJECT_REGISTRATION)) {
                                 filteredList.add(lv);
                             }
-                        } else if(isSampleRegistration){
-                            if(eventName.contains(Constants.EVENT_SAMPLE_REGISTRATION)) {
+                        } else if(isEventRegistration){
+                            if(eventName.contains(Constants.EVENT_REGISTRATION)) {
                                 filteredList.add(lv);
                             }
                         } else {
