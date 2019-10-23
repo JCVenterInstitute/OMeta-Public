@@ -613,9 +613,11 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                         samples = new ArrayList<Sample>();
                         samples.add(readPersister.getSample(sampleId));
                     }
-                } else
-                    //samples = readPersister.getSamplesForProject(this.projectId);
-                    samples = readPersister.getSamplesForProjectBySearch(this.projectId, (this.sampleVal != null ? this.sampleVal : ""), firstResult, maxResult);
+                } else {
+                    String parentEventName = (eventName.equals(Constants.EVENT_VISIT_REGISTRATION)) ? Constants.EVENT_SUBJECT_REGISTRATION
+                            : eventName.equals(Constants.EVENT_SAMPLE_REGISTRATION) ? Constants.EVENT_VISIT_REGISTRATION : "";
+                    samples = readPersister.getSamplesForProjectBySearch(this.projectId, parentEventName, (this.sampleVal != null ? this.sampleVal : ""), firstResult, maxResult);
+                }
 
                 if(firstResult == 0) totalSampleCount = readPersister.getSampleCountForProjectBySearch(this.projectId, (this.sampleVal != null ? this.sampleVal : ""));
 

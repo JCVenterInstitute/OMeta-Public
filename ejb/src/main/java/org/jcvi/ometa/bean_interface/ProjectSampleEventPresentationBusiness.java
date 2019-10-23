@@ -101,7 +101,7 @@ public interface ProjectSampleEventPresentationBusiness {
 
     public List<String[]> getSampleStatusForProject(Long projectId) throws Exception;
 
-    public List<Sample> getSamplesForProjectBySearch(Long projectId, String sampleVal,int firstResult, int maxResult) throws Exception;
+    public List<Sample> getSamplesForProjectBySearch(Long projectId,  String parentEventName, String sampleVal, int firstResult, int maxResult) throws Exception;
 
     public Integer getSampleCountForProjectBySearch(Long projectId, String sampleVal) throws Exception;
 

@@ -2060,7 +2060,7 @@ function fetchSample(arrResult, sampleVal, firstResult, maxResult){
   if(projectId != 0){
     $.ajax({
       url: 'sharedAjax.action',
-      data: 'type=sample&projectId=' + projectId + '&sampleVal=' + sampleVal + "&firstResult=" + firstResult + "&maxResult=" + maxResult,
+      data: 'type=sample&projectId=' + projectId + '&sampleVal=' + sampleVal + "&firstResult=" + firstResult + "&maxResult=" + maxResult + '&eventName=' + utils.getEventName(),
       cache: false,
       async: false,
       beforeSend: function (){

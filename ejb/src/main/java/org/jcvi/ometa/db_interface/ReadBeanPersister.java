@@ -180,8 +180,8 @@ public class ReadBeanPersister implements WebDataFacadeI {
         return pseb.getSampleStatusForProject(projectId);
     }
 
-    public List<Sample> getSamplesForProjectBySearch(Long projectId, String sampleVal,int firstResult, int maxResult) throws Exception {
-        return pseb.getSamplesForProjectBySearch(projectId, sampleVal, firstResult, maxResult);
+    public List<Sample> getSamplesForProjectBySearch(Long projectId, String parentEventName, String sampleVal,int firstResult, int maxResult) throws Exception {
+        return pseb.getSamplesForProjectBySearch(projectId, parentEventName, sampleVal, firstResult, maxResult);
     }
 
     public Integer getSampleCountForProjectBySearch(Long projectId, String sampleVal) throws Exception {

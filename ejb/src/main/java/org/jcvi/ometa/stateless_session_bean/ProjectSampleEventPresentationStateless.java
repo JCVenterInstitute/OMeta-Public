@@ -467,13 +467,13 @@ public class ProjectSampleEventPresentationStateless implements ProjectSampleEve
         return sampleStatusList;
     }
 
-    public List<Sample> getSamplesForProjectBySearch( @JCVI_Project Long projectId, String sampleVal, int firstResult, int maxResult ) throws Exception {
+    public List<Sample> getSamplesForProjectBySearch( @JCVI_Project Long projectId, String parentEventName, String sampleVal, int firstResult, int maxResult ) throws Exception {
         Session session = startTransactedSession();
 
         List<Sample> sBeans = Collections.emptyList();
         try {
             SampleDAO sDao = daoFactory.getSampleDAO();
-            sBeans = sDao.getAllSamplesBySearch(projectId, sampleVal, firstResult, maxResult, session);
+            sBeans = sDao.getAllSamplesBySearch(projectId, parentEventName, sampleVal, firstResult, maxResult, session);
             sessionAndTransactionManager.commitTransaction();
         } catch (Exception ex) {
             sessionAndTransactionManager.rollBackTransaction();

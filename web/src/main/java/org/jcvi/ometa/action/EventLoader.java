@@ -228,8 +228,8 @@ public class EventLoader extends ActionSupport implements Preparable {
                             gridList = templateUtil.parseEventFile(
                                     this.dataTemplateFileName, this.dataTemplate,
                                     this.projectName, isProjectRegistration, isEventRegistration,
-                                    eventName.equals("VisitRegistration") || eventName.equals("VisitUpdate"),
-                                    eventName.equals("SampleRegistration") || eventName.equals("SampleUpdate")
+                                    eventName.equals(Constants.EVENT_VISIT_REGISTRATION) || eventName.equals(Constants.EVENT_VISIT_UPDATE),
+                                    eventName.equals(Constants.EVENT_SAMPLE_REGISTRATION) || eventName.equals(Constants.EVENT_SAMPLE_UPDATE)
                             );
                             jobType = SUBMISSION_TYPE_GRID;
                         } catch(Exception ex) {

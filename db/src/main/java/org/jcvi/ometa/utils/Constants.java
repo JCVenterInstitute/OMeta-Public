@@ -133,6 +133,12 @@ public class Constants {
     public static final String EVENT_SEQUENCE_SUBMISSION = "Sequence Submission";
     public static final String EVENT_META_ATTRIBUTE_LIST = "emaList";
 
+    public static final String EVENT_SUBJECT_REGISTRATION = "SubjectRegistration";
+    public static final String EVENT_VISIT_REGISTRATION = "VisitRegistration";
+    public static final String EVENT_VISIT_UPDATE = "VisitUpdate";
+    public static final String EVENT_SAMPLE_REGISTRATION = "SampleRegistration";
+    public static final String EVENT_SAMPLE_UPDATE = "SampleUpdate";
+
     public static final String ATTR_PROJECT_NAME = "ProjectName";
     public static final String ATTR_SAMPLE_NAME = "SampleName";
     public static final String ATTR_EVENT_NAME = "EventName";

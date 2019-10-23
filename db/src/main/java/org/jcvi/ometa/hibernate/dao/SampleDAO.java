@@ -28,12 +28,12 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.NativeQuery;
+import org.jcvi.ometa.model.Event;
+import org.jcvi.ometa.model.LookupValue;
 import org.jcvi.ometa.model.Sample;
 import org.jcvi.ometa.utils.Constants;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -302,18 +302,26 @@ public class SampleDAO extends HibernateDAO {
         return sampleStatusList;
     }
 
-    public List<Sample> getAllSamplesBySearch(Long projectId, String sampleVal, int firstResult, int maxResult, Session session) throws DAOException {
+    public List<Sample> getAllSamplesBySearch(Long projectId, String parentEventName, String sampleVal, int firstResult, int maxResult, Session session) throws DAOException {
         List<Sample> sampleList;
         try {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery<Sample> criteriaQuery = builder.createQuery(Sample.class);
             Root<Sample> sampleRoot = criteriaQuery.from(Sample.class);
+            List<Predicate> criteriaList = new ArrayList<>();
+            criteriaList.add(builder.equal(sampleRoot.get("projectId"), projectId));
+            criteriaList.add(builder.like(builder.upper(sampleRoot.get("sampleName")), '%' +sampleVal.toUpperCase()+ '%'));
+
+            if(parentEventName != null && !parentEventName.equals("")) {
+                Root<Event> eventRoot = criteriaQuery.from(Event.class);
+                Join<Event, LookupValue> eventLookupValueJoin = eventRoot.join("eventTypeLookupValue");
+
+                criteriaList.add(builder.equal(eventLookupValueJoin.get("name"), parentEventName));
+                criteriaList.add(builder.equal(eventRoot.get("sampleId"), sampleRoot.get("sampleId")));
+            }
 
             criteriaQuery.select(sampleRoot)
-                    .where(builder.and(
-                            builder.equal(sampleRoot.get("projectId"), projectId),
-                            builder.like(builder.upper(sampleRoot.get("sampleName")), '%' +sampleVal.toUpperCase()+ '%')
-                    ))
+                    .where(builder.and(criteriaList.toArray(new Predicate[0])))
                     .orderBy(builder.asc(sampleRoot.get("sampleName")));
 
             sampleList = new ArrayList<>(session.createQuery(criteriaQuery)
