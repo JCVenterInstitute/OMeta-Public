@@ -405,17 +405,23 @@ public class SampleDAO extends HibernateDAO {
 
             StringBuilder sql = new StringBuilder(" select S1.*, S2.sample_name parent, CONCAT(A.actor_last_name,',',A.actor_first_name) user," +
                     " SA2.sampla_attribute_date attribute_value_date, SA2.sampla_attribute_float attribute_value_float, SA2.sampla_attribute_str attribute_value_str, SA2.sampla_attribute_int attribute_value_int " +
+                    ("event".equals(sortCol) ? ", elv.lkuvlu_name event " : "") +
                     " from sample S1 " +
                     " left join sample S2 on S1.sample_sample_parent_id=S2.sample_id " +
                     " left join actor A on S1.sample_created_by=A.actor_id " +
                     " left join (select SA1.* from sample_attribute SA1, lookup_value LV " +
                     " where SA1.sampla_lkuvlu_attribute_id = LV.lkuvlu_id and LV.lkuvlu_name = '" + sortCol +
-                    "') SA2 on S1.sample_id = SA2.sampla_sample_id where ");
+                    "') SA2 on S1.sample_id = SA2.sampla_sample_id ");
+
+            if("event".equals(sortCol)) {
+                sql.append("LEFT JOIN event e on e.event_id = (SELECT event_id FROM event where event_sampl_id = S1.sample_id ORDER BY event_create_date ASC limit 1) " +
+                        "LEFT JOIN lookup_value elv ON e.event_type_lkuvl_id=elv.lkuvlu_id");
+            }
 
             if("sample".equals(type))
-                sql.append("S1.sample_id=");
+                sql.append(" where S1.sample_id=");
             else
-                sql.append("S1.sample_projet_id=");
+                sql.append(" where S1.sample_projet_id=");
             sql.append(flexId);
 
             if(sSearch!=null && !sSearch.isEmpty()) {
@@ -475,23 +481,25 @@ public class SampleDAO extends HibernateDAO {
                 sql.append(')');
             }
 
-            if(sortCol!=null && !sortCol.isEmpty() && sortDir!=null && !sortDir.isEmpty()) {
+            if (sortCol != null && !sortCol.isEmpty() && sortDir != null && !sortDir.isEmpty()) {
                 sql.append(" order by");
                 boolean isDateSort = false;
-                if(sortCol.equals("sample"))
+                if (sortCol.equals("sample"))
                     sql.append(" sample_name ");
-                else if(sortCol.equals("parent"))
+                else if (sortCol.equals("parent"))
                     sql.append(" parent ");
-                else if(sortCol.equals("user"))
+                else if (sortCol.equals("user"))
                     sql.append(" user ");
-                else if(sortCol.equals("date")) {
+                else if (sortCol.equals("date")) {
                     sql.append(" sample_create_date ");
                     isDateSort = true;
-                }else
+                } else if (sortCol.equals("event"))
+                    sql.append(" event ");
+                else
                     sql.append(" COALESCE(attribute_value_date, attribute_value_float, attribute_value_str, attribute_value_int) ");
                 sql.append(sortDir);
 
-                if(isDateSort) sql.append(", sample_name asc");
+                if (isDateSort) sql.append(", sample_name asc");
             }
 
             NativeQuery query = session.createNativeQuery(sql.toString());

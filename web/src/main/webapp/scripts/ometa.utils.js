@@ -212,6 +212,18 @@ var utils = {
       $("#popupLayerScreenLocker").hide();
       $("#processingDiv").hide();
     }
+  },
+  addInput: function(id, name, val) {
+    var $dom = $('#' + id + ' input[name="' + name + '"]');
+    if (!$dom.length) {
+      $('<input>', {
+        type: 'hidden',
+        name: name,
+        value: val
+      }).appendTo('#' + id);
+    } else {
+      $dom.val(val);
+    }
   }
 };
 

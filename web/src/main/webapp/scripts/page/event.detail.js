@@ -7,7 +7,7 @@ var _html = {
 
 var openBtn = "glyphicon-plus-sign",
     closeBtn = "glyphicon-minus-sign",
-    subrow_html='<div><table cellpadding="6" cellspacing="0">$d$</table></div>';
+    subrow_html='<table class="table table-bordered table-striped table-condensed table-hover row-details-table">$d$</table>';
 
 var sDT, //sample detail table
     eDT; //event detail table
@@ -130,24 +130,33 @@ var _page = {
       },
       edit: {
         project: function() {
-          $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'projectName', value: $('#_projectSelect:selected').text()}));
-          $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'eventName', value: 'ProjectUpdate'}));
-          $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'jobType', value: 'projectedit'}));
+          utils.addInput('eventDetailPage', 'projectName', $('#_projectSelect:selected').text());
+          utils.addInput('eventDetailPage', 'eventName', 'ProjectUpdate');
+          utils.addInput('eventDetailPage', 'jobType', 'projectedit');
           this.submit('project');
         },
         sampleEvent: function() {
-          var sampleIds = '';
+          var sampleIds = '', eventName = null, eventError = '';
           $('#sampleTableBody input[id^=sampleCB]:checked').each(function(i,v) {
-            sampleIds += v.id.substr(v.id.indexOf('_') + 1) + ',';
+            var info = v.id.substr(v.id.indexOf('_') + 1);
+            sampleIds += info.substring(0, info.indexOf('[')) + ',';
+            var t_eventName = info.substring(info.indexOf('[') + 1, info.indexOf(']'));
+            if(!eventName) {
+              eventName = t_eventName;
+            } else {
+              if(eventName !== t_eventName) {
+                eventError = "Please select ONLY ONE Event type. Current sample selections include: " + eventName + ", " + t_eventName;
+                return;
+              }
+            }
           });
           if(sampleIds.length === 0) {
             utils.error.baloon("Please select sample to load or edit event.");
+          } else if(eventError.length !== 0) {
+            utils.error.baloon(eventError);
           } else {
-            if (!$('input[name="ids"]').length) {
-              $('#eventDetailPage').append($('<input/>').attr({type: 'hidden', name: 'ids'}).val(sampleIds));
-            } else {
-              $('input[name="ids"]').val(sampleIds);
-            }
+            utils.addInput('eventDetailPage', 'ids', sampleIds);
+            utils.addInput('eventDetailPage', 'eventName', eventName.replace('Registration', 'Update'));
             this.submit('sample');
           }
         },
@@ -239,7 +248,7 @@ var _page = {
         all: function() {
           $("#selectAllSamples").attr('checked', true);
           $('#sampleTableBody > tr ').each(function() {
-            $(this).find("td:first > input").attr('checked', true);
+            $(this).find("td:nth-child(2) > input").attr('checked', true);
           });
         }
       },
@@ -247,7 +256,7 @@ var _page = {
         all: function() {
           $("#selectAllSamples").attr('checked', false);
           $('#sampleTableBody > tr ').each(function() {
-            $(this).find("td:first > input").attr('checked', false);
+            $(this).find("td:nth-child(2) > input").attr('checked', false);
           });
         }
       },
@@ -333,12 +342,12 @@ function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
               });
               rtnVal = true;
             } else if(v1 && i1 == 1){  //create dynamic table header based on sample meta attributes
-              var $header = $("#sampleTableHeader tr");
+              /*var $header = $("#sampleTableHeader tr");
               $header.empty();
               headerList = [];
 
               $header.append("<th><input type='checkbox' id='selectAllSamples' onchange='selectSamples();'/></th>")
-                  .append("<th>Sample Name</th>")
+                  .append("<th>ID</th>")
                   .append("<th>Parent</th>")
                   .append("<th>User</th>")
                   .append("<th>Date</th>");
@@ -348,7 +357,7 @@ function gethtmlByType(ajaxType, projectId, sampleId, eventId) {
                   $header.append("<th>" + v2 + "</th>");
                 }
                 headerList.push(v2);
-              });
+              });*/
             } else if(v1 && i1 == 2){  //Assign lookup value/type to global var
               attributeTypeMap = v1;
             }
@@ -420,73 +429,49 @@ function createSampleDataTable(){
         }
       }
       if(sSource!=='') {
+        var resultingHeaders = ["ID", "Parent", "User", "Date"];
+
         $.ajax({
           dataType: 'json',
           type: "POST",
           url: sSource,
           data: aoData,
           success: function(json) {
+            var rows = [];
             if(json && json.aaData) {
-              var rows = [];
               $.each(json.aaData, function(ri,rowData) {
                 var row = [], attributes;
                 row.push(
-                    "<input type='checkbox' id='sampleCB_" + rowData.sample.sampleId + "' class='sampleCB'/>",
-                    rowData.sampleName,
+                    "<span id='rowDetail_openBtn' class='glyphicon glyphicon-plus-sign' aria-hidden='true' style='color:green;cursor: pointer;margin-left: 2px;'></span>",
+                    rowData.sampleName + "<input type='checkbox' class='" + rowData.status + "' style='margin-left:6px;' id='sampleCB_" + rowData.sample.sampleId + "[" + rowData.event + "]'/>",
+                    rowData.event.replace("Registration", ''),
                     rowData.parentSampleName,
                     rowData.actor,
                     rowData.createdOn
                 );
                 if(rowData.attributes) {
-                  for(var i=0; i < headerList.length; i++){
-                    var attributeValue = rowData.attributes[headerList[i]];
-
-                    if(attributeValue && attributeValue.toString().indexOf("downloadfile") > -1 ) {
-                      var id = headerList[i] + '_' + ri;
-
-                      var valArr = attributeValue.toString().split(',');
-                      var valArrLength = valArr.length;
-                      var existingFileField = "", downloadAllButton = "", fileNameList = "", separator = "", fileNameCharCount = 0;
-
-                      for(var j=0; j < valArr.length; j++) {
-                        var fileName = valArr[j].substring(valArr[j].indexOf("_") + 1, valArr[j].indexOf("&"));
-                        if (fileName != "" && !fileName.startsWith("<a href=")) {
-                          existingFileField += "<div id='file-" + id + "-" + j + "'><strong>" + fileName + "</strong><button type='button' class='btn btn-default btn-xs table-tooltip' data-tooltip='Download' style='float: right;margin-left: 2px;' onclick='downloadFile(\"" + fileName + "\",\"" + rowData.sampleName + "\",\"" + headerList[i] + "\");'><img src='images/download_file.png' style='height: 20px;'></button></div><br>";
-
-                          fileNameList += separator + fileName;
-                          fileNameCharCount = (fileName.length > fileNameCharCount) ? fileName.length : fileNameCharCount;
-                          separator = " ";
-                        } else {
-                          valArrLength -= 1;
-                        }
-                      }
-
-                      if(valArrLength > 1) {
-                        downloadAllButton = "<button type='button' class='btn btn-success' onclick='downloadFile(\"DOWNLOADALL\",\"" + rowData.sampleName + "\",\"" + headerList[i] + "\");'>Download All</button>";
-                      }
-
-                      if(valArrLength != 0){
-                        row.push('<button type="button" id="file_' + id + '"  class="btn btn-default btn-xs table-tooltip" data-tooltip="'+ fileNameList +'" style="white-space: pre-line;" value="FILE MANAGEMENT" onclick="showFMPopup(this.id)">File Store</button>' + _html.fm.replace(/\$id\$/g,id).replace(/\$existingFileField\$/g, existingFileField).replace(/\$downloadallbutton\$/g, downloadAllButton));
-                        $("head").append("<style> #file_" + id + ":hover:after {width : " + ((fileNameCharCount + 1) * 7) + "px !important;}</style>");
-                      } else {
-                        row.push("");
-                      }
-
-                    } else {
-                      row.push(attributeValue);
+                  var headers = '', values = '';
+                  $.each(rowData.attributes, function(ai, av) {
+                    if(resultingHeaders.indexOf(ai) < 0) {
+                      resultingHeaders.push(ai);
                     }
-                  }
+                    headers += '<td>' + ai + '</td>';
+                    values += '<td>' + av + '</td>';
+                  });
+                  attributes = '<tr class="even">' + headers + '</tr><tr class="odd">' + values + '</tr>';
                 } else {
                   attributes = '<tr class="odd"><td colspan="6">No Data</td></tr>';
-                  row.push(attributes);
                 }
+                row.push(attributes);
 
                 rows.push(row);
-              })
+              });
+
             }
             json.aaData = rows;
             fnCallback(json);
-
+          },
+          complete: function() {
             $('#sampleTable_filter').parent("div.col-sm-6").attr('class', 'col-sm-8').insertBefore($('#sampleTable_length').parent("div.col-sm-6"));
             $('#sampleTable_length').parent("div.col-sm-6").attr('class', 'col-sm-4').css("text-align", "right")
             $('#sampleTable_filter').css("float", "left")
@@ -508,14 +493,25 @@ function createSampleDataTable(){
                 $("#selectAllSamples")[0].checked = true; //change "select all" checked status to true
               }
             });
+            // add any new attribute names to the global header list to populate dropdown list in the advanced search
+            /*$.each(resultingHeaders, function(i, h) {
+              if(advanceSearch.headerList.indexOf(h) < 0) {
+                advanceSearch.addToHeaderList(h);
+
+                // add the header to existing search dropdowns
+                $("[id^=select_column_]").append($('<option/>').val(h).text(h));
+              }
+            });*/
           }
         });
       }
     },
-    "aaSorting": [[4,'asc']],
+    "aaSorting": [[5,'asc']],
     "bAutoWidth" : false,
     "aoColumnDefs": aoColumns()
   }).fnFilterOnReturn();
+
+  sDT.fnAdjustColumnSizing();
 
   var buttons = new $.fn.dataTable.Buttons(sDT, {
     buttons: [  'copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5', 'colvis' ]
@@ -647,7 +643,7 @@ function addNewFilter(i){
   var $columnFilterSelect = $("<select>", {class:"select_column", id: "select_column_"+i, name:"column_name", 'onchange':'updateOperation(this.value,'+ i + ')'});
   var $columnFilterOperation = $("<select>", {class:"select_operation form-control input-sm", id: "select_operation_"+i, name:"operation"});
 
-  $columnFilterSelect.append($("<option></option>").attr("value", "Sample Name").text("Sample Name"));
+  $columnFilterSelect.append($("<option></option>").attr("value", "Sample Name").text("ID"));
   $columnFilterSelect.append($("<option></option>").attr("value", "Parent").text("Parent"));
   $columnFilterSelect.append($("<option></option>").attr("value", "User").text("User"));
   $columnFilterSelect.append($("<option></option>").attr("value", "Date").text("Date"));
@@ -728,35 +724,7 @@ function triggerSearch(){
 
 function aoColumns() {
   var ao = [];
-  var totalWidth = 410;
-  ao.push({"aTargets":[0], "bSortable": false},
-      {"sWidth": "160px", "aTargets":[1]},
-      {"sWidth": "100px", "aTargets":[2]},
-      {"sWidth": "100px", "aTargets":[3]},
-      {"sWidth": "100px", "aTargets":[4]}
-  );
-  for(var i=0; i<headerList.length; i++){
-    var index = i+4;
-
-    if(headerList[i].length < 10) {
-      ao.push({"sWidth": "100px", "aTargets":[index]});
-      totalWidth+=100;
-    } else if(headerList[i].length < 15){
-      ao.push({"sWidth": "120px", "aTargets":[index]});
-      totalWidth+=120;
-    } else if(headerList[i].length < 20){
-      ao.push({"sWidth": "170px", "aTargets":[index]});
-      totalWidth+=170;
-    } else if(headerList[i].length < 25){
-      ao.push({"sWidth": "200px", "aTargets":[index]});
-      totalWidth+=200;
-    } else{
-      ao.push({"sWidth": "230px", "aTargets":[index]});
-      totalWidth+=230;
-    }
-  }
-
-  $("#sampleTable").css('width', totalWidth);
+  ao.push({"aTargets":[0], "bSortable": false, "sWidth" : "10px"});
   return ao;
 }
 

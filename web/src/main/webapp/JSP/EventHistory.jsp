@@ -113,7 +113,7 @@
                     <tr>
                       <th style="padding-right: 0"><span id="table_openBtn" class="glyphicon glyphicon-plus-sign" aria-hidden="true" style="color:green;cursor: pointer;"></span></th>
                       <th>Event Type</th>
-                      <th>Sample Name</th>
+                      <th>ID</th>
                       <th>Date</th>
                       <th>User</th>
                       <th>Hidden</th>

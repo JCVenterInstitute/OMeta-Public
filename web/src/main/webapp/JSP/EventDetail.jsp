@@ -131,11 +131,20 @@
 
               <!-- sample -->
               <div id="sampleTableDivHeader" style="display: none;">
-                <h2 class="csc-firstHeader middle-header">Sample Details</h2>
+                <h2 class="csc-firstHeader middle-header">Details</h2>
               </div>
               <div id="sampleTableDiv" style="display: none;">
                 <table name="sampleTable" id="sampleTable" class="table table-bordered table-striped table-condensed table-hover">
-                  <thead id="sampleTableHeader"><tr></tr></thead>
+                  <thead id="sampleTableHeader">
+                  <tr>
+                    <th style="width:23px !important;text-align:center"><span id='table_openBtn' class='glyphicon glyphicon-plus-sign' aria-hidden='true' style='color:green;cursor: pointer;margin-left: 2px;'></span></th>
+                    <th class="tableHeaderStyle">ID</th>
+                    <th class="tableHeaderStyle">Event</th>
+                    <th class="tableHeaderStyle">Parent ID</th>
+                    <th class="tableHeaderStyle">User</th>
+                    <th class="tableHeaderStyle">Date</th>
+                  </tr>
+                  </thead>
                   <tbody id="sampleTableBody"/>
                 </table>
                 <div id="buttons"></div>
@@ -184,23 +193,40 @@
 
     //add click listener on row expander
     $('tbody td #rowDetail_openBtn').live('click', function () {
-      var _row = this.parentNode.parentNode, _is_event=(_row.parentNode.id.indexOf('event')>=0), _table=_is_event?eDT:sDT;
-      if(this.src.indexOf('details_close')>=0){
-        this.src = openBtn;
-        _table.fnClose(_row);
-      } else {
-        this.src = closeBtn;
-        _table.fnOpen(_row, subrow_html.replace(/\$d\$/, _table.fnGetData(_row)[(_is_event?6:5)]), '_details');
-        $('td._details').attr('colspan', 7); //fix misalignment issue in chrome by incresing colspan by 1
-        $('td._details>div').css('width', $('#projectTableDiv').width()-90);
-      }
+      if(this.classList.contains(closeBtn)) toggleRow(this,'close')
+      else toggleRow(this,'open')
     });
 
     $('thead #table_openBtn').live('click', function () {
-      var _is_event=this.parentNode.parentNode.parentNode.id.indexOf('event')>=0;
-      $('#'+(_is_event?'eventTable':'sampleTable')+' #rowDetail_openBtn').click();
-      buttonSwitch(this);
+      if(this.classList.contains(closeBtn)){
+        this.classList.remove(closeBtn);
+        this.classList.add(openBtn);
+        this.style.color = "green";
+        $('#sampleTable #rowDetail_openBtn').each(function(){toggleRow(this,'close')});
+      } else {
+        this.classList.remove(openBtn);
+        this.classList.add(closeBtn);
+        this.style.color = "red";
+        $('#sampleTable #rowDetail_openBtn').each(function(){toggleRow(this,'open')});
+      }
     });
+
+    function toggleRow(item, action) {
+      var _row = item.parentNode.parentNode, _is_event=(_row.parentNode.id.indexOf('event')>=0), _table=_is_event?eDT:sDT;
+      if(action == 'open'){
+        item.classList.remove(openBtn);
+        item.classList.add(closeBtn);
+        item.style.color = "red";
+        _table.fnOpen(_row, subrow_html.replace(/\$d\$/, _table.fnGetData(_row)[6]), '_details');
+        $('td._details').attr('colspan', 6); //fix misalignment issue in chrome by incresing colspan by 1
+        $('td._details>div').css('width', $('#statusTableDiv').width()-90);
+      } else {
+        item.classList.remove(closeBtn);
+        item.classList.add(openBtn);
+        item.style.color = "green";
+        _table.fnClose(_row);
+      }
+    }
 
     $('#toggleProjectDetails').live('click', function () {
       $('#projectTableDiv').toggle();

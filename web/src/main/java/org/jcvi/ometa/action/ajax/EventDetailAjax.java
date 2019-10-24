@@ -98,10 +98,11 @@ public class EventDetailAjax extends ActionSupport implements IAjaxAction {
                 List<Sample> samples;
                 Long flexId = (sampleId!=null && sampleId!=0) ? sampleId : projectId;
                 String flexType = (sampleId!=null && sampleId!=0) ? "sample" : "project";
-                String sortCol = iSortCol_0.equals("0") ? "sample"
-                        : iSortCol_0.equals("1") ? "parent"
-                        : iSortCol_0.equals("2") ? "user"
-                        : iSortCol_0.equals("3") ? "date"
+                String sortCol = iSortCol_0.equals("1") ? "sample"
+                        : iSortCol_0.equals("2") ? "event"
+                        : iSortCol_0.equals("3") ? "parent"
+                        : iSortCol_0.equals("4") ? "user"
+                        : iSortCol_0.equals("5") ? "date"
                         : attributeList != null && !attributeList.isEmpty() ? attributeList.get(Integer.parseInt(iSortCol_0) - 4)
                         : null;
 
