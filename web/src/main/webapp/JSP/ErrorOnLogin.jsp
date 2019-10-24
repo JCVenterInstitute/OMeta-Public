@@ -35,19 +35,7 @@
       <div class="row">
         <div class="col-sm-4 col-sm-offset-4">
           <div class="panel panel-primary">
-            <div class="panel-heading">
-              <h3 class="panel-title">Sign In</h3>
-            </div>
             <div class="panel-body">
-              <div class="row">
-                <div class="alert alert-danger" role="alert">
-                  <button type="button" class="close" data-dismiss="alert">
-                    <span aria-hidden="true">&times;</span>
-                    <span class="sr-only">Close</span>
-                  </button>
-                  Login failed. Please check username and password.
-                </div>
-              </div>
               <form method="POST" action="j_security_check" id="loginPage" name="loginPage" role="form">
                 <div class="form-group">
                   <label for="usernameInput">Username</label>
@@ -59,6 +47,13 @@
                 </div>
                 <button id="loginButton" type="submit" class="btn btn-block btn-lg btn-primary">Sign in</button>
                 <hr>
+                <div class="alert alert-danger" role="alert">
+                  <button type="button" class="close" data-dismiss="alert">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                  </button>
+                  Login failed. Please check username and password.
+                </div>
               </form>
             </div>
           </div>
