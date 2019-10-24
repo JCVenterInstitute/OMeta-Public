@@ -132,7 +132,7 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-info" onclick="_utils.downloadTemplate();">Download</button>
+                <button type="button" class="btn btn-primary" onclick="_utils.downloadTemplate();">Download</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
               </div>
             </div>
@@ -176,7 +176,7 @@
                     </div>
                   </div>
                   <div class="col-sm-4">
-                    <button type="button" class="btn btn-info" id="projectPopupBtn" onclick="button.projectPopup();">Display Project Details</button>
+                    <button type="button" class="btn btn-primary" id="projectPopupBtn" onclick="button.projectPopup();">Display Project Details</button>
                   </div>
                 </div>
                 <div class="row form-group">
@@ -316,12 +316,12 @@
                 </div>
 
                 <div id="submitDiv" style="margin:15px 10px 5px 0;width:100%;padding-top: 15px;border-top: 1px solid #eeeeee;">
-                  <input type="button" class="btn btn-success" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to OMETA" disabled="true"/>
-                  <input type="button" class="btn btn-info" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Row" style="display:none;"/>
-                  <input type="button" class="btn btn-info" onclick="javascript:button.remove_event();" id="gridRemoveLineButton" value="Remove Row" style="display:none;"/>
-                  <input type="button" class="btn btn-info" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
-                  <input type="button" class="btn btn-info" onclick="javascript:button.exportSample();" id="exportButton" value="Export Record(s)" style="display:none;"/>
-                  <input type="button" class="btn btn-primary" onclick="javascript:button.clear_form();" value="Clear" />
+                  <input type="button" class="btn btn-primary" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to OMETA" disabled="true"/>
+                  <input type="button" class="btn btn-default" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Row" style="display:none;"/>
+                  <input type="button" class="btn btn-default" onclick="javascript:button.remove_event();" id="gridRemoveLineButton" value="Remove Row" style="display:none;"/>
+                  <input type="button" class="btn btn-default" onclick="javascript:button.template();" id="templateButton" value="Download Template"/>
+                  <input type="button" class="btn btn-default" onclick="javascript:button.exportSample();" id="exportButton" value="Export Record(s)" style="display:none;"/>
+                  <input type="button" class="btn btn-default" onclick="javascript:button.clear_form();" value="Clear" />
                 </div>
               </div>
             </div>
@@ -342,7 +342,7 @@
                   <p>Drag and Drop file in box to upload (Max file size is 2GB) </p>
                   <div id="dropzone" class="well">Drop files here</div>
                   <div class="row row_spacer fileupload-buttonbar">
-                    <input type="button" class="btn btn-success start" id="uploadFilesBtn" style="margin-left:10px;" value="Submit to OMETA"/>
+                    <input type="button" class="btn btn-primary start" id="uploadFilesBtn" style="margin-left:10px;" value="Submit to OMETA"/>
                   </div>
                   <div class="row row_spacer">
                     <div id="progress" style="margin: 10px;">
@@ -609,7 +609,7 @@
         }
       }
       if(valArrLength > 1) {
-        $files.append("<button type='button' class='btn btn-info btn-xs' onclick='downloadFile(\"DOWNLOADALL\",\"sampleName\",\"" + currAttributeName + "\");'>Download All</button>")
+        $files.append("<button type='button' class='btn btn-primary btn-xs' onclick='downloadFile(\"DOWNLOADALL\",\"sampleName\",\"" + currAttributeName + "\");'>Download All</button>")
       }
       if(valArrLength > 0) {
         $files.append("<input type='hidden' name='" + name + ".existingFileName' value='  ' >");

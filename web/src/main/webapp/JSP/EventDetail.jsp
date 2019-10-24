@@ -70,7 +70,7 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-info" onclick="_page.edit.submitExportSample();">Download</button>
+                <button type="button" class="btn btn-primary" onclick="_page.edit.submitExportSample();">Download</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
               </div>
             </div>

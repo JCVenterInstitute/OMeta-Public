@@ -101,7 +101,7 @@
           <div class="form-group">
             <div class="buttons col-sm-3">
               <input type="button" class="btn btn-primary" onclick="javascript:loadActor();" id="loadButton" value="Register"/>
-              <input type="button" class="btn btn-info" onclick="javascript:doClear();" value="Clear" />
+              <input type="button" class="btn btn-default" onclick="javascript:doClear();" value="Clear" />
               <a class="btn btn-default" href="actorRole.action" role="button">Cancel</a>
             </div>
           </div>

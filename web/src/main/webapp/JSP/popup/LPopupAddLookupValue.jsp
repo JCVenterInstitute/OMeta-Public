@@ -63,7 +63,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <input type="button" class="btn btn-info" value="Add" onclick="_popup.add();"/>
+          <input type="button" class="btn btn-primary" value="Add" onclick="_popup.add();"/>
           <button type="button" class="btn btn-default" onclick="$.closePopupLayer('LPopupAddLookupValue');">Close</button>
         </div>
       </div>

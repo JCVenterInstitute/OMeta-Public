@@ -28,7 +28,7 @@ var _html = {
   '<div><table cellpadding="0" cellspacing="0" id="eventInfoTable">' +
   '  <tr><td class="etTD_c" style="text-align:left;float:left;"><strong>$et$</strong></td></tr>' +
   '</table>' +
-  '<div class="btn-xs btn-warning" style="max-width:60%;" title="Add attribute to the event group" id="add_$imgid$">Add Attribute</div></div>',
+  '<div class="btn-xs btn-primary" style="max-width:60%;" title="Add attribute to the event group" id="add_$imgid$">Add Attribute</div></div>',
   etSelect: '<select name="beanList[$cnt$].et" id="et$cnt$">$et_opts$</select>',
   etHidden: '<input type="hidden" name="beanList[$cnt$].et" id="et$cnt$" value="$et$">'
 };

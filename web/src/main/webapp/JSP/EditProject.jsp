@@ -102,7 +102,7 @@
           </div>
           <div class="form-group">
             <div class="buttons col-sm-5">
-              <input type="submit" class="btn btn-success" id="_updateProject" value="Update Project"/>
+              <input type="submit" class="btn btn-primary" id="_updateProject" value="Update Project"/>
               <a class="btn btn-default" href="projectManagement.action" role="button">Back to Project Management</a>
             </div>
           </div>

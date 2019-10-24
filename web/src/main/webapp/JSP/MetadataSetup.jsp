@@ -178,11 +178,11 @@
                   </table>
                 </div>
                 <div id="EMASubmitDiv" style="margin:15px 10px 5px 0;">
-                  <input type="button" class="btn btn-success" onclick="_utils.submit();" id="eventLoadButton" value="Setup Event"/>
+                  <input type="button" class="btn btn-primary" onclick="_utils.submit();" id="eventLoadButton" value="Setup Event"/>
                   <input type="button" class="btn btn-primary" onclick="_utils.add.ema('add');" id="eventAddButton" value="Add Event Meta Attribute"/>
-                  <input type="button" class="btn btn-info" onclick="_utils.popup.attribute('et');" id="newEventButton" value="New Event Type"/>
-                  <input type="button" class="btn btn-info" onclick="_utils.popup.attribute('a');" id="newAttributeButton" value="New Attribute"/>
-                  <input type="button" class="btn btn-info" onclick="_utils.ontology();" id="ontologyButton" value="Ontology"/>
+                  <input type="button" class="btn btn-primary" onclick="_utils.popup.attribute('et');" id="newEventButton" value="New Event Type"/>
+                  <input type="button" class="btn btn-primary" onclick="_utils.popup.attribute('a');" id="newAttributeButton" value="New Attribute"/>
+                  <input type="button" class="btn btn-primary" onclick="_utils.ontology();" id="ontologyButton" value="Ontology"/>
                   <input type="button" class="btn btn-default" onclick="_utils.clean.all();" value="Clear"/>
                 </div>
               </div>

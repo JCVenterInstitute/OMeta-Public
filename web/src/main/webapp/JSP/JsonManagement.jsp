@@ -249,7 +249,7 @@
                       </div>
                     </td>
                     <td>
-                      <a href="generateJson.action" class="btn btn-info">Generate JSON</a>
+                      <a href="generateJson.action" class="btn btn-primary">Generate JSON</a>
                     </td>
                   </tr>
                 </table>

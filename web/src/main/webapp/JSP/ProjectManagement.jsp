@@ -48,7 +48,7 @@
         </div>
 
         <s:form id="editProjectPage" name="editProjectPage" namespace="/" action="editProject" method="post" theme="simple">
-          <input type="button" class="btn btn-success" onclick="window.location.href='projectSetup.action'" id="addNewProject" value="Project Setup" style="display: none;"/>
+          <input type="button" class="btn btn-primary" onclick="window.location.href='projectSetup.action'" id="addNewProject" value="Project Setup" style="display: none;"/>
           <table id="project-information-table" class="table table-bordered table-striped table-condensed table-hover">
             <thead>
             <tr>
@@ -77,9 +77,9 @@
                   </s:iterator>
                 </td>
                 <td>
-                  <input type="button" class="btn btn-xs btn-warning" id="<s:property value="#project.projectId"/>" value="Edit Project" onclick="editProject(this.id);"
+                  <input type="button" class="btn btn-xs btn-default" id="<s:property value="#project.projectId"/>" value="Edit Project" onclick="editProject(this.id);"
                          style="float: left;"/>
-                  <input type="button" class="btn btn-xs btn-info" id="<s:property value="#project.projectName"/>" value="Download Setup" onclick="downloadProjectSetup(this.id);"
+                  <input type="button" class="btn btn-xs btn-default" id="<s:property value="#project.projectName"/>" value="Download Setup" onclick="downloadProjectSetup(this.id);"
                          style="float: right;"/>
                 </td>
               </tr>

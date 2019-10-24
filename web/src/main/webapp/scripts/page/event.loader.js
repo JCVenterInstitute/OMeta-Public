@@ -3,9 +3,9 @@ var _html = {
   '<div class="file-dialog-heading"><h2 style="margin-top: 0px;margin-bottom: 9px;" title="Attach Files:&nbsp;">Attach Files<span style="display:none" class="header-separator">:&nbsp;</span>' +
   '</h2></div><div class="form-body" style="max-height: 364px;position: relative;overflow: auto;padding: 20px;"><fieldset class="fm-fieldset"><legend><span>Select</span></legend>' +
   '<input class="upload-file" id="uploadFile-$id$" multiple="multiple" type="file" name="$lt$upload" style="margin-bottom: 10px;"><div id="dropzone-$id$" class="dropzone" class="well">Drop files here</div><div id="attach-files-$id$">$uploadedFiles$</div>' +
-  '<button type="button" class="btn btn-success" id="attach-file-upload-$id$" style="margin-top: 10px;">UPLOAD</button><img id="loading-$id$" src="images/loading.gif" style="margin: 10px 0 0 10px;width: 24px;display: none;"></fieldset><fieldset class="fm-fieldset" style="width: 660px;margin-top: 5px;"><b>Tip:</b> After uploading or removing the file(s), click “Back to Submit Page”  button and submit the page to compete the changes!</fieldset>' +
+  '<button type="button" class="btn btn-primary" id="attach-file-upload-$id$" style="margin-top: 10px;">UPLOAD</button><img id="loading-$id$" src="images/loading.gif" style="margin: 10px 0 0 10px;width: 24px;display: none;"></fieldset><fieldset class="fm-fieldset" style="width: 660px;margin-top: 5px;"><b>Tip:</b> After uploading or removing the file(s), click “Back to Submit Page”  button and submit the page to compete the changes!</fieldset>' +
   '</div><div class="buttons-container form-footer" style="overflow: visible;min-height: 51px;height: 100%;margin: 0;padding: 10px;"><fieldset class="fm-fieldset" style="width: 600px;"><legend><span>Attachment(s)</span></legend><div id="files-$id$" class="files" style="padding-left:20px;">$existingFileField$</div></fieldset>' +
-  '<div class="buttons" style="float: right"><button type="button" class="btn btn-primary" id="attach-file-done-$id$" style="margin: 10px;" disabled>Back to Submit Page</button><button type="button" class="btn btn-warning" id="attach-file-cancel-$id$" style="margin: 10px;">Cancel</button></div></div></div>'
+  '<div class="buttons" style="float: right"><button type="button" class="btn btn-primary" id="attach-file-done-$id$" style="margin: 10px;" disabled>Back to Submit Page</button><button type="button" class="btn btn-default" id="attach-file-cancel-$id$" style="margin: 10px;">Cancel</button></div></div></div>'
 };
 
 var _utils = {
@@ -681,7 +681,7 @@ var _utils = {
                 }
 
                 if(valArrLength > 1) {
-                  $files.append("<button type='button' class='btn btn-info btn-xs' onclick='downloadFile(\"DOWNLOADALL\",\"" + selectName + "\",\"" + key + "\");'>Download All</button>")
+                  $files.append("<button type='button' class='btn btn-primary btn-xs' onclick='downloadFile(\"DOWNLOADALL\",\"" + selectName + "\",\"" + key + "\");'>Download All</button>")
                 }
 
                 if(valArrLength > 0) {
@@ -1389,7 +1389,7 @@ var button = {
             }
 
             if(valArrLength > 1) {
-              existingFileField += "<button type='button' class='btn btn-info btn-xs' onclick='downloadFile(\"DOWNLOADALL\",\"" + selectName + "\",\"" + av_v.ma.lookupValue.name + "\");'>Download All</button>";
+              existingFileField += "<button type='button' class='btn btn-primary btn-xs' onclick='downloadFile(\"DOWNLOADALL\",\"" + selectName + "\",\"" + av_v.ma.lookupValue.name + "\");'>Download All</button>";
             }
 
             if(valArrLength > 0) {
@@ -1799,7 +1799,7 @@ function increaseNumberInString(value, increase) {
 function confirmBox(action,text,func) {
   var html = '<div style="margin-top: 10px;" id="confirmOverride'+action+'">' +
       '<label class="confirm-text" style="margin-right: 5px;color:#a90329;">'+text+'</label>' +
-      '<button class="yes btn btn-success btn-xs" type="button" style="margin-right:2px">Yes</button><button class="no btn btn-primary btn-xs" type="button">No</button>' +
+      '<button class="yes btn btn-primary btn-xs" type="button" style="margin-right:2px">Yes</button><button class="no btn btn-primary btn-xs" type="button">No</button>' +
       '</div>';
 
   $('#confirmOverride'+action).remove(); //remove if exists
@@ -1844,7 +1844,7 @@ function toBulk() {
         $fileRow.append($('&nbsp;<strong class="error text-danger"/>').text("[Only .csv and .zip files are supported]"));
         data.files.length = 0;
       }
-      var $cancelBtn = $('<button type="button" class="btn btn-xs btn-warning cancel" style="margin-left:15px;" />').text("Cancel").click(function() {
+      var $cancelBtn = $('<button type="button" class="btn btn-xs btn-default cancel" style="margin-left:15px;" />').text("Cancel").click(function() {
         data.abort();
         data.files.length = 0;
         $(this).parent().remove();
@@ -2105,7 +2105,7 @@ function showFMPopup(id){
     $this = $(this);
 
     if($this.attr('id').indexOf("cancel") > -1) {
-      $("#attach-files-" + id + " button.btn-warning").each(function (i, file) {
+      $("#attach-files-" + id + " button.btn-default").each(function (i, file) {
         $this.click();
       });
     }
@@ -2132,7 +2132,7 @@ function initializeFileManagementFunctions(){
           data.files.length = 0;
         }
 
-        var $cancelBtn = $('<button type="button" class="btn btn-xs btn-warning cancel" style="margin-left:15px;" />').text("Cancel").click(function() {
+        var $cancelBtn = $('<button type="button" class="btn btn-xs btn-default cancel" style="margin-left:15px;" />').text("Cancel").click(function() {
           data.abort();
           data.files.length = 0;
           $(this).parent().remove();

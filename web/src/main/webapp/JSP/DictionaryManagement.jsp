@@ -74,7 +74,7 @@
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-info" onclick="_popup.add();">Add</button>
+                <button type="button" class="btn btn-primary" onclick="_popup.add();">Add</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
               </div>
             </div>
@@ -106,7 +106,7 @@
         </div>
 
         <s:form id="infoDictionaryPage" name="infoDictionaryPage" theme="simple">
-          <input type="button" class="btn btn-success" onclick="newDictionaryPopup()" id="newDictionaryButton" value="New Dictionary"/>
+          <input type="button" class="btn btn-primary" onclick="newDictionaryPopup()" id="newDictionaryButton" value="New Dictionary"/>
           <table id="dictionary-information-table" class="table table-bordered table-striped table-condensed table-hover">
             <thead>
             <tr>
@@ -128,7 +128,7 @@
                 <td><label id="<s:property value="#dictionary.dictionaryId"/>"><s:if test="%{#dictionary.isActive==1}">Yes</s:if><s:else>No</s:else></label></td>
                 <td><label id="<s:property value="#dictionary.dictionaryId"/>">
                   <s:if test="%{#dictionary.isActive == 1}">
-                    <input type="button" class="btn btn-xs btn-warning" id="<s:property value="#dictionary.dictionaryId"/>" value="Deactivate"
+                    <input type="button" class="btn btn-xs btn-default" id="<s:property value="#dictionary.dictionaryId"/>" value="Deactivate"
                            onclick="activateDictionary(false,this.id);"/>
                   </s:if>
                   <s:else>

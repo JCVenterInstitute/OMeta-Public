@@ -40,8 +40,8 @@
           </div>
           <div id="mainContent">
             <div id="mainDiv">
-              <input type="button" class="btn btn-info" onclick="popup();" id="addRole" value="Add Actor Role" style="display: none;">
-              <a class="btn btn-success" href="addActor.action" role="button" id="addNewActor" style="display: none;margin-left: 0.5em;">Add New Actor</a>
+              <input type="button" class="btn btn-primary" onclick="popup();" id="addRole" value="Add Actor Role" style="display: none;">
+              <a class="btn btn-primary" href="addActor.action" role="button" id="addNewActor" style="display: none;margin-left: 0.5em;">Add New Actor</a>
               <table id="userManagementTable" class="table table-bordered table-striped table-condensed table-hover">
                 <thead>
                 <tr>
@@ -59,7 +59,7 @@
                     <td class="actorName"><s:property value="#actor.firstName"/> <s:property value="#actor.lastName"/></td>
                     <td class="actorEmail"><s:property value="#actor.email"/></td>
                     <td class="actorGroup" id="<s:property value="#actor.loginId" />"></td>
-                    <td class=""><input type="button" class="btn btn-warning" id="<s:property value="#actor.loginId"/>" value="Edit Actor" onclick="editActor(this.id);"/></td>
+                    <td class=""><input type="button" class="btn btn-default" id="<s:property value="#actor.loginId"/>" value="Edit Actor" onclick="editActor(this.id);"/></td>
                   </tr>
                 </s:iterator>
                 </tbody>

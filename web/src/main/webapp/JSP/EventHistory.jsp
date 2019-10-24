@@ -542,7 +542,7 @@
                         }
 
                         if(valArrLength > 1) {
-                          downloadAllButton = "<button type='button' class='btn btn-success' onclick='downloadFile(\"DOWNLOADALL\",\"" + rowData.sampleName + "\",\"" + ai + "\");'>Download All</button>";
+                          downloadAllButton = "<button type='button' class='btn btn-primary' onclick='downloadFile(\"DOWNLOADALL\",\"" + rowData.sampleName + "\",\"" + ai + "\");'>Download All</button>";
                         }
 
                         values += '<td><button type="button" id="file_' + id + '"  class="btn btn-default btn-xs table-tooltip" data-tooltip="'+ fileNameList +'" style="white-space: pre-line;" value="FILE MANAGEMENT" onclick="showFMPopup(this.id)">File Store</button>' + _html.fm.replace(/\$id\$/g,id).replace(/\$existingFileField\$/g, existingFileField).replace(/\$downloadallbutton\$/g, downloadAllButton) + '</td>';

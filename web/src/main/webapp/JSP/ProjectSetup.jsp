@@ -126,8 +126,8 @@
           </div>
           <div class="form-group">
             <div class="buttons col-sm-5">
-              <input type="button" class="btn btn-success" onclick="loadProject();" id="projectLoadButton" value="Create Project"/>
-              <input type="button" class="btn btn-info" onclick="doClear();" value="Clear"/>
+              <input type="button" class="btn btn-primary" onclick="loadProject();" id="projectLoadButton" value="Create Project"/>
+              <input type="button" class="btn btn-default" onclick="doClear();" value="Clear"/>
               <a class="btn btn-default" href="projectManagement.action" role="button">Back to Project Management</a>
             </div>
           </div>
