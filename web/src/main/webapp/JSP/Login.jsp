@@ -35,9 +35,6 @@
       <div class="row">
         <div class="col-sm-4 col-sm-offset-4">
           <div class="panel panel-primary">
-            <div class="panel-heading">
-              <h3 class="panel-title">Sign In</h3>
-            </div>
             <div class="panel-body">
               <form method="POST" action="j_security_check" id="loginPage" name="loginPage" role="form">
                 <div class="form-group">
@@ -49,7 +46,6 @@
                   <input type="password" class="form-control" name="j_password" id="password" placeholder="Password">
                 </div>
                 <button id="loginButton" type="submit" class="btn btn-block btn-lg btn-primary">Sign in</button>
-                <hr>
               </form>
             </div>
           </div>
