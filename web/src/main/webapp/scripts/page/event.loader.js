@@ -220,7 +220,7 @@ var _utils = {
         g_gridLineCount=0;
         g_avDic={};
 
-        var requireImgHtml = '<img class="attributeIcon" src="images/icon/info_r.png"/>';
+        var tooltipSpan = '<span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="color: #1aac1a;"></span>';
         var autofillButtonHtml = '<button type="button" class="btn btn-default btn-xs autofill-title" data-placement="left" data-html="true" id="all-$a$" onClick="dataAutofill(this.id)" title="Autofill column"><img src="images/autofill.png" style="width: 24px;height: 22px;"></i></button>' +
             '<button type="button" id="sequence-$b$" onclick="dataAutofill(this.id)" data-placement="left" data-html="true" class="btn btn-default btn-xs autofill-title" title="Autofill column in sequence"><img src="images/autofill_sequence.png" style="width: 24px;height: 22px;"></button>' +
             '<button type="button" class="btn btn-default btn-xs autofill-title" data-placement="left" data-html="true" id="clear-$c$" onClick="dataAutofill(this.id)" title="Remove data in column"><img src="images/autofill_clear.png" style="width: 24px;height: 22px;"></i></button>';
@@ -259,8 +259,8 @@ var _utils = {
         } else {
           if(utils.checkPR(en)) {
             $gridHeaders.append(
-                $('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>Project Name<br/>', requireImgHtml),
-                $('<th/>').addClass('resizable-header').append('Public<br/>', requireImgHtml)
+                $('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>Project Name<br/>', tooltipSpan),
+                $('<th/>').addClass('resizable-header').append('Public<br/>', tooltipSpan)
             );
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '145').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
             $autofillLine.append($('<td/>')); // empty for Public
@@ -278,15 +278,15 @@ var _utils = {
             var isRequired = _ma.requiredDB;
             var isDictionary = _ma.dictionary;
             var hasOntology = (_ma.ontology && _ma.ontology !== '');
-            var $attributeTr = $('<tr/>');
+            var $attributeTr = $('<div class="form-group"/>');
 
             $attributeTr.append(//icons and hover over information
-                $('<td align="right"/>').attr('data-toggle', (isDesc ? 'tooltip' : '')).attr('data-container','body').attr('data-html','true').attr('data-placement','right').attr(
+                $('<label/>').attr('data-toggle', (isDesc ? 'tooltip' : '')).attr('data-container','body').attr('data-html','true').attr('data-placement','right').attr(
                     'data-original-title', (isDesc ? _ma.desc : '')).append(
                     isRequired ? '<small class="text-danger">*</small>' : '',
                     (_ma.label != null && _ma.label !== '' ?_ma.label:_ma.lookupValue.name),
                     "&nbsp;",
-                    isDesc ? requireImgHtml : ''
+                    isDesc ? tooltipSpan : ''
                     , (hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
                 )
             );
@@ -352,7 +352,7 @@ var _utils = {
                 }
               }
 
-              inputElement += '<select id="'  + (isRequired ? 'req_' : '') + 'select_$id$" name="$lt$attributeValue" style="width:200px;" ' + (isMulti || isRadio ? 'multiple="multiple"':'class="form-control"') + '>' + options + '</select>';
+              inputElement += '<select id="'  + (isRequired ? 'req_' : '') + 'select_$id$" name="$lt$attributeValue" style="' + (isMulti || isRadio ? 'width:200px;" multiple="multiple"':'min-width:200px;" class="form-control"') + '>' + options + '</select>';
 
               $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '130').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
             } else {
@@ -365,7 +365,7 @@ var _utils = {
               } else if(maDatatype ==='date') {
                 inputElement +=
                     '<div class="input-group col-sm-5">'+
-                    '  <input type="text" id="' + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" class="form-control" style="min-width:160px;"/>' +
+                    '  <input type="text" id="' + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" class="form-control" style="min-width:160px;" autocomplete="off"/>' +
                     '  <label for="' + maDatatype + '_$id$" class="input-group-addon"><span><i class="fa fa-calendar"></i></span></label>' +
                     '</div>';
 
@@ -385,7 +385,7 @@ var _utils = {
                     .attr('title', (isDesc ? _ma.desc : '')).attr('data-toggle','tooltip').attr('data-placement','top').attr('data-html', 'true').append(
                     isRequired ? '<small class="text-danger">*</small>' : '',
                     (_ma.label ? _ma.label : _ma.lookupValue.name) + '<br/>',
-                    isDesc ? requireImgHtml : ''
+                    isDesc ? tooltipSpan : ''
                     ,(hasOntology ? '<img class="attributeIcon" src="images/icon/ontology.png"/>' : '')
                     /*,(isSelect || isText ? '<img class="attributeIcon" src="images/icon/resize_icon.gif" style="position:absolute;bottom:0;right:0;"/>':'')*/
                 )
@@ -402,7 +402,7 @@ var _utils = {
               'valueLength' :_ma.valueLength
             };
 
-            var $inputNode = $('<td/>').append(inputElement.replace(/\$existingFileField\$/g, "").replace(/\$uploadedFiles\$/g, "")
+            var $inputNode = $('<div/>').append(inputElement.replace(/\$existingFileField\$/g, "").replace(/\$uploadedFiles\$/g, "")
                 .replace(/\$val\$/g, '').replace(/\$id\$/g, 'f_' + count).replace(/\$lt\$/g,"beanList["+count+"]."));
             utils.smartDatePicker($inputNode);
 
@@ -839,7 +839,7 @@ var button = {
 
     if(loadType === 'form') { //check is form is empty
       var hasAllReq = true, reqErrorMsg = ""; // require field check
-      var $formFields = $('#attributeInputDiv > tr > td');
+      var $formFields = $('#attributeInputDiv > div.form-group > div');
       $formFields.find('[id^="req_"]:not(:hidden), [id^="req_select_"]').each(function(i, v) {
         var $node = $(v);
         if($node.val() === null || $node.val() === '') {

@@ -156,14 +156,6 @@
             <input type="hidden" value="<s:property value="%{gridList.size}"/>" id="gridListSize" />
             <div id="interactiveDiv">
               <div id="statusTableDiv">
-                <div id="interactive-submission-group" class="form-group">
-                  <div class="btn-group btn-group-justified" data-toggle="buttons">
-                    <label class="btn btn-default active"><input type="radio" name="loadType" value="form">Single Record</label>
-                    <label class="btn btn-default"><input type="radio" name="loadType" value="grid">Multiple Records (Web Form)</label>
-                    <label class="btn btn-default"><input type="radio" name="loadType" value="file">Multiple Records (Excel Template)</label>
-                    <label class="btn btn-default"><input type="radio" name="loadType" value="bulk">Bulk Submission</label>
-                  </div>
-                </div>
                 <div class="row form-group">
                   <div class="col-sm-2">
                     <label class="control-label">Project Name</label>
@@ -189,11 +181,17 @@
                     </div>
                   </div>
                 </div>
-                <div id="form-sample-name" class="row form-group" style="display: none;">
-                  <div class="col-sm-2">
-                    <label class="control-label">ID</label>
+                <div id="interactive-submission-group" class="form-group">
+                  <div class="btn-group btn-group-justified" data-toggle="buttons">
+                    <label class="btn btn-default active"><input type="radio" name="loadType" value="form">Single Record</label>
+                    <label class="btn btn-default"><input type="radio" name="loadType" value="grid">Multiple Records (Web Form)</label>
+                    <label class="btn btn-default"><input type="radio" name="loadType" value="file">Multiple Records (Excel Template)</label>
+                    <label class="btn btn-default"><input type="radio" name="loadType" value="bulk">Bulk Submission</label>
                   </div>
-                  <div class="col-sm-4">
+                </div>
+                <div id="form-sample-name" class="col-sm-6" style="display: none;">
+                  <div class="form-group">
+                    <label for="sampleSelect">ID</label>
                     <div class="input-group">
                       <s:textfield id="sampleSelect" placeholder="Select by ID" name="sampleName"
                                    required="true" cssClass="form-control sample-element" disabled="true"/>
@@ -227,36 +225,27 @@
                   </div>
                 </div>
 
-                <div id="sampleDetailInputDiv" style="display:none;">
-                  <div class="middle-header">
-                    <h4>Record Information</h4>
-                  </div>
+                <div id="sampleDetailInputDiv" style="display:none;" class="col-sm-6">
                   <div id="sampleDetailSubDiv">
-                    <div class="row form-group">
-                      <div class="col-sm-2">ID</div>
-                      <div class="col-sm-4">
-                        <input type="text" id="_sampleName" name="loadingSample.sampleName" class="form-control"/>
+                    <div class="form-group">
+                      <label for="_sampleName">ID</label>
+                      <input type="text" id="_sampleName" name="loadingSample.sampleName" class="form-control"/>
+                    </div>
+                    <div class="form-group" id="parentSampleRow">
+                      <label for="parentSelect">Parent ID</label>
+                      <div class="input-group">
+                        <s:textfield id="parentSelect"  name="loadingSample.parentSampleName"  required="true" cssClass="form-control"/>
+                        <span class="input-group-btn" id="basic-addon2">
+                          <button type="button" class="btn btn-primary" id="searchParentSample" onclick="searchSamples(this.id);">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                          </button>
+                        </span>
                       </div>
                     </div>
-                    <div class="row form-group" id="parentSampleRow" style="display: none;">
-                      <div class="col-sm-2">Parent ID</div>
-                      <div class="col-sm-4">
-                        <div class="input-group">
-                          <s:textfield id="parentSelect"  name="loadingSample.parentSampleName"  required="true" cssClass="form-control"/>
-                          <span class="input-group-btn" id="basic-addon2">
-                            <button type="button" class="btn btn-primary" id="searchParentSample" onclick="searchSamples(this.id);">
-                              <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-                            </button>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row form-group" id="publicSampleRow" style="display: none;">
-                      <div class="col-sm-2">Public</div>
-                      <div class="col-sm-2">
-                        <div class="input-group">
-                          <s:select id="_isSamplePublic" list="#{0:'No', 1:'Yes'}" name="loadingSample.isPublic" required="true" />
-                        </div>
+                    <div class="form-group" id="publicSampleRow">
+                      <label for="_isSamplePublic">Public</label>
+                      <div class="input-group">
+                        <s:select id="_isSamplePublic" list="#{0:'No', 1:'Yes'}" name="loadingSample.isPublic" required="true" />
                       </div>
                     </div>
                   </div>
@@ -270,7 +259,7 @@
                            data-placement="top" data-original-title="Toggle Autofill" style="float: left;margin-right: 10px;margin-top: -3px;"/>
                   </div>
                 </div>
-                <div id="attributeInputDiv" style="clear:both;display:none;">
+                <div id="attributeInputDiv" style="clear:both;display:none;" class="col-sm-6">
                   <s:if test="beanList != null && beanList.size() > 0">
                     <table>
                       <s:iterator value="beanList" var="attrName" status="stat">
@@ -315,7 +304,7 @@
                   </table>
                 </div>
 
-                <div id="submitDiv" style="margin:15px 10px 5px 0;width:100%;padding-top: 15px;border-top: 1px solid #eeeeee;">
+                <div id="submitDiv" class="col-sm-6" style="margin:15px 10px 5px 0;width:100%;padding-top: 15px;border-top: 1px solid #eeeeee;">
                   <input type="button" class="btn btn-primary" onclick="javascript:button.submit('submit');" id="submitButton" value="Submit to OMETA" disabled="true"/>
                   <input type="button" class="btn btn-default" onclick="javascript:button.add_event();" id="gridAddLineButton" value="Add Row" style="display:none;"/>
                   <input type="button" class="btn btn-default" onclick="javascript:button.remove_event();" id="gridRemoveLineButton" value="Remove Row" style="display:none;"/>
@@ -448,7 +437,8 @@
           $('#sampleSelect, #searchSample').prop("disabled", true);
           $('#form-sample-name').hide();
         } else {
-          $('#sampleSelect, #searchSample').prop("disabled", false);$('#form-sample-name').show();
+          $('#sampleSelect, #searchSample').prop("disabled", false);
+          if(utils.getEventName()) $('#form-sample-name').show();
         }
         _utils.showPS();
       }

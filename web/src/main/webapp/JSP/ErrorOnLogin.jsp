@@ -39,11 +39,11 @@
               <form method="POST" action="j_security_check" id="loginPage" name="loginPage" role="form">
                 <div class="form-group">
                   <label for="usernameInput">Username</label>
-                  <input type="text" class="form-control" name="j_username" placeholder="Enter username">
+                  <input type="text" class="form-control" name="j_username" placeholder="Enter username" id="usernameInput">
                 </div>
                 <div class="form-group">
                   <label for="passwordInput">Password</label>
-                  <input type="password" class="form-control" name="j_password" id="password" placeholder="Password">
+                  <input type="password" class="form-control" name="j_password" id="password" placeholder="Password" id="passwordInput">
                 </div>
                 <button id="loginButton" type="submit" class="btn btn-block btn-lg btn-primary">Sign in</button>
                 <hr>

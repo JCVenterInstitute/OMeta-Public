@@ -38,11 +38,11 @@
             <div class="panel-body">
               <form method="POST" action="j_security_check" id="loginPage" name="loginPage" role="form">
                 <div class="form-group">
-                  <label for="usernameInput">Username</label>
-                  <input type="text" class="form-control" name="j_username" placeholder="Enter username">
+                  <label for="username">Username</label>
+                  <input type="text" class="form-control" name="j_username" placeholder="Enter username" id="username">
                 </div>
                 <div class="form-group">
-                  <label for="passwordInput">Password</label>
+                  <label for="password">Password</label>
                   <input type="password" class="form-control" name="j_password" id="password" placeholder="Password">
                 </div>
                 <button id="loginButton" type="submit" class="btn btn-block btn-lg btn-primary">Sign in</button>
