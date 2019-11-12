@@ -50,6 +50,8 @@ public class SecurityDAO extends HibernateDAO {
     private static final String USERNAME_PARAM = "userName";
     private static final String LIMIT_PARAM = "limit";
 
+    private static final String REPLACE_USER_JOIN_SQL = "{user_join}";
+
     private static final String VIEW_PROJECT_GROUP_FIELD = "P.projet_view_group_id";
     private static final String EDIT_PROJECT_GROUP_FIELD = "P.projet_edit_group_id";
 
@@ -97,16 +99,19 @@ public class SecurityDAO extends HibernateDAO {
 
     private static final String LATEST_AUTHORIZED_FOR_USER_SQL_QUERY =
             "select P.*, sa.sampla_create_date, sa.sampla_modified_date from dod_ometa.project P" +
-                    " join dod_ometa.sample_attribute sa on sa.sampla_projet_id = P.projet_id" +
-                    " join dod_ometa.actor a on a.actor_id = sa.sampla_actor_modified_by" +
+                    " join dod_ometa.sample_attribute sa on sa.sampla_projet_id = P.projet_id " +
+                    REPLACE_USER_JOIN_SQL +
+                    " group by P.projet_name" +
+                    " order by GREATEST(sa.sampla_modified_date, sa.sampla_create_date) desc" +
+                    " limit :" + LIMIT_PARAM;
+    
+    private static final String USER_SPECIFIC_JOIN_SQL_QUERY =
+            " join dod_ometa.actor a on a.actor_id = sa.sampla_actor_modified_by" +
                     " where a.actor_username =:" + USERNAME_PARAM +
                     " and (" + PROJ_GRP_SUBST_STR + " is null " +
                     "    or " + PROJ_GRP_SUBST_STR + " in (" +
                     "    select actgrp_group_id from actor a, actor_group ag where a.actor_username =:" + USERNAME_PARAM + " and a.actor_id = ag.actgrp_actor_id)" +
-                    "    )" +
-                    " group by P.projet_name" +
-                    " order by GREATEST(sa.sampla_modified_date, sa.sampla_create_date) desc" +
-                    " limit :" + LIMIT_PARAM;
+                    "    )" ;
 
     //-------------------------------SAMPLE SECTION
     private static final String SECURED_SAMPLES_SQL_QUERY =
@@ -343,16 +348,23 @@ public class SecurityDAO extends HibernateDAO {
 
         String queryStr = LATEST_AUTHORIZED_FOR_USER_SQL_QUERY;
 
-        if ( accessLevel == AccessLevel.View  ) {
-            queryStr = queryStr.replace( PROJ_GRP_SUBST_STR, VIEW_PROJECT_GROUP_FIELD );
-        }
+        boolean isQueryByUser = (username != null && !username.equals(""));
+
+        if(!isQueryByUser)
+            queryStr = queryStr.replace(REPLACE_USER_JOIN_SQL, "");
         else {
-            queryStr = queryStr.replace( PROJ_GRP_SUBST_STR, EDIT_PROJECT_GROUP_FIELD );
+            queryStr = queryStr.replace(REPLACE_USER_JOIN_SQL, USER_SPECIFIC_JOIN_SQL_QUERY);
+
+            if ( accessLevel == AccessLevel.View  )
+                queryStr = queryStr.replace( PROJ_GRP_SUBST_STR, VIEW_PROJECT_GROUP_FIELD );
+            else
+                queryStr = queryStr.replace( PROJ_GRP_SUBST_STR, EDIT_PROJECT_GROUP_FIELD );
         }
 
         NativeQuery query = session.createNativeQuery( queryStr );
         String queryUsername = username == null ? UNLOGGED_IN_USER : username;
-        query.setParameter( USERNAME_PARAM, queryUsername );
+        if(isQueryByUser)
+            query.setParameter( USERNAME_PARAM, queryUsername );
         query.setParameter( LIMIT_PARAM, size);
         query.addEntity("P", Project.class);
         List<Project> rtnVal = query.list();

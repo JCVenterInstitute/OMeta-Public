@@ -22,19 +22,27 @@
 <!doctype html>
 <%@ taglib uri="/struts-tags" prefix="s" %>
 <head>
-  <jsp:include page="header.jsp" />
+  <jsp:include page="header.jsp"/>
+  <style>
+    polyline {
+      opacity: .3;
+      stroke: black;
+      stroke-width: 2px;
+      fill: none;
+    }
+  </style>
 
 </head>
 
 <body class="smart-style-2">
 <div id="container">
-  <jsp:include page="top.jsp" />
+  <jsp:include page="top.jsp"/>
   <!-- Modal -->
   <div class="modal fade" id="project-details" role="dialog">
     <div class="modal-dialog">
 
       <!-- Modal content-->
-      <div class="modal-content" >
+      <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title"><i class="fa fa-angle-right"></i> <strong></strong></h4>
@@ -53,37 +61,40 @@
   <section id="main-content">
     <section class="wrapper">
       <s:iterator value="projectMapList" var="projectMap" status="status">
-        <s:if test="#status.index == 0 or #status.index % 4 == 0">
-          <s:if test="#status.index != 0"></div></s:if><div class="row mt">
-        </s:if>
-          <div class="showback col-lg-3 col-md-3 col-sm-6">
-            <h3><i class="fa fa-angle-right"></i> <strong>Project: </strong><s:property value="#projectMap.ProjectName" />
-              <span data-toggle="modal" data-target="#project-details"><i class="fa fa-info-circle" title="Click for project details." data-toggle="tooltip" data-placement="right"
-                 onclick="getProjectInfo(<s:property value="#projectMap.ProjectId" />);"></i></span>
-            </h3>
+      <s:if test="#status.index == 0 or #status.index % 2 == 0">
+  <s:if test="#status.index != 0"></div>
+</s:if>
+<div class="row mt">
+  </s:if>
+  <div class="showback col-lg-6 col-md-6">
+    <h3><i class="fa fa-angle-right"></i> <strong>Project: </strong><s:property value="#projectMap.ProjectName"/>
+      <span data-toggle="modal" data-target="#project-details"><i class="fa fa-info-circle" title="Click for project details." data-toggle="tooltip" data-placement="right"
+                                                                  onclick="getProjectInfo(<s:property value="#projectMap.ProjectId"/>);"></i></span>
+    </h3>
 
-            <div class="project-panel pn-lg">
-              <div class="project-panel-header">
-                <h5>SAMPLE STATUS</h5>
-              </div>
+    <div class="project-panel pn-lg">
+      <div class="project-panel-header">
+        <h5>SPECIMEN STATUS</h5>
+      </div>
 
-              <div id="sample-donut-<s:property value="#status.index" />" class="graph"></div>
-              <s:iterator value="#projectMap.sampleInfo" var="sample">
-                <s:hidden class="sample-info-%{#status.index}" name="%{#sample[1]}" value="%{#sample[0]}" />
-              </s:iterator>
-            </div>
-          </div>
-        <s:if test="#status.last"></div></s:if>
+      <div id="sample-donut-<s:property value="#status.index" />" class="graph"></div>
+      <s:iterator value="#projectMap.sampleInfo" var="sample">
+        <s:hidden class="sample-info-%{#status.index}" name="%{#sample[1]}" value="%{#sample[0]}"/>
       </s:iterator>
-    </section>
-    <! --/wrapper -->
-  </section>
+    </div>
+  </div>
+  <s:if test="#status.last"></div>
+</s:if>
+</s:iterator>
+</section>
+<! --/wrapper -->
+</section>
 
 </div>
-<jsp:include page="../html/footer.html" />
+<jsp:include page="../html/footer.html"/>
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script>
-  $(document).ready(function() {
+  $(document).ready(function () {
     $('.navbar-nav li').removeClass('active');
     $('.navbar-nav > li:first-child').addClass('active');
 
@@ -91,17 +102,19 @@
       container: 'body'
     });
 
-    $( ".graph" ).each(function(index) {
+    $(".graph").each(function (index) {
       var id = $(this).attr('id');
 
       var dataset = [], domainSource = [], colorSource = [];
       $('.sample-info-' + index).each(function () {
         var name = $(this).attr('name');
         var val = $(this).val()
-        var color = (name == 'Completed') ? 'green' : (name == 'Pending') ? 'orange' : (name == 'Submitted') ? 'blue' : (name == 'Deprecated') ? 'red' : 'brown';
+        var color = (name == 'Hospital - collection') ? '#98abc5' : (name == 'Hospital - shipped to ISR') ? '#8a89a6' : (name == 'ISR - received') ? '#7b6888'
+            : (name == 'ISR - extraction') ? '#6b486b' : (name == 'ISR - shipped to JCVI') ? '#a05d56' : (name == 'JCVI - received') ? '#d0743c' : (name == 'JCVI - library') ? '#ff8c00'
+                : (name == 'JCVI - sequencing') ? '#ff9842' : (name == 'JCVI - analysis') ? '#ff571c' : '#ff8c00';
 
-        name += ' - ' + val;
-        dataset.push({name: name, value: val, percent: '' });
+        name += ' (' + val + ')';
+        dataset.push({label: name, value: val, percent: ''});
         domainSource.push(name);
         colorSource.push(color);
       });
@@ -110,111 +123,158 @@
         return d.value;
       });
 
-      for(i = 0; i < dataset.length; i++) {
+      for (i = 0; i < dataset.length; i++) {
         dataset[i].percent = parseInt((dataset[i].value / total).toFixed(2) * 100);
       }
 
-      var pie=d3.layout.pie()
-          .value(function(d){return d.percent})
-          .sort(null)
-          .padAngle(.03);
+      var width = 700,
+          height = 250,
+          radius = Math.min(width, height) / 2;
 
-      var w=250,h=250,outerRadius=w/2,innerRadius=100;
+      var svg = d3.select('#' + id)
+          .append("svg")
+          .attr({
+            width:width,
+            height:height,
+            class:'shadow'
+          })
+          .append("g");
+
+      svg.append("g")
+          .attr("class", "slices");
+      svg.append("g")
+          .attr("class", "labels");
+      svg.append("g")
+          .attr("class", "lines");
+
+      var pie = d3.layout.pie()
+          .value(function (d) {
+            return d.percent
+          })
+          .sort(null);
+
+      var arc = d3.svg.arc()
+          .outerRadius(radius * 0.8)
+          .innerRadius(radius * 0.4);
+
+      var outerArc = d3.svg.arc()
+          .innerRadius(radius * 0.9)
+          .outerRadius(radius * 0.9);
+
+      svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+      var key = function (d) {
+        return d.data.label;
+      };
 
       var color = d3.scale.ordinal()
           .domain(domainSource)
           .range(colorSource);
 
-      var arc=d3.svg.arc()
-          .outerRadius(outerRadius)
-          .innerRadius(innerRadius);
+      var slice = svg.select(".slices").selectAll("path.slice")
+          .data(pie(dataset), key);
 
-      var svg=d3.select('#'+id)
-          .append("svg")
-          .attr({
-            width:w,
-            height:h,
-            class:'shadow'
-          }).append('g')
-          .attr({
-            transform:'translate('+w/2+','+h/2+')'
-          });
-      var path=svg.selectAll('path')
-          .data(pie(dataset))
-          .enter()
-          .append('path')
-          .attr({
-            d:arc,
-            fill:function(d,i){
-              return color(d.data.name);
-            }
-          });
+      slice.enter()
+          .insert("path")
+          .style("fill", function (d) {
+            return color(d.data.label);
+          })
+          .attr("class", "slice");
 
-      path.transition()
+      slice.transition()
           .duration(1000)
-          .attrTween('d', function(d) {
-            var interpolate = d3.interpolate({startAngle: 0, endAngle: 0}, d);
-            return function(t) {
+          .attrTween('d', function (d) {
+            this._current = this._current || d;
+            var interpolate = d3.interpolate(this._current, d);
+            this._current = interpolate(0);
+            return function (t) {
               return arc(interpolate(t));
             };
           });
 
+      slice.exit().remove();
 
-      var restOfTheData=function(){
-        var text=svg.selectAll('text')
-            .data(pie(dataset))
-            .enter()
-            .append("text")
-            .transition()
-            .duration(200)
-            .attr("transform", function (d) {
-              return "translate(" + arc.centroid(d) + ")";
-            })
-            .attr("dy", ".4em")
-            .attr("text-anchor", "middle")
-            .text(function(d){
-              return d.data.percent+"%";
-            })
-            .style({
-              fill:'#fff',
-              'font-size':'10px'
-            });
 
-        var legendRectSize=20;
-        var legendSpacing=7;
-        var legendHeight=legendRectSize+legendSpacing;
+      // Append percent info
+      svg.selectAll('text')
+          .data(pie(dataset), key)
+          .enter()
+          .append("text")
+          .transition()
+          .duration(1000)
+          .attr("transform", function (d) {
+            return "translate(" + arc.centroid(d) + ")";
+          })
+          .attr("dy", ".4em")
+          .attr("text-anchor", "middle")
+          .text(function (d) {
+            return d.data.percent + "%";
+          })
+          .style({
+            fill: '#fff',
+            'font-size': '10px'
+          });
 
-        var legend=svg.selectAll('.legend')
-            .data(color.domain())
-            .enter()
-            .append('g')
-            .attr({
-              class:'legend',
-              transform:function(d,i){
-                //Just a calculation for x & y position
-                return 'translate(-60,' + ((i*legendHeight)-65) + ')';
-              }
-            });
-        legend.append('rect')
-            .attr({
-              width:legendRectSize,
-              height:legendRectSize,
-              rx:20,
-              ry:20
-            })
-            .style({fill:color,stroke:color});
+      //Append text for each slice
+      var text = svg.select(".labels").selectAll("text")
+          .data(pie(dataset), key);
 
-        legend.append('text')
-            .attr({
-              x:30,
-              y:15
-            })
-            .text(function(d){
-              return d;
-            }).style({fill:'#929DAF', 'font-size':'14px'});
-      };
+      text.enter()
+          .append("text")
+          .attr("dy", ".35em")
+          .text(function (d) {
+            return d.data.label;
+          });
 
-      setTimeout(restOfTheData,1000);
+      function midAngle(d) {
+        return d.startAngle + (d.endAngle - d.startAngle) / 2;
+      }
+
+      text.transition().duration(1000)
+          .attrTween("transform", function (d) {
+            this._current = this._current || d;
+            var interpolate = d3.interpolate(this._current, d);
+            this._current = interpolate(0);
+            return function (t) {
+              var d2 = interpolate(t);
+              var pos = outerArc.centroid(d2);
+              pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+              return "translate(" + pos + ")";
+            };
+          })
+          .styleTween("text-anchor", function (d) {
+            this._current = this._current || d;
+            var interpolate = d3.interpolate(this._current, d);
+            this._current = interpolate(0);
+            return function (t) {
+              var d2 = interpolate(t);
+              return midAngle(d2) < Math.PI ? "start" : "end";
+            };
+          });
+
+      text.exit().remove();
+
+      var polyline = svg.select(".lines").selectAll("polyline")
+          .data(pie(dataset), key);
+
+      polyline.enter()
+          .append("polyline");
+
+      polyline.transition()
+          .duration(1000)
+          .attrTween("points", function (d) {
+            this._current = this._current || d;
+            var interpolate = d3.interpolate(this._current, d);
+            this._current = interpolate(0);
+            return function (t) {
+              var d2 = interpolate(t);
+              var pos = outerArc.centroid(d2);
+              pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+              return [arc.centroid(d2), outerArc.centroid(d2), pos];
+            };
+          });
+
+      polyline.exit().remove();
     });
   });
 

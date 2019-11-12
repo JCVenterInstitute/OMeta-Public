@@ -33,7 +33,7 @@ public class Dashboard extends ActionSupport {
 
         try {
             String userName = ServletActionContext.getRequest().getRemoteUser();
-            List<Project> projectList = readPersister.getLastUpdatedProjects( userName, totalCount, AccessLevel.View );
+            List<Project> projectList = readPersister.getLastUpdatedProjects( null, totalCount, AccessLevel.View );
 
             List<ProjectAttribute> projectAttributeList = readPersister.getProjectAttributes(
                     projectList.stream()

@@ -289,7 +289,7 @@ public class SampleDAO extends HibernateDAO {
                     " join dod_ometa.sample_attribute sa on sa.sampla_sample_id = s.sample_id" +
                     " join dod_ometa.lookup_value lv on lv.lkuvlu_id = sa.sampla_lkuvlu_attribute_id" +
                     " where s.sample_projet_id = :projectId" +
-                    " and (lv.lkuvlu_name = 'Sample Status' or  lv.lkuvlu_name = 'Sample_Status')" +
+                    " and (lv.lkuvlu_name = 'Sample Status' or  lv.lkuvlu_name = 'Sample_Status' or lv.lkuvlu_name = 'Specimen Status')" +
                     " group by sa.sampla_attribute_str";
 
             NativeQuery query = session.createNativeQuery( sql );
