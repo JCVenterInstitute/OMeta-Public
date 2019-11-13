@@ -134,6 +134,7 @@ public class Constants {
     public static final String EVENT_META_ATTRIBUTE_LIST = "emaList";
 
     public static final String EVENT_SUBJECT_REGISTRATION = "SubjectRegistration";
+    public static final String EVENT_SUBJECT_UPDATE = "SubjectUpdate";
     public static final String EVENT_VISIT_REGISTRATION = "VisitRegistration";
     public static final String EVENT_VISIT_UPDATE = "VisitUpdate";
     public static final String EVENT_SAMPLE_REGISTRATION = "SampleRegistration";

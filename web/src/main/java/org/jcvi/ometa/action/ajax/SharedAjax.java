@@ -143,13 +143,10 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
 
             List<ProjectAttribute> projectAttributes = readPersister.getProjectAttributes(this.projectId);
 
-            Collections.sort(projectAttributes, new Comparator<ProjectAttribute>() {
-                @Override
-                public int compare(ProjectAttribute pa1, ProjectAttribute pa2) {
-                    Integer pa1Index = sortedMetaAttributeNames.indexOf(pa1.getMetaAttribute().getLookupValue().getName());
-                    Integer pa2Index = sortedMetaAttributeNames.indexOf(pa2.getMetaAttribute().getLookupValue().getName());
-                    return pa1Index.compareTo(pa2Index);
-                }
+            projectAttributes.sort((pa1, pa2) -> {
+                Integer pa1Index = sortedMetaAttributeNames.indexOf(pa1.getMetaAttribute().getLookupValue().getName());
+                Integer pa2Index = sortedMetaAttributeNames.indexOf(pa2.getMetaAttribute().getLookupValue().getName());
+                return pa1Index.compareTo(pa2Index);
             });
 
             for (ProjectAttribute projAttr : projectAttributes) {
@@ -634,6 +631,26 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                 }
             } else if ("event".equals(type)) { //get event types for a project
                 List<LookupValue> eventNameList = readPersister.getEventTypesForProject(this.projectId);
+                String[] eNames = {"Subject", "Visit", "Sample"};
+                List<String> eventNameOrder = new ArrayList<String>() {{
+                    add(Constants.EVENT_SUBJECT_REGISTRATION);
+                    add(Constants.EVENT_SUBJECT_UPDATE);
+                    add(Constants.EVENT_VISIT_REGISTRATION);
+                    add(Constants.EVENT_VISIT_UPDATE);
+                    add(Constants.EVENT_SAMPLE_REGISTRATION);
+                    add(Constants.EVENT_SAMPLE_UPDATE);
+                }};
+
+                eventNameList.sort((lv1, lv2) -> {
+                    Integer lv1Index = eventNameOrder.indexOf(lv1.getName());
+                    Integer lv2Index = eventNameOrder.indexOf(lv2.getName());
+
+                    //put the rest at the end
+                    if (lv1Index == -1) lv1Index = eventNameOrder.size() + 1;
+                    if (lv2Index == -1) lv2Index = eventNameOrder.size() + 1;
+
+                    return lv1Index.compareTo(lv2Index);
+                });
 
                 if(filter != null && !filter.isEmpty()) {
                     boolean isEventRegistration = filter.equals("sr");
