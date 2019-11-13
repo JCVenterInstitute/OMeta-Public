@@ -207,7 +207,7 @@ var _utils = {
         var hasDependantDict = false;
         publicEnabled = data.publicEnabled;
         //parentEnabled = data.parentEnabled;
-        parentEnabled = true;
+        parentEnabled = en.indexOf('Subject') < 0;  //disable parent if subject event
 
         var $attributeDiv = $("#attributeInputDiv"); //where attributes are placed
         $attributeDiv.empty(); //empty any existing contents
@@ -230,12 +230,13 @@ var _utils = {
         var gridHeaders = '', $gridHeaders = $('<tr/>');
         $gridHeaders.append($('<th/>').addClass('gridIndex').append('#')); //grid row index
         if(utils.checkNP(en)) {
+          var idLabel = (en.indexOf('Subject') > -1) ? "Subject ID" : (en.indexOf('Sample') > -1) ? "Sample ID" : "Visit ID";
           if(!utils.checkSR(en)) {
-            $gridHeaders.append($('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>ID'));
+            $gridHeaders.append($('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>'+idLabel));
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '135').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
             autofill_no+=1;
           } else {
-            $gridHeaders.append($('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>ID<br/>'));
+            $gridHeaders.append($('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>'+idLabel+'<br/>'));
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '95').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
             autofill_no+=1;
 
@@ -1192,15 +1193,18 @@ var button = {
     if(_pn && _en) {
       if(utils.checkNP(_en)){ //not project related
         if(utils.checkSR(_en)) { //add sample information fields for sample registration
+          var $input = $('<input/>').attr({
+            'type': 'text',
+            'name': 'gridList[' + g_gridLineCount + '].sampleName',
+            'class': 'form-control',
+            'id': '_sampleName' + g_gridLineCount,
+            'style' : 'min-width:160px'
+          });
+          if(parentEnabled)
+            $input.attr("readonly", "readonly");
+
           $eventLine.append(
-              $('<td/>').append($('<input/>').attr({
-                    'type': 'text',
-                    'name': 'gridList[' + g_gridLineCount + '].sampleName',
-                    'class': 'form-control',
-                    'id': '_sampleName' + g_gridLineCount,
-                    'style' : 'min-width:160px'
-                  })
-              )
+              $('<td/>').append($input)
           );
           $eventLine.append(
               $('<td/>').attr({
@@ -1549,6 +1553,7 @@ function comboBoxChanged(option, id) {
     $("#_eventSelect").html(vs.empty);
     if(option.value!=null && option.value!=0 && option.text!=null && option.text!='') {
       changes.project(option.value);
+
     } else {
       $("#_sampleSelect").html(vs.empty);
       $("#_eventSelect").html(vs.empty);
@@ -1567,6 +1572,14 @@ function comboBoxChanged(option, id) {
         $('#sampleSelect, #searchSample').prop("disabled", true);$('#form-sample-name').hide();
       } else{
         if(!utils.checkPR(_eventName) && utils.getEventName(_eventName).toLowerCase().indexOf('project') < 0) $('#sampleSelect, #searchSample').prop("disabled", false);$('#form-sample-name').show();
+      }
+
+      var idLabel = (_eventName.indexOf('Subject') > -1) ? "Subject ID" : (_eventName.indexOf('Sample') > -1) ? "Sample ID" : "Visit ID";
+      $('.id-label').text(idLabel);
+      if(parentEnabled) {
+        $("#_sampleName").attr("readonly", "readonly");
+      } else {
+        $("#_sampleName").removeAttr("readonly");
       }
 
       if(utils.checkPU(_eventName)){

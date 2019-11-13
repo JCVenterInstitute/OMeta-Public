@@ -191,7 +191,7 @@
                 </div>
                 <div id="form-sample-name" class="col-sm-6" style="display: none;">
                   <div class="form-group">
-                    <label for="sampleSelect">ID</label>
+                    <label for="sampleSelect" class="id-label">ID</label>
                     <div class="input-group">
                       <s:textfield id="sampleSelect" placeholder="Select by ID" name="sampleName"
                                    required="true" cssClass="form-control sample-element" disabled="true"/>
@@ -228,7 +228,7 @@
                 <div id="sampleDetailInputDiv" style="display:none;" class="col-sm-6">
                   <div id="sampleDetailSubDiv">
                     <div class="form-group">
-                      <label for="_sampleName">ID</label>
+                      <label for="_sampleName" class="id-label">ID</label>
                       <input type="text" id="_sampleName" name="loadingSample.sampleName" class="form-control"/>
                     </div>
                     <div class="form-group" id="parentSampleRow">
