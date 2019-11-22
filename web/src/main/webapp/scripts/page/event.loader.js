@@ -1613,7 +1613,11 @@ function comboBoxChanged(option, id) {
         $('#gridRemoveLineButton').removeAttr('disabled');
       }
 
-      var sampleName = $("#sampleSelect").val();
+      //Clear id field after event change
+      $("#sampleSelect, #parentSelect").val("");
+      $("#_eventSelect option").filter(function() { return this.text == option.label; }).attr("selected", true);
+      $("button[id*='searchSample'], #parentSelect").click();
+      /*var sampleName = $("#sampleSelect").val();
 
       if(sampleName && sampleName != "" && !utils.checkPU(_eventName)) {
         _utils.makeAjax(
