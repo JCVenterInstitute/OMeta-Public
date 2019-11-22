@@ -615,7 +615,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
         b.setActiveDB(active);
         b.setRequiredDB(required);
         b.setDesc(desc);
-        b.setOptions(options);
+        b.setOptions(options.trim());
         b.setLabel(label);
         b.setOntology(ontology);
         b.setProjectName(projectName);
