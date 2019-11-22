@@ -232,7 +232,7 @@
                       <input type="text" id="_sampleName" name="loadingSample.sampleName" class="form-control"/>
                     </div>
                     <div class="form-group" id="parentSampleRow">
-                      <label for="parentSelect">Parent ID</label>
+                      <label for="parentSelect" class="parentid-label">Parent ID</label>
                       <div class="input-group">
                         <s:textfield id="parentSelect"  name="loadingSample.parentSampleName"  required="true" cssClass="form-control"/>
                         <span class="input-group-btn" id="basic-addon2">

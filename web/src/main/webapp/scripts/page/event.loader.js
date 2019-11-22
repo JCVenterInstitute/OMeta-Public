@@ -230,7 +230,17 @@ var _utils = {
         var gridHeaders = '', $gridHeaders = $('<tr/>');
         $gridHeaders.append($('<th/>').addClass('gridIndex').append('#')); //grid row index
         if(utils.checkNP(en)) {
-          var idLabel = (en.indexOf('Subject') > -1) ? "Subject ID" : (en.indexOf('Sample') > -1) ? "Sample ID" : "Visit ID";
+          var idLabel, parentIdLabel;
+          if (en.indexOf('Subject') > -1) {
+            idLabel = "Subject ID";
+            parentIdLabel = "";
+          } else if (en.indexOf('Sample') > -1) {
+            idLabel = "Sample ID";
+            parentIdLabel = "Visit ID";
+          } else {
+            idLabel = "Visit ID";
+            parentIdLabel = "Subject ID"
+          }
           if(!utils.checkSR(en)) {
             $gridHeaders.append($('<th/>').addClass('resizable-header').append('<small class="text-danger">*</small>'+idLabel));
             $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '135').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
@@ -241,7 +251,7 @@ var _utils = {
             autofill_no+=1;
 
             if(parentEnabled) {
-              $gridHeaders.append($('<th/>').addClass('resizable-header').append('Parent ID'));
+              $gridHeaders.append($('<th/>').addClass('resizable-header').append(parentIdLabel));
               $autofillLine.append($('<td/>').append(autofillButtonHtml.replace('$w$', '190').replace('$a$', autofill_no).replace('$b$', autofill_no).replace('$c$', autofill_no)));
               autofill_no+=1;
             } else {
@@ -1574,12 +1584,25 @@ function comboBoxChanged(option, id) {
         if(!utils.checkPR(_eventName) && utils.getEventName(_eventName).toLowerCase().indexOf('project') < 0) $('#sampleSelect, #searchSample').prop("disabled", false);$('#form-sample-name').show();
       }
 
-      var idLabel = (_eventName.indexOf('Subject') > -1) ? "Subject ID" : (_eventName.indexOf('Sample') > -1) ? "Sample ID" : "Visit ID";
+      var idLabel, parentIdLabel;
+      if (_eventName.indexOf('Subject') > -1) {
+        idLabel = "Subject ID";
+        parentIdLabel = "";
+      } else if (_eventName.indexOf('Sample') > -1) {
+        idLabel = "Sample ID";
+        parentIdLabel = "Visit ID";
+      } else {
+        idLabel = "Visit ID";
+        parentIdLabel = "Subject ID;"
+      }
       $('.id-label').text(idLabel);
+      $('.parentid-label').text(parentIdLabel);
       if(parentEnabled) {
         $("#_sampleName").attr("readonly", "readonly");
+        $("#parentSampleRow").show();
       } else {
         $("#_sampleName").removeAttr("readonly");
+        $("#parentSampleRow").hide();
       }
 
       if(utils.checkPU(_eventName)){
@@ -1599,7 +1622,7 @@ function comboBoxChanged(option, id) {
             "sampleName",
             callbacks.populateSampleInfo
         );
-      }
+      }*/
     }
   } else if(id==='_sampleSelect') {
     /*if(option.value && option.value!=0 && option.text && option.text!='' && $('#_eventSelect').val() != 0) {
@@ -2258,12 +2281,14 @@ function generateID(v) {
     if (isMulti) {
       var row = id.substr(id.length - 1);
       var parentVal = $("#_parentSelect" + row).val();
-      var selVal = $("#" + select + "_g_" + row).val().replace(/-/g, '');
+      var selVal = $("#" + select + "_g_" + row).val();
+      selVal = (selVal) ? selVal.replace(/-/g, '') : '';
       if(isSample && selVal != '') selVal = selVal.match(/\((.*)\)/)[1];
       $("#_sampleName" + row).val(parentVal + "_" + selVal);
     } else {
       var parentVal = $("#parentSelect").val();
-      var selVal =$("[id*='"+select+"_f']").val().replace(/-/g, '');
+      var selVal =$("[id*='"+select+"_f']").val();
+      selVal = (selVal) ? selVal.replace(/-/g, '') : '';
       if(isSample && selVal != '') selVal = selVal.match(/\((.*)\)/)[1];
       $("#_sampleName").val(parentVal + "_" + selVal);
     }
