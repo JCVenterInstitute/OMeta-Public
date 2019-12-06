@@ -30,8 +30,8 @@
     </module>
     <module>
         <web>
-            <web-uri>ometa.war</web-uri>
-            <context-root>ometa</context-root>
+            <web-uri>ROOT.war</web-uri>
+            <context-root>/</context-root>
         </web>
     </module>
     <module>

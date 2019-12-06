@@ -21,6 +21,6 @@
 
 <%
 session.invalidate(); 
-response.sendRedirect("/ometa/unsecureIndex.action");
+response.sendRedirect("/unsecureIndex.action");
 %>
 

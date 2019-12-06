@@ -129,7 +129,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Dependencies>deployment.ometa.ear.ometa.war,org.apache.commons.beanutils,org.apache.commons.lang3,org.apache.commons.io,org.apache.commons.lang,org.codehaus.jettison,org.apache.activemq.artemis</Dependencies>
+                            <Dependencies>deployment.ometa.ear.ROOT.war,org.apache.commons.beanutils,org.apache.commons.lang3,org.apache.commons.io,org.apache.commons.lang,org.codehaus.jettison,org.apache.activemq.artemis</Dependencies>
                         </manifestEntries>
                     </archive>
                 </configuration>

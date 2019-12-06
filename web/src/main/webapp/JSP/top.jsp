@@ -14,7 +14,7 @@
     <div class="site-title"></div>
     <div class="inner-header container max-container">
       <div class="top-links clearfix" style="float:left;">
-        <a data-nav="home" href="/ometa/secureIndex.action">
+        <a data-nav="home" href="<c:url value='/secureIndex.action' />">
           <img class="headerImage" src="<c:url value='/images/ometa_logo.png' />" alt="Ontology based Metadata Tracking" style="height: 45px;">
         </a>
       </div>

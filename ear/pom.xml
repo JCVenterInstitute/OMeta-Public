@@ -70,8 +70,8 @@
                         <webModule>
                             <groupId>org.jcvi</groupId>
                             <artifactId>web</artifactId>
-                            <contextRoot>ometa</contextRoot>
-                            <bundleFileName>ometa.war</bundleFileName>
+                            <contextRoot>/</contextRoot>
+                            <bundleFileName>ROOT.war</bundleFileName>
                         </webModule>
                         <jarModule>
                             <groupId>org.apache.poi</groupId>

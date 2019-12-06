@@ -214,7 +214,7 @@
     </dependencies>
 
     <build>
-        <finalName>ometa</finalName>
+        <finalName>ROOT</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>

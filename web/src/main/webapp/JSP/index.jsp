@@ -18,7 +18,8 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
 <script>
-  location.href="/ometa/secureIndex.action";
+  location.href="<c:url value='/secureIndex.action' />";
 </script>
