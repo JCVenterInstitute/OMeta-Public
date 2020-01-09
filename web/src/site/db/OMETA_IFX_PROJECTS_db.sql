@@ -761,7 +761,7 @@ CREATE TABLE `dictionary_dependency` (
   `parent_id` bigint(20) NOT NULL,
   `dict_dpcy_create_date` datetime DEFAULT NULL,
   `dict_dpcy_modify_date` datetime DEFAULT NULL,
-  PRIMARY KEY (`dict_dpcy_id`),
+  PRIMARY KEY (`dict_dpcy_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
