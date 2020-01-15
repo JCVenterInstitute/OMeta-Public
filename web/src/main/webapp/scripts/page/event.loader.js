@@ -1579,9 +1579,13 @@ function comboBoxChanged(option, id) {
       var _selectedType = $('input[name="loadType"]:checked').val();
       var _eventName = option.text;
       if(utils.checkSR(_eventName) || _selectedType === 'grid') {
-        $('#sampleSelect, #searchSample').prop("disabled", true);$('#form-sample-name').hide();
+        $('#sampleSelect, #searchSample').prop("disabled", true);
+        $('#form-sample-name').hide();
       } else{
-        if(!utils.checkPR(_eventName) && utils.getEventName(_eventName).toLowerCase().indexOf('project') < 0) $('#sampleSelect, #searchSample').prop("disabled", false);$('#form-sample-name').show();
+        if(!utils.checkPR(_eventName) && utils.getEventName(_eventName).toLowerCase().indexOf('project') < 0) {
+          $('#sampleSelect, #searchSample').prop("disabled", false);
+          $('#form-sample-name').show();
+        }
       }
 
       var idLabel, parentIdLabel;
