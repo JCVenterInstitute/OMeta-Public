@@ -774,6 +774,7 @@ INSERT INTO `lookup_value` (`lkuvlu_id`, `lkuvlu_name`, `lkuvlu_type`, `lkuvlu_d
 (1111111111111, 'General-Edit', 'Edit Group', 'string', '2014-05-22 14:44:50', NULL),
 (1111111111112, 'General-View', 'Access Group', 'string', '2014-05-22 14:44:50', NULL),
 (1111111111113, 'General-Admin', 'Access Group', 'string', '2014-05-22 14:44:50', NULL),
+(1135914705125, 'ActorAdmin', 'Access Group', 'string', '2014-05-22 14:44:50', NULL),
 (1111111111114, 'Active', 'Event Status', 'string', '2011-02-08 00:00:00', NULL),
 (1111111111115, 'Inactive', 'Event Status', 'string', '2011-02-08 00:00:00', NULL),
 (1135914704994, 'Complete', 'Attribute', 'int', '2014-05-28 13:05:23', NULL),
@@ -828,7 +829,8 @@ INSERT INTO `lookup_value` (`lkuvlu_id`, `lkuvlu_name`, `lkuvlu_type`, `lkuvlu_d
 INSERT INTO `groups` (`group_id`, `group_name_lkuvl_id`) VALUES
 (1111111111118, 1111111111111),
 (1111111111119, 1111111111112),
-(1111111111120, 1111111111113);
+(1111111111120, 1111111111113),
+(1135914705126, 1135914705125);
 
 INSERT INTO `actor` (`actor_username`, `actor_first_name`, `actor_last_name`, `actor_middle_name`, `actor_email_address`, `actor_id`, `actor_create_date`, `actor_modify_date`) VALUES
 ('testuser', 'test', 'test', 'user', 'test@test.com', 1111111111124, '2014-05-22 14:51:36', NULL);
@@ -836,7 +838,8 @@ INSERT INTO `actor` (`actor_username`, `actor_first_name`, `actor_last_name`, `a
 INSERT INTO `actor_group` (`actgrp_id`, `actgrp_create_date`, `actgrp_modify_date`, `actgrp_actor_id`, `actgrp_group_id`) VALUES
 (1111111111121, '2014-05-22 00:00:00', NULL, 1111111111124, 1111111111118),
 (1111111111122, '2014-05-22 14:51:36', NULL, 1111111111124, 1111111111119),
-(1111111111123, '2014-05-22 14:51:36', NULL, 1111111111124, 1111111111120);
+(1111111111123, '2014-05-22 14:51:36', NULL, 1111111111124, 1111111111120),
+(1135914705127, '2014-05-22 14:51:36', NULL, 1111111111124, 1135914705126);
 
 
 INSERT INTO `project` (`projet_id`, `projet_name`, `projet_projet_parent_id`, `projet_create_date`, `projet_actor_created_by`, `projet_actor_modified_by`, `projet_modified_date`, `projet_level`, `projet_is_public`, `projet_view_group_id`, `projet_edit_group_id`, `projet_is_secure`) VALUES
