@@ -47,7 +47,8 @@ var _utils = {
       },
       hidePS: function() {
         $('#sampleDetailInputDiv, #projectDetailInputDiv').hide();
-        $('#sampleSelect, #searchSample').prop("disabled", true);$('#form-sample-name').hide();
+        $('#sampleSelect, #searchSample').prop("disabled", true);
+        $('#form-sample-name').hide();
       },
       ontologify: function(desc, $inputNode) {
         var ontologyInfo = desc.substring(desc.lastIndexOf('[')+1, desc.length-1).split(',');
@@ -1558,10 +1559,14 @@ function comboBoxChanged(option, id) {
       //Hide Sample dropdown if SampleRegistration is selected
       var _selectedType = $('input[name="loadType"]:checked').val();
       var _eventName = option.text;
-      if(utils.checkSR(_eventName) || _selectedType === 'grid') {
-        $('#sampleSelect, #searchSample').prop("disabled", true);$('#form-sample-name').hide();
-      } else{
-        if(!utils.checkPR(_eventName) && utils.getEventName(_eventName).toLowerCase().indexOf('project') < 0) $('#sampleSelect, #searchSample').prop("disabled", false);$('#form-sample-name').show();
+      if (utils.checkSR(_eventName) || _selectedType === 'grid') {
+        $('#sampleSelect, #searchSample').prop("disabled", true);
+        $('#form-sample-name').hide();
+      } else {
+        if (!utils.checkPR(_eventName) && utils.getEventName(_eventName).toLowerCase().indexOf('project') < 0) {
+          $('#sampleSelect, #searchSample').prop("disabled", false);
+          $('#form-sample-name').show();
+        }
       }
 
       if(utils.checkPU(_eventName)){
