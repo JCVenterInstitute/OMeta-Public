@@ -98,6 +98,7 @@ public class SampleAttribute
         this.sampleId = sampleId;
     }
 
+    @Temporal(TemporalType.DATE)
     @Column(name="sampla_attribute_date", nullable=true)
     public Date getAttributeDateValue() {
         return attributeDateValue;

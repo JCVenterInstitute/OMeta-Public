@@ -105,6 +105,7 @@ public class ProjectAttribute implements ModelBean, AttributeModelBean {
         this.attributeFloatValue = attributeFloatValue;
     }
 
+    @Temporal(TemporalType.DATE)
     @Column(name="projea_attribute_date", nullable=true)
     public Date getAttributeDateValue() {
         return attributeDateValue;

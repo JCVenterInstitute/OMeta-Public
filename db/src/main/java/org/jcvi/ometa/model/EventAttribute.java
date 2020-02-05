@@ -83,6 +83,7 @@ public class EventAttribute implements ModelBean, AttributeModelBean {
         nameLookupValueId = maId;
     }
 
+    @Temporal(TemporalType.DATE)
     @Column(name="eventa_attribute_date",nullable=true)
     public Date getAttributeDateValue() {
         return attributeDateValue;
