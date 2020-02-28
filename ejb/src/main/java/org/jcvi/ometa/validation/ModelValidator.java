@@ -300,7 +300,7 @@ public class ModelValidator {
         if(lookupValue != null) {
             String dataType = lookupValue.getDataType();
             if (dataType.equals(Constants.DATE_DATA_TYPE)) {
-                rtnValue = model.getAttributeDateValue();
+                rtnValue = (model.getAttributeDateValue() != null) ? model.getAttributeDateValue().toString() : null;
             } else if (dataType.equals(Constants.INT_DATA_TYPE)) {
                 rtnValue = model.getAttributeIntValue();
             } else if (dataType.equals(Constants.STRING_DATA_TYPE) || dataType.equals(Constants.FILE_DATA_TYPE)) {
