@@ -557,7 +557,7 @@ var _utils = {
         //_utils.addGridRows(null,eventName);
       },
       populateProjectInfo: function(data, eventName) {
-        if(data && data.aaData) {
+        if(data && data.aaData && data.aaData[1]) {
           var projAttrMap = data.aaData[1].attributes;
           var keyArr = Object.keys(projAttrMap).sort(); //move keys to an array to loop them in order
 
