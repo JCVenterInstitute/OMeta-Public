@@ -70,6 +70,10 @@ public interface BeanPersistenceFacadeI {
 
     void deleteActorGroup(List<ActorGroup> actorgroups) throws Exception;
 
+    void deleteSMA(SampleMetaAttribute sma) throws Exception;
+
+    void deletePMA(ProjectMetaAttribute pma) throws Exception;
+
     void writeBackGroups(List<Group> groups) throws Exception;
 
     void loadDictionaryWithDependency(String dictType, String dictValue, String dictCode, String parentDictTypeCode) throws Exception;

@@ -149,4 +149,12 @@ public class ProjectMetaAttributeDAO extends HibernateDAO {
         locateAttribNameLookupId(model, session, Constants.ATTRIBUTE_LV_TYPE_NAME);
     }
 
+    public void deletePMA(ProjectMetaAttribute pma, Session session) throws DAOException {
+        try {
+            session.delete(session.contains(pma) ? pma : session.merge(pma));
+        } catch(Exception ex) {
+            throw new DAOException(ex);
+        }
+    }
+
 }

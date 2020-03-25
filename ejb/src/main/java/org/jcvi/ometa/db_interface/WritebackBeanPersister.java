@@ -197,6 +197,27 @@ public class WritebackBeanPersister implements BeanPersistenceFacadeI {
         }
     }
 
+    public void deleteSMA(SampleMetaAttribute sma) throws Exception {
+        try {
+            SampleMetaAttributeDAO smaDAO = daoFactory.getSampleMetaAttributeDAO();
+            smaDAO.deleteSMA(sma, session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        }
+    }
+
+    public void deletePMA(ProjectMetaAttribute pma) throws Exception {
+        try {
+            ProjectMetaAttributeDAO pmaDAO = daoFactory.getProjectMetaAttributeDAO();
+            pmaDAO.deletePMA(pma, session);
+            sessionAndTransactionManager.commitTransaction();
+        } catch (Exception ex) {
+            sessionAndTransactionManager.rollBackTransaction();
+            throw ex;
+        }
+    }
 
     /**
      * Save things to be referenced by attributes later.

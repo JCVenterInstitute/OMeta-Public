@@ -142,6 +142,44 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
     @Override
     @WebMethod
     @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void deleteSMA(SampleMetaAttribute sma) throws Exception {
+        BeanPersistenceFacadeI beanPersister = getBeanPersister();
+        beanPersister.open();
+        try {
+            beanPersister.deleteSMA(sma);
+        } catch (Exception ex) {
+            logger.error(ex);
+            beanPersister.error();
+            throw ex;
+        } finally {
+            beanPersister.close();
+        }
+    }
+
+    @ExcludeClassInterceptors
+    @ExcludeDefaultInterceptors
+    @Override
+    @WebMethod
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
+    public void deletePMA(ProjectMetaAttribute pma) throws Exception {
+        BeanPersistenceFacadeI beanPersister = getBeanPersister();
+        beanPersister.open();
+        try {
+            beanPersister.deletePMA(pma);
+        } catch (Exception ex) {
+            logger.error(ex);
+            beanPersister.error();
+            throw ex;
+        } finally {
+            beanPersister.close();
+        }
+    }
+
+    @ExcludeClassInterceptors
+    @ExcludeDefaultInterceptors
+    @Override
+    @WebMethod
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void loadGroups(List<Group> groups) throws Exception {
         BeanPersistenceFacadeI beanPersister = getBeanPersister();
         beanPersister.open();

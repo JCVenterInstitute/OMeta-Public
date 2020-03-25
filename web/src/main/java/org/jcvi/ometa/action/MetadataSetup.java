@@ -104,7 +104,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
         UserTransaction tx = null;
 
         try {
-            List<String> projectNameList = new ArrayList<String>();
+            List<String> projectNameList = new ArrayList<>();
             if(projectNames == null || projectNames.equals(""))
                 projectNameList.add("ALL");
             else if(projectNames.contains(","))
@@ -129,32 +129,32 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                 List<EventMetaAttribute> refEmaList = psept.getEventMetaAttributes(loadingProject.getProjectId());
 
                 if("e".equals(type)) {  //event metadata setup
-                    Map<String, Map<String, EventMetaAttribute>> existingEmaMap = new HashMap<String, Map<String, EventMetaAttribute>>();
+                    Map<String, Map<String, EventMetaAttribute>> existingEmaMap = new HashMap<>();
                     for(EventMetaAttribute ema : refEmaList) {
                         if(existingEmaMap.containsKey(ema.getEventName())) {
                             existingEmaMap.get(ema.getEventName()).put(ema.getAttributeName(), ema);
                         } else {
-                            HashMap<String, EventMetaAttribute> emaMap = new HashMap<String, EventMetaAttribute>();
+                            HashMap<String, EventMetaAttribute> emaMap = new HashMap<>();
                             emaMap.put(ema.getAttributeName(), ema);
                             existingEmaMap.put(ema.getEventName(), emaMap);
                         }
                     }
 
                     //process meta attribute orders
-                    Map<String, List<MetadataSetupReadBean>> groupedList = new HashMap<String, List<MetadataSetupReadBean>>();
+                    Map<String, List<MetadataSetupReadBean>> groupedList = new HashMap<>();
                     for (MetadataSetupReadBean bean : beanList) {
                         if(groupedList.containsKey(bean.getEt())) {
                             groupedList.get(bean.getEt()).add(bean);
                         } else {
-                            List<MetadataSetupReadBean> beanList = new ArrayList<MetadataSetupReadBean>();
+                            List<MetadataSetupReadBean> beanList = new ArrayList<>();
                             beanList.add(bean);
                             groupedList.put(bean.getEt(), beanList);
                         }
                     }
-                    beanList = new ArrayList<MetadataSetupReadBean>(beanList.size());
+                    beanList = new ArrayList<>(beanList.size());
                     for(String et : groupedList.keySet()) {
-                        Map<Integer, MetadataSetupReadBean> treeMap = new TreeMap<Integer, MetadataSetupReadBean>();
-                        List<MetadataSetupReadBean> unordered = new ArrayList<MetadataSetupReadBean>();
+                        Map<Integer, MetadataSetupReadBean> treeMap = new TreeMap<>();
+                        List<MetadataSetupReadBean> unordered = new ArrayList<>();
                         for(MetadataSetupReadBean bean : groupedList.get(et)) {
                             String order = bean.getOrder();
                             if(order == null || order.trim().length() == 0 || order.equals("0")) {
@@ -182,9 +182,9 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                     Map<String, SampleMetaAttribute> existingSmaMap = this.getSmaMap(loadingProject.getProjectId());
                     Map<String, ProjectMetaAttribute> existingPmaMap = this.getPmaMap(loadingProject.getProjectId());
 
-                    List<EventMetaAttribute> emaList = new ArrayList<EventMetaAttribute>();
-                    List<ProjectMetaAttribute> pmaList = new ArrayList<ProjectMetaAttribute>();
-                    List<SampleMetaAttribute> smaList = new ArrayList<SampleMetaAttribute>();
+                    List<EventMetaAttribute> emaList = new ArrayList<>();
+                    List<ProjectMetaAttribute> pmaList = new ArrayList<>();
+                    List<SampleMetaAttribute> smaList = new ArrayList<>();
                     for (MetadataSetupReadBean bean : beanList) {
                         EventMetaAttribute ema;
                         boolean isNewOrModified = true;
@@ -218,10 +218,14 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                         //updates PMA or SMA associated with current EMA
                         if(existingPmaMap.containsKey(bean.getName())) {
                             ProjectMetaAttribute pma = existingPmaMap.get(bean.getName());
-                            this.setMAValues(pma,
-                                    bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
-                                    bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName(), bean.getValueLength());
-                            pmaList.add(pma);
+                            if (bean.getProjectMetaDB()) {
+                                this.setMAValues(pma,
+                                        bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
+                                        bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName(), bean.getValueLength());
+                                pmaList.add(pma);
+                            } else {
+                                psewt.deletePMA(pma);
+                            }
                         } else {
                             //handles Project Metadata checkbox by adding new project meta attribute
                             if(bean.getProjectMetaDB()) {
@@ -237,10 +241,14 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                         }
                         if(existingSmaMap.containsKey(bean.getName())) {
                             SampleMetaAttribute sma = existingSmaMap.get(bean.getName());
-                            this.setMAValues(sma,
-                                    bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
-                                    bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName(), bean.getValueLength());
-                            smaList.add(sma);
+                            if(bean.getSampleMetaDB()) {
+                                this.setMAValues(sma,
+                                        bean.getActiveDB(), bean.getRequiredDB(), bean.getDesc(),
+                                        bean.getOptions(), bean.getLabel(), bean.getOntology(), loadingProject.getProjectName(), bean.getValueLength());
+                                smaList.add(sma);
+                            } else {
+                                psewt.deleteSMA(sma);
+                            }
                         } else {
                             //handles Sample Metadata checkbox by adding new sample meta attribute
                             if(bean.getSampleMetaDB()) {
@@ -385,7 +393,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
     public String runAjax() {
         String rtnVal = SUCCESS;
         boolean isError = false;
-        dataMap = new HashMap<String, Object>();
+        dataMap = new HashMap<>();
 
         try {
             if("g_ema".equals(type)) { //event meta attribute
@@ -396,19 +404,19 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                 List<EventMetaAttribute> emas = psept.getEventMetaAttributes(projectId, eventTypeLV==null?null:eventTypeLV.getLookupValueId());
                 if(emas.size()>0) {
                     //group ema by event type
-                    Map<String, List<EventMetaAttribute>> groupedList = new HashMap<String, List<EventMetaAttribute>>();
+                    Map<String, List<EventMetaAttribute>> groupedList = new HashMap<>();
                     for (EventMetaAttribute ema : emas) {
                         LookupValue lv = ema.getEventTypeLookupValue();
                         if(groupedList.containsKey(lv.getName())) {
                             groupedList.get(lv.getName()).add(ema);
                         } else {
-                            List<EventMetaAttribute> emaList = new ArrayList<EventMetaAttribute>();
+                            List<EventMetaAttribute> emaList = new ArrayList<>();
                             emaList.add(ema);
                             groupedList.put(lv.getName(), emaList);
                         }
                     }
                     //sort by orders
-                    emas = new ArrayList<EventMetaAttribute>(emas.size());
+                    emas = new ArrayList<>(emas.size());
                     for(String et : groupedList.keySet()) {
                         List<EventMetaAttribute> sortedList = groupedList.get(et);
                         //CommonTool.sortEventMetaAttributeByOrder(sortedList);
@@ -417,18 +425,18 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
 
                     //project meta attribute
                     List<ProjectMetaAttribute> pmas = psept.getProjectMetaAttributes(projectId);
-                    List<String> pmaNames = new ArrayList<String>(pmas.size());
+                    List<String> pmaNames = new ArrayList<>(pmas.size());
                     for(ProjectMetaAttribute pma : pmas) {
                         pmaNames.add(pma.getAttributeName());
                     }
                     //sample meta attribute
                     List<SampleMetaAttribute> smas = psept.getSampleMetaAttributes(projectId);
-                    List<String> smaNames = new ArrayList<String>();
+                    List<String> smaNames = new ArrayList<>();
                     for(SampleMetaAttribute sma : smas) {
                         smaNames.add(sma.getAttributeName());
                     }
 
-                    List<EventMetaAttributeContainer> tempList = new ArrayList<EventMetaAttributeContainer>(emas.size());
+                    List<EventMetaAttributeContainer> tempList = new ArrayList<>(emas.size());
                     for(EventMetaAttribute ema : emas) {
                         EventMetaAttributeContainer container = new EventMetaAttributeContainer(ema);
                         container.setProjectMeta(pmaNames.contains(ema.getAttributeName()));
@@ -458,7 +466,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                     String[] lvNames = lvName.split(",");
                     boolean isGroupInsert = lvType.endsWith("Group");
 
-                    List<LookupValue> lvList = new ArrayList<LookupValue>();
+                    List<LookupValue> lvList = new ArrayList<>();
                     for(String name : lvNames) {
                         if(name != null && name.trim().length() > 0) {
                             if(name.contains("[") || name.contains("]")) {
@@ -475,7 +483,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
                     psewt.loadLookupValues(lvList);
 
                     if(isGroupInsert && lvList.size() > 0) {
-                        List<Group> groups = new ArrayList<Group>(lvNames.length);
+                        List<Group> groups = new ArrayList<>(lvNames.length);
                         for(LookupValue lv : lvList) {
                             LookupValue loadedLookupValue = psept.getLookupValue(lv.getName(), lv.getType());
                             Group group = new Group();
@@ -585,10 +593,10 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
 
     public String openNewAttribute() {
         ModelValidator modelValidator = new ModelValidator();
-        dataTypes = new ArrayList<String>();
+        dataTypes = new ArrayList<>();
         dataTypes.addAll(modelValidator.getValidDataTypes());
 
-        types = new ArrayList<String>();
+        types = new ArrayList<>();
         if(type.equals("gr")) { //actor group lookup value
             types.add(Constants.VIEW_GROUP_LV_TYPE_NAME);
             types.add(Constants.EDIT_GROUP_LV_TYPE_NAME);
@@ -623,7 +631,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
     }
 
     private List<EventMetaAttribute> updateExistingEMA(List<EventMetaAttribute> emas, MetadataSetupReadBean bean, String projectName) {
-        List<EventMetaAttribute> emaList = new ArrayList<EventMetaAttribute>();
+        List<EventMetaAttribute> emaList = new ArrayList<>();
         if(emas!=null && emas.size()>0) {
             for(EventMetaAttribute ema : emas) {
                 if(!this.isUnchanged(bean, ema)) {
@@ -638,7 +646,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
 
     private Map<String, ProjectMetaAttribute> getPmaMap(Long projectId) throws Exception {
         List<ProjectMetaAttribute> existingPmaList = psept.getProjectMetaAttributes(projectId);
-        Map<String, ProjectMetaAttribute> exsitingPmaMap = new HashMap<String, ProjectMetaAttribute>();
+        Map<String, ProjectMetaAttribute> exsitingPmaMap = new HashMap<>();
         for(ProjectMetaAttribute pma : existingPmaList) {
             exsitingPmaMap.put(pma.getAttributeName(), pma);
         }
@@ -647,7 +655,7 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
 
     private Map<String, SampleMetaAttribute> getSmaMap(Long projectId) throws Exception {
         List<SampleMetaAttribute> existingSmaList = psept.getSampleMetaAttributes(projectId);
-        Map<String, SampleMetaAttribute> exsitingSmaMap = new HashMap<String, SampleMetaAttribute>();
+        Map<String, SampleMetaAttribute> exsitingSmaMap = new HashMap<>();
         for(SampleMetaAttribute sma : existingSmaList) {
             exsitingSmaMap.put(sma.getAttributeName(), sma);
         }
@@ -655,13 +663,13 @@ public class MetadataSetup extends ActionSupport implements IAjaxAction, Prepara
     }
 
     private Map<String, List<EventMetaAttribute>> getEmaMap(List<EventMetaAttribute> emaList) {
-        Map<String, List<EventMetaAttribute>> emas = new HashMap<String, List<EventMetaAttribute>>();
+        Map<String, List<EventMetaAttribute>> emas = new HashMap<>();
         for(EventMetaAttribute ema : emaList) {
             String attributeName = ema.getLookupValue().getName();
             if(emas.containsKey(attributeName)) {
                 emas.get(attributeName).add(ema);
             } else {
-                List<EventMetaAttribute> subEmas = new ArrayList<EventMetaAttribute>();
+                List<EventMetaAttribute> subEmas = new ArrayList<>();
                 subEmas.add(ema);
                 emas.put(attributeName, subEmas);
             }

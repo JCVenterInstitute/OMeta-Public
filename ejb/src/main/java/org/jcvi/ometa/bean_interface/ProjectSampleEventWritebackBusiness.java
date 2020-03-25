@@ -40,6 +40,8 @@ public interface ProjectSampleEventWritebackBusiness {
 
     void loadActorGroup(List<ActorGroup> actorGroups) throws Exception;
     void deleteActorGroup(List<ActorGroup> actorGroups) throws Exception;
+    void deleteSMA(SampleMetaAttribute sma) throws Exception;
+    void deletePMA(ProjectMetaAttribute pma) throws Exception;
 
     void loadGroups(List<Group> groups) throws Exception;
     /**

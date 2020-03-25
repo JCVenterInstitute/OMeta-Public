@@ -165,4 +165,11 @@ public class SampleMetaAttributeDAO extends HibernateDAO {
         locateAttribNameLookupId(model, session, Constants.ATTRIBUTE_LV_TYPE_NAME);
     }
 
+    public void deleteSMA(SampleMetaAttribute sma, Session session) throws DAOException {
+        try {
+            session.delete(session.contains(sma) ? sma : session.merge(sma));
+        } catch(Exception ex) {
+            throw new DAOException(ex);
+        }
+    }
 }
