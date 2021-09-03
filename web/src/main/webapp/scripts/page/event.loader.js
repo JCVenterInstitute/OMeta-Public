@@ -449,7 +449,7 @@ var _utils = {
         });
         _utils.addGridRows(null, en);
 
-        $("[id^='req_select_sample_type']").on('change', function() {
+        $("[id^='req_select_sample_type'], [id^='date_Visit_Date']").on('change', function() {
           generateID(this);
         });
 
