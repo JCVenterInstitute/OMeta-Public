@@ -25,6 +25,10 @@
 
     <display-name>Production Status</display-name>
 
+    <session-config>
+        <session-timeout>0</session-timeout>
+    </session-config>
+
     <filter>
         <filter-name>Struts</filter-name>
         <filter-class>

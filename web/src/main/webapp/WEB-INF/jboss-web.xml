@@ -21,4 +21,7 @@
 
 <jboss-web>
   <security-domain>java:/jaas/jcvi</security-domain>
+  <session-config>
+    <session-timeout>0</session-timeout>
+  </session-config>
 </jboss-web>
