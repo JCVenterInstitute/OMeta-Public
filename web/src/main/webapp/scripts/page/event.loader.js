@@ -376,7 +376,7 @@ var _utils = {
               } else if(maDatatype ==='date') {
                 inputElement +=
                     '<div class="input-group col-sm-5">'+
-                    '  <input type="text" id="' + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" class="form-control" style="min-width:160px;" autocomplete="off"/>' +
+                    '  <input type="text" placeholder="YYYY-MM-DD" id="' + maDatatype + '_$id$" name="$lt$attributeValue" value="$val$" class="form-control" style="min-width:160px;" autocomplete="off"/>' +
                     '  <label for="' + maDatatype + '_$id$" class="input-group-addon"><span><i class="fa fa-calendar"></i></span></label>' +
                     '</div>';
 
