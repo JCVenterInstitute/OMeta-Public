@@ -557,11 +557,11 @@ var vs = {
 })(jQuery);
 
 //Check session timeout
-$(document).ready(function() {
+/*$(document).ready(function() {
   $.active = false;
   $('body').bind('click keypress', function() { $.active = true; });
   checkActivity(1800000, 60000, 0); // timeout = 30 minutes, interval = 1 minute.
-});
+});*/
 
 function checkActivity(timeout, interval, elapsed) {
   if ($.active) {
