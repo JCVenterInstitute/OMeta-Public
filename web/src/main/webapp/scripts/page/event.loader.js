@@ -2024,12 +2024,17 @@ function searchSamples(id) {
       } else{
         closeDropdown = true;
 
-        _utils.makeAjax(
-            'getsample.action',
-            'type=single&subType=sample&projectId=' + utils.getProjectId() + '&sampleVal=' + b.item.value,
-            this.name,
-            callbacks.populateSampleInfo
-        );
+        var en = utils.getEventName();
+
+        // Override attribute data only if update events
+        if (en && en.indexOf('Update') > 0) {
+          _utils.makeAjax(
+              'getsample.action',
+              'type=single&subType=sample&projectId=' + utils.getProjectId() + '&sampleVal=' + b.item.value,
+              this.name,
+              callbacks.populateSampleInfo
+          );
+        }
       }
     },
     change: function () {
