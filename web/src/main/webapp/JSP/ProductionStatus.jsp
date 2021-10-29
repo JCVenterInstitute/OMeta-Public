@@ -127,9 +127,12 @@
       "bServerSide": true,
       "aoColumns": aoColumns,
       "sServerMethod": "POST",
-      "sAjaxSource": "productionStatusAjax.action?projectNames=${projectNames}&attributes=${attributes}",
+      "lengthMenu": [[10, 25, 50, 500, -1], [10, 25, 50, 500, "All"]],
+      "sAjaxSource": "productionStatusAjax.action",
       "fnServerParams": function (aoData){
-        if(_page.columnfilter.isActive()) {
+        aoData.push({"name" : "projectNames", "value" : "${projectNames}"});
+        aoData.push({"name" : "attributes", "value" : "${attributes}"});
+        if(_page.columnfilter.isActive()) {``
           var index = 0;  // keep count to have an accurate list size in case of empty filter values
           $('.column_filter_box').each(function (i, elem) {
             var $filterText = $(this).children('input:text[class="filter_text form-control input-sm"]');
