@@ -36,7 +36,7 @@
 </head>
 <body>
 <div id="content" class="container-fluid" role="main">
-  <s:form id="statusPage" name="statusPage" namespace="/" action="productionStatus" method="post" theme="simple">
+  <s:form id="statusPage" name="statusPage" namespace="/" action="productionStatusExcel" method="post" theme="simple">
   <s:hidden name="projectNames" />
   <s:hidden name="attributesOnScreen" id="attributesOnScreen"/>
   <s:hidden name="attributes" />
@@ -158,7 +158,34 @@
     });
 
     var buttons = new $.fn.dataTable.Buttons(pDT, {
-      buttons: [  'copyHtml5', 'excelHtml5', 'csvHtml5', 'pdfHtml5', 'colvis' ]
+      buttons: [  'copyHtml5', 'excelHtml5',
+        {
+          text: 'Excel - ALL',
+          action: function ( e, dt, node, config ) {
+            var form = $('#statusPage');
+            var isExcel = form.find("input[name=isExcel]");
+            if (isExcel.length == 0) {
+              form.append('<input type="hidden" name="isExcel" value="true">');
+            } else {
+              isExcel.val("true");
+            }
+            form.submit();
+          }
+        },'csvHtml5',
+        {
+          text: 'CSV - ALL',
+          action: function ( e, dt, node, config ) {
+            var form = $('#statusPage');
+            var isExcel = form.find("input[name=isExcel]");
+            if (isExcel.length == 0) {
+              form.append('<input type="hidden" name="isExcel" value="false">');
+            } else {
+              isExcel.val("false");
+            }
+            form.submit();
+          }
+        },
+        'pdfHtml5', 'colvis' ]
     }).container().appendTo($('#buttons'));
 
     $(".dataTables_filter").append(

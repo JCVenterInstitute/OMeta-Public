@@ -30,7 +30,13 @@ package org.jcvi.ometa.action;
  */
 
 import com.opensymphony.xwork2.ActionSupport;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.jcvi.ometa.action.ajax.IAjaxAction;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.*;
@@ -41,6 +47,13 @@ import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.validation.ModelValidator;
 import org.jtc.common.util.property.PropertyHelper;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class ProductionStatus extends ActionSupport implements IAjaxAction {
@@ -80,6 +93,10 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
     Map<String, String> attributeTypeMap;
     private List<String> columnName;
     private List<String> columnSearchArguments;
+
+    private InputStream dataTemplateStream;
+    private String dataTemplateFileName;
+    private String dataTemplateContentType;
 
     public ProductionStatus() {
         readPersister = new ReadBeanPersister();
@@ -184,14 +201,14 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
         return rtnVal + (iss && !rtnVal.equals(LOGIN) ? "_s" : "");
     }
 
-    public String statusExcel() {
+    public String statusExcel() throws IOException {
         String rtnVal = SUCCESS;
 
         try {
-            isExcel = true;
+            //isExcel = true;
             LookupValue tempLookupValue;
 
-            List<String> tokenizedOnScreenAttribute = new ArrayList<String>(Arrays.asList(attributesOnScreen.trim().replaceAll(",\\s+", ",").split(",")));
+            List<String> tokenizedOnScreenAttribute = new ArrayList<String>(Arrays.asList(attributes.trim().replaceAll(",\\s+", ",").split(",")));
             if (tokenizedOnScreenAttribute.contains("") || tokenizedOnScreenAttribute.contains(" ")) {
                 List<String> emptyList = new ArrayList<String>();
                 emptyList.add("");
@@ -311,6 +328,67 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
             logger.error("Exception in Status Page Action : " + ex.toString());
             ex.printStackTrace();
             return ERROR;
+        }
+
+        String date = DateTimeFormatter.ofPattern("uuuuMMddHHmmss").format(LocalDateTime.now());
+        if (isExcel) {
+            Workbook workbook = new HSSFWorkbook();
+            Sheet sheet = workbook.createSheet("Report");
+
+            int rowCount = 0;
+            Row headerRow = sheet.createRow(rowCount++);
+
+            int columnCount = 0;
+            for (String attribute : parameterizedAttributes) {
+                Cell cell = headerRow.createCell(columnCount++);
+                cell.setCellValue(attribute);
+            }
+
+            for (Map element : pageElementList) {
+                Row row = sheet.createRow(rowCount++);
+                columnCount = 0;
+
+                for (String attribute : parameterizedAttributes) {
+                    Cell cell = row.createCell(columnCount++);
+                    Object object = element.get(attribute);
+                    if (object != null) {
+                        cell.setCellValue((object instanceof String) ? (String) object :
+                                (object instanceof Integer) ? ((Integer) object).toString() :
+                                (object instanceof Double) ? ((Double) object).toString() :
+                                        ((Long) object).toString());
+                    } else {
+                        cell.setCellValue("");
+                    }
+                }
+            }
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            workbook.write(baos);
+            InputStream templateStream = new ByteArrayInputStream(baos.toByteArray());
+
+            this.dataTemplateStream = templateStream;
+            this.dataTemplateContentType = "application/vnd.ms-excel";
+            this.dataTemplateFileName = "OMeta-report-" + date + ".xls";
+        } else {
+            String header = String.join(",", parameterizedAttributes);
+            StringBuilder data = new StringBuilder();
+
+            for (Map element : pageElementList) {
+                data.append("\n");
+
+                for (String attribute : parameterizedAttributes) {
+                    data.append("\"");
+                    if (element.get(attribute) != null) {
+                        data.append(element.get(attribute));
+                    }
+                    data.append("\"");
+                    data.append(",");
+                }
+            }
+
+            this.dataTemplateStream = IOUtils.toInputStream(header + data, StandardCharsets.UTF_8);
+            this.dataTemplateContentType = "text/csv";
+            this.dataTemplateFileName = "OMeta-report-" + date + ".csv";
         }
 
         return rtnVal;
@@ -597,11 +675,11 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
         this.attributesOnScreen = attributesOnScreen;
     }
 
-    public boolean isExcel() {
+    public boolean isIsExcel() {
         return isExcel;
     }
 
-    public void setExcel(boolean excel) {
+    public void setIsExcel(boolean excel) {
         isExcel = excel;
     }
 
@@ -731,5 +809,29 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
 
     public void setAttributeTypeMap(Map<String, String> attributeTypeMap) {
         this.attributeTypeMap = attributeTypeMap;
+    }
+
+    public InputStream getDataTemplateStream() {
+        return dataTemplateStream;
+    }
+
+    public void setDataTemplateStream(InputStream dataTemplateStream) {
+        this.dataTemplateStream = dataTemplateStream;
+    }
+
+    public String getDataTemplateFileName() {
+        return dataTemplateFileName;
+    }
+
+    public void setDataTemplateFileName(String dataTemplateFileName) {
+        this.dataTemplateFileName = dataTemplateFileName;
+    }
+
+    public String getDataTemplateContentType() {
+        return dataTemplateContentType;
+    }
+
+    public void setDataTemplateContentType(String dataTemplateContentType) {
+        this.dataTemplateContentType = dataTemplateContentType;
     }
 }

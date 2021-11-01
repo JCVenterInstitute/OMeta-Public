@@ -129,7 +129,11 @@
             <result name="forbidden_s">/JSP/ProductionStatus.jsp</result>
         </action>
         <action name="productionStatusExcel" class="org.jcvi.ometa.action.ProductionStatus" method="statusExcel">
-            <result name="success">/JSP/ProductionStatusExcel.jsp</result>
+            <result name="success" type="stream">
+                <param name="contentType">${dataTemplateContentType}</param>
+                <param name="contentDisposition">attachment;filename="${dataTemplateFileName}"</param>
+                <param name="inputName">dataTemplateStream</param>
+            </result>
         </action>
 
         <action name="projectSetup" class="org.jcvi.ometa.action.ProjectSetup" method="projectSetup">
