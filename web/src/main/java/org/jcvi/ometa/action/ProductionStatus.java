@@ -423,7 +423,10 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
 
             //paginate samples before main loop
             iTotalDisplayRecords=iTotalRecords=samples.size();
-            samples = samples.subList(iDisplayStart, iDisplayStart+iDisplayLength>samples.size()?samples.size():iDisplayLength+iDisplayStart);
+            // Get sublist if ALL (-1) is not selected
+            if (iDisplayLength != -1) {
+                samples = samples.subList(iDisplayStart, iDisplayStart + iDisplayLength > samples.size() ? samples.size() : iDisplayLength + iDisplayStart);
+            }
 
             List<Long> sampleIdList = new ArrayList<Long>();
             for (Sample sample : samples) {
