@@ -21,7 +21,8 @@
 
 package org.jcvi.ometa.interceptor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.struts2.dispatcher.HttpParameters;
 import org.hibernate.Session;
 import org.jcvi.ometa.configuration.*;

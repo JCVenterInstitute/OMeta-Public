@@ -1,7 +1,8 @@
 package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.Event;
 import org.jcvi.ometa.model.LookupValue;
@@ -22,7 +23,7 @@ import java.util.Properties;
  * This is a generic action for opening a popup. "t" parameter decides which popup this class should open.
  */
 public class Popup extends ActionSupport {
-    private Logger logger = Logger.getLogger(Popup.class);
+    private Logger logger = LogManager.getLogger(Popup.class);
 
     private ReadBeanPersister readPersister;
 

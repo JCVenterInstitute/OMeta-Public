@@ -21,7 +21,8 @@
 
 package org.jcvi.ometa.utils;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jtc.common.util.property.PropertyHelper;
 
 import javax.activation.DataHandler;
@@ -47,7 +48,7 @@ import java.util.Properties;
  * To change this template use File | Settings | File Templates.
  */
 public class EmailSender {
-    private Logger logger = Logger.getLogger( EmailSender.class );
+    private Logger logger = LogManager.getLogger( EmailSender.class );
 
     private final String EMAIL_HOST;
     private final String EMAIL_USER;

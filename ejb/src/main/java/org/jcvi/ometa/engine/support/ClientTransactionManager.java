@@ -21,7 +21,8 @@
 
 package org.jcvi.ometa.engine.support;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.utils.EjbBuilder;
 
 import javax.transaction.UserTransaction;
@@ -46,7 +47,7 @@ public class ClientTransactionManager {
 
     private UserTransaction trax;
     private boolean transactionRolledBack = false;
-    private Logger logger = Logger.getLogger(ClientTransactionManager.class);
+    private Logger logger = LogManager.getLogger(ClientTransactionManager.class);
 
     /**
      * Start a transaction, and keep its handle-like object within the

@@ -21,7 +21,8 @@
 
 package org.jcvi.ometa.utils;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
@@ -44,7 +45,7 @@ import java.util.regex.Pattern;
  * Time: 3:27 PM
  */
 public class CommonTool {
-    private static Logger logger = Logger.getLogger(CommonTool.class);
+    private static Logger logger = LogManager.getLogger(CommonTool.class);
 
     public static Map<String, String> decorateAttributeMap(Map<String, Object> attributeMap, List<String> attributeList, Project project) {
         Map<String, String> newSampleAttrMap = new HashMap<String, String>();

@@ -22,7 +22,8 @@
 package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.Actor;
@@ -44,7 +45,7 @@ import java.util.Properties;
  * Time: 10:54 AM
  */
 public class FileDownloader extends ActionSupport {
-    private static Logger logger = Logger.getLogger(FileDownloader.class);
+    private static Logger logger = LogManager.getLogger(FileDownloader.class);
 
     private String fp;
 

@@ -21,7 +21,8 @@
 
 package org.jcvi.ometa.interceptor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.configuration.QueryEntityType;
 import org.jcvi.ometa.hibernate.dao.StandaloneSessionAndTransactionManager;
 import org.jcvi.ometa.utils.Constants;
@@ -48,7 +49,7 @@ public class TestInterceptorHelper {
     protected static final String TEST_USER = "lfoster";
     protected static final String OPEN_TEST_PROJECT = "MRSA";
     protected static final String BARRED_PROJECT = "Werewolf";
-    private Logger logger = Logger.getLogger(TestInterceptorHelper.class);
+    private Logger logger = LogManager.getLogger(TestInterceptorHelper.class);
     private InterceptorHelper helper;
     @Before
     public void setUp() {

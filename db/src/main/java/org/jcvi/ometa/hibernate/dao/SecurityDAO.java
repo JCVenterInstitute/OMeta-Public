@@ -21,7 +21,8 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
@@ -104,7 +105,7 @@ public class SecurityDAO extends HibernateDAO {
                     " group by P.projet_name" +
                     " order by GREATEST(sa.sampla_modified_date, sa.sampla_create_date) desc" +
                     " limit :" + LIMIT_PARAM;
-    
+
     private static final String USER_SPECIFIC_JOIN_SQL_QUERY =
             " join dod_ometa.actor a on a.actor_id = sa.sampla_actor_modified_by" +
                     " where a.actor_username =:" + USERNAME_PARAM +
@@ -145,7 +146,7 @@ public class SecurityDAO extends HibernateDAO {
                     "and S.sample_id in (:openSample) " +
                     "union " + SECURED_SAMPLE_IDS_SQL_QUERY;
 
-    private Logger logger = Logger.getLogger( SecurityDAO.class );
+    private Logger logger = LogManager.getLogger( SecurityDAO.class );
 
     //-------------------------------------------------NAME SECTION
     /**

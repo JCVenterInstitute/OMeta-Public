@@ -22,7 +22,8 @@
 package org.jcvi.ometa.jndi.user_info;
 
 import org.apache.activemq.artemis.utils.JNDIUtil;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.Actor;
 import org.jcvi.ometa.utils.Constants;
@@ -42,7 +43,7 @@ import java.util.Properties;
  * Can get the user information, given user ID.
  */
 public class JndiUserInfo {
-    private Logger logger = Logger.getLogger(JNDIUtil.class);
+    private Logger logger = LogManager.getLogger(JNDIUtil.class);
 
     private ReadBeanPersister readPersister;
     /**

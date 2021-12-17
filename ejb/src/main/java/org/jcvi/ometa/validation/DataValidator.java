@@ -1,6 +1,7 @@
 package org.jcvi.ometa.validation;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.model.SampleAttribute;
 import org.jcvi.ometa.utils.Constants;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * Created by mkuscuog on 7/24/2015.
  */
 public class DataValidator{
-    private Logger logger = Logger.getLogger(DataValidator.class);
+    private Logger logger = LogManager.getLogger(DataValidator.class);
     protected final MessageFormat DATE_NOT_VALID_MSG = new MessageFormat(
             "Date validation failed! Please use one of the format below: \n {0}" );
     protected final MessageFormat MAX_LENGTH_ERROR_MSG = new MessageFormat(

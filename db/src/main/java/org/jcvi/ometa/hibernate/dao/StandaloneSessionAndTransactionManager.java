@@ -21,7 +21,8 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -56,7 +57,7 @@ public class StandaloneSessionAndTransactionManager implements SessionAndTransac
     private Timestamp traxStartDate;
     private String sessionFactoryName;
     private String hibernateCfg;
-    Logger logger = Logger.getLogger( StandaloneSessionAndTransactionManager.class );
+    Logger logger = LogManager.getLogger( StandaloneSessionAndTransactionManager.class );
 
     public StandaloneSessionAndTransactionManager( Properties props, String deploymentEnvironment  ) {
         if ( deploymentEnvironment.equalsIgnoreCase( Constants.DEVELOPMENT_DATABASE ) ) {

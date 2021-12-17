@@ -23,7 +23,8 @@ package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.action.ajax.IAjaxAction;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
@@ -52,7 +53,7 @@ import java.util.*;
  * Time: 2:08 PM
  */
 public class MetadataSetup extends ActionSupport implements IAjaxAction, Preparable {
-    private Logger logger = Logger.getLogger(MetadataSetup.class);
+    private Logger logger = LogManager.getLogger(MetadataSetup.class);
 
     private ProjectSampleEventPresentationBusiness psept;
     private ProjectSampleEventWritebackBusiness psewt;

@@ -31,7 +31,8 @@ package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -57,7 +58,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class ProductionStatus extends ActionSupport implements IAjaxAction {
-    private Logger logger = Logger.getLogger(ProductionStatus.class);
+    private Logger logger = LogManager.getLogger(ProductionStatus.class);
 
 
     private ReadBeanPersister readPersister;

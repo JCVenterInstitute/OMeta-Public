@@ -2,7 +2,8 @@ package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.action.ajax.IAjaxAction;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
@@ -27,7 +28,7 @@ import java.util.*;
  * org.jcvi.ometa.action
  */
 public class ActorRole extends ActionSupport implements IAjaxAction, Preparable {
-    private Logger logger = Logger.getLogger(ActorRole.class);
+    private Logger logger = LogManager.getLogger(ActorRole.class);
 
     private List<Actor> actors;
     private List<Group> groups;

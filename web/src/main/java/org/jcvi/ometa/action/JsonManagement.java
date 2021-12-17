@@ -5,7 +5,8 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 import org.jcvi.ometa.action.ajax.IAjaxAction;
 import org.jcvi.ometa.configuration.AccessLevel;
@@ -29,7 +30,7 @@ import java.util.Properties;
  * Created by mkuscuog on 3/28/2017.
  */
 public class JsonManagement extends ActionSupport implements IAjaxAction {
-    private Logger logger = Logger.getLogger(JsonManagement.class);
+    private Logger logger = LogManager.getLogger(JsonManagement.class);
     private ReadBeanPersister readPersister;
 
     List<Project> projectList;

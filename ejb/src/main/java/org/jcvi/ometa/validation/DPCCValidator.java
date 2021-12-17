@@ -1,6 +1,7 @@
 package org.jcvi.ometa.validation;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.helper.DPCCHelper;
 import org.jcvi.ometa.model.FileReadAttributeBean;
 import org.jcvi.ometa.utils.Constants;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 public class DPCCValidator {
 
-    private Logger logger = Logger.getLogger(DPCCValidator.class);
+    private Logger logger = LogManager.getLogger(DPCCValidator.class);
 
 
 

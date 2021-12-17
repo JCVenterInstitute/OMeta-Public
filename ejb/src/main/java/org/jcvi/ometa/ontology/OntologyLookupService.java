@@ -21,7 +21,8 @@
 
 package org.jcvi.ometa.ontology;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import uk.ac.ebi.ook.web.services.Query;
 import uk.ac.ebi.ook.web.services.QueryServiceLocator;
 
@@ -34,7 +35,7 @@ import java.util.*;
  * Time: 4:16 PM
  */
 public class OntologyLookupService {
-    private Logger logger = Logger.getLogger(OntologyLookupService.class);
+    private Logger logger = LogManager.getLogger(OntologyLookupService.class);
 
     public static final String ONTOLOGY_LS_URL = "http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=";
 

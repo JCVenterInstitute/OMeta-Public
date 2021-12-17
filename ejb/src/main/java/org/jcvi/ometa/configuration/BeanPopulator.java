@@ -21,7 +21,8 @@
 
 package org.jcvi.ometa.configuration;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -41,7 +42,7 @@ public class BeanPopulator {
     private static final String SET_PREFIX = "set";
     private static final Class OVERRIDE_ANNOTATION_CLASS = JCVI_BeanPopulator_Column.class;
 
-    private Logger logger = Logger.getLogger(BeanPopulator.class);
+    private Logger logger = LogManager.getLogger(BeanPopulator.class);
     private Map<Method,String> methodVsDataName;
     private Class checkClass;
 

@@ -1,7 +1,8 @@
 package org.jcvi.ometa.utils;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -21,7 +22,7 @@ import java.util.*;
  */
 public class EventsToFile {
     private final String serverUrl = "jnp://limsdev5.jcvi.org:1299";
-    private static Logger logger = Logger.getLogger(EventsToFile.class);
+    private static Logger logger = LogManager.getLogger(EventsToFile.class);
 
     public EventsToFile() {
 

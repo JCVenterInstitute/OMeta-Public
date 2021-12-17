@@ -1,6 +1,7 @@
 package org.jcvi.ometa.stateless_session_bean;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.utils.JsonProducer;
 
 import javax.ejb.LocalBean;
@@ -13,7 +14,7 @@ import javax.ejb.Singleton;
 @Singleton
 @LocalBean
 public class JsonProducerBean {
-    private Logger logger = Logger.getLogger(JsonProducerBean.class);
+    private Logger logger = LogManager.getLogger(JsonProducerBean.class);
 
     //Runs 7 AM everyday (Server Time)
     @Schedule(hour="7")

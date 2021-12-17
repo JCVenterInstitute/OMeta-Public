@@ -22,7 +22,8 @@
 package org.jcvi.ometa.action.ajax;
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.ontology.OntologyLookupService;
 import org.jcvi.ometa.ontology.OntologyTerm;
 import uk.ac.ebi.ontocat.OntologyService;
@@ -46,7 +47,7 @@ import java.util.*;
  * http://www.ontocat.org/
  */
 public class OntologyAjax extends ActionSupport implements IAjaxAction {
-    Logger logger = Logger.getLogger(OntologyAjax.class);
+    Logger logger = LogManager.getLogger(OntologyAjax.class);
     private String ot;
     private String tid;
     private String sw;

@@ -22,7 +22,8 @@
 package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.*;
 import org.jcvi.ometa.exception.ForbiddenResourceException;
@@ -43,7 +44,7 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 public class SampleDetail extends ActionSupport {
-    private Logger logger = Logger.getLogger(SampleDetail.class);
+    private Logger logger = LogManager.getLogger(SampleDetail.class);
 
     ReadBeanPersister readPersister;
 
