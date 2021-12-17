@@ -21,7 +21,8 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
@@ -140,7 +141,7 @@ public class SecurityDAO extends HibernateDAO {
                     "and S.sample_id in (:openSample) " +
                     "union " + SECURED_SAMPLE_IDS_SQL_QUERY;
 
-    private Logger logger = Logger.getLogger( SecurityDAO.class );
+    private Logger logger = LogManager.getLogger( SecurityDAO.class );
 
     //-------------------------------------------------NAME SECTION
     /**

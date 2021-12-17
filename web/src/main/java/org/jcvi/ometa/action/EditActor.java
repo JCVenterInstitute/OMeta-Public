@@ -3,7 +3,8 @@ package org.jcvi.ometa.action;
 import com.opensymphony.xwork2.ActionSupport;
 
 import com.opensymphony.xwork2.Preparable;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.helper.LDAPHelper;
@@ -25,7 +26,7 @@ import java.util.*;
  * Created by mkuscuog on 2/13/2015.
  */
 public class EditActor extends ActionSupport implements Preparable {
-    private Logger logger = Logger.getLogger(EditActor.class);
+    private Logger logger = LogManager.getLogger(EditActor.class);
 
     private List<Actor> actors;
     private List<Group> groups;

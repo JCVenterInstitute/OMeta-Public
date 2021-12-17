@@ -26,7 +26,8 @@ import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.builder.fluent.PropertiesBuilderParameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.codehaus.jettison.json.JSONObject;
@@ -53,7 +54,7 @@ import java.util.*;
  */
 
 public class JsonProducer implements Runnable {
-    private Logger logger = Logger.getLogger(JsonProducer.class);
+    private Logger logger = LogManager.getLogger(JsonProducer.class);
     private ProjectSampleEventPresentationBusiness pseEjb;
 
     private final String forbiddenAttributes[] = {"run date"};
@@ -64,7 +65,7 @@ public class JsonProducer implements Runnable {
     private List<String> errorList;
 
     public JsonProducer() {
-        pseEjb = new PresentationActionDelegate().initializeEjb(Logger.getLogger(ReadBeanPersister.class), null);
+        pseEjb = new PresentationActionDelegate().initializeEjb(LogManager.getLogger(ReadBeanPersister.class), null);
     }
 
     public JsonProducer(ProjectSampleEventPresentationBusiness ejb) {
@@ -150,7 +151,7 @@ public class JsonProducer implements Runnable {
         String PROJECT_STATUS = "Project Status";
         try {
             JSONObject json = new JSONObject();
-            
+
             File directory = new File(filePath);
             if (!directory.exists() || !directory.isDirectory()) {
                 if ((new File(directory.getParent())).canWrite())
@@ -164,7 +165,7 @@ public class JsonProducer implements Runnable {
             File tempFile = new File(filePath + File.separator + fileName + "_temp.json");
             FileWriter fileWriter = new FileWriter(tempFile);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            
+
             //Normal status data retrieval
             LookupValue tempLookupValue;
 
@@ -423,8 +424,8 @@ public class JsonProducer implements Runnable {
                 }
                 sumList.add(currSum);
             }
-            
-                       
+
+
             JSONObject sumMap = new JSONObject();
             sumMap.put("s_l", statusList);
             sumMap.put("data", sumList);
@@ -432,7 +433,7 @@ public class JsonProducer implements Runnable {
             json.put("samples", sampleList);
             bufferedWriter.write(json.toString());
     		bufferedWriter.close();
-            
+
             if(fileName.equalsIgnoreCase("gscmsc")){
             	if(tempFile.exists() && tempFile.length()>0){
             		JSONObject jsonSummary;
@@ -450,7 +451,7 @@ public class JsonProducer implements Runnable {
             }
 
                 if (tempFile.exists() && tempFile.length() > 0) {
-                               
+
                 String jsonPath = filePath + File.separator + fileName + ".json";
                 Files.deleteIfExists(Paths.get(jsonPath));
                 File dataFile = new File(jsonPath);

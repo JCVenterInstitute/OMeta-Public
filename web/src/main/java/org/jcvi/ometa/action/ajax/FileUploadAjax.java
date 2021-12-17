@@ -2,7 +2,8 @@ package org.jcvi.ometa.action.ajax;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 import org.jcvi.ometa.utils.CommonTool;
 import org.jcvi.ometa.utils.Constants;
@@ -32,7 +33,7 @@ public class FileUploadAjax extends ActionSupport implements IAjaxAction {
 
     private Map<String, Object> result;
 
-    private Logger logger = Logger.getLogger(FileUploadAjax.class);
+    private Logger logger = LogManager.getLogger(FileUploadAjax.class);
 
     public FileUploadAjax() {
         Properties props = PropertyHelper.getHostnameProperties(Constants.PROPERTIES_FILE_NAME);

@@ -21,7 +21,8 @@
 
 package org.jcvi.ometa.stateless_session_bean;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ws.api.annotation.WebContext;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
@@ -77,7 +78,7 @@ public class ProjectSampleEventTrackerStateless implements ProjectSampleEventWri
 
     @Resource
     private SessionContext context;
-    private Logger logger = Logger.getLogger(ProjectSampleEventTrackerStateless.class);
+    private Logger logger = LogManager.getLogger(ProjectSampleEventTrackerStateless.class);
 
     @PermitAll
     @ExcludeClassInterceptors

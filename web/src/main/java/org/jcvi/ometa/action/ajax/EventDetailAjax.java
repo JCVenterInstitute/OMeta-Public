@@ -22,7 +22,8 @@
 package org.jcvi.ometa.action.ajax;
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 import org.jcvi.ometa.configuration.AccessLevel;
 import org.jcvi.ometa.configuration.QueryEntityType;
@@ -45,7 +46,7 @@ import java.util.*;
  * Time: 2:16 PM
  */
 public class EventDetailAjax extends ActionSupport implements IAjaxAction {
-    private Logger logger = Logger.getLogger(EventDetailAjax.class);
+    private Logger logger = LogManager.getLogger(EventDetailAjax.class);
 
     private ReadBeanPersister readPersister;
 

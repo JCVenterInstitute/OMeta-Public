@@ -5,7 +5,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationRemote;
 import org.jcvi.ometa.model.Actor;
@@ -28,7 +29,7 @@ import java.util.*;
  * org.jcvi.ometa.helper
  */
 public class SequenceHelper {
-    private static Logger logger = Logger.getLogger(SequenceHelper.class);
+    private static Logger logger = LogManager.getLogger(SequenceHelper.class);
 
     private final String PROJECT_FILE_STORAGE;
     private final String USER_FILE_STORAGE;

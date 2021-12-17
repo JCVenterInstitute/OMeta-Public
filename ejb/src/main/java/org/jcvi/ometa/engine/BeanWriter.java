@@ -21,7 +21,8 @@
 
 package org.jcvi.ometa.engine;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationRemote;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
@@ -47,7 +48,7 @@ import java.util.*;
  * Takes care of specifics to type of data.
  */
 public class BeanWriter {
-    private Logger logger = Logger.getLogger(BeanWriter.class);
+    private Logger logger = LogManager.getLogger(BeanWriter.class);
 
     private Context writeDelegateContext  = null;
     private Context readDelegateContext  = null;

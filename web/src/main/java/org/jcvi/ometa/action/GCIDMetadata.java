@@ -2,7 +2,8 @@ package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -25,7 +26,7 @@ import java.util.*;
  * Created by mkuscuog on 3/9/2015.
  */
 public class GCIDMetadata extends ActionSupport {
-    private Logger logger = Logger.getLogger(GCIDMetadata.class);
+    private Logger logger = LogManager.getLogger(GCIDMetadata.class);
 
     private ReadBeanPersister readPersister;
     private final Long bioSampleLookupValueId = 9132686064399L;

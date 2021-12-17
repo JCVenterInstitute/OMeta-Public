@@ -22,7 +22,8 @@
 package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.*;
@@ -47,7 +48,7 @@ import java.util.Properties;
  * To change this template use File | Settings | File Templates.
  */
 public class Editor extends ActionSupport {
-    private Logger logger = Logger.getLogger(Editor.class);
+    private Logger logger = LogManager.getLogger(Editor.class);
 
     private static final String LOOKUP_VALUE_TYPE_EVENT = "Event Type";
     private static final String LOOKUP_VALUE_TYPE_ATTRIBUTE = "Attribute";

@@ -4,7 +4,8 @@ import net.lingala.zip4j.core.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.LineIterator;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.helper.SequenceHelper;
 import org.jcvi.ometa.utils.Constants;
 import org.jcvi.ometa.utils.EmailSender;
@@ -24,7 +25,7 @@ import java.util.Properties;
  * org.jcvi.ometa.engine
  */
 public class BulkLoader {
-    private static Logger logger = Logger.getLogger(BulkLoader.class);
+    private static Logger logger = LogManager.getLogger(BulkLoader.class);
 
     private final String BULK_FILE_DIRECTORY;
     private final String BULK_SYSTEM_USER;

@@ -21,7 +21,7 @@
 
 package org.jcvi.ometa.db_interface;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
 import org.jcvi.ometa.configuration.AccessLevel;
 import org.jcvi.ometa.configuration.QueryEntityType;
@@ -49,7 +49,7 @@ public class ReadBeanPersister implements WebDataFacadeI {
 
     public ReadBeanPersister() {
         //pseb = new ProjectSampleEventPresentationStateless();
-        pseb = new PresentationActionDelegate().initializeEjb( Logger.getLogger( ReadBeanPersister.class ), null );
+        pseb = new PresentationActionDelegate().initializeEjb( LogManager.getLogger( ReadBeanPersister.class ), null );
     }
 
     public ReadBeanPersister( SessionAndTransactionManagerI sessionAndTransactionManager ) {

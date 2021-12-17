@@ -21,7 +21,8 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
@@ -51,7 +52,7 @@ public abstract class HibernateDAO {
     public static final String EVENT_STATUS_ACTIVE = "Active";
     public static final String EVENT_STATUS_INACTIVE = "InActive";
 
-    protected Logger logger = Logger.getLogger(HibernateDAO.class);
+    protected Logger logger = LogManager.getLogger(HibernateDAO.class);
 
     /**
      * Grab any meta attribute by lookup value, given its final class.

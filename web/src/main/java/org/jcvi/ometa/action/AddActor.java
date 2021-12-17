@@ -22,7 +22,8 @@
 package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
@@ -47,7 +48,7 @@ import java.util.*;
  * Time: 1:28 PM
  */
 public class AddActor extends ActionSupport {
-    private Logger logger = Logger.getLogger(AddActor.class);
+    private Logger logger = LogManager.getLogger(AddActor.class);
 
     private ProjectSampleEventWritebackBusiness psewt;
     private ReadBeanPersister readPersister;

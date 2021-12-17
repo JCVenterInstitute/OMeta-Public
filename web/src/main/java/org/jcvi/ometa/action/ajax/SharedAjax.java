@@ -23,7 +23,8 @@ package org.jcvi.ometa.action.ajax;
 
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
@@ -56,7 +57,7 @@ import java.util.zip.ZipOutputStream;
  * To change this template use File | Settings | File Templates.
  */
 public class SharedAjax extends ActionSupport implements IAjaxAction {
-    private Logger logger = Logger.getLogger(SharedAjax.class);
+    private Logger logger = LogManager.getLogger(SharedAjax.class);
 
     private ReadBeanPersister readPersister;
 

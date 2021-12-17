@@ -31,7 +31,8 @@ package org.jcvi.ometa.action;
  */
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.struts2.interceptor.SessionAware;
 import org.jcvi.ometa.interceptor.InterceptorHelper;
 import org.jcvi.ometa.utils.Constants;
@@ -40,7 +41,7 @@ import org.jtc.common.util.property.PropertyHelper;
 import java.util.*;
 
 public class ForceLogin extends ActionSupport implements SessionAware {
-    private Logger logger = Logger.getLogger(ForceLogin.class);
+    private Logger logger = LogManager.getLogger(ForceLogin.class);
     private Map<String,Object> session;
     private String projectNames;
     private String attributes;

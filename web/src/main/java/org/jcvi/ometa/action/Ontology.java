@@ -22,7 +22,8 @@
 package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.ontology.OntologyLookupService;
 import org.jcvi.ometa.utils.Constants;
@@ -41,7 +42,7 @@ import java.util.Properties;
  * bioportal API key : 0189b747-4ff6-4f07-9619-0ec86972c7f5, a6b4dbc7-d18d-40ce-a5d0-93e5e5a88468
  */
 public class Ontology extends ActionSupport {
-    private Logger logger = Logger.getLogger(Ontology.class);
+    private Logger logger = LogManager.getLogger(Ontology.class);
 
     private OntologyLookupService ontologyService;
     private ReadBeanPersister readPersister;

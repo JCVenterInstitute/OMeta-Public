@@ -21,7 +21,8 @@
 
 package org.jcvi.ometa.utils;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationRemote;
 

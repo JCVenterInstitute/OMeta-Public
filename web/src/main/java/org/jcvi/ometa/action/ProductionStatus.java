@@ -30,7 +30,8 @@ package org.jcvi.ometa.action;
  */
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.action.ajax.IAjaxAction;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.*;
@@ -44,7 +45,7 @@ import org.jtc.common.util.property.PropertyHelper;
 import java.util.*;
 
 public class ProductionStatus extends ActionSupport implements IAjaxAction {
-    private Logger logger = Logger.getLogger(ProductionStatus.class);
+    private Logger logger = LogManager.getLogger(ProductionStatus.class);
 
 
     private ReadBeanPersister readPersister;
@@ -594,11 +595,11 @@ public class ProductionStatus extends ActionSupport implements IAjaxAction {
         this.attributesOnScreen = attributesOnScreen;
     }
 
-    public boolean isExcel() {
+    public boolean isIsExcel() {
         return isExcel;
     }
 
-    public void setExcel(boolean excel) {
+    public void setIsExcel(boolean excel) {
         isExcel = excel;
     }
 

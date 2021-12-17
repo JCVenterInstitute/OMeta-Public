@@ -21,7 +21,8 @@
 
 package org.jcvi.ometa.interceptor.javaee;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.configuration.AccessLevel;
 import org.jcvi.ometa.configuration.ResponseToFailedAuthorization;
 import org.jcvi.ometa.interceptor.InterceptorHelper;
@@ -50,7 +51,7 @@ import java.util.Properties;
 public class WriteableAllOrNothingAuthInterceptor {
 
     private boolean isInitialized = false;
-    private Logger logger = Logger.getLogger( WriteableAllOrNothingAuthInterceptor.class );
+    private Logger logger = LogManager.getLogger( WriteableAllOrNothingAuthInterceptor.class );
     private InterceptorHelper interceptorHelper;
 
     @Resource

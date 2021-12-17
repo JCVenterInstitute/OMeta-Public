@@ -22,7 +22,8 @@ package org.jcvi.ometa.action;
  */
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 import org.jcvi.ometa.configuration.AccessLevel;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
@@ -38,7 +39,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class EventHistory extends ActionSupport {
-    private Logger logger = Logger.getLogger(EventDetail.class);
+    private Logger logger = LogManager.getLogger(EventDetail.class);
 
     private ReadBeanPersister readPersister;
 

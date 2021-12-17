@@ -1,7 +1,8 @@
 package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.exception.ForbiddenResourceException;
 import org.jcvi.ometa.exception.LoginRequiredException;
@@ -16,7 +17,7 @@ import java.util.*;
  * Created by mkuscuog on 7/7/2015.
  */
 public class DictionaryManagement extends ActionSupport {
-    private Logger logger = Logger.getLogger(DictionaryManagement.class);
+    private Logger logger = LogManager.getLogger(DictionaryManagement.class);
 
     private ReadBeanPersister readPersister;
 

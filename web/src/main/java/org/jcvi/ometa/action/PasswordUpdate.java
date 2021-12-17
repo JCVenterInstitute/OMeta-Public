@@ -2,7 +2,8 @@ package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 import org.jcvi.ometa.action.ajax.IAjaxAction;
 import org.jcvi.ometa.helper.LDAPHelper;
@@ -14,7 +15,7 @@ import org.jcvi.ometa.helper.LDAPHelper;
  * org.jcvi.ometa.action
  */
 public class PasswordUpdate extends ActionSupport implements IAjaxAction, Preparable {
-    private Logger logger = Logger.getLogger(PasswordUpdate.class);
+    private Logger logger = LogManager.getLogger(PasswordUpdate.class);
 
     String newPass;
     String newPassRe;

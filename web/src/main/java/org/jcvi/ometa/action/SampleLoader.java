@@ -22,7 +22,8 @@
 package org.jcvi.ometa.action;
 
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
 import org.jcvi.ometa.model.FileReadAttributeBean;
@@ -63,7 +64,7 @@ public class SampleLoader extends ActionSupport {
     private String jobType;
     private Sample loadingSample;
 
-    private Logger logger = Logger.getLogger(EventLoader.class);
+    private Logger logger = LogManager.getLogger(EventLoader.class);
 
     public SampleLoader() {
         readPersister = new ReadBeanPersister();

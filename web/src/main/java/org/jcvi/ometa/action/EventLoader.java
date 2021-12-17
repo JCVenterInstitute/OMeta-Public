@@ -24,7 +24,8 @@ package org.jcvi.ometa.action;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.configuration.AccessLevel;
@@ -108,7 +109,7 @@ public class EventLoader extends ActionSupport implements Preparable {
     private final String SUBMISSION_STATUS_VALIDATE = "validate";
     private final String SUBMISSION_STATUS_SUBMIT = "submit";
 
-    private Logger logger = Logger.getLogger(EventLoader.class);
+    private Logger logger = LogManager.getLogger(EventLoader.class);
 
     public EventLoader(ReadBeanPersister persister, ProjectSampleEventWritebackBusiness writeEjb) {
         this.readPersister = persister;

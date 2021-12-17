@@ -21,9 +21,9 @@
 
 package org.jcvi.ometa.hibernate.dao;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.resource.transaction.spi.TransactionStatus;
 
@@ -32,7 +32,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Properties;
 
 /**
  * Created by IntelliJ IDEA.
@@ -51,7 +50,7 @@ public class ContainerizedSessionAndTransactionManager implements SessionAndTran
     private String sessionFactoryName;
     private boolean sessionIsUsed = false;
 
-    Logger logger = Logger.getLogger(ContainerizedSessionAndTransactionManager.class);
+    Logger logger = LogManager.getLogger(ContainerizedSessionAndTransactionManager.class);
 
     @PersistenceContext(unitName="OMETAPersistenceUnit")
     private EntityManager em;

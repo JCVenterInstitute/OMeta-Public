@@ -21,7 +21,7 @@
 
 package org.jcvi.ometa;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventPresentationBusiness;
 import org.jcvi.ometa.bean_interface.ProjectSampleEventWritebackBusiness;
 import org.jcvi.ometa.db_interface.ReadBeanPersister;
@@ -75,7 +75,7 @@ public abstract class PSTTestAbstract {
                 (type.equals("prod")?"http-remoting://localhost:8080":"http-remoting://localhost:8080"),
                 userPassProvider.getUsername(),
                 userPassProvider.getPassword(),
-                Logger.getLogger(this.getClass().getName())
+                LogManager.getLogger(this.getClass().getName())
         );
 
         return pseb;
@@ -88,7 +88,7 @@ public abstract class PSTTestAbstract {
                 (type.equals("prod")?"http-remoting://localhost:8080":"http-remoting://localhost:8080"),
                 userPassProvider.getUsername(),
                 userPassProvider.getPassword(),
-                Logger.getLogger(this.getClass().getName())
+                LogManager.getLogger(this.getClass().getName())
         );
 
         return pseb;
