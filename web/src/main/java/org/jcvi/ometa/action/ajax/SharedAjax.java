@@ -693,10 +693,10 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
 
                     if (subType == null)
                         subType = "A";
-                    if (subType.equals("P") || subType.equals("A")) {
+                    if (subType.equals("P") || subType.equals("A") || subType.equals("DOD")) {
                         List<ProjectMetaAttribute> allProjectMetaAttributes = readPersister.getProjectMetaAttributes(projectIds);
                         List<String> projectMetaList = new ArrayList<String>();
-                        if (subType.equals("A"))
+                        if (subType.equals("A") || subType.equals("DOD"))
                             projectMetaList.add("Project Name");
                         for (ProjectMetaAttribute pma : allProjectMetaAttributes) {
                             if (!projectMetaList.contains(pma.getLookupValue().getName()) && pma.isActive()) {
@@ -705,37 +705,66 @@ public class SharedAjax extends ActionSupport implements IAjaxAction {
                         }
                         containerMap.put("project", projectMetaList);
                     }
-                    if (subType.equals("S") || subType.equals("A")) {
-                        List<SampleMetaAttribute> allSampleMetaAttributes = readPersister.getSampleMetaAttributes(projectIds);
-                        List<String> sampleMetaList = new ArrayList<String>();
-                        if (subType.equals("A")) {
-                            sampleMetaList.add("Sample Name");
-                            sampleMetaList.add("Parent Sample");
-                        }
-                        for (SampleMetaAttribute sma : allSampleMetaAttributes) {
-                            if (!sampleMetaList.contains(sma.getLookupValue().getName()) && sma.isActive()) {
-                                sampleMetaList.add(sma.getLookupValue().getName());
-                            }
-                        }
-                        containerMap.put("sample", sampleMetaList);
-                    }
-                    if (subType.equals("E") || subType.equals("A")) {
+
+                    if (subType.equals("DOD")) {
                         List<EventMetaAttribute> allEventMetaAttributes = readPersister.getEventMetaAttributes(projectIds);
-                        Map<String, List<String>> groupedEMA = new HashMap<String, List<String>>();
+
+                        Map<String, Set<String>> groupedEMA = new HashMap<>();
+                        groupedEMA.put("Sample", new TreeSet<>());
+                        groupedEMA.put("Visit", new TreeSet<>());
+                        Set<String> sampleMetaList = new TreeSet<>();
+                        sampleMetaList.add("Sample Name");
+                        sampleMetaList.add("Parent Sample");
+
                         for (EventMetaAttribute ema : allEventMetaAttributes) {
-                            if(ema.getEventTypeLookupValue() != null && ema.getLookupValue() != null && ema.isActive()) {
-                                String et = ema.getEventTypeLookupValue().getName();
-                                String name = ema.getLookupValue().getName();
-                                if(groupedEMA.containsKey(et)) {
-                                    groupedEMA.get(et).add(name);
-                                } else {
-                                    List<String> newList = new ArrayList<String>();
-                                    newList.add(name);
-                                    groupedEMA.put(et, newList);
+                            String en = ema.getEventTypeLookupValue().getName();
+
+                            if (ema.getEventTypeLookupValue() != null && ema.getLookupValue() != null && ema.isActive()) {
+                                if (en.startsWith("Subject")) {
+                                    sampleMetaList.add(ema.getLookupValue().getName());
+                                } else if (en.startsWith("Sample")) {
+                                    groupedEMA.get("Sample").add(ema.getLookupValue().getName());
+                                } else if (en.startsWith("Visit")) {
+                                    groupedEMA.get("Visit").add(ema.getLookupValue().getName());
                                 }
                             }
                         }
+
+                        containerMap.put("sample", sampleMetaList);
                         containerMap.put("event", groupedEMA);
+                    } else {
+                        if (subType.equals("S") || subType.equals("A")) {
+                            List<SampleMetaAttribute> allSampleMetaAttributes = readPersister.getSampleMetaAttributes(projectIds);
+                            List<String> sampleMetaList = new ArrayList<String>();
+                            if (subType.equals("A")) {
+                                sampleMetaList.add("Sample Name");
+                                sampleMetaList.add("Parent Sample");
+                            }
+                            for (SampleMetaAttribute sma : allSampleMetaAttributes) {
+                                if (!sampleMetaList.contains(sma.getLookupValue().getName()) && sma.isActive()) {
+                                    sampleMetaList.add(sma.getLookupValue().getName());
+                                }
+                            }
+                            containerMap.put("sample", sampleMetaList);
+                        }
+                        if (subType.equals("E") || subType.equals("A")) {
+                            List<EventMetaAttribute> allEventMetaAttributes = readPersister.getEventMetaAttributes(projectIds);
+                            Map<String, List<String>> groupedEMA = new HashMap<String, List<String>>();
+                            for (EventMetaAttribute ema : allEventMetaAttributes) {
+                                if (ema.getEventTypeLookupValue() != null && ema.getLookupValue() != null && ema.isActive()) {
+                                    String et = ema.getEventTypeLookupValue().getName();
+                                    String name = ema.getLookupValue().getName();
+                                    if (groupedEMA.containsKey(et)) {
+                                        groupedEMA.get(et).add(name);
+                                    } else {
+                                        List<String> newList = new ArrayList<String>();
+                                        newList.add(name);
+                                        groupedEMA.put(et, newList);
+                                    }
+                                }
+                            }
+                            containerMap.put("event", groupedEMA);
+                        }
                     }
                     aaData.add(containerMap);
                 } else {

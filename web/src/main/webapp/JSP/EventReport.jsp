@@ -105,7 +105,7 @@
                     <td colspan="2" id="projectMetaAttributesTD"></td>
                   </tr>
                   <tr class="odd">
-                    <td width="5%"><label>Sample</label></td>
+                    <td width="5%"><label>Subject</label></td>
                     <td colspan="2" id="sampleMetaAttributesTD"></td>
                   </tr>
                   <tr class="even">
@@ -372,7 +372,7 @@
       url:"sharedAjax.action",
       cache: false,
       async: false,
-      data: "type="+type+"&projectId="+projectId+"&sampleId=0&eventId=0&subType=A",
+      data: "type="+type+"&projectId="+projectId+"&sampleId=0&eventId=0&subType=DOD",
       success: function(data){
         if(data.err) {
           utils.error.add(data.err.substring(data.err.indexOf(':')+1));
