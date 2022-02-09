@@ -33,7 +33,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.0.7.Final</version> <!-- check with wildfly dependency tree -->
+            <version>5.4.24.Final</version> <!-- check with wildfly dependency tree -->
             <exclusions>
                 <exclusion>
                     <groupId>org.jboss</groupId>
